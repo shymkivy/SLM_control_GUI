@@ -1,0 +1,104 @@
+function f_SLM_initialize_GUI_params(app)
+    app.SLMheightEditField.Value = app.SLM_ops.height;
+    app.SLMwidthEditField.Value = app.SLM_ops.width;
+    
+    % lut dropdown
+    app.LUTfilereactivateSLMDropDown.Items = app.SLM_ops.lut_names;
+    app.LUTfilereactivateSLMDropDown.Value = app.SLM_ops.lut_names{app.SLM_ops.lut_default_num};
+    app.SLM_ops.current_lut = app.LUTfilereactivateSLMDropDown.Value;
+    
+    % dir names
+    app.LUTsavedirEditField.Value = app.SLM_ops.save_LUT_dir;
+    app.AOsavedirEditField.Value = app.SLM_ops.save_AO_dir;
+    app.CalibrationdirEditField.Value = app.SLM_ops.calibration_dir;
+    
+    % file names
+    app.AxialcalibrationfileEditField.Value = app.SLM_ops.axial_calib_file;
+    app.AffinetransformatiomatrixfileEditField.Value = app.SLM_ops.lateral_calib_affine_transf_file;
+    app.LateralpixelumscalingfileEditField.Value = app.SLM_ops.lateral_calib_pixel_um_file;
+    
+    % AO dropdown
+    app.AOcorrectionfilesDropDown.Items  = app.SLM_ops.zernike_file_names;
+    app.AOcorrectionfilesDropDown.Value = app.SLM_ops.zernike_file_names{1};
+    
+    % blank
+    app.BlankPixelValueEditField.Value = 0;
+
+    % Fresnel lens
+    app.FresCenterXEditField.Value = app.SLM_ops.width/2;
+    app.FresCenterYEditField.Value = app.SLM_ops.height/2;
+    app.FresRadiusEditField.Value = app.SLM_ops.height/2;
+    app.FresPowerEditField.Value = 1;
+    app.FresCylindricalCheckBox.Value = 1;
+    app.FresHorizontalCheckBox.Value = 0;
+
+    % Blazed grating
+    app.BlazPeriodEditField.Value = 128;
+    app.BlazIncreasingCheckBox.Value = 1;
+    app.BlazHorizontalCheckBox.Value = 0;
+
+    % Stripes
+    app.StripePixelPerStripeEditField.Value = 8;
+    app.StripePixelValueEditField.Value = 0;
+    app.StripeGrayEditField.Value = 255;
+    
+    % zernike
+    app.CenterXEditField.Value = floor(app.SLM_ops.width/2);
+    app.CenterYEditField.Value = floor(app.SLM_ops.height/2);
+    app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
+    
+    % Multiplane imaging
+    app.UIImagePhaseTable.Data = table();
+    
+    % AO zernike table
+    app.ZernikeListTable.Data = table();
+    f_SLM_AO_fill_modes_table(app);
+    f_SLM_LUT_update_total_frames(app);
+    
+    % parameters
+    app.LUTsavedirEditField.Value = app.SLM_ops.save_LUT_dir;
+    app.AOsavedirEditField.Value = app.SLM_ops.save_AO_dir;
+    
+    % current coord initialize
+    app.current_SLM_coord = f_SLM_mpl_get_coords(app, 'zero');
+    app.UITablecurrentcoord.Data = app.current_SLM_coord.xyzp;
+ 
+    % initialize af matrix   
+    f_SLM_apply_xyz_calibration(app, 1);
+    
+    % initialize blank image
+    app.SLM_blank_im = zeros(app.SLM_ops.height, app.SLM_ops.width);
+    app.SLM_blank_pointer = f_SLM_initialize_pointer(app);
+    app.SLM_Image_pointer.Value = f_SLM_convert_to_pointer(app, zeros(app.SLM_ops.height, app.SLM_ops.width));
+    
+    % initialize X offset image
+    app.SLM_X_offset_im_pointer = f_SLM_initialize_pointer(app);
+    coords = f_SLM_mpl_get_coords(app, 'zero');
+    coords.xyzp = [app.SLM_ops.X_offset, 0, 0];
+    app.SLM_X_offset_im = f_SLM_gen_holo_multiplane_image(app, coords);
+    app.SLM_X_offset_im_pointer.Value = f_SLM_convert_to_pointer(app, app.SLM_X_offset_im);
+    
+    % initialize ref image
+    app.SLM_ref_im_pointer = f_SLM_initialize_pointer(app);
+    coords = f_SLM_mpl_get_coords(app, 'zero');
+    coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
+                   -app.SLM_ops.ref_offset, 0, 0;...
+                    0, app.SLM_ops.ref_offset, 0;...
+                    0,-app.SLM_ops.ref_offset, 0];
+    app.SLM_ref_im = f_SLM_gen_holo_multiplane_image(app, coords);
+    app.SLM_ref_im_pointer.Value = f_SLM_convert_to_pointer(app, app.SLM_ref_im);
+    
+    % initialize other pointers
+    app.SLM_Image = zeros(app.SLM_ops.height,app.SLM_ops.width);
+    app.SLM_Image_pointer = f_SLM_initialize_pointer(app);
+    app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_Image);
+    axis(app.UIAxesGenerateHologram, 'tight');
+    caxis(app.UIAxesGenerateHologram, [0 2*pi]);
+    
+    app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);
+
+    f_SLM_AO_generate_AO_image(app);  
+    
+    % initialize DAQ
+    f_SLM_initialize_DAQ(app);
+end
