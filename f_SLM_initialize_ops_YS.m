@@ -4,9 +4,19 @@ if ~exist('ops', 'var')
     ops = struct;
 end
 
+pwd2 = fileparts(which('SLM_control_GUI.mlapp'));
+ops.GUI_dir = pwd2;
+if exist([pwd2 '\SLM_GUI_funcions'], 'dir')
+    addpath([pwd2 '\SLM_GUI_funcions']);
+else
+    error('RAFA: You need to move to SLM_microscope_GUI directory and reopen GUI!!!');
+end  
+
+
 % library path
+%ops.GUI_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch\SLM_microscope_GUI\';
+
 ops.path_library = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-ops.GUI_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch\SLM_microscope_GUI\';
 ops.lut_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\LUT Files';
 % - In your program you should use the path to your custom LUT as opposed to linear LUT
 
@@ -35,6 +45,5 @@ ops.current_lut = ops.lut_names{ops.lut_default_num};
 
 % load Zernike files
 ops.zernike_file_names = f_SLM_get_file_names([ops.GUI_dir '\' ops.calibration_dir], '*ernike*.mat', false);
-
 
 end
