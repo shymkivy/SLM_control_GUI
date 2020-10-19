@@ -2,7 +2,7 @@
 %% Try closing thing from past
 
 try
-    [~] = f_SLM_close_YS(ops);
+    [~] = f_SLM_BNS_close(ops);
 catch
 end
 
@@ -23,8 +23,8 @@ save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
 
-ops = f_SLM_initialize_ops_YS();
-ops = f_SLM_initialize_YS(ops);
+ops = f_SLM_default_ops();
+ops = f_SLM_BNS_initialize(ops);
 
 
 %% Initialize DAQ
@@ -46,7 +46,7 @@ if ops.SDK_created == 1
     PixelValue = 0;
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, PixelValue);
     
-    f_SLM_update_YS(ops, SLM_image);
+    f_SLM_BNS_update(ops, SLM_image);
 	
     figure;
     SLM_image_plot = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
@@ -68,7 +68,7 @@ if ops.SDK_created == 1
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions);
             
             %write the image
-            f_SLM_update_YS(ops, SLM_image);
+            f_SLM_BNS_update(ops, SLM_image);
             SLM_image_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
             
             %let the SLM settle for 10 ms
@@ -103,5 +103,5 @@ end
 
 
 %% close SLM
-ops = f_SLM_close_YS(ops);
+ops = f_SLM_BNS_close(ops);
 

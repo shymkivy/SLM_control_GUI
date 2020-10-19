@@ -2,9 +2,9 @@ function f_SLM_apply_xyz_calibration(app, turn_on)
 
 if turn_on
     try
-        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.calibration_dir '\' app.AxialcalibrationfileEditField.Value], 'axial_calibration');
-        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.calibration_dir '\' app.AffinetransformatiomatrixfileEditField.Value], 'lateral_affine_transform_mat');
-        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.calibration_dir '\' app.LateralpixelumscalingfileEditField.Value], 'lateral_calibration_pixel_um');
+        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.xyz_calibration_dir '\' app.AxialcalibrationfileEditField.Value], 'axial_calibration');
+        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.xyz_calibration_dir '\' app.AffinetransformatiomatrixfileEditField.Value], 'lateral_affine_transform_mat');
+        load([app.SLM_ops.GUI_dir '\' app.SLM_ops.xyz_calibration_dir '\' app.LateralpixelumscalingfileEditField.Value], 'lateral_calibration_pixel_um');
         
         % regress number of pixels\um
         pum_fraction = abs(lateral_calibration_pixel_um(:,2)\lateral_calibration_pixel_um(:,1));

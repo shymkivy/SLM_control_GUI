@@ -1,4 +1,4 @@
-function f_SLM_update_YS(ops, image)
+function f_SLM_BNS_update(ops, image)
 
 % loads image
 calllib('Blink_C_wrapper', 'Write_image', ops.board_number, image, ops.width*ops.height, ops.wait_For_Trigger, ops.external_Pulse, ops.timeout_ms);

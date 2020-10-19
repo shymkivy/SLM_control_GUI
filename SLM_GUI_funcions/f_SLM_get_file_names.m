@@ -13,6 +13,8 @@ if load_data
     for n_lut = 1:num_luts
         data{n_lut} = load([dir_path '\' file_names{n_lut}]);
     end 
+else
+    data = [];
 end
 
 end

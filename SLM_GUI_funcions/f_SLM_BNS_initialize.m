@@ -1,4 +1,4 @@
-function ops = f_SLM_initialize_YS(ops)
+function ops = f_SLM_BNS_initialize(ops)
 
 % Load the DLL
 % Blink_C_wrapper.dll, Blink_SDK.dll, ImageGen.dll, FreeImage.dll and wdapi1021.dll
@@ -6,7 +6,7 @@ function ops = f_SLM_initialize_YS(ops)
 % library
 
 %ops.path_library = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-addpath(ops.path_library);
+addpath(ops.SLM_SDK_dir);
 
 if ~libisloaded('Blink_C_wrapper')
     loadlibrary('Blink_C_wrapper.dll', 'Blink_C_wrapper.h');

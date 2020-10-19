@@ -2,14 +2,11 @@
 %% Try closing thing from past
 
 try
-    [~] = f_SLM_close_YS(ops);
+    [~] = f_SLM_BNS_close(ops);
 catch
 end
-try
-    TLDC_set_Cam_Close(hdl_cam);
-catch
-end
-
+clear;
+close all;
 
 %% Parameters
 NumDataPoints = 256;    % bit depth
@@ -18,65 +15,25 @@ PixelsPerStripe = 8;
 save_raw_stack = 1;
 
 save_pref = '940_slm5221_maitai2';
-
-addpath('C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control');
+%GUI_dir = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control';
+GUI_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch';
+addpath(GUI_dir);
 time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
-save_path = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control\lut_calibration';
+save_path = [GUI_dir '\lut_calibration'];
 save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
 
-ops = f_SLM_initialize_ops_YS();
-ops = f_SLM_initialize_YS(ops);
+ops = f_SLM_default_ops();
+ops = f_SLM_BNS_initialize(ops);
 
-%% Set up the camera
-% Camera parameters
-cam_params.GammaCal_Camera='Thorlabs';
-cam_params.GammaCal_CameraExposeTime=0.2;
-
-% Thorlabs Camera 1024x1280 pixels
-cam_params.TLCAM_exptm       = 50;%40;       % exposure time in milliseconds (max~ 1/frame rate)
-cam_params.TLCAM_fps         = 19.78;    % frames per second
-cam_params.TLCAM_pxlclock    = 34;       % pixel clock in MHz (5-43MHz)
-% select pixels
-cam_params.TLCAM_win_start_M       = 0;  % beginning with 2, then steps in intervals of 2;  456
-cam_params.TLCAM_win_start_N       = 0;  % beginning with 4, then steps in intervals of 4;  156
-cam_params.TLCAM_win_Width   = 1280;%640;      % 32-1280, intervals of 4
-cam_params.TLCAM_win_Height  = 1024;%640;      % 4-1024, intervals of 2
-cam_params.TLCAM_gain        = 1;        % gain factor varying from 1 to 100
-cam_params.path_TLCAM_MEX = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control\MEX';
-addpath(cam_params.path_TLCAM_MEX);
-
-if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
-    
-    [hdl_cam, cam_im, act] = f_TLDC_Cam_Init_YS(cam_params); 
-    TLDC_get_Cam_Im(hdl_cam);
-    %calib_im_series = zeros( size(cam_im,1), size(cam_im,2), GRATvnum );
-    %tmp_im = zeros( size(cam_im,1), size(cam_im,2), 1 );
-end
-
-% figure;
-% h = imagesc();
-% xlim([1 cam_params.TLCAM_win_Width]);
-% ylim([1 cam_params.TLCAM_win_Height]);
-% n_frames = 500;
-% times_T = zeros(n_frames,1);
-% tic
-% for ii = 1:n_frames
-%     TLDC_get_Cam_Im(hdl_cam);
-%     h.CData = cam_im';
-%     drawnow;
-%     times_T(ii) = toc;
-% end
-% 
-% figure; plot(diff(times_T))
+%% Initialize DAQ
+session = daq.createSession ('ni');
+session.addCounterInputChannel('dev2', 'ctr0', 'EdgeCount');
+resetCounters(session);
 
 %% create gratings and upload
 if ops.SDK_created == 1
-    
-    if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
-        calib_im_series = zeros(size(cam_im,1), size(cam_im,2), NumDataPoints);
-    end
     
     %allocate arrays for our images
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
@@ -89,7 +46,7 @@ if ops.SDK_created == 1
     PixelValue = 0;
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, PixelValue);
     
-    f_SLM_update_YS(ops, SLM_image);
+    f_SLM_BNS_update(ops, SLM_image);
 	
     figure;
     SLM_image_plot = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
@@ -119,7 +76,7 @@ if ops.SDK_created == 1
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions);
             
             %write the image
-            f_SLM_update_YS(ops, SLM_image);
+            f_SLM_BNS_update(ops, SLM_image);
             SLM_image_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
             
             %let the SLM settle for 10 ms
@@ -230,11 +187,4 @@ end
 
 
 %% close SLM
-ops = f_SLM_close_YS(ops);
-
-
-%% Close the camera 
-if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')       % Thorlabs camera
-% close the camera handle
-    TLDC_set_Cam_Close(hdl_cam);            
-end
+ops = f_SLM_BNS_close(ops);

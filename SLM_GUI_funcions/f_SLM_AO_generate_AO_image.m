@@ -1,7 +1,7 @@
 function f_SLM_AO_generate_AO_image(app)
 
 try    
-    app.SLM_ops.zernike_file_names = f_SLM_get_file_names([app.SLM_ops.GUI_dir '\' app.SLM_ops.calibration_dir], '*ernike*.mat', false);
+    app.SLM_ops.zernike_file_names = f_SLM_get_file_names([app.SLM_ops.GUI_dir '\' app.SLM_ops.xyz_calibration_dir], '*ernike*.mat', false);
     app.AOcorrectionfilesDropDown.Items  = app.SLM_ops.zernike_file_names;
     app.AO_correction_data = load([app.SLM_ops.GUI_dir '\' app.CalibrationdirEditField.Value '\' app.AOcorrectionfilesDropDown.Value]);
     zernike_computed_weights = app.AO_correction_data.zernike_computed_weights;

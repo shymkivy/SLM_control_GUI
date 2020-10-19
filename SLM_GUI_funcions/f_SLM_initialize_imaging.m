@@ -39,7 +39,7 @@ if app.InitializeimagingButton.Value
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
         disp('Imaging run failed')
-        f_SLM_update_YS(app.SLM_ops, app.SLM_blank_pointer);
+        f_SLM_BNS_update(app.SLM_ops, app.SLM_blank_pointer);
     end
 else
     app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
