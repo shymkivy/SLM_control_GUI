@@ -25,6 +25,7 @@ app.SLM_roi_list = [app.SLM_roi_list; roi1];
 
 app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
 app.PatternROIDropDown.Items = [app.SLM_roi_list.name_tag];
+app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
 %% xyz table
 xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
 xyz_blank.Properties.VariableNames = {'Plane #', 'Z (um)', 'X', 'Y', 'NA', 'Weight'};
@@ -37,6 +38,8 @@ pat1.SLM_roi = {'Full SLM'};
 app.xyz_patterns = [app.xyz_patterns pat1];
 
 f_SLM_pat_update(app, 1);
+app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
+app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
 
 %%
 app.SLMheightEditField.Value = ops.height;

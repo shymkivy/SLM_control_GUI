@@ -7,6 +7,8 @@ if sum(idx1)
     app.SLM_roi_list(idx1) = roi1;
     app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
     app.SelectROIDropDown.Value = roi1.name_tag;
+    app.PatternROIDropDown.Items = [app.SLM_roi_list.name_tag];
+    app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
 else
    disp('save did not work');
 end

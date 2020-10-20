@@ -11,8 +11,10 @@ if ~sum(idx1)
     
     app.PatternlistDropDown.Items = [app.xyz_patterns.name_tag];
     app.PatternlistDropDown.Value = pat1.name_tag;
+    app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
+    app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
 else
-    disp('Pattern add failed');
+    disp('Pattern add failed, make a unique name');
 end
 
 

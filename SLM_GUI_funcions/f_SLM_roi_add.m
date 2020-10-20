@@ -9,6 +9,8 @@ else
     app.SLM_roi_list = [app.SLM_roi_list; roi1];
     app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
     app.SelectROIDropDown.Value = roi1.name_tag;
+    app.PatternROIDropDown.Items = [app.SLM_roi_list.name_tag];
+    app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
 end
 
 end

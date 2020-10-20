@@ -1,12 +1,20 @@
 function f_SLM_gh_solid(app)
+% get roi
+[m, n] = f_SLM_gh_get_roimn(app);
+SLMm = m(2) - m(1) + 1;
+SLMn = n(2) - n(1) + 1;
+
+pointer = libpointer('uint8Ptr', zeros(SLMn*SLMm,1));
 
 calllib('ImageGen', 'Generate_Solid',...
-        app.SLM_Image_pointer,...
-        app.SLM_ops.width,...
-        app.SLM_ops.height,...
+        pointer,...
+        SLMn, SLMm,...
         app.BlankPixelValueEditField.Value);
-        
-app.SLM_Image = f_SLM_poiner_to_im(app, app.SLM_Image_pointer);
-app.SLM_Image_plot.CData = app.SLM_Image;
+
+holo_image = app.SLM_blank_im;
+holo_image(m(1):m(2),n(1):n(2)) = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
+
+app.SLM_Image_plot.CData = holo_image;
+app.SLM_Image = holo_image;
 
 end

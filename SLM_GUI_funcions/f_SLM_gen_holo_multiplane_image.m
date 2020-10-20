@@ -1,7 +1,9 @@
-function holo_image = f_SLM_gen_holo_multiplane_image(app, coord)
+function holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
     
-    SLMm = app.SLMheightEditField.Value;
-    SLMn = app.SLMwidthEditField.Value;
+    if ~exist('SLMm', 'var')
+        SLMm = app.SLMheightEditField.Value;
+        SLMn = app.SLMwidthEditField.Value;
+    end
     
     % transform coordinates with calibration matrix
     xyzp = coord.xyzp*app.xyz_affine_tf_mat;

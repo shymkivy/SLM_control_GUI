@@ -6,6 +6,8 @@ if sum(idx1)
     if numel(idx1)>1
         app.xyz_patterns(idx1) = [];
         app.PatternlistDropDown.Items(idx1) = [];
+        app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
+        app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
     else
         disp('Need to keep at least one')
     end

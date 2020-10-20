@@ -10,6 +10,9 @@ if sum(idx1)
     app.xyz_patterns(idx1) = pat1;
     
     f_SLM_pat_update(app, find(idx1));
+    
+    app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
+    app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
 else
     disp('Pattern save failed')
 end
