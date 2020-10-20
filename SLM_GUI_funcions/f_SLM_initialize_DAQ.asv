@@ -20,7 +20,7 @@ try
         end
     end
     
-    data = app.DAQ_session.inputSingleScan;
+    data = app.DAQ_session.inputSingleScan
     
     % setup frame trigger
     app.InitializeDAQLamp.Color = [0 1 0];
