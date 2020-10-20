@@ -24,11 +24,11 @@ roi1.lut_fname = ops.current_lut;
 app.SLM_roi_list = [app.SLM_roi_list; roi1];
 
 app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
-app.PatternROIDropDown.Items = [app.SLM_roi_list.name_tag];
+app.GroupROIDropDown.Items = [app.SLM_roi_list.name_tag];
 app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
 %% xyz table
 xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
-xyz_blank.Properties.VariableNames = {'Plane #', 'Z (um)', 'X', 'Y', 'NA', 'Weight'};
+xyz_blank.Properties.VariableNames = {'Pattern', 'Z', 'X', 'Y', 'NA', 'Weight'};
 app.GUI_ops.xyz_blank = xyz_blank;
 
 pat1.name_tag = {'Multiplane'};
@@ -54,6 +54,7 @@ app.SLMpresetoffsetXEditField.Value = ops.X_offset;
 app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
+app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 
 % lut dropdown
 app.LUTfilereactivateSLMDropDown.Items = app.SLM_ops.lut_names;

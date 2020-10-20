@@ -1,4 +1,4 @@
-function f_SLM_initialize_imaging(app)
+function f_SLM_scan_initialize_imaging(app)
 
 if app.InitializeimagingButton.Value
     try

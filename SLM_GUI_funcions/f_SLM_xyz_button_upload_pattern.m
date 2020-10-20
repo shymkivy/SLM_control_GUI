@@ -1,6 +1,6 @@
-function f_SLM_xyz_button_upload_plane(app)
+function f_SLM_xyz_button_upload_pattern(app)
 
-coord = f_SLM_mpl_get_coords(app, 'plane', round(app.PlaneSpinner.Value));
+coord = f_SLM_mpl_get_coords(app, 'pattern', round(app.PatternSpinner.Value));
 
 app.current_SLM_coord = coord;
 app.UITablecurrentcoord.Data = app.current_SLM_coord.xyzp;

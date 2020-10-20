@@ -5,7 +5,7 @@ if sum(idx1)
     app.SLM_roi_list(idx1) = [];
     app.SelectROIDropDown.Items(idx1) = [];
     f_SLM_roi_update(app);
-    app.PatternROIDropDown.Items = [app.SLM_roi_list.name_tag];
+    app.GroupROIDropDown.Items = [app.SLM_roi_list.name_tag];
     app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
 else
     disp('Delete did not work')

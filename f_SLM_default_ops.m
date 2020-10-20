@@ -37,5 +37,6 @@ ops.ref_offset = 50;    % reference image offset (makes + pattern)
 
 ops.NI_DAQ_dvice = 'dev2';
 ops.NI_DAQ_counter_channel = 0;
+ops.NI_DAQ_AI_channel = 0;
 
 end

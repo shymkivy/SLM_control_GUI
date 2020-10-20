@@ -1,6 +1,6 @@
-function f_SLM_xyz_button_view_plane_phase(app)
+function f_SLM_xyz_button_view_pattern_phase(app)
 
-coord = f_SLM_mpl_get_coords(app, 'plane', round(app.PlaneSpinner.Value));
+coord = f_SLM_mpl_get_coords(app, 'pattern', round(app.PatternSpinner.Value));
 
 % get roi
 [m, n] = f_SLM_xyz_get_roimn(app);
