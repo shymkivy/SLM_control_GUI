@@ -13,15 +13,16 @@ try
     app.DAQ_session.addAnalogInputChannel(app.NIDAQdeviceEditField.Value,ai_id,'Voltage');
     
     % make the data acquisition 'SingleEnded, to separate the '
+    daq_ai_chan = false(length(app.DAQ_session.Channels),1);
     for nchan = 1:length(app.DAQ_session.Channels)
         if strcmpi(app.DAQ_session.Channels(nchan).ID(1:2), 'ai')
             app.DAQ_session.Channels(nchan).TerminalConfig = 'SingleEnded';
             app.DAQ_session.Channels(nchan).Range = [-10 10];
+            daq_ai_chan(nchan) = 1;
         end
     end
-    
-    data = app.DAQ_session.inputSingleScan;
-    
+    app.DAQ_ai_chan = find(daq_ai_chan);
+
     % setup frame trigger
     app.InitializeDAQLamp.Color = [0 1 0];
 catch
