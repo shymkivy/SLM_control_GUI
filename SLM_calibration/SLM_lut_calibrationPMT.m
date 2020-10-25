@@ -20,6 +20,8 @@ GUI_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch';
 addpath(GUI_dir);
 time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
 save_path = [GUI_dir '\lut_calibration'];
+
+
 save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
@@ -28,7 +30,7 @@ ops = f_SLM_default_ops();
 ops = f_SLM_BNS_initialize(ops);
 
 %% Initialize DAQ
-session = daq.createSession ('ni');
+session = daq.createSession('ni');
 session.addCounterInputChannel('dev2', 'ctr0', 'EdgeCount');
 resetCounters(session);
 

@@ -18,6 +18,9 @@ ops.AO_correction_dir = 'SLM_calibration\AO_correction';
 
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
+ops.lut_dir = 'SLM_calibration\lut_calibration\';
+ops.current_lut = 'linear.lut';
+
 %%
 ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;

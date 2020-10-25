@@ -13,16 +13,18 @@ end
 
 %% Parameters
 NumDataPoints = 256;    % bit depth
-NumRegions = 1;         % field has to be divisible by the number of regions
+NumRegions = 1;         % (squares only [1,4,9,16...])
 PixelsPerStripe = 8;    
 save_raw_stack = 1;
 
 save_pref = '940_slm5221_maitai2';
 
-addpath('C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control');
+%% add paths
+pwd2 = fileparts(which('SLM_control_GUI.mlapp'));
+addpath([pwd2 '\SLM_GUI_funcions']);
 time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
-save_path = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control\lut_calibration';
-save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
+save_path = [pwd2 '\..\SLM_outputs\lut_calibration'];
+save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
 
@@ -44,7 +46,7 @@ cam_params.TLCAM_win_start_N       = 0;  % beginning with 4, then steps in inter
 cam_params.TLCAM_win_Width   = 1280;%640;      % 32-1280, intervals of 4
 cam_params.TLCAM_win_Height  = 1024;%640;      % 4-1024, intervals of 2
 cam_params.TLCAM_gain        = 1;        % gain factor varying from 1 to 100
-cam_params.path_TLCAM_MEX = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control\MEX';
+cam_params.path_TLCAM_MEX = [pwd2 '\..\MEX'];
 addpath(cam_params.path_TLCAM_MEX);
 
 if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
@@ -116,11 +118,13 @@ if ops.SDK_created == 1
         for Gray = 0:(NumDataPoints-1)
             %Generate the stripe pattern and mask out current region
             calllib('ImageGen', 'Generate_Stripe', SLM_image, ops.width, ops.height, PixelValue, Gray, PixelsPerStripe);
-            calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions);
+            calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions); % 
             
             %write the image
             f_SLM_BNS_update(ops, SLM_image);
             SLM_image_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
+            
+            %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             
             %let the SLM settle for 10 ms
             pause(0.01);
