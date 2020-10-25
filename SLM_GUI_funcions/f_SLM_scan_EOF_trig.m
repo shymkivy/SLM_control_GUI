@@ -38,8 +38,6 @@ while imaging
     end
 end
 
-
-
 resetCounters(session);
 if app.PlotSLMupdateratesCheckBox.Value
     if num_planes_all>3
