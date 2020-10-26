@@ -4,11 +4,11 @@
 
 
 %% Parameters
-ops.use_TLDC = 0;   % otherwise wait for trigger
+ops.use_TLDC = 1;   % otherwise wait for trigger
 ops.plot_phase = 1;
 
-ops.bit_depth = 256;    % bit depth
-ops.NumRegions = 4;         % (squares only [1,4,9,16...])
+ops.NumGray = 256;    % bit depth
+ops.NumRegions = 1;         % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;  
 ops.PixelValue = 0;
 
@@ -21,7 +21,11 @@ addpath([ops.working_dir '\..\SLM_GUI_funcions']);
 
 ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
 ops.save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
-ops.save_file_name = sprintf('%s\\lut_raw_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
+ops.save_file_name = sprintf('%s\\lut_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
+ops.save_file_name_im = sprintf('%s\\lut_images_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
+if ~exist(ops.save_path, 'dir')
+    mkdir(ops.save_path);
+end
 
 %% Initialize SLM
 try %#ok<*TRYNC>
@@ -32,7 +36,7 @@ ops = f_SLM_BNS_initialize(ops);
 
 if ops.use_TLDC
     try
-        TLDC_set_Cam_Close(hdl_cam);
+        TLDC_set_Cam_Close(cam_out.hdl_cam);
     end
     [cam_out, ops.cam_params] = f_TLDC_initialize(ops);
 else
@@ -44,7 +48,7 @@ end
 
 %% create gratings and upload
 if ops.SDK_created == 1
-    region_gray = zeros(ops.bit_depth*ops.NumRegions,2);
+    region_gray = zeros(ops.NumGray*ops.NumRegions,2);
     
     %allocate arrays for our images
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
@@ -59,7 +63,7 @@ if ops.SDK_created == 1
     end
     
     if ops.use_TLDC
-        calib_im_series = zeros(size(cam_out.cam_frame,1), size(cam_out.cam_frame,2), ops.bit_depth*ops.NumRegions);
+        calib_im_series = zeros(size(cam_out.cam_frame,1), size(cam_out.cam_frame,2), ops.NumGray*ops.NumRegions, 'uint8');
         cam_fig = figure;
         cam_im = imagesc(cam_out.cam_frame');
         %caxis([1 256]);
@@ -74,7 +78,7 @@ if ops.SDK_created == 1
     n_idx = 1;
     %loop through each region
     for Region = 0:(ops.NumRegions-1)
-        for Gray = 0:(ops.bit_depth-1)
+        for Gray = 0:(ops.NumGray-1)
             
             region_gray(n_idx,:) = [Region, Gray];
             n_idx = n_idx + 1;
@@ -93,7 +97,7 @@ if ops.SDK_created == 1
                         f_SLM_BNS_update(ops, SLM_image);
                         frame_start_times(scan_frame) = toc;
                         SLM_frame = scan_frame;
-                        if scan_frame > ops.bit_depth*ops.NumRegions
+                        if scan_frame > ops.NumGray*ops.NumRegions
                             imaging = 0;
                         end
                     end
@@ -113,14 +117,14 @@ if ops.SDK_created == 1
                 pause(0.01); %let the SLM settle for 10 ms
                 TLDC_get_Cam_Im(cam_out.hdl_cam);
                 cam_im.CData = cam_out.cam_frame';
-                calib_im_series(:,:,n_idx) = mean(double(cam_out.cam_frame),3);
-                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.bit_depth,Region+1,ops.NumRegions);
+                calib_im_series(:,:,n_idx) = (cam_out.cam_frame);
+                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 pause(.2);
             end
             
             if ops.plot_phase
                 SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
-                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.bit_depth,Region+1,ops.NumRegions);
+                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
@@ -129,7 +133,10 @@ if ops.SDK_created == 1
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);
     f_SLM_BNS_update(ops, SLM_image);
     
-    save(save_file_name, 'region_gray', 'ops', '-v7.3')
+    save(ops.save_file_name, 'region_gray', 'ops', '-v7.3');
+    if ops.use_TLDC
+        save(ops.save_file_name_im, 'calib_im_series', '-v7.3');
+    end
 end
 
 %% close SLM
