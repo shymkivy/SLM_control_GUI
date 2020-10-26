@@ -1,4 +1,8 @@
 %% Script for getting data for calibration lut
+% start by running the 
+
+
+
 %% Try closing thing from past
 
 try
@@ -12,12 +16,12 @@ end
 
 
 %% Parameters
-NumDataPoints = 256;    % bit depth
+bit_depth = 256;    % bit depth
 NumRegions = 1;         % (squares only [1,4,9,16...])
 PixelsPerStripe = 8;    
 save_raw_stack = 1;
-
 save_pref = '940_slm5221_maitai2';
+
 
 %% add paths
 pwd2 = fileparts(which('SLM_control_GUI.mlapp'));
@@ -51,7 +55,7 @@ addpath(cam_params.path_TLCAM_MEX);
 
 if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
     
-    [hdl_cam, cam_im, act] = f_TLDC_Cam_Init_YS(cam_params); 
+    [hdl_cam, cam_frame, act] = f_TLDC_Cam_Init_YS(cam_params); 
     TLDC_get_Cam_Im(hdl_cam);
     %calib_im_series = zeros( size(cam_im,1), size(cam_im,2), GRATvnum );
     %tmp_im = zeros( size(cam_im,1), size(cam_im,2), 1 );
@@ -77,14 +81,14 @@ end
 if ops.SDK_created == 1
     
     if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
-        calib_im_series = zeros(size(cam_im,1), size(cam_im,2), NumDataPoints);
+        calib_im_series = zeros(size(cam_frame,1), size(cam_frame,2), bit_depth);
     end
     
     %allocate arrays for our images
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
     
     % Create an array to hold measurements from the analog input (AI) board
-    AI_Intensities = zeros(NumDataPoints,3);
+    AI_Intensities = zeros(bit_depth,3);
     
     % Generate a blank wavefront correction image, you should load your
     % custom wavefront correction that was shipped with your SLM.
@@ -93,13 +97,13 @@ if ops.SDK_created == 1
     
     f_SLM_BNS_update(ops, SLM_image);
 	
-    figure;
-    SLM_image_plot = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
+    SLM_fig = figure;
+    SLM_im = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
     caxis([1 256]);
     title('SLM phase');
     
-    figure;
-    Cam_image_plot = imagesc(cam_im');
+    cam_fig = figure;
+    cam_im = imagesc(cam_frame');
     %caxis([1 256]);
     title('Camera');
     
@@ -115,14 +119,14 @@ if ops.SDK_created == 1
       
         %AI_Index = 1;
         %loop through each graylevel
-        for Gray = 0:(NumDataPoints-1)
+        for Gray = 0:(bit_depth-1)
             %Generate the stripe pattern and mask out current region
             calllib('ImageGen', 'Generate_Stripe', SLM_image, ops.width, ops.height, PixelValue, Gray, PixelsPerStripe);
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions); % 
             
             %write the image
             f_SLM_BNS_update(ops, SLM_image);
-            SLM_image_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
+            SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
             
             %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             
@@ -131,9 +135,9 @@ if ops.SDK_created == 1
             
             if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')   % Thorlabs camera
                 TLDC_get_Cam_Im(hdl_cam);
-                Cam_image_plot.CData = cam_im';
-                calib_im_series(:,:,Gray+1) = mean(double(cam_im),3);
-                title(sprintf('Gray %d/%d; Region %d/%d', Gray+1,NumDataPoints,Region+1,NumRegions));
+                cam_im.CData = cam_frame';
+                calib_im_series(:,:,Gray+1) = mean(double(cam_frame),3);
+                title(sprintf('Gray %d/%d; Region %d/%d', Gray+1,bit_depth,Region+1,NumRegions));
             end 
             drawnow;
             pause(cam_params.GammaCal_CameraExposeTime);
@@ -186,20 +190,12 @@ if ops.SDK_created == 1
         AI_Intensities(:, 2) = mean(mean(zero_ord_im,1),2);
         AI_Intensities(:, 3) = mean(mean(first_ord_im,1),2);
         
-        % square for 2p adj
-        AI_Intensities_sq = AI_Intensities;
-        AI_Intensities_sq(:, 2) = (AI_Intensities_sq(:, 2).^2);
-        AI_Intensities_sq(:, 3) = (AI_Intensities_sq(:, 3).^2);
- 
+        
         
         figure; plot(AI_Intensities(:,2)); hold on; plot(AI_Intensities(:,3));
         legend('Zero ord', 'First ord');
         title('intensities vs gray')
-        
-        figure; plot(AI_Intensities_sq(:,2)); hold on; plot(AI_Intensities_sq(:,3));
-        legend('Zero ord', 'First ord');
-        title('intensities sq vs gray')
-        
+
         % dump the AI measurements to a csv file
         
         fold_dir = [save_csv_path 'zero_ord\'];
@@ -210,26 +206,20 @@ if ops.SDK_created == 1
         if ~exist(fold_dir, 'dir'); mkdir(fold_dir); end
         csvwrite([fold_dir  'raw' num2str(Region) '.csv'], [AI_Intensities(:, 1) AI_Intensities(:, 3)]);
         
-        fold_dir = [save_csv_path 'zero_ord_sq\'];
-        if ~exist(fold_dir, 'dir'); mkdir(fold_dir); end
-        csvwrite([fold_dir  'raw' num2str(Region) '.csv'], [AI_Intensities_sq(:, 1) AI_Intensities_sq(:, 2)]);
-        
-        fold_dir = [save_csv_path 'first_ord_sq\'];
-        if ~exist(fold_dir, 'dir'); mkdir(fold_dir); end
-        csvwrite([fold_dir  'raw' num2str(Region) '.csv'], [AI_Intensities_sq(:, 1) AI_Intensities_sq(:, 3)]);
-
         AI_stack{Region+1} = AI_Intensities;
-        AI_sq_stack{Region+1} = AI_Intensities_sq;
         if save_raw_stack
             calib_im_stack{Region+1} = calib_im_series;
             coord_stack{Region+1} = [pt_zero_ord; pt_first_ord];
         end
     end
     save_file_name = [save_path '\' 'lut_raw_' save_pref time_stamp '.mat'];
-    save(save_file_name, 'AI_stack', 'AI_sq_stack', 'NumDataPoints', 'NumRegions', 'PixelsPerStripe', 'cam_params', 'ops', 'save_raw_stack', '-v7.3')
+    save(save_file_name, 'AI_stack', 'NumDataPoints', 'NumRegions', 'PixelsPerStripe', 'cam_params', 'ops', 'save_raw_stack', '-v7.3')
     if save_raw_stack
         save(save_file_name, 'calib_im_stack', 'coord_stack', '-append')
     end
+    
+    calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, PixelValue);
+    f_SLM_BNS_update(ops, SLM_image);
 end
 
 
