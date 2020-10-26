@@ -16,18 +16,28 @@ end
 
 
 %% Parameters
+<<<<<<< HEAD
 bit_depth = 256;    % bit depth
 NumRegions = 1;         % (squares only [1,4,9,16...])
 PixelsPerStripe = 8;    
 save_raw_stack = 1;
 save_pref = '940_slm5221_maitai2';
+=======
+NumDataPoints = 256;    % bit depth
+NumRegions = 4;         % (squares only [1,4,9,16...])
+PixelsPerStripe = 8;    
+save_raw_stack = 0;
+
+save_pref = '940_slm5221_maitai_4r';
+>>>>>>> fd753ba15aca45bc9f1d6824ca1aa325aebdc1ea
 
 
 %% add paths
-pwd2 = fileparts(which('SLM_control_GUI.mlapp'));
-addpath([pwd2 '\SLM_GUI_funcions']);
+pwd2 = fileparts(which('SLM_lut_calibrationTLDC.m'));
+addpath([pwd2 '\..\']);
+addpath([pwd2 '\..\SLM_GUI_funcions']);
 time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
-save_path = [pwd2 '\..\SLM_outputs\lut_calibration'];
+save_path = [pwd2 '\..\..\SLM_outputs\lut_calibration'];
 save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
@@ -175,7 +185,7 @@ if ops.SDK_created == 1
         pt_zero_ord = round(pt_zero_ord);
         pt_first_ord = round(pt_first_ord);
         
-        ds = 20;
+        ds = 35;
         figure;
         subplot(1,2,1);
         zero_ord_im = calib_im_series(round((pt_zero_ord(1)-ds):(pt_zero_ord(1)+ds)), round((pt_zero_ord(2)-ds):(pt_zero_ord(2)+ds)),:);
