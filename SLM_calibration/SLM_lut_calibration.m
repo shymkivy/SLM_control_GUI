@@ -1,19 +1,11 @@
 %% Script for getting data for calibration lut
+% can either use TDLC and grab frames or wait for trigger with some other method
 % start by running the 
-
-%% Try closing thing from past
-
-try
-    [~] = f_SLM_BNS_close(ops);
-catch
-end
-try
-    TLDC_set_Cam_Close(hdl_cam);
-catch
-end
 
 
 %% Parameters
+use_TLDC = 1;   % otherwise wait for trigger
+
 bit_depth = 256;    % bit depth
 NumRegions = 4;         % (squares only [1,4,9,16...])
 PixelsPerStripe = 8;    
@@ -21,51 +13,39 @@ save_raw_stack = 0;
 
 save_pref = '940_slm5221_maitai_4r';
 
-%% add paths
-pwd2 = fileparts(which('SLM_lut_calibrationTLDC.m'));
-addpath([pwd2 '\..\']);
-addpath([pwd2 '\..\SLM_GUI_funcions']);
-time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
-save_path = [pwd2 '\..\..\SLM_outputs\lut_calibration'];
-save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
-mkdir(save_csv_path);
-%% Initialize SLM
-
-ops = f_SLM_default_ops();
-ops = f_SLM_BNS_initialize(ops);
-
-%% Set up the camera
-% Camera parameters
-cam_params.GammaCal_Camera='Thorlabs';
-cam_params.GammaCal_CameraExposeTime=0.2;
-
-% Thorlabs Camera 1024x1280 pixels
-cam_params.TLCAM_exptm       = 50;%40;       % exposure time in milliseconds (max~ 1/frame rate)
-cam_params.TLCAM_fps         = 19.78;    % frames per second
-cam_params.TLCAM_pxlclock    = 34;       % pixel clock in MHz (5-43MHz)
-% select pixels
-cam_params.TLCAM_win_start_M       = 0;  % beginning with 2, then steps in intervals of 2;  456
-cam_params.TLCAM_win_start_N       = 0;  % beginning with 4, then steps in intervals of 4;  156
-cam_params.TLCAM_win_Width   = 1280;%640;      % 32-1280, intervals of 4
-cam_params.TLCAM_win_Height  = 1024;%640;      % 4-1024, intervals of 2
-cam_params.TLCAM_gain        = 1;        % gain factor varying from 1 to 100
-cam_params.path_TLCAM_MEX = [pwd2 '\..\MEX'];
-addpath(cam_params.path_TLCAM_MEX);
-
-if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
-    
-    [hdl_cam, cam_frame, act] = f_TLDC_Cam_Init_YS(cam_params); 
-    TLDC_get_Cam_Im(hdl_cam);
-    %calib_im_series = zeros( size(cam_im,1), size(cam_im,2), GRATvnum );
-    %tmp_im = zeros( size(cam_im,1), size(cam_im,2), 1 );
+%% Try closing thing from past
+try %#ok<*TRYNC>
+    [~] = f_SLM_BNS_close(ops);
+end
+if use_TLDC
+    try
+        TLDC_set_Cam_Close(hdl_cam);
+    end
 end
 
+%% add paths
+ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
+addpath([ops.working_dir '\..\']);
+addpath([ops.working_dir '\..\SLM_GUI_funcions']);
+time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
+save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
+save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
+mkdir(save_csv_path);
+
+%% Initialize SLM
+ops = f_SLM_default_ops(ops);
+ops = f_SLM_BNS_initialize(ops);
+
+if use_TLDC
+    [cam_out, cam_params] = f_TLDC_initialize(ops);
+end
 
 %% create gratings and upload
 if ops.SDK_created == 1
     
-    if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')
-        calib_im_series = zeros(size(cam_frame,1), size(cam_frame,2), bit_depth);
+    if use_TLDC
+        [cam_d1, cam_d2] = size(cam_out.cam_frame);
+        calib_im_series = zeros(cam_d1, cam_d2, bit_depth);
     end
     
     %allocate arrays for our images
@@ -86,10 +66,12 @@ if ops.SDK_created == 1
     caxis([1 256]);
     title('SLM phase');
     
-    cam_fig = figure;
-    cam_im = imagesc(cam_frame');
-    %caxis([1 256]);
-    title('Camera');
+    if use_TLDC
+        cam_fig = figure;
+        cam_im = imagesc(cam_out.cam_frame');
+        %caxis([1 256]);
+        title('Camera');
+    end
     
     AI_stack = cell(NumRegions,1);
     AI_sq_stack = cell(NumRegions,1);
@@ -100,9 +82,6 @@ if ops.SDK_created == 1
     
     %loop through each region
     for Region = 0:(NumRegions-1)
-      
-        %AI_Index = 1;
-        %loop through each graylevel
         for Gray = 0:(bit_depth-1)
             %Generate the stripe pattern and mask out current region
             calllib('ImageGen', 'Generate_Stripe', SLM_image, ops.width, ops.height, PixelValue, Gray, PixelsPerStripe);
@@ -111,30 +90,25 @@ if ops.SDK_created == 1
             %write the image
             f_SLM_BNS_update(ops, SLM_image);
             SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
-            
             %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
-            
+           
             %let the SLM settle for 10 ms
             pause(0.01);
             
-            if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')   % Thorlabs camera
-                TLDC_get_Cam_Im(hdl_cam);
-                cam_im.CData = cam_frame';
-                calib_im_series(:,:,Gray+1) = mean(double(cam_frame),3);
-                title(sprintf('Gray %d/%d; Region %d/%d', Gray+1,bit_depth,Region+1,NumRegions));
+            if use_TLDC   % Thorlabs camera
+                TLDC_get_Cam_Im(cam_out.hdl_cam);
+                cam_im.CData = cam_out.cam_frame';
+                calib_im_series(:,:,Gray+1) = mean(double(cam_out.cam_frame),3);
+                title(cam_im, sprintf('Gray %d/%d; Region %d/%d', Gray+1,bit_depth,Region+1,NumRegions));
             end 
             drawnow;
-            pause(cam_params.GammaCal_CameraExposeTime);
-            
-            
-            
+            pause(.2);
+
             %YOU FILL IN HERE...FIRST: read from your specific AI board, note it might help to clean up noise to average several readings
             %SECOND: store the measurement in your AI_Intensities array
             %AI_Intensities(AI_Index, 1) = Gray; %This is the varable graylevel you wrote to collect this data point
             %AI_Intensities(AI_Index, 2) = 0; % HERE YOU NEED TO REPLACE 0 with YOUR MEASURED VALUE FROM YOUR ANALOG INPUT BOARD
- 
             %AI_Index = AI_Index + 1;
-        
         end
         
         % extrac intensities
@@ -214,5 +188,5 @@ ops = f_SLM_BNS_close(ops);
 %% Close the camera 
 if strcmp(cam_params.GammaCal_Camera, 'Thorlabs')       % Thorlabs camera
 % close the camera handle
-    TLDC_set_Cam_Close(hdl_cam);            
+    TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end
