@@ -1,4 +1,5 @@
 function f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_vol)
+% end of frame scan
 
 if ~exist('scans_per_vol', 'var') || isempty(scans_per_vol)
     scans_per_vol = 1;
