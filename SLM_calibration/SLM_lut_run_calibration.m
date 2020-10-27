@@ -53,6 +53,10 @@ end
 ops = f_SLM_default_ops(ops);
 ops = f_SLM_BNS_initialize(ops);
 
+%%
+cont1 = input('Turn laser on and reply [y] to continue:', 's');
+
+%%
 if ops.use_TLDC
     try
         TLDC_set_Cam_Close(cam_out.hdl_cam);
@@ -65,8 +69,9 @@ else
     resetCounters(session);
 end
 
+
 %% create gratings and upload
-if ops.SDK_created == 1
+if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     region_gray = zeros(ops.NumGray*numel(regions_run),2);
     
     %allocate arrays for our images
