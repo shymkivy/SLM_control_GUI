@@ -23,25 +23,8 @@ if size(calib_im_series,3) > size(region_gray,1)
 end
 
 
-
 %%
-regions = unique(region_gray(:,1));
-
-if strcmpi(slm_roi, 'full')
-    regions_run = regions;
-elseif strcmpi(slm_roi, 'left_half')
-    [rows, cols] = ind2sub([sqrt(numel(regions)) sqrt(numel(regions))], 1:numel(regions));
-    ind1 = sub2ind([sqrt(numel(regions)) sqrt(numel(regions))], cols(cols<=(max(cols)/2)), rows(cols<=(max(cols)/2)));
-    regions_run = regions(ind1);
-elseif strcmpi(slm_roi, 'right_half')
-    [rows, cols] = ind2sub([sqrt(numel(regions)) sqrt(numel(regions))], 1:numel(regions));
-    ind1 = sub2ind([sqrt(numel(regions)) sqrt(numel(regions))], cols(cols>(max(cols)/2)), rows(cols<=(max(cols)/2)));
-    regions_run = regions(ind1);
-end
-
-%%
-
-
+regions_run = unique(region_gray(:,1));
 
 for n_reg = 1:numel(regions_run)
     Region = regions_run(n_reg);

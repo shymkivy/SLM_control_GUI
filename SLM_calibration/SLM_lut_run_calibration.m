@@ -8,9 +8,11 @@ ops.use_TLDC = 1;   % otherwise wait for trigger
 ops.plot_phase = 1;
 
 ops.NumGray = 256;    % bit depth
-ops.NumRegions = 1;         % (squares only [1,4,9,16...])
+ops.NumRegions = 64;         % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;  
 ops.PixelValue = 0;
+
+slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 save_pref = '940_slm5221_maitai';
 
@@ -25,6 +27,23 @@ ops.save_file_name = sprintf('%s\\lut_%s_%dr_%s.mat',ops.save_path, save_pref,op
 ops.save_file_name_im = sprintf('%s\\lut_images_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
 if ~exist(ops.save_path, 'dir')
     mkdir(ops.save_path);
+end
+
+%%
+regions = (1:ops.NumRegions)-1;
+
+if regions > 1
+    if strcmpi(slm_roi, 'full')
+        regions_run = regions;
+    elseif strcmpi(slm_roi, 'left_half')
+        [rows, cols] = ind2sub([sqrt(numel(regions)) sqrt(numel(regions))], 1:numel(regions));
+        ind1 = sub2ind([sqrt(numel(regions)) sqrt(numel(regions))], cols(cols<=(max(cols)/2)), rows(cols<=(max(cols)/2)));
+        regions_run = sort(regions(ind1));
+    elseif strcmpi(slm_roi, 'right_half')
+        [rows, cols] = ind2sub([sqrt(numel(regions)) sqrt(numel(regions))], 1:numel(regions));
+        ind1 = sub2ind([sqrt(numel(regions)) sqrt(numel(regions))], cols(cols>(max(cols)/2)), rows(cols<=(max(cols)/2)));
+        regions_run = sort(regions(ind1));
+    end
 end
 
 %% Initialize SLM
@@ -48,7 +67,7 @@ end
 
 %% create gratings and upload
 if ops.SDK_created == 1
-    region_gray = zeros(ops.NumGray*ops.NumRegions,2);
+    region_gray = zeros(ops.NumGray*numel(regions_run),2);
     
     %allocate arrays for our images
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
@@ -63,7 +82,7 @@ if ops.SDK_created == 1
     end
     
     if ops.use_TLDC
-        calib_im_series = zeros(size(cam_out.cam_frame,1), size(cam_out.cam_frame,2), ops.NumGray*ops.NumRegions, 'uint8');
+        calib_im_series = zeros(size(cam_out.cam_frame,1), size(cam_out.cam_frame,2), ops.NumGray*numel(regions_run), 'uint8');
         cam_fig = figure;
         cam_im = imagesc(cam_out.cam_frame');
         %caxis([1 256]);
@@ -77,7 +96,7 @@ if ops.SDK_created == 1
     end
     n_idx = 1;
     %loop through each region
-    for Region = 0:(ops.NumRegions-1)
+    for Region = regions_run
         for Gray = 0:(ops.NumGray-1)
             
             region_gray(n_idx,:) = [Region, Gray];
@@ -96,7 +115,7 @@ if ops.SDK_created == 1
                         f_SLM_BNS_update(ops, SLM_image);
                         frame_start_times(scan_frame) = toc;
                         SLM_frame = scan_frame;
-                        if scan_frame > ops.NumGray*ops.NumRegions
+                        if scan_frame > ops.NumGray*numel(regions_run)
                             imaging = 0;
                         end
                     end
@@ -117,13 +136,13 @@ if ops.SDK_created == 1
                 TLDC_get_Cam_Im(cam_out.hdl_cam);
                 cam_im.CData = cam_out.cam_frame';
                 calib_im_series(:,:,n_idx) = (cam_out.cam_frame);
-                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
+                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,numel(regions_run));
                 pause(.2);
             end
             
             if ops.plot_phase
                 SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
-                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
+                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,numel(regions_run));
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
