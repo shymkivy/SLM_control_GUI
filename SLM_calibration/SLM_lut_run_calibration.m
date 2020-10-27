@@ -81,8 +81,7 @@ if ops.SDK_created == 1
         for Gray = 0:(ops.NumGray-1)
             
             region_gray(n_idx,:) = [Region, Gray];
-            n_idx = n_idx + 1;
-            
+
             %Generate the stripe pattern and mask out current region
             calllib('ImageGen', 'Generate_Stripe', SLM_image, ops.width, ops.height, ops.PixelValue, Gray, ops.PixelsPerStripe);
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, ops.NumRegions); % 
@@ -128,6 +127,8 @@ if ops.SDK_created == 1
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
+            
+            n_idx = n_idx + 1;
         end
     end
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);

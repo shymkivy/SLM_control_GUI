@@ -170,7 +170,7 @@ if ops.SDK_created == 1
         imagesc(mean(first_ord_im,3)');axis image;
         title('First order point');
         
-        AI_Intensities(:, 1) = 1:size(calib_im_series,3);
+        AI_Intensities(:, 1) = (1:size(calib_im_series,3))-1;
         AI_Intensities(:, 2) = mean(mean(zero_ord_im,1),2);
         AI_Intensities(:, 3) = mean(mean(first_ord_im,1),2);
         
