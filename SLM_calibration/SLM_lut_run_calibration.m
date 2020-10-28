@@ -4,12 +4,12 @@
 
 
 %% Parameters
-ops.use_TLDC = 1;   % otherwise wait for trigger
+ops.use_TLDC = 1;           % otherwise wait for trigger
 ops.plot_phase = 1;
 
-ops.NumGray = 256;    % bit depth
-ops.NumRegions = 64;         % (squares only [1,4,9,16...])
-ops.PixelsPerStripe = 8;  
+ops.NumGray = 256;          % bit depth
+ops.NumRegions = 64;        % (squares only [1,4,9,16...])
+ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
 slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
@@ -32,7 +32,7 @@ end
 %%
 regions = (1:ops.NumRegions)-1;
 
-if regions > 1
+if numel(regions) > 1
     if strcmpi(slm_roi, 'full')
         regions_run = regions;
     elseif strcmpi(slm_roi, 'left_half')
