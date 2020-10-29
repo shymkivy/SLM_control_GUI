@@ -12,14 +12,14 @@ app.SLM_roi_list = [app.SLM_roi_list; roi1];
 roi1.name_tag = {'Left half SLM'};
 roi1.height_range = [1, app.SLM_ops.height];
 roi1.width_range = [1, round((app.SLM_ops.width)/2)];
-roi1.wavelength = app.SLM_ops.wavelength;
+roi1.wavelength = 1064;
 roi1.lut_fname = ops.current_lut;
 app.SLM_roi_list = [app.SLM_roi_list; roi1];
 
 roi1.name_tag = {'Right half SLM'};
 roi1.height_range = [1, app.SLM_ops.height];
 roi1.width_range = [(round((app.SLM_ops.width)/2)+1), app.SLM_ops.width];
-roi1.wavelength = app.SLM_ops.wavelength;
+roi1.wavelength = 940;
 roi1.lut_fname = ops.current_lut;
 app.SLM_roi_list = [app.SLM_roi_list; roi1];
 
@@ -142,6 +142,7 @@ app.SLM_Image = zeros(app.SLM_ops.height,app.SLM_ops.width);
 app.SLM_Image_pointer = f_SLM_initialize_pointer(app);
 app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_Image);
 axis(app.UIAxesGenerateHologram, 'tight');
+axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);
 
 app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);

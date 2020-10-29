@@ -1,4 +1,4 @@
-function f_SLM_gh_solid(app)
+function f_SLM_gh_piston(app)
 % get roi
 [m, n] = f_SLM_gh_get_roimn(app);
 SLMm = m(2) - m(1) + 1;
