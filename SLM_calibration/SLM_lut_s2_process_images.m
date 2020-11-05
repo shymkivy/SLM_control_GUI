@@ -1,3 +1,6 @@
+%%
+% lut pipeline step 2/3
+
 clear;close all;
 
 load_path = 'E:\data\SLM\lut_calibration\';

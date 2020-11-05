@@ -1,5 +1,6 @@
 %% compute LUT for SLM
-% so far I like this better than the one from bns
+% so far I like this better than the one from bns 
+% lut pipeline step 3/3
 % yuriy
 
 clear;

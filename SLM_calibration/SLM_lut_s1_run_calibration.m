@@ -2,6 +2,7 @@
 % can either use TDLC and grab frames or wait for trigger with some other method
 % start by running the 
 
+% lut pipeline step 1/3
 
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
