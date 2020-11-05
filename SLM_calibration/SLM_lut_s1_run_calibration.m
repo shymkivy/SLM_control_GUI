@@ -6,7 +6,7 @@
 % lut pipeline step 1/3
 
 %% Parameters
-ops.use_TLDC = 0;           % otherwise wait for trigger
+ops.use_TLDC = 1;           % otherwise wait for trigger
 ops.use_DAQ = 0;
 ops.plot_phase = 1;
 
@@ -15,14 +15,14 @@ ops.NumRegions = 1;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
-slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 
 %%
-save_pref = '940_slm5221_maitai';
-
+%save_pref = '940_slm5221_maitai';
+save_pref = '1064_slm5221_fianium';
 %%
-blaze_deflect_blank = 1;
+blaze_deflect_blank = 0;
 blaze_period = 50;
 blaze_increaseing = 0;
 blaze_horizontal = 1;
@@ -153,9 +153,10 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             % update mask
             calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
             calllib('ImageGen', 'Mask_Image', SLM_mask, ops.width, ops.height, Region, ops.NumRegions); % 
-
-            SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
             
+            if blaze_deflect_blank
+                SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
+            end
             if ops.use_DAQ
                 % wait for counter
                 imaging = 1;
@@ -211,7 +212,7 @@ end
 
 %% close SLM
 
-cont1 = input('Done, turnb off laser and press [y] close SLM', 's');
+cont1 = input('Done, turnb off laser and press [y] close SLM:', 's');
 
 try 
     f_SLM_BNS_close(ops);
