@@ -7,7 +7,7 @@ if sum(indx1)
     app.PixelfractionheightpixpixEditField.Value = [num2str(roi1.height_range(1)) ':' num2str(roi1.height_range(2))];
     app.PixelfractionwidthpixpixEditField.Value = [num2str(roi1.width_range(1)) ':' num2str(roi1.width_range(2))];
     app.WavelengthnmEditField_2.Value = roi1.wavelength;
-    app.LUTfilereactivateSLMDropDown.Value = roi1.lut_fname;
+    app.LUTconversionfileDropDown.Value = roi1.lut_fname;
 else
     disp('ROI update failed')
 end

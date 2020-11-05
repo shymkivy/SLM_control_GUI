@@ -9,9 +9,19 @@ if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
     mkdir([ops.GUI_dir '\' ops.lut_dir])
 end
 
-ops.current_lut_num = 2;
-[ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, '*.lut', true);
+linear_lut = {'linear_lut'};
+linear_lut_data = {[(0:255); (0:255)]'};
+
+ops.current_lut_num = 1;
+[ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, 'computed_lut*.mat', true);
+for n_l = 1:numel(ops.lut_data)
+    ops.lut_data{n_l} = ops.lut_data{n_l}.LUT_conv;
+end
+ops.lut_names = [linear_lut; ops.lut_names];
+ops.lut_data = [linear_lut_data; ops.lut_data];
+
 ops.current_lut = ops.lut_names{ops.current_lut_num};
+
 %ops.current_lut = 'linear.lut';
 
 % xyz calibration
