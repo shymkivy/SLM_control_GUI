@@ -3,17 +3,13 @@ clear;close all;
 load_path = 'E:\data\SLM\lut_calibration\';
 save_path = 'E:\data\SLM\lut_calibration\';
 
-save_fname = 'lut_1064_slm5221_fianium_4r_10_26_20_14h_54m';
+save_fname = 'lut_1064_slm5221_fianium_1r_11_03_20_14h_36m';
 
-im_stack_fname = 'lut_images_1064_slm5221_fianium_4r_10_26_20_14h_54m.mat';
-region_gray_fname = 'lut_1064_slm5221_fianium_4r_10_26_20_14h_54m.mat';
+im_stack_fname = 'lut_images_1064_slm5221_fianium_1r_11_03_20_14h_36m.mat';
+region_gray_fname = 'lut_1064_slm5221_fianium_1r_11_03_20_14h_36m.mat';
 
 z_thresh = .6;
 plot_stuff = 1;
-
-slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
-
-
 
 %%
 load([load_path im_stack_fname]);

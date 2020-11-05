@@ -4,7 +4,8 @@
 
 
 %% Parameters
-ops.use_TLDC = 1;           % otherwise wait for trigger
+ops.use_TLDC = 0;           % otherwise wait for trigger
+ops.use_DAQ = 0;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
@@ -14,7 +15,37 @@ ops.PixelValue = 0;
 
 slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
+
+%%
 save_pref = '940_slm5221_maitai';
+
+%%
+blaze_deflect_blank = 1;
+blaze_period = 50;
+blaze_increaseing = 0;
+blaze_horizontal = 1;
+bkg_lut_fname = 'slm5221_at940_11_3_20_fo1r_PhaseFitMeasurements.csv';
+lut_path = 'E:\data\SLM\lut_calibration\lut_940_slm5221_maitai_1r_11_03_20_14h_39m\first_ord\';
+
+data1 = dlmread([lut_path 'slm5221_at940_11_3_20_fo1r.lut']);
+figure; plot(data1(:,1),data1(:,2))
+
+if blaze_deflect_blank
+    bkg_lut = csvread([lut_path bkg_lut_fname]);
+    
+    px = 0:255;
+    [~, max_idx] = max(bkg_lut(:,2));
+    [min_lut] = min(bkg_lut(1:max_idx,2));
+    min_idx = find(min_lut == bkg_lut(1:max_idx,2));
+    min_idx = min_idx(end);
+
+    bkg_lut2 = bkg_lut(min_idx:max_idx,:);
+    bkg_lut2(:,2) = bkg_lut2(:,2) - min(bkg_lut2(:,2));
+    bkg_lut2(:,2) = bkg_lut2(:,2)*255; %/max(bkg_lut2(:,2))
+
+    vq = interp1(bkg_lut2(:,2),bkg_lut2(:,1),px);
+    lut_rev = round([px', vq']);
+end
 
 %% add paths
 ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
@@ -62,7 +93,9 @@ if ops.use_TLDC
         TLDC_set_Cam_Close(cam_out.hdl_cam);
     end
     [cam_out, ops.cam_params] = f_TLDC_initialize(ops);
-else
+end
+
+if ops.use_DAQ
     % Setup counter
     session = daq.createSession('ni');
     session.addCounterInputChannel(app.NIDAQdeviceEditField.Value, 'ctr0', 'EdgeCount');
@@ -78,11 +111,14 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);
     f_SLM_BNS_update(ops, SLM_image);
+    
+    SLM_mask = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
+    calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
 	
     if ops.plot_phase
         SLM_fig = figure;
         SLM_im = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
-        caxis([1 256]);
+        caxis([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
     end
     
@@ -95,10 +131,23 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     end
     
     if ~ops.use_TLDC
-        frame_start_times = zeros(num_planes_all,1);
+        frame_start_times = zeros(ops.NumGray*numel(regions_run),1);
         SLM_frame = 1;
         tic;
     end
+    
+    if blaze_deflect_blank
+        pointer_bkg = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
+        calllib('ImageGen', 'Generate_Grating',...
+                pointer_bkg,...
+                SLMn, SLMm,...
+                blaze_period,...
+                blaze_increaseing,...
+                blaze_horizontal);
+        
+        pointer_bkg.Value = lut_rev(pointer_bkg.Value+1,2);
+    end
+    
     n_idx = 1;
     %loop through each region
     for Region = regions_run
@@ -110,8 +159,13 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             calllib('ImageGen', 'Generate_Stripe', SLM_image, ops.width, ops.height, ops.PixelValue, Gray, ops.PixelsPerStripe);
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, ops.NumRegions); % 
             
+            % update mask
+            calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
+            calllib('ImageGen', 'Mask_Image', SLM_mask, ops.width, ops.height, Region, ops.NumRegions); % 
+
+            SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
             
-            if ~ops.use_TLDC
+            if ops.use_DAQ
                 % wait for counter
                 imaging = 1;
                 while imaging
