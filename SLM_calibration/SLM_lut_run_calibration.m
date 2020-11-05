@@ -8,11 +8,11 @@ ops.use_TLDC = 1;           % otherwise wait for trigger
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 64;        % (squares only [1,4,9,16...])
+ops.NumRegions = 1;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
-slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 save_pref = '940_slm5221_maitai';
 
@@ -44,6 +44,8 @@ if numel(regions) > 1
         ind1 = sub2ind([sqrt(numel(regions)) sqrt(numel(regions))], cols(cols>(max(cols)/2)), rows(cols<=(max(cols)/2)));
         regions_run = sort(regions(ind1));
     end
+else
+    regions_run = regions;
 end
 
 %% Initialize SLM
@@ -165,6 +167,9 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
 end
 
 %% close SLM
+
+cont1 = input('Done, turnb off laser and press [y] close SLM', 's');
+
 try 
     f_SLM_BNS_close(ops);
 end
