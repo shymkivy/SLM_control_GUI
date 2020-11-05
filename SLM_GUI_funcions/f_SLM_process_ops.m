@@ -10,7 +10,7 @@ if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
 end
 
 linear_lut = {'linear_lut'};
-linear_lut_data = {[(1:255); (1:255)]'};
+linear_lut_data = {[(0:255); (0:255)]'};
 
 ops.current_lut_num = 1;
 [ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, 'computed_lut*.mat', true);
