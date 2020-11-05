@@ -17,7 +17,7 @@ if ~libisloaded('ImageGen')
     loadlibrary('ImageGen.dll', 'ImageGen.h');
 end
 
-lut_file_path = [ops.lut_dir '\' ops.current_lut];
+lut_file_path = [ops.lut_dir '\' ops.lut_init];
 
 % Basic parameters for calling Create_SDK
 ops.bit_depth = 12;

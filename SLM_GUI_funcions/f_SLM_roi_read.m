@@ -16,7 +16,7 @@ roi1.width_range = [max([1 width_range(1)]) min([app.SLM_ops.width width_range(2
 %%
 roi1.wavelength = app.WavelengthnmEditField_2.Value;
 
-roi1.lut_fname = app.LUTfilereactivateSLMDropDown.Value;
+roi1.lut_fname = app.LUTconversionfileDropDown.Value;
 
 %roi1.lut_fname = app.LutfileDropDown.Value;
 

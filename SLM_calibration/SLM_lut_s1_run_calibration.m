@@ -1,6 +1,7 @@
 %% Script for getting data for calibration lut
 % can either use TDLC and grab frames or wait for trigger with some other method
-% start by running the 
+% start by running the global calibration
+% if need regional, use previos global for blaze deflect blank
 
 % lut pipeline step 1/3
 
@@ -25,28 +26,7 @@ blaze_deflect_blank = 1;
 blaze_period = 50;
 blaze_increaseing = 0;
 blaze_horizontal = 1;
-bkg_lut_fname = 'slm5221_at940_11_3_20_fo1r_PhaseFitMeasurements.csv';
-lut_path = 'E:\data\SLM\lut_calibration\lut_940_slm5221_maitai_1r_11_03_20_14h_39m\first_ord\';
-
-data1 = dlmread([lut_path 'slm5221_at940_11_3_20_fo1r.lut']);
-figure; plot(data1(:,1),data1(:,2))
-
-if blaze_deflect_blank
-    bkg_lut = csvread([lut_path bkg_lut_fname]);
-    
-    px = 0:255;
-    [~, max_idx] = max(bkg_lut(:,2));
-    [min_lut] = min(bkg_lut(1:max_idx,2));
-    min_idx = find(min_lut == bkg_lut(1:max_idx,2));
-    min_idx = min_idx(end);
-
-    bkg_lut2 = bkg_lut(min_idx:max_idx,:);
-    bkg_lut2(:,2) = bkg_lut2(:,2) - min(bkg_lut2(:,2));
-    bkg_lut2(:,2) = bkg_lut2(:,2)*255; %/max(bkg_lut2(:,2))
-
-    vq = interp1(bkg_lut2(:,2),bkg_lut2(:,1),px);
-    lut_rev = round([px', vq']);
-end
+bkg_lut_fname = 'computed_lut_940_slm5221_maitai_1r_11_03_20_14h_39m_fo.mat';
 
 %% add paths
 ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
@@ -59,6 +39,14 @@ ops.save_file_name = sprintf('%s\\lut_%s_%dr_%s.mat',ops.save_path, save_pref,op
 ops.save_file_name_im = sprintf('%s\\lut_images_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
 if ~exist(ops.save_path, 'dir')
     mkdir(ops.save_path);
+end
+
+%%
+if blaze_deflect_blank
+    lut_path = [ops.working_dir '\lut_calibration\' bkg_lut_fname];
+    lut_load = load(lut_path);
+    LUT_conv = lut_load.LUT_conv;
+    LUT_conv = round(LUT_conv);
 end
 
 %%
@@ -141,12 +129,12 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         pointer_bkg = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
         calllib('ImageGen', 'Generate_Grating',...
                 pointer_bkg,...
-                SLMn, SLMm,...
+                ops.width, ops.height,...
                 blaze_period,...
                 blaze_increaseing,...
                 blaze_horizontal);
         
-        pointer_bkg.Value = lut_rev(pointer_bkg.Value+1,2);
+        pointer_bkg.Value = LUT_conv(pointer_bkg.Value+1,2);
     end
     
     n_idx = 1;
