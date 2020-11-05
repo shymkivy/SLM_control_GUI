@@ -62,7 +62,7 @@ if app.ScanZernikeButton.Value
             end           
             holo_im = f_SLM_AO_add_correction(app,holo_im);
             %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
-            holo_pointers{n_plane} = f_SLM_convert_to_pointer(app, holo_im);
+            holo_pointers{n_plane} = f_SLM_im_to_pointer(holo_im);
         end
         
         %%

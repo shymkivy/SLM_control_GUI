@@ -1,4 +1,4 @@
-function image_out = f_SLM_gh_gen_image(app, pattern, SLMm, SLMn)
+function pointer = f_SLM_gh_gen_image(app, pattern, SLMm, SLMn)
 
 pointer = libpointer('uint8Ptr', zeros(SLMn*SLMm,1));
 
@@ -8,7 +8,6 @@ if strcmpi(pattern, 'piston')
             SLMn, SLMm,...
             app.BlankPixelValueEditField.Value);
     
-    image_out = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
 elseif strcmpi(pattern, 'blazed')
     calllib('ImageGen', 'Generate_Grating',...
             pointer,...
@@ -16,8 +15,6 @@ elseif strcmpi(pattern, 'blazed')
             app.BlazPeriodEditField.Value,...
             app.BlazIncreasingCheckBox.Value,...
             app.BlazHorizontalCheckBox.Value);
-        
-    image_out = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
 elseif strcmpi(pattern, 'fresnel')
     calllib('ImageGen', 'Generate_FresnelLens',...
             pointer,...
@@ -28,8 +25,6 @@ elseif strcmpi(pattern, 'fresnel')
             app.FresPowerEditField.Value,...
             app.FresCylindricalCheckBox.Value,...
             app.FresHorizontalCheckBox.Value);
-    
-    image_out = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
 elseif strcmpi(pattern, 'stripes')
     calllib('ImageGen', 'Generate_Stripe',...
             pointer,...
@@ -37,8 +32,6 @@ elseif strcmpi(pattern, 'stripes')
             app.StripePixelValueEditField.Value,...
             app.StripeGrayEditField.Value,...
             app.StripePixelPerStripeEditField.Value);
-        
-    image_out = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
 elseif strcmpi(pattern, 'zernike')
     centerX = int32(app.CenterXEditField.Value);    % int
     centerY = int32(app.CenterYEditField.Value);    % int
@@ -75,8 +68,6 @@ elseif strcmpi(pattern, 'zernike')
             SecondaryComaX, SecondaryComaY, SecondarySpherical,...
             TetrafoilX, TetrafoilY, TertiarySpherical,...
             QuaternarySpherical);
-    
-    image_out = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
 elseif strcmpi(pattern, 'cross')
     max_dim = max(SLMn,SLMm);
     xlm = linspace(-SLMm/max_dim, SLMm/max_dim, SLMm);
@@ -109,7 +100,7 @@ elseif strcmpi(pattern, 'cross')
     cross_im(cross_im_ind == 0) = app.CrossPixelValueEditField.Value;
     cross_im(cross_im_ind == 1) = app.CrossGrayEditField.Value;
     
-    image_out = cross_im;
+    pointer.Value = reshape(uint8((rot90(cross_im, 3))), [],1);
 end
 
 end

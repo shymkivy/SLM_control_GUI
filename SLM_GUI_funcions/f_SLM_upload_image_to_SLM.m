@@ -7,7 +7,7 @@ else
     SLM_image = app.SLM_Image;
 end
 
-app.SLM_Image_pointer.Value = f_SLM_convert_to_pointer(app,SLM_image);
+app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_image);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
 
 end

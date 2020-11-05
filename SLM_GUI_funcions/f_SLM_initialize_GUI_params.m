@@ -118,14 +118,14 @@ f_SLM_apply_xyz_calibration(app, 1);
 % initialize blank image
 app.SLM_blank_im = zeros(app.SLM_ops.height, app.SLM_ops.width);
 app.SLM_blank_pointer = f_SLM_initialize_pointer(app);
-app.SLM_Image_pointer.Value = f_SLM_convert_to_pointer(app, zeros(app.SLM_ops.height, app.SLM_ops.width));
+app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(zeros(app.SLM_ops.height, app.SLM_ops.width));
 
 % initialize X offset image
 app.SLM_X_offset_im_pointer = f_SLM_initialize_pointer(app);
 coords = f_SLM_mpl_get_coords(app, 'zero');
 coords.xyzp = [app.SLM_ops.X_offset, 0, 0];
 app.SLM_X_offset_im = f_SLM_gen_holo_multiplane_image(app, coords);
-app.SLM_X_offset_im_pointer.Value = f_SLM_convert_to_pointer(app, app.SLM_X_offset_im);
+app.SLM_X_offset_im_pointer.Value = f_SLM_im_to_pointer(app.SLM_X_offset_im);
 
 % initialize ref image
 app.SLM_ref_im_pointer = f_SLM_initialize_pointer(app);
@@ -135,7 +135,7 @@ coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
                 0, app.SLM_ops.ref_offset, 0;...
                 0,-app.SLM_ops.ref_offset, 0];
 app.SLM_ref_im = f_SLM_gen_holo_multiplane_image(app, coords);
-app.SLM_ref_im_pointer.Value = f_SLM_convert_to_pointer(app, app.SLM_ref_im);
+app.SLM_ref_im_pointer.Value = f_SLM_im_to_pointer(app.SLM_ref_im);
 
 % initialize other pointers
 app.SLM_Image = zeros(app.SLM_ops.height,app.SLM_ops.width);
