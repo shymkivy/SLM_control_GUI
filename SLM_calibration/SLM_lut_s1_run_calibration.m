@@ -17,7 +17,6 @@ ops.PixelValue = 0;
 
 slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 
-
 %%
 %save_pref = '940_slm5221_maitai';
 save_pref = '1064_slm5221_fianium';
@@ -72,7 +71,6 @@ end
 try %#ok<*TRYNC>
     f_SLM_BNS_close(ops);
 end
-ops = f_SLM_default_ops(ops);
 ops = f_SLM_BNS_initialize(ops);
 
 %%

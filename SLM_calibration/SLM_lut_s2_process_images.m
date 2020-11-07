@@ -6,10 +6,10 @@ clear;close all;
 load_path = 'E:\data\SLM\lut_calibration\';
 save_path = 'E:\data\SLM\lut_calibration\';
 
-save_fname = 'lut_1064_slm5221_fianium_1r_11_03_20_14h_36m';
+save_fname = 'lut_1064_slm5221_fianium_1r_11_05_20_15h_32m';
 
-im_stack_fname = 'lut_images_1064_slm5221_fianium_1r_11_03_20_14h_36m.mat';
-region_gray_fname = 'lut_1064_slm5221_fianium_1r_11_03_20_14h_36m.mat';
+im_stack_fname = 'lut_images_1064_slm5221_fianium_1r_11_05_20_15h_32m.mat';
+region_gray_fname = 'lut_1064_slm5221_fianium_1r_11_05_20_15h_32m.mat';
 
 z_thresh = .6;
 plot_stuff = 1;

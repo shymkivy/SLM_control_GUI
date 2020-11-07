@@ -1,4 +1,4 @@
-function f_SLM_process_ops(app)
+function f_SLM_load_calibration(app)
 
 ops = app.SLM_ops;
 
@@ -9,20 +9,14 @@ if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
     mkdir([ops.GUI_dir '\' ops.lut_dir])
 end
 
-linear_lut = {'linear_lut'};
-linear_lut_data = {[(0:255); (0:255)]'};
-
-ops.current_lut_num = 1;
-[ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, 'computed_lut*.mat', true);
-for n_l = 1:numel(ops.lut_data)
-    ops.lut_data{n_l} = ops.lut_data{n_l}.LUT_conv;
+[ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, '*.lut', true);
+for n_lut = 1:numel(ops.lut_names)
+    [~, fname, ~] = fileparts(ops.lut_names{n_lut});
+    if ~exist([ops.GUI_dir '\' ops.lut_dir '\' fname '_correction'], 'dir')
+        mkdir([ops.GUI_dir '\' ops.lut_dir '\' fname '_correction'])
+    end
 end
-ops.lut_names = [linear_lut; ops.lut_names];
-ops.lut_data = [linear_lut_data; ops.lut_data];
 
-ops.current_lut = ops.lut_names{ops.current_lut_num};
-
-%ops.current_lut = 'linear.lut';
 
 % xyz calibration
 if ~exist([ops.GUI_dir '\' ops.xyz_calibration_dir], 'dir')
@@ -58,7 +52,6 @@ if ~exist([ops.GUI_dir '\' ops.AO_correction_dir], 'dir')
     mkdir([ops.GUI_dir '\' ops.AO_correction_dir])
 end
 ops.zernike_file_names = f_SLM_get_file_names([ops.GUI_dir '\' ops.AO_correction_dir], '*ernike*.mat', false);
-
 
 %%
 app.SLM_ops = ops;

@@ -1,42 +1,27 @@
 function f_SLM_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
+app.globalLUTreactivateSLMDropDown.Items = ops.lut_names;
+app.globalLUTreactivateSLMDropDown.Value = ops.lut_fname;
+
 %% initialize roi list
-roi1.name_tag = {'Full SLM'};
-roi1.height_range = [1, app.SLM_ops.height];
-roi1.width_range = [1, app.SLM_ops.width];
-roi1.wavelength = app.SLM_ops.wavelength;
-roi1.lut_fname = ops.lut_names(1);
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
-
-roi1.name_tag = {'Left half SLM'};
-roi1.height_range = [1, app.SLM_ops.height];
-roi1.width_range = [1, round((app.SLM_ops.width)/2)];
-roi1.wavelength = 1064;
-roi1.lut_fname = ops.lut_names(1);
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
-
-roi1.name_tag = {'Right half SLM'};
-roi1.height_range = [1, app.SLM_ops.height];
-roi1.width_range = [(round((app.SLM_ops.width)/2)+1), app.SLM_ops.width];
-roi1.wavelength = 940;
-roi1.lut_fname = ops.lut_names(1);
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
-
 app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
 app.GroupROIDropDown.Items = [app.SLM_roi_list.name_tag];
 app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
+
+%% update lut corrections 
+roi_list = app.SLM_roi_list;
+for n_ls = 1:numel(app.SLM_roi_list)
+    strcmpi(app.SLM_roi_list(n_ls).lut_correction_fname(:,1), app.SLM_ops.lut_fname)
+
+end
+
+f_SLM_roi_update(app);
+
 %% xyz table
-xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
-xyz_blank.Properties.VariableNames = {'Pattern', 'Z', 'X', 'Y', 'NA', 'Weight'};
-app.GUI_ops.xyz_blank = xyz_blank;
-
-pat1.name_tag = {'Multiplane'};
-pat1.xyz_pts = xyz_blank;
-pat1.SLM_roi = {'Full SLM'};
-
-app.xyz_patterns = [app.xyz_patterns pat1];
-
+% xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
+% xyz_blank.Properties.VariableNames = {'Pattern', 'Z', 'X', 'Y', 'NA', 'Weight'};
+% app.GUI_ops.xyz_blank = xyz_blank;
 f_SLM_pat_update(app, 1);
 app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
 app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
@@ -55,11 +40,6 @@ app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
-
-% lut dropdown
-app.LUTconversionfileDropDown.Items = app.SLM_ops.lut_names;
-app.LUTconversionfileDropDown.Value = app.SLM_ops.lut_names{app.SLM_ops.current_lut_num};
-app.SLM_ops.current_lut = app.LUTconversionfileDropDown.Value;
 
 % file names
 app.AxialcalibrationfileEditField.Value = app.SLM_ops.axial_calib_file;

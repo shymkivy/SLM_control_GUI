@@ -1,9 +1,9 @@
 function f_SLM_gh_defocus(app)
 
 % get roi
-[m, n] = f_SLM_gh_get_roimn(app);
-SLMm = m(2) - m(1) + 1;
-SLMn = n(2) - n(1) + 1;
+[m_idx, n_idx] = f_SLM_gh_get_roimn(app);
+SLMm = sum(m_idx);
+SLMn = sum(n_idx);
 
 idx_roi = strcmpi(app.SelectROIDropDownGH.Value, [app.SLM_roi_list.name_tag]);
 wavelength = app.SLM_roi_list(idx_roi).wavelength*10e-9;
@@ -18,7 +18,7 @@ defocus = f_SLM_DefocusPhase_YS(SLMm, SLMn,...
 defocus=angle(sum(exp(1i*(defocus-pi)),3))+pi;
 
 holo_image = app.SLM_blank_im;
-holo_image(m(1):m(2),n(1):n(2)) = defocus;
+holo_image(m_idx,n_idx) = defocus;
 
 app.SLM_Image_plot.CData = holo_image;
 app.SLM_Image = holo_image;

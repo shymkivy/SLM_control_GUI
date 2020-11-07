@@ -30,9 +30,7 @@ save_path = [pwd2 '\..\..\SLM_outputs\lut_calibration'];
 save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
-
-ops = f_SLM_default_ops();
-ops = f_SLM_BNS_initialize(ops);
+ops = f_SLM_BNS_initialize();
 
 %% Set up the camera
 % Camera parameters

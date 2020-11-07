@@ -22,10 +22,7 @@ save_path = 'C:\Users\rylab_901c\Desktop\Yuriy_scripts\SLM_Control\lut_calibrati
 save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
-
-ops = f_SLM_default_ops();
-ops = f_SLM_BNS_initialize(ops);
-
+ops = f_SLM_BNS_initialize();
 
 %% Initialize DAQ
 session = daq.createSession ('ni');

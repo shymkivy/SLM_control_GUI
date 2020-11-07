@@ -8,16 +8,17 @@ close all
 
 %%
 path1 = 'E:\data\SLM\lut_calibration\';
-fname = 'lut_940_slm5221_maitai_1r_10_26_20_15h_06m';
+fname = 'lut_940_slm5221_maitai_1r_11_05_20_15h_19m';
 
 load_path_fo = [path1 fname '\first_ord'];
 load_path_zo = [path1 fname '\zero_ord'];
 
 %%
 params.two_photon_correction = 1; % since 2pFl ~ I^2, will take sqrt
-params.smooth_win = 15;
+params.smooth_win = 10;
 params.order_use = 1;
 
+params.manual_peak_selection = 1;
 params.plot_stuff = 1;
 
 
@@ -54,7 +55,7 @@ end
 xq = (0:255)';
 vq = interp1(x, v, xq);
 
-LUT_conv = [xq, vq];
+LUT_correction = [xq, vq];
 
 %%
 save_input = input('Save data? [y]:', 's');
@@ -62,5 +63,5 @@ save_input = input('Save data? [y]:', 's');
 if strcmpi(save_input, 'y')
     params.fname = fname;
     params = rmfield(params , 'plot_stuff');
-    save([path1,'computed_', fname, name_tag], 'LUT_conv', 'params');
+    save([path1,'computed_', fname, name_tag], 'LUT_correction', 'params');
 end

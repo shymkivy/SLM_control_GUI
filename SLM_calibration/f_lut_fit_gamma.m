@@ -18,6 +18,10 @@ if ~isfield(params, 'two_photon')
     params.two_photon = 1; % assumes Fl ~ I^2 and takes sqrt
 end
 
+if ~isfield(params, 'manual_peak_selection')
+    params.manual_peak_selection = 0; 
+end
+
 if ~isfield(params, 'plot_stuff')
     params.plot_stuff = 0; 
 end
@@ -47,11 +51,50 @@ end
 
 %% first find 2 pi window
 
-[max_val, max_ind] = max(data_fo_rns2);
-[min_val2, min_ind2] = min(data_fo_rns2(max_ind:end));
-min_ind2 = min_ind2 + max_ind - 1;
-[min_val1, min_ind1] = min(data_fo_rns2(1:max_ind));
-
+if params.manual_peak_selection
+    peak_buff = 10;
+    f1 = figure; hold on; axis tight;
+    plot(px, data_fo_rn);
+    plot(px, data_fo_rns);
+    
+    if order
+        title('First order, select first min for 0 pi');
+    else
+        title('Zero order, select first max for 0 pi');
+    end
+    [x,~] = ginput(1);
+    x = round(x)+1;
+    [min_val1, min_ind1] = min(data_fo_rns2((x-peak_buff):(x+peak_buff)));
+    min_ind1 = min_ind1 + x - peak_buff - 1;
+    
+    if order
+        title('First order, select max for 1 pi');
+    else
+        title('Zero order, select min for 1 pi');
+    end
+    [x,~] = ginput(1);
+    x = round(x)+1;
+    [max_val, max_ind] = max(data_fo_rns2((x-peak_buff):(x+peak_buff)));
+    max_ind = max_ind + x - peak_buff - 1;
+    
+    if order
+        title('First order, select second min for 2 pi');
+    else
+        title('Zero order, select second max for 2 pi');
+    end
+    [x,~] = ginput(1);
+    x = round(x)+1;
+    [min_val2, min_ind2] = min(data_fo_rns2((x-peak_buff):(x+peak_buff)));
+    min_ind2 = min_ind2 + x - peak_buff - 1;
+    
+    close(f1)
+else
+    [max_val, max_ind] = max(data_fo_rns2);
+    [min_val2, min_ind2] = min(data_fo_rns2(max_ind:end));
+    min_ind2 = min_ind2 + max_ind - 1;
+    [min_val1, min_ind1] = min(data_fo_rns2(1:max_ind));
+end
+%%
 if order
     txt_offset = [.05 -.05 .05];
 else
@@ -84,9 +127,9 @@ if params.plot_stuff
     plot(px, data_fo_rns);
     plot(px_all, phi_all_n+residual_I(s_all)); % '*' means that this is not real raw, close approximation because no asin transform
     plot(px_all, phi_all_n, 'k', 'LineWidth', 2);
-    plot(min_ind1, min_val1, 'ro'); text(min_ind1-5,min_val1+txt_offset(1),'0 pi');
-    plot(max_ind, max_val, 'ro'); text(max_ind-5,max_val+txt_offset(2),'1 pi');
-    plot(min_ind2, min_val2, 'ro'); text(min_ind2-5,min_val2+txt_offset(3),'2 pi');
+    plot(px(min_ind1), min_val1, 'ro'); text(px(min_ind1)-2,min_val1+txt_offset(1),'0 pi');
+    plot(px(max_ind), max_val, 'ro'); text(px(max_ind)-2,max_val+txt_offset(2),'1 pi');
+    plot(px(min_ind2), min_val2, 'ro'); text(px(min_ind2)-2,min_val2+txt_offset(3),'2 pi');
     xlabel('pixel val SLM');
     ylabel('image intensity');
     legend('P raw (power)', 'P smooth', 'phi raw*', 'phi smooth', 'Location', 'northwest');

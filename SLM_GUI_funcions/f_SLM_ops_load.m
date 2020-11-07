@@ -1,12 +1,16 @@
 function f_SLM_ops_load(app)
 
-load_data = load('SLM_GUI_local_ops.mat', 'saved_data');
-load_data = load_data.saved_data;
+fname = 'SLM_GUI_local_ops.mat';
 
-app.SLM_roi_list = load_data.SLM_roi_list;
-app.xyz_patterns = load_data.xyz_patterns;
+if exist(fname, 'file')
+    load_data = load(fname, 'saved_data');
+    load_data = load_data.saved_data;
 
-f_SLM_roi_update(app);
-f_SLM_xyz_pat_update_roi(app);
+    app.SLM_roi_list = load_data.SLM_roi_list;
+    app.xyz_patterns = load_data.xyz_patterns;
+
+    f_SLM_roi_update(app);
+    f_SLM_pat_update(app);
+end
 
 end
