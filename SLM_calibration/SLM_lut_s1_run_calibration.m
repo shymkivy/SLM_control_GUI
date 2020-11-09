@@ -15,11 +15,15 @@ ops.NumRegions = 1;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
+%ops.lut_fname = 'linear.lut'; %;
+%ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
+ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
+
 slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %%
-%save_pref = '940_slm5221_maitai';
-save_pref = '1064_slm5221_fianium';
+save_pref = '940_slm5221_maitai';
+%save_pref = '1064_slm5221_fianium';
 %%
 blaze_deflect_blank = 0;
 blaze_period = 50;
