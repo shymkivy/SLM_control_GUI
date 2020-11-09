@@ -1,4 +1,4 @@
-function [holo_patterns, roi_idx] = f_SLM_scan_make_pointer_images(app, pattern, add_blank)
+function [holo_patterns, reg_idx] = f_SLM_scan_make_pointer_images(app, pattern, add_blank)
 
 if ~exist('add_blank', 'var')
     add_blank = false;
@@ -6,17 +6,17 @@ end
     
 if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, [app.xyz_patterns.name_tag]);
-    idx_roi = strcmpi(app.xyz_patterns(idx_pat).SLM_roi, [app.SLM_roi_list.name_tag]);
+    idx_reg = strcmpi(app.xyz_patterns(idx_pat).SLM_reg, [app.region_list.name_tag]);
 
-    roi1 = app.SLM_roi_list(idx_roi);
-    m = roi1.height_range;
-    n = roi1.width_range;
+    reg1 = app.region_list(idx_reg);
+    m = reg1.height_range;
+    n = reg1.width_range;
     SLMm = m(2) - m(1) + 1;
     SLMn = n(2) - n(1) + 1;
     
-    roi_idx = false(app.SLM_ops.height,app.SLM_ops.width);
-    roi_idx(m(1):m(2),n(1):n(2)) = 1;
-    roi_idx = reshape(rot90(roi_idx, 3), [],1);
+    reg_idx = false(app.SLM_ops.height,app.SLM_ops.width);
+    reg_idx(m(1):m(2),n(1):n(2)) = 1;
+    reg_idx = reshape(rot90(reg_idx, 3), [],1);
     
     group_table = app.xyz_patterns(idx_pat).xyz_pts.Variables;
     groups = unique(group_table(:,1));

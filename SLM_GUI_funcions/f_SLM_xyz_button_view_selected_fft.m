@@ -3,8 +3,8 @@ function f_SLM_xyz_button_view_selected_fft(app)
 if size(app.UIImagePhaseTableSelection,1) > 0
     coord = f_SLM_mpl_get_coords(app, 'table_selection');
     
-    % get roi
-    [m, n] = f_SLM_xyz_get_roimn(app);
+    % get region
+    [m, n] = f_SLM_xyz_get_regmn(app);
     SLMm = m(2) - m(1) + 1;
     SLMn = n(2) - n(1) + 1;
     

@@ -1,4 +1,4 @@
-function f_SLM_scan_EOF_trig(app, holo_pointers, holo_patterns_ai, roi_idx_ai, num_planes_all, imaging_button)
+function f_SLM_scan_EOF_trig2(app, holo_pointers, holo_patterns_ai, reg_idx_ai, num_planes_all, imaging_button)
 
 session = app.DAQ_session;
 resetCounters(session);

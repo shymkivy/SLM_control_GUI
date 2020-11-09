@@ -9,14 +9,7 @@ if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
     mkdir([ops.GUI_dir '\' ops.lut_dir])
 end
 
-[ops.lut_names, ops.lut_data] = f_SLM_get_file_names(ops.lut_dir, '*.lut', true);
-for n_lut = 1:numel(ops.lut_names)
-    [~, fname, ~] = fileparts(ops.lut_names{n_lut});
-    if ~exist([ops.GUI_dir '\' ops.lut_dir '\' fname '_correction'], 'dir')
-        mkdir([ops.GUI_dir '\' ops.lut_dir '\' fname '_correction'])
-    end
-end
-
+f_SLM_update_lut_list(app);
 
 % xyz calibration
 if ~exist([ops.GUI_dir '\' ops.xyz_calibration_dir], 'dir')

@@ -4,7 +4,7 @@ idx1 = strcmpi(app.PatterngroupDropDown.Value, [app.xyz_patterns.name_tag]);
 
 if sum(idx1)
     pat1.name_tag = {app.GroupnameEditField.Value};
-    pat1.SLM_roi = app.GroupROIDropDown.Value;
+    pat1.SLM_reg = app.GroupRegionDropDown.Value;
     pat1.xyz_pts = app.UIImagePhaseTable.Data;
 
     app.xyz_patterns(idx1) = pat1;

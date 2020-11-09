@@ -1,6 +1,5 @@
 function [file_names, data] = f_SLM_get_file_names(dir_path, tag, load_data)
 
-
 lut_list = dir([dir_path, '\' tag]);
 num_luts = numel(lut_list);
 file_names = cell(num_luts,1);

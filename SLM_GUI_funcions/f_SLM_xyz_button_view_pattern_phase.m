@@ -2,8 +2,8 @@ function f_SLM_xyz_button_view_pattern_phase(app)
 
 coord = f_SLM_mpl_get_coords(app, 'pattern', round(app.PatternSpinner.Value));
 
-% get roi
-[m_idx, n_idx] = f_SLM_gh_get_roimn(app);
+% get region
+[m_idx, n_idx] = f_SLM_gh_get_regmn(app);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 

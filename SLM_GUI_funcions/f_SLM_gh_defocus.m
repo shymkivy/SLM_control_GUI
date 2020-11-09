@@ -1,12 +1,12 @@
 function f_SLM_gh_defocus(app)
 
-% get roi
-[m_idx, n_idx] = f_SLM_gh_get_roimn(app);
+% get reg
+[m_idx, n_idx] = f_SLM_gh_get_regmn(app);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
-idx_roi = strcmpi(app.SelectROIDropDownGH.Value, [app.SLM_roi_list.name_tag]);
-wavelength = app.SLM_roi_list(idx_roi).wavelength*10e-9;
+idx_reg = strcmpi(app.SelectRegionDropDownGH.Value, [app.region_list.name_tag]);
+wavelength = app.region_list(idx_reg).wavelength*10e-9;
 
 defocus_weight = app.DeficusWeightEditField.Value*10e-6;
 

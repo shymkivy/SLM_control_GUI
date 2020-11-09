@@ -11,8 +11,8 @@ pat1 = app.xyz_patterns(current_pat);
 app.PatterngroupDropDown.Items = [app.xyz_patterns.name_tag];
 app.PatterngroupDropDown.Value = pat1.name_tag;
 app.GroupnameEditField.Value = pat1.name_tag{1};
-app.GroupROIDropDown.Items = [app.SLM_roi_list.name_tag];
-app.GroupROIDropDown.Value = pat1.SLM_roi;
+app.GroupRegionDropDown.Items = [app.region_list.name_tag];
+app.GroupRegionDropDown.Value = pat1.SLM_region;
 app.UIImagePhaseTable.Data = pat1.xyz_pts;
 
 end

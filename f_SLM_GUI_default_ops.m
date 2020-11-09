@@ -47,27 +47,24 @@ roi1.name_tag = {'Full SLM'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 1];
 roi1.wavelength = 940;
-roi1.lut_correction_fname = '';
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
+app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Left half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 0.5];
 roi1.wavelength = 1064;
-roi1.lut_correction_fname = '';
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
+app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Right half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0.5, 1];
 roi1.wavelength = 940;
-roi1.lut_correction_fname = '';
-app.SLM_roi_list = [app.SLM_roi_list; roi1];
+app.region_list = [app.region_list; roi1];
 
 %% default xyz pattern
 pat1.name_tag = {'Multiplane'};
 pat1.xyz_pts = [];
-pat1.SLM_roi = {'Full SLM'};
+pat1.SLM_region = {'Full SLM'};
 app.xyz_patterns = [app.xyz_patterns; pat1];
 
 end

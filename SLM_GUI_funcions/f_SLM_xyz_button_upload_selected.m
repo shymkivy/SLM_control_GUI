@@ -6,8 +6,8 @@ if size(app.UIImagePhaseTableSelection,1) > 0
     app.current_SLM_coord = coord;
     app.UITablecurrentcoord.Data = app.current_SLM_coord.xyzp;
     
-    % get roi
-    [m_idx, n_idx] = f_SLM_gh_get_roimn(app);
+    % get region
+    [m_idx, n_idx] = f_SLM_gh_get_regmn(app);
     SLMm = sum(m_idx);
     SLMn = sum(n_idx);
 

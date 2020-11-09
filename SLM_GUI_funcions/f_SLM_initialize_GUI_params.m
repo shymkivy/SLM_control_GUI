@@ -1,22 +1,16 @@
 function f_SLM_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
-app.globalLUTreactivateSLMDropDown.Items = ops.lut_names;
+app.globalLUTreactivateSLMDropDown.Items = app.global_LUT_list(:,1);
 app.globalLUTreactivateSLMDropDown.Value = ops.lut_fname;
 
-%% initialize roi list
-app.SelectROIDropDown.Items = [app.SLM_roi_list.name_tag];
-app.GroupROIDropDown.Items = [app.SLM_roi_list.name_tag];
-app.SelectROIDropDownGH.Items = [app.SLM_roi_list.name_tag];
+%% initialize region list
+app.SelectRegionDropDown.Items = [app.region_list.name_tag];
+app.GroupRegionDropDown.Items = [app.region_list.name_tag];
+app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
 
-%% update lut corrections 
-roi_list = app.SLM_roi_list;
-for n_ls = 1:numel(app.SLM_roi_list)
-    strcmpi(app.SLM_roi_list(n_ls).lut_correction_fname(:,1), app.SLM_ops.lut_fname)
-
-end
-
-f_SLM_roi_update(app);
+%% update lut corrections
+f_SLM_reg_update(app);
 
 %% xyz table
 % xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
