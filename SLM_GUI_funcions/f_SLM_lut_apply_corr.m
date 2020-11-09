@@ -7,6 +7,8 @@ lut_correction_data = app.region_list(idx_reg).lut_correction{idx_lut_corr,3};
 
 if ~isempty(lut_correction_data)
     pointer_out.Value = round(lut_correction_data(pointer.Value+1,2));
+else
+    pointer_out = pointer;
 end
 
 end
