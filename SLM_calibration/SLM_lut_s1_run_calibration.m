@@ -15,9 +15,9 @@ ops.NumRegions = 1;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
-%ops.lut_fname = 'linear.lut'; %;
+ops.lut_fname = 'linear.lut'; %;
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
-ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
+%ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
 slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 
@@ -25,11 +25,12 @@ slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 save_pref = '940_slm5221_maitai';
 %save_pref = '1064_slm5221_fianium';
 %%
-blaze_deflect_blank = 0;
-blaze_period = 50;
+blaze_deflect_blank = 1;
+blaze_period = 20;
 blaze_increaseing = 0;
 blaze_horizontal = 1;
-bkg_lut_fname = 'computed_lut_940_slm5221_maitai_1r_11_03_20_14h_39m_fo.mat';
+blaze_reverse_dir = 1;
+bkg_lut_fname = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
 
 %% add paths
 ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
@@ -46,10 +47,10 @@ end
 
 %%
 if blaze_deflect_blank
-    lut_path = [ops.working_dir '\lut_calibration\' bkg_lut_fname];
+    lut_path = [ops.working_dir '\lut_calibration\linear_correction\' bkg_lut_fname];
     lut_load = load(lut_path);
-    LUT_conv = lut_load.LUT_conv;
-    LUT_conv = round(LUT_conv);
+    LUT_correction = lut_load.LUT_correction;
+    LUT_correction = round(LUT_correction);
 end
 
 %%
@@ -138,7 +139,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 blaze_increaseing,...
                 blaze_horizontal);
         
-        pointer_bkg.Value = LUT_conv(pointer_bkg.Value+1,2);
+        pointer_bkg.Value = LUT_correction(pointer_bkg.Value+1,2);
     end
     
     n_idx = 1;
