@@ -14,11 +14,12 @@ defocus = f_SLM_DefocusPhase_YS(SLMm, SLMn,...
                 app.SLM_ops.objective_NA,...
                 app.SLM_ops.objective_RI,...
                 wavelength*10)*defocus_weight;
+defocus = defocus - min(defocus(:));
 
-defocus=angle(sum(exp(1i*(defocus-pi)),3))+pi;
+defocus2=angle(sum(exp(1i*(defocus-pi)),3))+pi;
 
 holo_image = app.SLM_blank_im;
-holo_image(m_idx,n_idx) = defocus;
+holo_image(m_idx,n_idx) = defocus2;
 
 app.SLM_Image_plot.CData = holo_image;
 app.SLM_Image = holo_image;
