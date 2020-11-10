@@ -6,12 +6,13 @@
 % lut pipeline step 1/3
 
 %% Parameters
-ops.use_TLDC = 1;           % otherwise wait for trigger
-ops.use_DAQ = 0;
+ops.use_TLDC = 0;           % otherwise wait for trigger
+ops.use_photodiode = 1;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 1;        % (squares only [1,4,9,16...])
+ops.NumRegions = 64;        % (squares only [1,4,9,16...])
+%16R 940nm p120
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
@@ -19,18 +20,18 @@ ops.lut_fname = 'linear.lut'; %;
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
-slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %%
-save_pref = '940_slm5221_maitai';
-%save_pref = '1064_slm5221_fianium';
+%save_pref = '940_slm5221_maitai';
+save_pref = '1064_slm5221_fianium';
 %%
-blaze_deflect_blank = 1;
+blaze_deflect_blank = 0;
 blaze_period = 20;
-blaze_increaseing = 0;
-blaze_horizontal = 1;
+blaze_increaseing = 1;
+blaze_horizontal = 0;
 blaze_reverse_dir = 1;
-bkg_lut_fname = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
+bkg_lut_correction = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
 
 %% add paths
 ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
@@ -39,15 +40,14 @@ addpath([ops.working_dir '\..\SLM_GUI_funcions']);
 
 ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
 ops.save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
-ops.save_file_name = sprintf('%s\\lut_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
-ops.save_file_name_im = sprintf('%s\\lut_images_%s_%dr_%s.mat',ops.save_path, save_pref,ops.NumRegions, ops.time_stamp);
+ops.save_file_name = sprintf('lut_%s_%dr_%s.mat', save_pref,ops.NumRegions, ops.time_stamp);
 if ~exist(ops.save_path, 'dir')
     mkdir(ops.save_path);
 end
 
 %%
 if blaze_deflect_blank
-    lut_path = [ops.working_dir '\lut_calibration\linear_correction\' bkg_lut_fname];
+    lut_path = [ops.working_dir '\lut_calibration\linear_correction\' bkg_lut_correction];
     lut_load = load(lut_path);
     LUT_correction = lut_load.LUT_correction;
     LUT_correction = round(LUT_correction);
@@ -89,11 +89,21 @@ if ops.use_TLDC
     [cam_out, ops.cam_params] = f_TLDC_initialize(ops);
 end
 
-if ops.use_DAQ
+if ops.use_photodiode
     % Setup counter
     session = daq.createSession('ni');
-    session.addCounterInputChannel(app.NIDAQdeviceEditField.Value, 'ctr0', 'EdgeCount');
-    resetCounters(session);
+%     session.addCounterInputChannel('dev2', 'ctr0', 'EdgeCount');
+%     resetCounters(session);
+    
+    session.addAnalogInputChannel('dev2','ai1','Voltage');
+    % make the data acquisition 'SingleEnded, to separate the '
+    for nchan = 1:length(session.Channels)
+        if strcmpi(session.Channels(nchan).ID(1:2), 'ai')
+            session.Channels(nchan).TerminalConfig = 'SingleEnded';
+            session.Channels(nchan).Range = [-10 10];
+        end
+    end
+    session.NumberOfScans = 200;
 end
 
 
@@ -124,10 +134,12 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         cam_fig.Children.Title.String = 'Camera';
     end
     
-    if ~ops.use_TLDC
-        frame_start_times = zeros(ops.NumGray*numel(regions_run),1);
-        SLM_frame = 1;
-        tic;
+    if ops.use_photodiode
+        AI_intensity = zeros(ops.NumGray*numel(regions_run), 1);
+        phd_fig = figure;
+        phd_plot = plot(1,1); axis tight;
+        %caxis([1 256]);
+        phd_fig.Children.Title.String = 'Photodiode';
     end
     
     if blaze_deflect_blank
@@ -140,6 +152,9 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 blaze_horizontal);
         
         pointer_bkg.Value = LUT_correction(pointer_bkg.Value+1,2);
+        if blaze_reverse_dir
+            pointer_bkg.Value = max(pointer_bkg.Value) - pointer_bkg.Value;
+        end
     end
     
     n_idx = 1;
@@ -160,28 +175,16 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             if blaze_deflect_blank
                 SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
             end
-            if ops.use_DAQ
-                % wait for counter
-                imaging = 1;
-                while imaging
-                    scan_frame = inputSingleScan(session)+1;
-                    if scan_frame > SLM_frame
-                        f_SLM_BNS_update(ops, SLM_image);
-                        frame_start_times(scan_frame) = toc;
-                        SLM_frame = scan_frame;
-                        if scan_frame > ops.NumGray*numel(regions_run)
-                            imaging = 0;
-                        end
-                    end
-
-                    if (toc -  frame_start_times(scan_frame)) > 15
-                        pause(0.0001);
-                        if ~imaging_button.Value
-                            imaging = 0;
-                            disp(['Aborted trigger wait frame ' num2str(SLM_frame)]);
-                        end
-                    end
-                end
+            
+            if ops.use_photodiode
+                f_SLM_BNS_update(ops, SLM_image);
+                pause(0.01); %let the SLM settle for 10 ms
+                % scan intensity
+                data = startForeground(session);
+                AI_intensity(n_idx) = mean(data);
+                phd_plot.XData = region_gray(1:n_idx,2);
+                phd_plot.YData = AI_intensity(1:n_idx);
+                phd_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
             end
             
             if ops.use_TLDC   % Thorlabs camera
@@ -190,13 +193,13 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 TLDC_get_Cam_Im(cam_out.hdl_cam);
                 cam_im.CData = cam_out.cam_frame';
                 calib_im_series(:,:,n_idx) = (cam_out.cam_frame);
-                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,numel(regions_run));
+                cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 pause(.2);
             end
             
             if ops.plot_phase
                 SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
-                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,numel(regions_run));
+                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
@@ -207,9 +210,17 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);
     f_SLM_BNS_update(ops, SLM_image);
     
-    save(ops.save_file_name, 'region_gray', 'ops', '-v7.3');
+    if ops.use_photodiode
+        save([ops.save_path '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
+        for Region = regions_run
+            region_gray(:,1) = Region;
+            % dump the AI measurements to a csv file
+            filename = ['Raw' num2str(Region) '.csv'];
+            csvwrite(filename, AI_Intensities);  
+        end
+    end
     if ops.use_TLDC
-        save(ops.save_file_name_im, 'calib_im_series', '-v7.3');
+        save([ops.save_path '\TDLC_' ops.save_file_name], 'region_gray', 'calib_im_series', 'ops', '-v7.3');
     end
 end
 
