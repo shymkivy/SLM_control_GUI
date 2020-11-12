@@ -11,16 +11,16 @@ ops.use_photodiode = 1;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 64;        % (squares only [1,4,9,16...])
+ops.NumRegions = 16;        % (squares only [1,4,9,16...])
 %16R 940nm p120
-ops.PixelsPerStripe = 8;	
+ops.PixelsPerStripe = 4;	
 ops.PixelValue = 0;
 
 ops.lut_fname = 'linear.lut'; %;
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
-slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %%
 %save_pref = '940_slm5221_maitai';
@@ -103,7 +103,10 @@ if ops.use_photodiode
             session.Channels(nchan).Range = [-10 10];
         end
     end
-    session.NumberOfScans = 200;
+    ops.DAQ_rate = 1000;
+    session.Rate = ops.DAQ_rate;
+    ops.DAQ_num_sessions = 100;
+    session.NumberOfScans = ops.DAQ_num_sessions;
 end
 
 
@@ -194,7 +197,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 cam_im.CData = cam_out.cam_frame';
                 calib_im_series(:,:,n_idx) = (cam_out.cam_frame);
                 cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
-                pause(.2);
+                pause(.02);
             end
             
             if ops.plot_phase
@@ -212,11 +215,13 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     
     if ops.use_photodiode
         save([ops.save_path '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
+        new_dir1 = [ops.save_path '\photodiode_' ops.save_file_name(1:end-4)];
+        % dump the AI measurements to a csv file
+        mkdir(new_dir1);
         for Region = regions_run
-            region_gray(:,1) = Region;
-            % dump the AI measurements to a csv file
+            r_idx = region_gray(:,1) == Region;
             filename = ['Raw' num2str(Region) '.csv'];
-            csvwrite(filename, AI_Intensities);  
+            csvwrite([new_dir1 '\' filename], [region_gray(r_idx,2), AI_intensity(r_idx)]);  
         end
     end
     if ops.use_TLDC
