@@ -11,14 +11,22 @@ if sum(indx1)
     app.regionWavelengthnmEditField.Value = reg1.wavelength;
     
     % update dropdown
-    current_lut = {app.globalLUTreactivateSLMDropDown.Value};
+    global_lut = {app.globalLUTDropDown.Value};
+    regional_lut = {app.regionalLUTDropDown.Value};
     
-    glob_lut_idx = strcmpi(app.global_LUT_list(:,1), current_lut);
-    lut_corr = [{'none'}; app.global_LUT_list{glob_lut_idx,2}];
-    app.regionLUTcorrectionDropDown.Items = lut_corr;
+    lut_corr = {'None'};
+    % load saved correction value
+    if isfield(reg1, 'lut_correction')
+        if ~isempty(reg1.lut_correction)
+            save_idx = strcmpi(global_lut, reg1.lut_correction(:,1)).*strcmpi(regional_lut, reg1.lut_correction(:,2));
+            if sum(save_idx)
+                lut_corr = reg1.lut_correction(save_idx,3);
+            end
+        end
+    end
     
-    lut_corr_idx = strcmpi(current_lut, reg1.lut_correction(:,1));
-    app.regionLUTcorrectionDropDown.Value = reg1.lut_correction(lut_corr_idx,2);
+    app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
+    app.LUTcorrectionDropDown.Value = lut_corr;
 else
     disp('Region update failed')
 end

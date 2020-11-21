@@ -9,7 +9,9 @@ if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
     mkdir([ops.GUI_dir '\' ops.lut_dir])
 end
 
-f_SLM_update_lut_list(app);
+f_SLM_lut_global_load_list(app);
+f_SLM_lut_regional_load_list(app);
+f_SLM_lut_correctios_load_list(app);
 
 % xyz calibration
 if ~exist([ops.GUI_dir '\' ops.xyz_calibration_dir], 'dir')

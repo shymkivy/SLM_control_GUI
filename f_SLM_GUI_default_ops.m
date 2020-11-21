@@ -17,8 +17,8 @@ ops.AO_correction_dir = 'SLM_calibration\AO_correction';
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
 %% default lut
-ops.lut_fname = 'linear.lut';
-
+ops.global_lut_fname = 'linear.lut';
+ops.regional_lut_fname = libpointer('string'); % null or custom regional lut for slm creation
 %%
 ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;

@@ -1,0 +1,21 @@
+function f_SLM_lut_correctios_load_list(app)
+
+corrections_dir = [app.SLM_ops.lut_dir '\' app.SLM_ops.global_lut_fname(1:end-4) '_regional'];
+if ~strcmpi(app.regionalLUTDropDown.Value, 'none')
+    corrections_dir = [corrections_dir '\' app.regionalLUTDropDown.Value '_corrections'];
+end
+
+[lut_corr, ~] = f_SLM_get_file_names(corrections_dir, '*.mat', 0);
+lut_corr = [{'None'}; lut_corr];
+app.lut_corrections_list = cell(numel(lut_corr),2);
+app.lut_corrections_list(:,1) = lut_corr;
+
+% load the mat files
+if size(lut_corr,1) > 1
+    for n_lut = 2:size(lut_corr,1)
+        corr_data = load([corrections_dir '\' lut_corr{n_lut}]);
+        app.lut_corrections_list{n_lut,2} = corr_data.LUT_correction;
+    end
+end
+
+end
