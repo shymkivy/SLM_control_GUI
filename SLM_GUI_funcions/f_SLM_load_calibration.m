@@ -5,8 +5,8 @@ ops = app.SLM_ops;
 %% load calibratio files
 
 % load LUT files
-if ~exist([ops.GUI_dir '\' ops.lut_dir], 'dir')
-    mkdir([ops.GUI_dir '\' ops.lut_dir])
+if ~exist(ops.lut_dir, 'dir')
+    mkdir(ops.lut_dir)
 end
 
 f_SLM_lut_global_load_list(app);
@@ -14,8 +14,8 @@ f_SLM_lut_regional_load_list(app);
 f_SLM_lut_correctios_load_list(app);
 
 % xyz calibration
-if ~exist([ops.GUI_dir '\' ops.xyz_calibration_dir], 'dir')
-    mkdir([ops.GUI_dir '\' ops.xyz_calibration_dir])
+if ~exist(ops.xyz_calibration_dir, 'dir')
+    mkdir(ops.xyz_calibration_dir)
 end
 
 % load axial
@@ -43,8 +43,8 @@ else
 end
 
 % load Zernike files
-if ~exist([ops.GUI_dir '\' ops.AO_correction_dir], 'dir')
-    mkdir([ops.GUI_dir '\' ops.AO_correction_dir])
+if ~exist(ops.AO_correction_dir, 'dir')
+    mkdir(ops.AO_correction_dir)
 end
 ops.zernike_file_names = f_SLM_get_file_names([ops.GUI_dir '\' ops.AO_correction_dir], '*ernike*.mat', false);
 

@@ -8,12 +8,12 @@ end
 
 %% directories
 % where to save outputs
-ops.save_dir = '..\SLM_outputs';
+ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
 
 % GUI subdirectories
-ops.lut_dir = 'SLM_calibration\lut_calibration';
-ops.xyz_calibration_dir = 'SLM_calibration\xyz_calibration';
-ops.AO_correction_dir = 'SLM_calibration\AO_correction';
+ops.lut_dir = [ops.GUI_dir '\SLM_calibration\lut_calibration'];
+ops.xyz_calibration_dir = [ops.GUI_dir '\SLM_calibration\xyz_calibration'];
+ops.AO_correction_dir = [ops.GUI_dir '\SLM_calibration\AO_correction'];
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
 %% default lut

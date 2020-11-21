@@ -1,6 +1,7 @@
 function f_SLM_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
+%%
 app.globalLUTDropDown.Items = app.lut_global_list;
 app.globalLUTDropDown.Value = ops.global_lut_fname;
 
