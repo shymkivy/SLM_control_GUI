@@ -1,11 +1,16 @@
 function f_SLM_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
-app.globalLUTDropDown.Items = app.lut_global_list(:,1);
-
-
-
+app.globalLUTDropDown.Items = app.lut_global_list;
 app.globalLUTDropDown.Value = ops.global_lut_fname;
+
+%%
+app.regionalLUTDropDown.Items = app.lut_regional_list;
+if ischar(ops.regional_lut_fname)
+    app.regionalLUTDropDown.Value = ops.regional_lut_fname;
+else
+    app.regionalLUTDropDown.Value = 'None';
+end
 
 %% initialize region list
 app.SelectRegionDropDown.Items = [app.region_list.name_tag];
