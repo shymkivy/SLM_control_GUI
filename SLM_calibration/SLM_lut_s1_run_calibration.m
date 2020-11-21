@@ -11,7 +11,7 @@ ops.use_photodiode = 1;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 16;        % (squares only [1,4,9,16...])
+ops.NumRegions = 64;        % (squares only [1,4,9,16...])
 %16R 940nm p120
 ops.PixelsPerStripe = 4;	
 ops.PixelValue = 0;
@@ -105,7 +105,7 @@ if ops.use_photodiode
     end
     ops.DAQ_rate = 1000;
     session.Rate = ops.DAQ_rate;
-    ops.DAQ_num_sessions = 100;
+    ops.DAQ_num_sessions = 200;
     session.NumberOfScans = ops.DAQ_num_sessions;
 end
 
