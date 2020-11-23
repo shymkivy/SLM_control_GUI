@@ -13,7 +13,7 @@ imaging = true;
 frame_start_times = zeros(num_planes_all,1);
 SLM_frame = 1;
 num_planes = numel(holo_pointers);
-tic;
+tic;ca
 
 f_SLM_BNS_update(app.SLM_ops, holo_pointers{1}); 
 frame_start_times(1) = toc;
