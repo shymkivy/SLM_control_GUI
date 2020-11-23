@@ -16,7 +16,7 @@ ops.NumRegions = 64;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 4;	
 ops.PixelValue = 0;
 
-ops.lut_fname = 'linear.lut'; %;
+ops.global_lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
@@ -36,7 +36,7 @@ bkg_lut_correction = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat
 %% add paths
 ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
 addpath([ops.working_dir '\..\']);
-addpath([ops.working_dir '\..\SLM_GUI_funcions']);
+addpath([ops.working_dir '\..\SLM_GUI_funcions\BNS']);
 
 ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
 ops.save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
