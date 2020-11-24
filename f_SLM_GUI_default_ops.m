@@ -17,7 +17,9 @@ ops.AO_correction_dir = [ops.GUI_dir '\SLM_calibration\AO_correction'];
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
 %% default lut
-ops.lut_fname = 'linear.lut'; % 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+
+ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+
 %%
 ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;

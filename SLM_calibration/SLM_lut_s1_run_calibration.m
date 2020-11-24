@@ -16,7 +16,7 @@ ops.NumRegions = 64;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 4;	
 ops.PixelValue = 0;
 
-ops.global_lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
+ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 

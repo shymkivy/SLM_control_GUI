@@ -9,8 +9,7 @@ if ~exist(ops.lut_dir, 'dir')
     mkdir(ops.lut_dir)
 end
 
-f_SLM_lut_global_load_list(app);
-f_SLM_lut_regional_load_list(app);
+f_SLM_lut_load_list(app);
 f_SLM_lut_correctios_load_list(app);
 
 % xyz calibration

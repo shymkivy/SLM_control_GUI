@@ -2,16 +2,8 @@ function f_SLM_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
 %%
-app.globalLUTDropDown.Items = app.lut_global_list;
-app.globalLUTDropDown.Value = ops.global_lut_fname;
-
-%%
-app.regionalLUTDropDown.Items = app.lut_regional_list;
-if ischar(ops.regional_lut_fname)
-    app.regionalLUTDropDown.Value = ops.regional_lut_fname;
-else
-    app.regionalLUTDropDown.Value = 'None';
-end
+app.LUTDropDown.Items = app.lut_list;
+app.LUTDropDown.Value = ops.lut_fname;
 
 %% initialize region list
 app.SelectRegionDropDown.Items = [app.region_list.name_tag];
@@ -19,10 +11,10 @@ app.GroupRegionDropDown.Items = [app.region_list.name_tag];
 app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
 
 %% update lut corrections
-
 if ~isfield(app.region_list, 'lut_correction')
     app.region_list(1).lut_correction = [];
 end
+
 f_SLM_reg_update(app);
 
 %% xyz table
@@ -138,7 +130,5 @@ f_SLM_AO_generate_AO_image(app);
 
 % initialize DAQ
 f_SLM_initialize_DAQ(app);
-
-
 
 end
