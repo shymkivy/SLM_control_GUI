@@ -16,30 +16,14 @@ if ~isfield(ops, 'lut_dir')
 end
 
 %% Lut global
-if ~isfield(ops, 'global_lut_fname')
-    ops.global_lut_fname = 'linear.lut';
+if ~isfield(ops, 'lut_fname')
+    ops.lut_fname = 'linear.lut';
 end
 
-global_lut_path = [ops.lut_dir '\' ops.global_lut_fname];
+lut_path = [ops.lut_dir '\' ops.lut_fname];
 
-if ~exist(global_lut_path, 'file')
-    error('global lut file missing: %s',global_lut_path);
-end
-
-%% regional lut
-if ~isfield(ops, 'regional_lut_fname') || isempty(ops.regional_lut_fname)
-    ops.regional_lut_fname = libpointer('string'); % null or custom regional lut for slm creation
-end
-
-if ischar(ops.regional_lut_fname)
-    regional_lut_path = [ops.lut_dir '\' ops.global_lut_fname(1:end-4) '_regional\' ops.regional_lut_fname];
-    if ~exist(regional_lut_path, 'file')
-        warning('Regional lut file missing, changed to null: %s', regional_lut_path);
-        regional_lut_path = libpointer('string');
-        ops.regional_lut_fname = libpointer('string');
-    end
-else
-    regional_lut_path = ops.regional_lut_fname;
+if ~exist(lut_path, 'file')
+    error('lut file missing: %s',lut_path);
 end
 
 %% Load the DLL
@@ -72,10 +56,11 @@ ops.external_Pulse = 0;
 ops.timeout_ms = 5000;
 
 %% - create SDK
+regional_lut_fname = libpointer('string'); % null for new bns, only important for old
 
 calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found,...
     ops.constructed_okay, ops.is_nematic_type, ops.RAM_write_enable,...
-    ops.use_GPU, ops.max_transients, regional_lut_path);
+    ops.use_GPU, ops.max_transients, regional_lut_fname);
 
 % Convention follows that of C function return values: 0 is success, nonzero integer is an error
 if ops.constructed_okay.value ~= 0  
@@ -89,7 +74,7 @@ else
     ops.SDK_created = 1;
     
     % load a LUT 
-    calllib('Blink_C_wrapper', 'Load_LUT_file',ops.board_number, global_lut_path);
+    calllib('Blink_C_wrapper', 'Load_LUT_file',ops.board_number, lut_path);
     
     %allocate arrays for our images
     ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);

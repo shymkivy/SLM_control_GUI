@@ -1,9 +1,6 @@
 function f_SLM_lut_correctios_load_list(app)
 
-corrections_dir = [app.SLM_ops.lut_dir '\' app.SLM_ops.global_lut_fname(1:end-4) '_regional'];
-if ~strcmpi(app.regionalLUTDropDown.Value, 'none')
-    corrections_dir = [corrections_dir '\' app.regionalLUTDropDown.Value '_corrections'];
-end
+corrections_dir = [app.SLM_ops.lut_dir '\' app.SLM_ops.lut_fname(1:end-4) '_correction'];
 
 [lut_corr, ~] = f_SLM_get_file_names(corrections_dir, '*.mat', 0);
 lut_corr = [{'None'}; lut_corr];

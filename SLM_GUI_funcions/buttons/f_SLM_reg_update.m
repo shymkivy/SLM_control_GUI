@@ -11,16 +11,15 @@ if sum(indx1)
     app.regionWavelengthnmEditField.Value = reg1.wavelength;
     
     % update dropdown
-    global_lut = {app.globalLUTDropDown.Value};
-    regional_lut = {app.regionalLUTDropDown.Value};
-    
+    lut_fname = {app.LUTDropDown.Value};
     lut_corr = {'None'};
+    
     % load saved correction value
     if isfield(reg1, 'lut_correction')
         if ~isempty(reg1.lut_correction)
-            save_idx = strcmpi(global_lut, reg1.lut_correction(:,1)).*strcmpi(regional_lut, reg1.lut_correction(:,2));
+            save_idx = strcmpi(lut_fname, reg1.lut_correction(:,1));
             if sum(save_idx)
-                lut_corr = reg1.lut_correction(save_idx,3);
+                lut_corr = reg1.lut_correction(save_idx,2);
             end
         end
     end

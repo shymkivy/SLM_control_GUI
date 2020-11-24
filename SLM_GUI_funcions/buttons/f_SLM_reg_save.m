@@ -9,7 +9,7 @@ if sum(idx1)
     save_exists = 0;
     save_lut = reg1.lut_correction;
     if ~isempty(old_reg.lut_correction)
-        save_ind = strcmpi(app.globalLUTDropDown.Value, old_reg.lut_correction{:,1}).*strcmpi(app.regionalLUTDropDown.Value, old_reg.lut_correction{:,2});
+        save_ind = strcmpi(app.LUTDropDown.Value, old_reg.lut_correction{:,1});
         if sum(save_ind)
             save_exists = 1;
         end
