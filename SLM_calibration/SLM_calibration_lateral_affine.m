@@ -1,6 +1,6 @@
 clear
 
-files_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch\SLM_calibration\XYZcalibration\lateral_calibration_images';
+files_dir = 'C:\Users\ys2605\Desktop\stuff\SLM_outputs\XYZcalibration\XYZcalibration\3_3_20\lateral_calibration_images';
 
 % for 20X zoom 1 256 pixel/um ratio
 

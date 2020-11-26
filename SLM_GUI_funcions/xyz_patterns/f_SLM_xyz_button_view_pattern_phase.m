@@ -8,9 +8,12 @@ SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
 holo_image = app.SLM_blank_im;
-holo_image(m_idx,n_idx) =  f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn);
-                                  
-holo_image = f_SLM_AO_add_correction(app,holo_image);
+if ~isempty(coord)
+    holo_image(m_idx,n_idx) =  f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn);
+    holo_image = f_SLM_AO_add_correction(app,holo_image);
+else
+    holo_image = holo_image(m_idx,n_idx);
+end         
 
 f_SLM_view_hologram_phase(app, holo_image);
 
