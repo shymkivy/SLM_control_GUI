@@ -1,4 +1,4 @@
-function coord = f_SLM_mpl_get_coords(app, from_where, n_plane)
+function coord = f_SLM_mpl_get_coords(app, from_where, num)
 
 if strcmp(from_where, 'custom')
     coord.xyzp = [app.XdisplacementEditField.Value,...
@@ -26,9 +26,23 @@ elseif strcmp(from_where, 'table_selection')
     end
 elseif strcmp(from_where, 'pattern')
     if ~isempty(app.UIImagePhaseTable.Data)
-        plan_idx = app.UIImagePhaseTable.Data(:,1).Variables == n_plane;
+        plan_idx = app.UIImagePhaseTable.Data(:,1).Variables == num;
         if sum(plan_idx)
-            plane_table = app.UIImagePhaseTable.Data(app.UIImagePhaseTable.Data(:,1).Variables == n_plane,:).Variables;
+            plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
+            coord.xyzp = [plane_table(:,3:4), plane_table(:,2)*10e-6];
+            coord.weight = plane_table(:,6);
+            coord.NA = plane_table(:,5);
+        else
+            coord = [];
+        end
+    else
+        coord = [];
+    end
+elseif strcmp(from_where, 'z_plane')
+    if ~isempty(app.UIImagePhaseTable.Data)
+        plan_idx = app.UIImagePhaseTable.Data(:,2).Variables == num;
+        if sum(plan_idx)
+            plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
             coord.xyzp = [plane_table(:,3:4), plane_table(:,2)*10e-6];
             coord.weight = plane_table(:,6);
             coord.NA = plane_table(:,5);
