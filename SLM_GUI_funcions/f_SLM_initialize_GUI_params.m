@@ -9,6 +9,11 @@ app.LUTDropDown.Value = ops.lut_fname;
 app.SelectRegionDropDown.Items = [app.region_list.name_tag];
 app.GroupRegionDropDown.Items = [app.region_list.name_tag];
 app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
+app.AOregionDropDown.Items = [app.region_list.name_tag];
+
+%%
+app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
+app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
 
 %% update lut corrections
 if ~isfield(app.region_list, 'lut_correction')

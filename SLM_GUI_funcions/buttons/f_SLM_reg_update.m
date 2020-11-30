@@ -26,6 +26,10 @@ if sum(indx1)
     
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
     app.LUTcorrectionDropDown.Value = lut_corr;
+    
+    app.LateralaffinetransformDropDown
+    app.AxialcalibrationDropDown
+    
 else
     disp('Region update failed')
 end

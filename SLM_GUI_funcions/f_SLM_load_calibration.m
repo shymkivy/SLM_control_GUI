@@ -18,28 +18,22 @@ if ~exist(ops.xyz_calibration_dir, 'dir')
 end
 
 % load axial
-axial_calibration_fnames = f_SLM_get_file_names([ops.GUI_dir '\' ops.xyz_calibration_dir], '*axial_calibration*.mat', false);
-if ~isempty(axial_calibration_fnames)
-    ops.axial_calib_file = axial_calibration_fnames{1};
-else
-    ops.axial_calib_file = '';
+axial_calibration_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*axial_calibration*.csv', false);
+ops.axial_calibration = cell(numel(axial_calibration_fnames),2);
+for n_fl = 1:numel(axial_calibration_fnames)
+    ops.axial_calibration(n_fl,1) = axial_calibration_fnames(n_fl);
+    ops.axial_calibration{n_fl,2} = csvread([ops.xyz_calibration_dir '\' axial_calibration_fnames{n_fl}], 1, 0);
 end
+ops.axial_calibration = [{'None'}, {[]};ops.axial_calibration];
 
 % load lateral
-lateral_calib_fnames = f_SLM_get_file_names([ops.GUI_dir '\' ops.xyz_calibration_dir], '*lateral_affine*.mat', false);
-if ~isempty(lateral_calib_fnames)
-    ops.lateral_calib_affine_transf_file = lateral_calib_fnames{1};
-else
-    ops.lateral_calib_affine_transf_file = '';
+lateral_calib_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*lateral_affine*.mat', false);
+ops.lateral_calibration = cell(numel(lateral_calib_fnames),2);
+for n_fl = 1:numel(axial_calibration_fnames)
+    ops.lateral_calibration(n_fl,1) = lateral_calib_fnames(n_fl);
+    ops.lateral_calibration{n_fl,2} = load([ops.xyz_calibration_dir '\' lateral_calib_fnames{n_fl}]);
 end
-
-% pixel um
-lateral_calib_pixel_um_fnames = f_SLM_get_file_names([ops.GUI_dir '\' ops.xyz_calibration_dir], '*lateral_calibration_pixel*.mat', false);
-if ~isempty(lateral_calib_pixel_um_fnames)
-    ops.lateral_calib_pixel_um_file = lateral_calib_pixel_um_fnames{1};
-else
-    ops.lateral_calib_pixel_um_file = '';
-end
+ops.lateral_calibration = [{'None'}, {[]};ops.lateral_calibration];
 
 % load Zernike files
 if ~exist(ops.AO_correction_dir, 'dir')

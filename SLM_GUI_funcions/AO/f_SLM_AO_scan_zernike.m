@@ -3,12 +3,27 @@ function f_SLM_AO_scan_zernike(app)
 if app.ScanZernikeButton.Value
     try
         disp('Initializing Zernike Scan...')
-        % generate coordinates
-        SLMn = app.SLM_ops.width;
-        SLMm = app.SLM_ops.height;
-        beam_width = app.BeamdiameterpixEditField.Value;
+        
+        % get slm region
+        idx_reg = strcmpi(app.AOregionDropDown.Value, [app.region_list.name_tag]);
+        reg1 = app.region_list(idx_reg);
+        m = reg1.height_range;
+        n = reg1.width_range;
+
+        m_px = (1:app.SLM_ops.height)'/app.SLM_ops.height;
+        n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
+
+        m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
+        n_idx = logical((n_px>n(1)).*(n_px<=n(2)));
+        
+        SLMm = sum(m_idx);
+        SLMn = sum(n_idx);
+
+        beam_width = max([SLMm SLMn]);
+        
         xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
         xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+        
         [fX, fY] = meshgrid(xln, xlm);
         [theta, rho] = cart2pol( fX, fY );
         

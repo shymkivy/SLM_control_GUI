@@ -15,23 +15,25 @@ if strcmp(from_where, 'custom')
     
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
-        coord.xyzp = [app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),3).Variables,...
-                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),4).Variables,...
-                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),2).Variables*10e-6];
+        coord.xyzp = [app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),4).Variables,...
+                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),5).Variables,...
+                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),3).Variables*10e-6];
 
-        coord.weight = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),6).Variables;
-        coord.NA = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),5).Variables;
+        coord.weight = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),7).Variables;
+        coord.NA = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),6).Variables;
+        coord.idx = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),1).Variables;
     else
         coord = [];
     end
 elseif strcmp(from_where, 'pattern')
     if ~isempty(app.UIImagePhaseTable.Data)
-        plan_idx = app.UIImagePhaseTable.Data(:,1).Variables == num;
+        plan_idx = app.UIImagePhaseTable.Data(:,strcmpi(app.UIImagePhaseTable.ColumnName, 'pattern')).Variables == num;
         if sum(plan_idx)
             plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
-            coord.xyzp = [plane_table(:,3:4), plane_table(:,2)*10e-6];
-            coord.weight = plane_table(:,6);
-            coord.NA = plane_table(:,5);
+            coord.xyzp = [plane_table(:,4:5), plane_table(:,3)*10e-6];
+            coord.weight = plane_table(:,7);
+            coord.NA = plane_table(:,6);
+            coord.idx = plane_table(:,1);
         else
             coord = [];
         end
@@ -40,12 +42,13 @@ elseif strcmp(from_where, 'pattern')
     end
 elseif strcmp(from_where, 'z_plane')
     if ~isempty(app.UIImagePhaseTable.Data)
-        plan_idx = app.UIImagePhaseTable.Data(:,2).Variables == num;
+        plan_idx = app.UIImagePhaseTable.Data(:,strcmpi(app.UIImagePhaseTable.ColumnName, 'z')).Variables == num;
         if sum(plan_idx)
             plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
-            coord.xyzp = [plane_table(:,3:4), plane_table(:,2)*10e-6];
-            coord.weight = plane_table(:,6);
-            coord.NA = plane_table(:,5);
+            coord.xyzp = [plane_table(:,4:5), plane_table(:,3)*10e-6];
+            coord.weight = plane_table(:,7);
+            coord.NA = plane_table(:,6);
+            coord.idx = plane_table(:,1);
         else
             coord = [];
         end

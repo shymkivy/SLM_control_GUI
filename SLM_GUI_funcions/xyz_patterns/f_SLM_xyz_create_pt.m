@@ -1,7 +1,8 @@
-function pt_ptr = f_SLM_xyz_create_pt(fov_fig, coord)
+function pt_ptr = f_SLM_xyz_create_pt(ax1, coord, idx, app)
 
-pt_ptr = images.roi.Point(fov_fig.Children, 'Color', 'r', 'Position', coord);
-addlistener(pt_ptr,'ROIMoved',@f_SLM_xyz_allevents);
-addlistener(pt_ptr,'DeletingROI',@f_SLM_xyz_allevents);
+pt_ptr = images.roi.Point(ax1, 'Color', 'r', 'Position', coord);
+pt_ptr.Label = num2str(idx);
+addlistener(pt_ptr,'ROIMoved',@(h,evt)f_SLM_xyz_allevents(h,evt,app));
+addlistener(pt_ptr,'DeletingROI',@(h,evt)f_SLM_xyz_allevents(h,evt,app));
 
 end
