@@ -28,7 +28,7 @@ ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;
 
 ops.objective_mag = 25;
-ops.objective_NA = 0.95;
+ops.objective_NA = 1.05;
 ops.objective_RI = 1.33;
 
 ops.wavelength = 940;           % in nm
