@@ -32,6 +32,7 @@ f_SLM_compute_xyz_affine_tf_mat(app);
 % xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
 % xyz_blank.Properties.VariableNames = {'Pattern', 'Z', 'X', 'Y', 'NA', 'Weight'};
 % app.GUI_ops.xyz_blank = xyz_blank;
+
 f_SLM_pat_update(app, 1);
 app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
 app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
@@ -86,7 +87,7 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
 % Multiplane imaging
-app.UIImagePhaseTable.Data = table();
+app.UIImagePhaseTable.Data = array2table([1, 1, 0, 0, 0, app.ObjectiveNAEditField.Value 1]);
 
 % AO zernike table
 app.ZernikeListTable.Data = table();

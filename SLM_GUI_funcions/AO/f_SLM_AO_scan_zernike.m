@@ -58,7 +58,8 @@ if app.ScanZernikeButton.Value
             if n_mode == 999
                 holo_im = app.SLM_ref_im;
             else
-                holo_im=angle(exp(1i*(all_modes(:,:,n_mode)*n_weight + app.SLM_Image)))+pi;
+                holo_im = app.SLM_Image;
+                holo_im(m_idx,n_idx) = angle(exp(1i*(app.SLM_Image(m_idx,n_idx)-pi + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
             end           
             holo_im = f_SLM_AO_add_correction(app,holo_im);
             %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
@@ -80,8 +81,8 @@ if app.ScanZernikeButton.Value
         zernike_AO_data.zernike_table = zernike_table;
         zernike_AO_data.coordinates = app.UITablecurrentcoord.Data;
         
-        save(sprintf('%s\\%s\\%s_%d_%d_%d_%dh_%dm.mat',...
-            app.SLM_ops.GUI_dir, app.AOsavedirEditField.Value,...
+        save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
+            app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value,...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
             time_stamp(5)), 'zernike_AO_data');
