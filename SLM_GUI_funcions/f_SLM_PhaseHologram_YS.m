@@ -12,11 +12,11 @@ function [ phase ] = f_SLM_PhaseHologram_YS( xyzp, SLMm, SLMn, weight, objective
     end
     if nargin>4
         for idx=1:size(xyzp,1)            
-            defocus(:,:,idx) = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA(idx), objectiveRI, illuminationWavelength );
+            defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA(idx), objectiveRI, illuminationWavelength );
         end
     end
     for idx=1:size(xyzp,1)
-        SLMplane=SLMplane+exp( 1i.*(2*pi.*xyzp(idx,1).*u ...
+        SLMplane=SLMplane+exp(1i.*(2*pi.*xyzp(idx,1).*u ...
                               + 2*pi.*xyzp(idx,2).*v ...
                               + xyzp(idx,3).*defocus(:,:,idx)) )*weight(idx);
     end

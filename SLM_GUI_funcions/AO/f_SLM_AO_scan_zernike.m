@@ -4,21 +4,11 @@ if app.ScanZernikeButton.Value
     try
         disp('Initializing Zernike Scan...')
         
-        % get slm region
-        idx_reg = strcmpi(app.AOregionDropDown.Value, [app.region_list.name_tag]);
-        reg1 = app.region_list(idx_reg);
-        m = reg1.height_range;
-        n = reg1.width_range;
-
-        m_px = (1:app.SLM_ops.height)'/app.SLM_ops.height;
-        n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
-
-        m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
-        n_idx = logical((n_px>n(1)).*(n_px<=n(2)));
+        [m_idx, n_idx] = f_SLM_get_reg_deets(app, app.AOregionDropDown.Value);
         
         SLMm = sum(m_idx);
         SLMn = sum(n_idx);
-
+        
         beam_width = max([SLMm SLMn]);
         
         xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
@@ -28,7 +18,6 @@ if app.ScanZernikeButton.Value
         [theta, rho] = cart2pol( fX, fY );
         
         time_stamp = clock;
-        
         %% create pointers
         zernike_table = app.ZernikeListTable.Data;
         

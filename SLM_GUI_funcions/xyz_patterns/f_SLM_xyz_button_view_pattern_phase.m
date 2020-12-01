@@ -3,7 +3,7 @@ function f_SLM_xyz_button_view_pattern_phase(app)
 coord = f_SLM_mpl_get_coords(app, 'pattern', round(app.PatternSpinner.Value));
 
 % get region
-[m_idx, n_idx] = f_SLM_gh_get_regmn(app);
+[m_idx, n_idx] = f_SLM_get_reg_deets(app, app.GroupRegionDropDown.Value);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 

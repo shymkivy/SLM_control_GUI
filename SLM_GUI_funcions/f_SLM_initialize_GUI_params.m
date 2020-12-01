@@ -19,8 +19,14 @@ app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
 if ~isfield(app.region_list, 'lut_correction')
     app.region_list(1).lut_correction = [];
 end
+if ~isfield(app.region_list, 'lut_correction')
+    for n_reg = 1:numel(app.region_list)
+        app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
+    end
+end
 
 f_SLM_reg_update(app);
+f_SLM_compute_xyz_affine_tf_mat(app);
 
 %% xyz table
 % xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
@@ -44,11 +50,6 @@ app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
-
-% file names
-app.AxialcalibrationfileEditField.Value = app.SLM_ops.axial_calib_file;
-app.AffinetransformatiomatrixfileEditField.Value = app.SLM_ops.lateral_calib_affine_transf_file;
-app.LateralpixelumscalingfileEditField.Value = app.SLM_ops.lateral_calib_pixel_um_file;
 
 % AO dropdown
 app.AOcorrectionfilesDropDown.Items  = app.SLM_ops.zernike_file_names;
@@ -96,8 +97,9 @@ f_SLM_LUT_update_total_frames(app);
 app.current_SLM_coord = f_SLM_mpl_get_coords(app, 'zero');
 app.UITablecurrentcoord.Data = app.current_SLM_coord.xyzp;
 
-% initialize af matrix   
-f_SLM_apply_xyz_calibration(app, 1);
+% initialize af matrix
+app.ApplyXYZcalibrationButton.Value = 1;
+f_SLM_apply_xyz_calibration(app);
 
 % initialize blank image
 app.SLM_blank_im = zeros(app.SLM_ops.height, app.SLM_ops.width);
@@ -128,6 +130,8 @@ app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_Image);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);
+
+app.SLM_Image_gh_preview = app.SLM_Image;
 
 app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);
 

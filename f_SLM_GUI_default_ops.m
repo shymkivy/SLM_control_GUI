@@ -51,24 +51,24 @@ roi1.name_tag = {'Full SLM'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 1];
 roi1.wavelength = 940;
-roi1.lateral_affine_transform = 'lateral_affine_transform_mat_z2_um_11_25_20';
-roi1.axial_calibration = 'axial_calibration_11_25_20.csv';
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_11_25_20.mat'};
+roi1.axial_calibration = {'axial_calibration_11_25_20.csv'};
 app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Left half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 0.5];
 roi1.wavelength = 1064;
-roi1.lateral_affine_transform = '';
-roi1.axial_calibration = '';
+roi1.lateral_affine_transform = [];
+roi1.axial_calibration = [];
 app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Right half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0.5, 1];
 roi1.wavelength = 940;
-roi1.lateral_affine_transform = 'lateral_affine_transform_mat_z2_um_11_25_20';
-roi1.axial_calibration = 'axial_calibration_11_25_20.csv';
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_11_25_20.mat'};
+roi1.axial_calibration = {'axial_calibration_11_25_20.csv'};
 app.region_list = [app.region_list; roi1];
 
 %% default xyz pattern

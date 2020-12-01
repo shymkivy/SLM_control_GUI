@@ -1,5 +1,4 @@
 function f_SLM_upload_image_to_SLM(app)
-
 % add AO correction if on
 if app.ApplyAOcorrectionButton.Value
     SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image);
