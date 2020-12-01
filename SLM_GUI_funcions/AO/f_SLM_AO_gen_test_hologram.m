@@ -17,11 +17,16 @@ function [phase, n, m] = f_SLM_AO_gen_test_hologram(app)
 % Z4_4    = sqrt(10)*rho.^4.*cos(4*theta);
 
 % generate coordinates
-SLMn = app.SLM_ops.width;
-SLMm = app.SLM_ops.height;
-beam_width = app.BeamdiameterpixEditField.Value;
+[m_idx, n_idx] = f_SLM_get_reg_deets(app, app.AOregionDropDown.Value);
+        
+SLMm = sum(m_idx);
+SLMn = sum(n_idx);
+
+beam_width = max([SLMm SLMn]);
+
 xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
 xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
 

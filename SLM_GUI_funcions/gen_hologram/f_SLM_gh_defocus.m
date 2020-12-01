@@ -1,7 +1,7 @@
 function f_SLM_gh_defocus(app)
 
 % get reg
-[m_idx, n_idx] = f_SLM_gh_get_regmn(app);
+[m_idx, n_idx] = f_SLM_get_reg_deets(app, app.SelectRegionDropDownGH.Value);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
@@ -18,10 +18,10 @@ defocus = defocus - min(defocus(:));
 
 defocus2=angle(sum(exp(1i*(defocus-pi)),3))+pi;
 
-holo_image = app.SLM_blank_im;
+holo_image = app.SLM_Image_gh_preview;
 holo_image(m_idx,n_idx) = defocus2;
 
 app.SLM_Image_plot.CData = holo_image;
-app.SLM_Image = holo_image;
+app.SLM_Image_gh_preview = holo_image;
 
 end

@@ -21,6 +21,9 @@ ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 
+%% default xyz
+
+
 %%
 ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;
@@ -49,18 +52,24 @@ roi1.name_tag = {'Full SLM'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 1];
 roi1.wavelength = 940;
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_11_25_20.mat'};
+roi1.axial_calibration = {'axial_calibration_11_25_20.csv'};
 app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Left half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 0.5];
 roi1.wavelength = 1064;
+roi1.lateral_affine_transform = [];
+roi1.axial_calibration = [];
 app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Right half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0.5, 1];
 roi1.wavelength = 940;
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_11_25_20.mat'};
+roi1.axial_calibration = {'axial_calibration_11_25_20.csv'};
 app.region_list = [app.region_list; roi1];
 
 %% default xyz pattern

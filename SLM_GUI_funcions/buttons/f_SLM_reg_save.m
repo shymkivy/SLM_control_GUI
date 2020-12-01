@@ -32,6 +32,7 @@ if sum(idx1)
     app.SelectRegionDropDown.Value = reg1.name_tag;
     app.GroupRegionDropDown.Items = [app.region_list.name_tag];
     app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
+    app.AOregionDropDown.Items = [app.region_list.name_tag];
 else
    disp('save did not work');
 end

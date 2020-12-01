@@ -5,7 +5,7 @@ function [ defocus ] = f_SLM_DefocusPhase_YS( SLMm, SLMn, objectiveNA, objective
     [fX, fY] = meshgrid(xln, xlm);
     [~, RHO] = cart2pol( fX, fY );
     
-    alpha = asin( (objectiveNA./objectiveRI) );
+    alpha = asin((objectiveNA./objectiveRI));
     k = 2*pi/illuminationWavelength;
     
 % from 'Three dimensional imaging and photostimulation by remote focusing and holographic light patterning'

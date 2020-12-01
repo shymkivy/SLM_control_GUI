@@ -9,4 +9,15 @@ if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
 else
     region1.lut_correction = [{app.LUTDropDown.Value}, {app.LUTcorrectionDropDown.Value}];
 end
+if strcmpi(app.LateralaffinetransformDropDown.Value, 'none')
+    region1.lateral_affine_transform = [];
+else
+    region1.lateral_affine_transform = app.LateralaffinetransformDropDown.Value;
+end
+if strcmpi(app.AxialcalibrationDropDown.Value, 'none')
+    region1.axial_calibration = [];
+else
+    region1.axial_calibration = app.AxialcalibrationDropDown.Value;
+end
+
 end

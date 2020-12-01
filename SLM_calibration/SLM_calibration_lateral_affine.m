@@ -1,9 +1,19 @@
 clear
 
-files_dir = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch\SLM_calibration\XYZcalibration\lateral_calibration_images';
+%%
+
+fov_size_x = 253.3; % um for 
+fov_size_y = 260;   % um
+fov_pix_x = 256;
+foc_pix_y = 256;
+
+xy_calib = [fov_size_x/fov_pix_x, fov_size_y/foc_pix_y];
+
+%%
+files_dir = 'C:\Users\ys2605\Desktop\stuff\SLM_outputs\XYZcalibration\XYZcalibration\11_25_20\zoom2\all_im';
 
 % for 20X zoom 1 256 pixel/um ratio
-
+%%
 file_list = dir([files_dir, '\' '*.tif']);
 num_files = numel(file_list);
 file_names = cell(num_files,1);
@@ -40,7 +50,7 @@ zero_ord_coords = zeros(num_files,2);
 first_ord_coords = zeros(num_files,2);
 figure;
 for n_file = 1:num_files
-    imagesc(Y(:,:,n_file)); axis tight equal;
+     imagesc(Y(:,:,n_file)); axis tight equal;
     title([file_names{n_file} ' Click on zero order spot']);
     [x1, y1] = ginput(1);
     zero_ord_coords(n_file,:) = round([x1, y1]);
@@ -51,8 +61,18 @@ end
 close;
 
 displacement_mat = first_ord_coords-zero_ord_coords;
+displacement_mat2 = displacement_mat*diag(xy_calib);
+
+figure; plot(input_coords(:,1), displacement_mat2(:,1),  '-o');
+xlabel('x input'); ylabel('x displacement');
+
+figure; plot(input_coords(:,2), displacement_mat2(:,2),  '-o')
+xlabel('y input'); ylabel('y displacement');
 
 % transform_mat*input_coords = displacement_mat
 lateral_affine_transform_mat = inv(input_coords\displacement_mat);
 
-save([files_dir '\' 'lateral_affine_transform_mat_3_3_20.mat'], 'lateral_affine_transform_mat')
+%lateral_affine_transform_mat3 = diag(xy_calib)\lateral_affine_transform_mat;
+%lateral_affine_transform_mat2 = inv(input_coords\displacement_mat2);
+
+save([files_dir '\' 'lateral_affine_transform_mat_z2_um_11_25_20.mat'], 'lateral_affine_transform_mat', 'xy_calib')

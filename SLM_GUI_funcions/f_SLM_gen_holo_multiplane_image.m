@@ -5,8 +5,7 @@ function holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
         SLMn = app.SLMwidthEditField.Value;
     end
     
-    % transform coordinates with calibration matrix
-    xyzp = coord.xyzp*app.xyz_affine_tf_mat;
+    xyzp = coord.xyzp;
     num_points = size(xyzp,1);
     
     weight = coord.weight;
