@@ -136,11 +136,14 @@ app.SLM_Image_gh_preview = app.SLM_Image;
 
 app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);
 
+if ~exist(ops.save_AO_dir, 'dir')
+    mkdir(ops.save_AO_dir);
+end
+ops.save_AO_dir
 f_SLM_AO_generate_AO_image(app);  
 
 % initialize DAQ
 f_SLM_initialize_DAQ(app);
-
 %
 
 end
