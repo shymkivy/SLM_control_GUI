@@ -1,14 +1,13 @@
-%clear;
 close all;
 
-dir_path = 'C:\Users\ys2605\Desktop\SLM stuff\Prairie_2_scratch\SLM_AO_images\3_10_20_beads\';
-mov_name = 'Zernike_3m_505_2r-005';
+dir_path = 'E:\data\SLM\AO\12_1_20\';
+mov_name = 'zernike_100umoff_4_3_.5-001';
 
-save_date = '3_10_20';
+save_date = '12_1_20';
 
 Y = f_collect_prairie_tiffs3([dir_path mov_name]);
 
-load_file_name = 'zernike_scan_data_3_10_20_5';
+load_file_name = 'zernike_scan_data_12_1_20_17h_41m';
 load([dir_path load_file_name '.mat']);
 
 %zernike_AO_data.current_correction;
@@ -42,16 +41,16 @@ end
 title('Regions to analyze');
 
 %% analysis of regions
-Y_means = zeros(num_images,num_regions);
+im_means = zeros(num_images,num_regions);
 for n_point = 1:num_regions
-    Y_means(:,n_point) = squeeze(mean(mean(regions{n_point},1),2));
+    im_means(:,n_point) = squeeze(mean(mean(regions{n_point},1),2));
 end
 
-Y_peak_means = zeros(num_images,num_regions);
+im_peak_means = zeros(num_images,num_regions);
 ave_top_num = 3;
 for n_point = 1:num_regions
     Y3_temp = sort(reshape(regions{n_point},[],num_images),1, 'descend');
-    Y_peak_means(:,num_regions) = mean(Y3_temp(1:ave_top_num,:));
+    im_peak_means(:,num_regions) = mean(Y3_temp(1:ave_top_num,:));
 end
 
 %% sort the data
@@ -72,9 +71,9 @@ for n_reg = 1:num_regions
             mode_data(n_scan).Zn = zernike_table(scanned_sequence(n_scan,1),2);
             mode_data(n_scan).Zm = zernike_table(scanned_sequence(n_scan,1),3);
         end
-        mode_data(n_scan).Y_regions{n_reg} = temp_reg(:,:,n_scan);
-        mode_data(n_scan).Y_means(n_reg) = Y_means(n_scan,n_reg);
-        mode_data(n_scan).Y_peak_means(n_reg) = Y_peak_means(n_scan,n_reg);
+        mode_data(n_scan).im_regions{n_reg} = temp_reg(:,:,n_scan);
+        mode_data(n_scan).im_means(n_reg) = im_means(n_scan,n_reg);
+        mode_data(n_scan).im_peak_means(n_reg) = im_peak_means(n_scan,n_reg);
     end
 end
 for n_mode_ind = 1:num_scanned_modes
@@ -120,13 +119,10 @@ end
 % end
 
 %%
-
 %ft = fittype( @(a1, b1, c1, x) a1*exp(-((x-b1)/c1).^2) );
-plot_images = 1;
-plot_psf_params = 0;
-y_lim = [min(Y(:)) max(Y(:))];
-plot_modes = [1:15];
-plot_weights = [16,1]; % plot 10,including every other one
+
+% y needs extrasmoothing before processing;
+filt_win = 5;
 
 for n_mode_ind = 1:(num_scanned_modes-1)
     n_mode = scanned_modes(n_mode_ind);
@@ -145,23 +141,34 @@ for n_mode_ind = 1:(num_scanned_modes-1)
                 temp = temp_mode_data([temp_mode_data.weight] == weights(n_w));
                 Y_temp = temp_mode_data([temp_mode_data.weight] == weights(n_w)).Y_regions{n_reg}; 
                 
-                % compute parameters
+                % compute X parameters
                 X_mean = mean(Y_temp,1);
                 X_mean = X_mean - min(X_mean);
-                %Y_fit = fit((1:numel(Y_mean))',Y_mean','gauss1');
+                X_max = max(X_mean);
+                X_fwhm = sum(X_mean>(X_max/2));
+                %X_fit = fit((1:numel(X_mean))',X_mean_sm,'gauss1');
+                
+                
                 Y_mean = mean(Y_temp,2);
-                Y_mean_sm = conv(Y_mean,ones(10,1)/10,'same');
+                Y_mean_sm = smooth(Y_mean,filt_win, 'lowess');
+                %Y_mean_sm = medfilt1(Y_mean,filt_win);
                 Y_mean = Y_mean - min(Y_mean_sm);
                 Y_mean_sm = Y_mean_sm - min(Y_mean_sm);
-                %X_fit = fit((1:numel(X_mean))',X_mean_sm,'gauss1');
-                X_max = max(X_mean);
-                X_hwm = sum(X_mean>(X_max/2))/2;
                 Y_max = max(Y_mean_sm);
-                Y_hwm = sum(Y_mean_sm>(Y_max/2))/2;
+                Y_fwhm = sum(Y_mean_sm>(Y_max/2));
+%                 figure; hold on;
+%                 plot(Y_mean)
+%                 plot(Y_mean_sm)
+%                 plot(Y_max*(Y_mean_sm>(Y_max/2)))
+                %Y_fit = fit((1:numel(Y_mean))',Y_mean','gauss1');
+                
+                
                 mode_data(temp.scan_ind).X_max(n_reg) = X_max;
-                mode_data(temp.scan_ind).X_hwm(n_reg) = X_hwm;
+                mode_data(temp.scan_ind).X_fwhm(n_reg) = X_fwhm;
                 mode_data(temp.scan_ind).Y_max(n_reg) = Y_max;
-                mode_data(temp.scan_ind).Y_hwm(n_reg) = Y_hwm;
+                mode_data(temp.scan_ind).Y_fwhm(n_reg) = Y_fwhm;
+                
+                
                 if plot_images
                     if sum(plot_modes == n_mode)
                         if sum(n_w == plot_weights_ind)
@@ -170,8 +177,8 @@ for n_mode_ind = 1:(num_scanned_modes-1)
                             imagesc(Y_temp);
                             caxis(y_lim);
                             set(ax1,'xtick',[]);set(ax1,'ytick',[]);
-                            ylabel(sprintf('Ymax=%.1f, Yhwm=%.1f',Y_max,Y_hwm));
-                            xlabel(sprintf('Xmax=%.1f, Xhwm=%.1f',X_max,X_hwm));
+                            ylabel(sprintf('Ymax=%.1f, Yhwm=%.1f',Y_max,Y_fwhm));
+                            xlabel(sprintf('Xmax=%.1f, Xhwm=%.1f',X_max,X_fwhm));
                             title(['Weight=' num2str(weights(n_w))]);
                         end
                     end
@@ -182,11 +189,106 @@ for n_mode_ind = 1:(num_scanned_modes-1)
                             figure; 
                             subplot(3,2,1:2);
                             plot(X_mean); hold on; axis tight;
-                            title(['Y mean, max= ' num2str(X_max) ' hwm=' num2str(X_hwm)]); 
+                            title(['Y mean, max= ' num2str(X_max) ' hwm=' num2str(X_fwhm)]); 
                             plot(ones(numel(X_mean))*X_max/2, 'r');
                             subplot(3,2,3:4);
                             plot(Y_mean); hold on; axis tight;
-                            title(['X mean, max= ' num2str(Y_max) ' hwm=' num2str(Y_hwm)]);
+                            title(['X mean, max= ' num2str(Y_max) ' hwm=' num2str(Y_fwhm)]);
+                            plot(Y_mean_sm);
+                            plot(ones(numel(Y_mean_sm))*Y_max/2, 'r');
+                            subplot(3,2,5);
+                            surf(Y_temp); title(['PSF Mode=' num2str(temp.mode) ' Weight=' num2str(weights(plot_weights_ind(n_w)))])
+                            sm_Y = conv2(Y_temp, ones(5,5)/5, 'same');
+                            subplot(3,2,6);
+                            surf(sm_Y); title('Smooth PSF')
+                            suptitle(['Region=' num2str(n_reg) ' Mode=' num2str(temp.mode) ' Zn=' num2str(temp.Zn) ' Zm=' num2str(temp.Zm) ' Rep' num2str(temp.num_repeat)])
+                        end
+                    end
+                end
+            end
+            if plot_images
+                if sum(plot_modes == n_mode)
+                    figure(fig1)
+                    suptitle(['Region=' num2str(n_reg) ' Mode=' num2str(temp.mode) ' Zn=' num2str(temp.Zn) ' Zm=' num2str(temp.Zm) ' Rep' num2str(temp.num_repeat)]);
+                end
+            end
+        end
+    end
+end
+
+%%
+plot_images = 0;
+plot_psf_params = 0;
+y_lim = [min(Y(:)) max(Y(:))];
+plot_modes = 1:15;
+plot_weights = [16,1]; % plot 10,including every other one
+
+for n_mode_ind = 1:(num_scanned_modes-1)
+    n_mode = scanned_modes(n_mode_ind);
+    for n_rep = 1:num_reps
+        temp_mode_data = mode_data(and([mode_data.mode] == n_mode,[mode_data.num_repeat] == n_rep));
+        for n_reg = 1:num_regions                
+            weights = sort([temp_mode_data.weight])';
+            zero_ind = find(weights == 0);
+            plot_weights_ind = [(zero_ind-plot_weights(2)*plot_weights(1)/2):plot_weights(2):zero_ind (zero_ind+1):plot_weights(2):(zero_ind+plot_weights(2)*(plot_weights(1)/2-1))];            
+            if sum(plot_modes == n_mode)
+                fig1 = figure;
+            end
+            for n_w = 1:numel(weights)
+                temp = temp_mode_data([temp_mode_data.weight] == weights(n_w));
+                Y_temp = temp_mode_data([temp_mode_data.weight] == weights(n_w)).Y_regions{n_reg}; 
+                
+                % compute X parameters
+                X_mean = mean(Y_temp,1);
+                X_mean = X_mean - min(X_mean);
+                X_max = max(X_mean);
+                X_fwhm = sum(X_mean>(X_max/2));
+                %X_fit = fit((1:numel(X_mean))',X_mean_sm,'gauss1');
+                
+                
+                Y_mean = mean(Y_temp,2);
+                Y_mean_sm = smooth(Y_mean,filt_win, 'lowess');
+                %Y_mean_sm = medfilt1(Y_mean,filt_win);
+                Y_mean = Y_mean - min(Y_mean_sm);
+                Y_mean_sm = Y_mean_sm - min(Y_mean_sm);
+                Y_max = max(Y_mean_sm);
+                Y_fwhm = sum(Y_mean_sm>(Y_max/2));
+%                 figure; hold on;
+%                 plot(Y_mean)
+%                 plot(Y_mean_sm)
+%                 plot(Y_max*(Y_mean_sm>(Y_max/2)))
+                %Y_fit = fit((1:numel(Y_mean))',Y_mean','gauss1');
+                
+                
+                mode_data(temp.scan_ind).X_max(n_reg) = X_max;
+                mode_data(temp.scan_ind).X_fwhm(n_reg) = X_fwhm;
+                mode_data(temp.scan_ind).Y_max(n_reg) = Y_max;
+                mode_data(temp.scan_ind).Y_fwhm(n_reg) = Y_fwhm;
+
+                if sum(plot_modes == n_mode)
+                    if sum(n_w == plot_weights_ind)
+                        figure(fig1)
+                        ax1 = subplot(3,6,find(n_w == plot_weights_ind));
+                        imagesc(Y_temp);
+                        caxis(y_lim);
+                        set(ax1,'xtick',[]);set(ax1,'ytick',[]);
+                        ylabel(sprintf('Ymax=%.1f, Yfwhm=%.1f',mode_data(temp.scan_ind).Y_max(n_reg),mode_data(temp.scan_ind).Y_fwhm(n_reg)));
+                        xlabel(sprintf('Xmax=%.1f, Xfwhm=%.1f',mode_data(temp.scan_ind).X_max(n_reg),mode_data(temp.scan_ind).X_fwhm(n_reg) = X_fwhm));
+                        title(['Weight=' num2str(weights(n_w))]);
+                    end
+                end
+
+                if plot_psf_params
+                    if sum(plot_modes == n_mode)
+                        if weights(n_w) == 0
+                            figure; 
+                            subplot(3,2,1:2);
+                            plot(X_mean); hold on; axis tight;
+                            title(['Y mean, max= ' num2str(X_max) ' hwm=' num2str(X_fwhm)]); 
+                            plot(ones(numel(X_mean))*X_max/2, 'r');
+                            subplot(3,2,3:4);
+                            plot(Y_mean); hold on; axis tight;
+                            title(['X mean, max= ' num2str(Y_max) ' hwm=' num2str(Y_fwhm)]);
                             plot(Y_mean_sm);
                             plot(ones(numel(Y_mean_sm))*Y_max/2, 'r');
                             subplot(3,2,5);
@@ -260,12 +362,12 @@ for n_mode_ind = 1:(num_scanned_modes-1)
     Y_max = reshape([temp_mode_data3.Y_max],[],num_reps);
     sm_max = smooth(mean([X_max, Y_max],2),10, 'loess');
     max_ind = find(max(sm_max) == sm_max);
-    X_hwm = reshape([temp_mode_data3.X_hwm],[],num_reps);
-    Y_hwm = reshape([temp_mode_data3.Y_hwm],[],num_reps);
-    sm_hwm = smooth(mean([X_hwm, Y_hwm],2),10, 'loess');
+    X_fwhm = reshape([temp_mode_data3.X_hwm],[],num_reps);
+    Y_fwhm = reshape([temp_mode_data3.Y_hwm],[],num_reps);
+    sm_hwm = smooth(mean([X_fwhm, Y_fwhm],2),10, 'loess');
     hwm_ind = find(min(sm_hwm) == sm_hwm);
-    Y_means = reshape([temp_mode_data3.Y_means],[],num_reps);
-    sm_mean = smooth(mean(Y_means,2),10, 'loess');
+    im_means = reshape([temp_mode_data3.Y_means],[],num_reps);
+    sm_mean = smooth(mean(im_means,2),10, 'loess');
     mean_ind = find(max(sm_mean) == sm_mean);
     sm_max_hwm_ratio = sm_max./sm_hwm;
     max_hwm_ratio_ind = find(max(sm_max_hwm_ratio) == sm_max_hwm_ratio);
@@ -289,16 +391,16 @@ for n_mode_ind = 1:(num_scanned_modes-1)
         title('Xmax and Ymax');
 
         subplot(2,2,3); hold on;
-        plot(weights,X_hwm, 'b')
-        plot(weights,Y_hwm, 'g')
-        plot(weights,mean([X_hwm, Y_hwm],2),'Linewidth',2, 'Color','k');
+        plot(weights,X_fwhm, 'b')
+        plot(weights,Y_fwhm, 'g')
+        plot(weights,mean([X_fwhm, Y_fwhm],2),'Linewidth',2, 'Color','k');
         plot(weights,sm_hwm,'Linewidth',2, 'Color','m');
         plot(weights(hwm_ind), sm_hwm(hwm_ind), '*g','MarkerSize',14,'Linewidth',2);
         title('Xhwm and Yhwm');
 
         subplot(2,2,2); hold on;
-        plot(weights,Y_means)
-        plot(weights,mean(Y_means,2),'Linewidth',2, 'Color','k')
+        plot(weights,im_means)
+        plot(weights,mean(im_means,2),'Linewidth',2, 'Color','k')
         plot(weights,sm_mean,'Linewidth',2, 'Color','m');
         plot(weights(mean_ind), sm_mean(mean_ind), '*g','MarkerSize',14,'Linewidth',2);
         title('full average');
