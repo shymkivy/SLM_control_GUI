@@ -1,4 +1,4 @@
-function [m_idx, n_idx, xyz_affine_tf_mat] = f_SLM_get_reg_deets(app, name_tag)
+function [m_idx, n_idx, xyz_affine_tf_mat, reg1] = f_SLM_get_reg_deets(app, name_tag)
 
 % get slm region
 idx_reg = strcmpi(name_tag, [app.region_list.name_tag]);
@@ -12,6 +12,7 @@ n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
 m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
 n_idx = logical((n_px>n(1)).*(n_px<=n(2)));
 
-xyz_affine_tf_mat = app.region_list(idx_reg).xyz_affine_tf_mat;
+reg1 = app.region_list(idx_reg);
+xyz_affine_tf_mat = reg1.xyz_affine_tf_mat;
 
 end

@@ -127,7 +127,7 @@ plot_modes = 1:15;
 plot_weights = [16,1]; % plot 10,including every other one
 for n_mode_ind = 1:(num_scanned_modes-1)
     n_mode = scanned_modes(n_mode_ind);
-    for n_rep = 1:num_reps
+    for n_rep = 1%:num_reps
         temp_mode_data = mode_data(and([mode_data.mode] == n_mode,[mode_data.num_repeat] == n_rep));
         weights = sort([temp_mode_data.weight])';
         zero_ind = find(weights == 0);
@@ -176,27 +176,40 @@ for n_mode_ind = 1:(num_scanned_modes-1)
     temp_mode_data3 = temp_mode_data2(temp_ind);
     
     weights = [temp_mode_data3([temp_mode_data3.num_repeat] == 1).weight];
+    idx_zero_weight = weights == 0;
+
     X_peak = reshape([temp_mode_data3.X_peak],[],num_reps);
     Y_peak = reshape([temp_mode_data3.Y_peak],[],num_reps);
-    sm_max = smooth(mean([X_peak, Y_peak],2),10, 'loess');
-    peak_ind = find(max(sm_max) == sm_max);
+    sm_peak = smooth(mean([X_peak, Y_peak],2),10, 'loess');
+    [peak_mag, peak_ind] = max(sm_peak);
+    peak_change = peak_mag - sm_peak(idx_zero_weight);
+
     X_fwhm_um = reshape([temp_mode_data3.X_fwhm_um],[],num_reps);
     Y_fwhm_um = reshape([temp_mode_data3.Y_fwhm_um],[],num_reps);
     sm_fwhm = smooth(mean([X_fwhm_um, Y_fwhm_um],2),10, 'loess');
-    fwhm_ind = find(min(sm_fwhm) == sm_fwhm);
+    [fwhm_mag, fwhm_ind] = min(sm_fwhm);
+    fwhm_change = fwhm_mag - sm_fwhm(idx_zero_weight);
+
     im_intens = reshape([temp_mode_data3.intensity_raw],[],num_reps);
     im_intens_sm = smooth(mean(im_intens,2),10, 'loess');
-    intens_ind = find(max(im_intens_sm) == im_intens_sm);
-    sm_max_fwhm_ratio = sm_max./sm_fwhm;
-    max_fwhm_ratio_ind = find(max(sm_max_fwhm_ratio) == sm_max_fwhm_ratio);
-    
+    [intens_mag, intens_ind] = max(im_intens_sm);
+    intens_change = intens_mag - im_intens_sm(idx_zero_weight);
+
+    sm_peak_fwhm_ratio = sm_peak./sm_fwhm;
+    [peak_fwhm_ratio_mag, peak_fwhm_ratio_ind] = max(sm_peak_fwhm_ratio);
+    peak_fwhm_ratio_change = peak_fwhm_ratio_mag - sm_peak_fwhm_ratio(idx_zero_weight);
+
     zernike_computed_weights(n_mode_ind).mode = n_mode;
     zernike_computed_weights(n_mode_ind).Zn = temp_mode_data3(1).Zn;
     zernike_computed_weights(n_mode_ind).Zm = temp_mode_data3(1).Zm;
-    zernike_computed_weights(n_mode_ind).peak_weight = weights(peak_ind);
-    zernike_computed_weights(n_mode_ind).hwm_weight = weights(fwhm_ind);
-    zernike_computed_weights(n_mode_ind).mean_weight = weights(intens_ind);
-    zernike_computed_weights(n_mode_ind).max_hwm_ratio_ind = weights(max_fwhm_ratio_ind);
+    zernike_computed_weights(n_mode_ind).best_peak_weight = weights(peak_ind);
+    zernike_computed_weights(n_mode_ind).best_fwhm_weight = weights(fwhm_ind);
+    zernike_computed_weights(n_mode_ind).best_intensity_weight = weights(intens_ind);
+    zernike_computed_weights(n_mode_ind).best_peak_fwhm_ratio_weight = weights(peak_fwhm_ratio_ind);
+    zernike_computed_weights(n_mode_ind).peak_change = peak_change;
+    zernike_computed_weights(n_mode_ind).fwhm_change = fwhm_change;
+    zernike_computed_weights(n_mode_ind).intensity_change = intens_change;
+    zernike_computed_weights(n_mode_ind).peak_fwhm_ratio_change = peak_fwhm_ratio_change;
     
     if plot_traces
         figure;
@@ -204,8 +217,8 @@ for n_mode_ind = 1:(num_scanned_modes-1)
         plot(weights,X_peak, 'b');
         plot(weights,Y_peak, 'g');
         plot(weights,mean([X_peak, Y_peak],2),'Linewidth',2, 'Color','k');
-        plot(weights,sm_max,'Linewidth',2, 'Color','m');
-        plot(weights(peak_ind), sm_max(peak_ind), '*g','MarkerSize',14,'Linewidth',2);
+        plot(weights,sm_peak,'Linewidth',2, 'Color','m');
+        plot(weights(peak_ind), sm_peak(peak_ind), '*g','MarkerSize',14,'Linewidth',2);
         title('X peak and Y peak');
 
         subplot(2,2,3); hold on;
@@ -224,14 +237,21 @@ for n_mode_ind = 1:(num_scanned_modes-1)
         title('intensity');
 
         subplot(2,2,4); hold on;
-        plot(weights,sm_max./sm_fwhm,'Linewidth',2, 'Color','m');
-        plot(weights(max_fwhm_ratio_ind), sm_max_fwhm_ratio(max_fwhm_ratio_ind), '*g','MarkerSize',14,'Linewidth',2);
+        plot(weights,sm_peak./sm_fwhm,'Linewidth',2, 'Color','m');
+        plot(weights(peak_fwhm_ratio_ind), sm_peak_fwhm_ratio(peak_fwhm_ratio_ind), '*g','MarkerSize',14,'Linewidth',2);
         title('max/fwhm ratio');
         suptitle(sprintf('zernike mode %d', n_mode));
     end
 end
 
+%%
+figure;
+plot([zernike_computed_weights.mode], [zernike_computed_weights.intensity_change]);
+title('Peak intensity change vs mode');
 
+figure;
+plot([zernike_computed_weights.mode], [zernike_computed_weights.peak_fwhm_ratio_change]);
+title('Peak intensity to fwhm ration change vs mode');
 %%
 
 %zernike_computed_weights = mode_data.zernike_computed_weights;

@@ -19,5 +19,14 @@ if strcmpi(app.AxialcalibrationDropDown.Value, 'none')
 else
     region1.axial_calibration = app.AxialcalibrationDropDown.Value;
 end
+if strcmpi(app.AOcorrectionDropDown.Value, 'none')
+    region1.AO_correction = [];
+else
+    region1.AO_correction = app.AOcorrectionDropDown.Value;
+end
+
+region1.xyz_affine_tf_mat = f_SLM_compute_xyz_affine_tf_mat_reg(app, region1);
+
+region1.AO_wf = f_SLM_AO_compute_wf(app, region1, app.AOnummodestouseSpinner.Value);
 
 end

@@ -11,9 +11,12 @@ app.GroupRegionDropDown.Items = [app.region_list.name_tag];
 app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
 app.AOregionDropDown.Items = [app.region_list.name_tag];
 
+
 %%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
+app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
+app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
 
 %% update lut corrections
 if ~isfield(app.region_list, 'lut_correction')
@@ -23,6 +26,12 @@ if ~isfield(app.region_list, 'lut_correction')
     for n_reg = 1:numel(app.region_list)
         app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
+end
+if ~isfield(app.region_list, 'AO_correction')
+    app.region_list(1).AO_correction = [];
+end
+if ~isfield(app.region_list, 'AO_wf')
+    app.region_list(1).AO_wf = [];
 end
 
 f_SLM_reg_update(app);
@@ -52,11 +61,6 @@ app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 
-% AO dropdown
-app.AOcorrectionfilesDropDown.Items  = app.SLM_ops.zernike_file_names;
-if ~isempty(app.SLM_ops.zernike_file_names)
-    app.AOcorrectionfilesDropDown.Value = app.SLM_ops.zernike_file_names{1};
-end
 
 %%
 % blank

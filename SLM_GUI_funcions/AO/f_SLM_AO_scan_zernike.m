@@ -4,7 +4,7 @@ if app.ScanZernikeButton.Value
     try
         disp('Initializing Zernike Scan...')
         
-        [m_idx, n_idx] = f_SLM_get_reg_deets(app, app.AOregionDropDown.Value);
+        [m_idx, n_idx, ~,  reg1] = f_SLM_get_reg_deets(app, app.AOregionDropDown.Value);
         
         SLMm = sum(m_idx);
         SLMn = sum(n_idx);
@@ -18,6 +18,12 @@ if app.ScanZernikeButton.Value
         [theta, rho] = cart2pol( fX, fY );
         
         time_stamp = clock;
+        %% create AO file
+        if app.ApplyAOcorrectionButton.Value
+            reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
+            AO_wf = f_SLM_AO_compute_wf(app, reg1, app.NumberoftopmodestoincludeSpinner.Value);
+        end
+        
         %% create pointers
         zernike_table = app.ZernikeListTable.Data;
         
@@ -60,8 +66,13 @@ if app.ScanZernikeButton.Value
             else
                 holo_im = app.SLM_Image;
                 holo_im(m_idx,n_idx) = angle(exp(1i*(app.SLM_Image(m_idx,n_idx)-pi + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
-            end           
-            holo_im = f_SLM_AO_add_correction(app,holo_im);
+            end
+            if app.ApplyAOcorrectionButton.Value
+                if ~isempty(AO_wf)
+                    holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx)-pi + AO_wf - pi))) + pi;
+                end
+            end
+            
             %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
             holo_pointers{n_plane} = f_SLM_im_to_pointer(holo_im);
         end
