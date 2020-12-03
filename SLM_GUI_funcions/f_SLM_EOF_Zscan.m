@@ -13,14 +13,15 @@ imaging = true;
 frame_start_times = zeros(num_planes_all,1);
 SLM_frame = 1;
 num_planes = numel(holo_pointers);
-tic;ca
+tic;
 
 f_SLM_BNS_update(app.SLM_ops, holo_pointers{1}); 
 frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
 while imaging
-    scan_frame = inputSingleScan(session)+1;
+    scan1 = inputSingleScan(session);
+    scan_frame = scan1(1)+1;
     if scan_frame > SLM_frame*scans_per_vol
         f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
         frame_start_times(scan_frame) = toc;

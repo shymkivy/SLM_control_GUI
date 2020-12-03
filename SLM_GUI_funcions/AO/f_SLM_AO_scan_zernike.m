@@ -21,7 +21,10 @@ if app.ScanZernikeButton.Value
         %% create AO file
         if app.ApplyAOcorrectionButton.Value
             reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
-            AO_wf = f_SLM_AO_compute_wf(app, reg1, app.NumberoftopmodestoincludeSpinner.Value);
+            [AO_wf, used_modes, used_weights] = f_SLM_AO_compute_wf(app, reg1, app.NumtopmodestoincludeSpinner.Value);
+            AO_data.AO_wf = AO_wf;
+            AO_data.used_modes = used_modes;
+            AO_data.used_weights = used_weights;
         end
         
         %% create pointers
@@ -96,7 +99,7 @@ if app.ScanZernikeButton.Value
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value,...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5)), 'zernike_AO_data');
+            time_stamp(5)), 'zernike_AO_data', 'AO_data');
         
         app.ScanZernikeButton.Value = 0;
         app.ZernikeReadyLamp.Color = [0.80,0.80,0.80];

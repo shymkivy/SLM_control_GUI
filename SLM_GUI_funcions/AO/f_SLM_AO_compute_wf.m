@@ -1,4 +1,6 @@
 function [wf_out, used_modes, used_weights] = f_SLM_AO_compute_wf(app, reg1, num_modes)
+used_weights = 0;
+used_modes = 0;
 
 if strcmpi(reg1.AO_correction, 'none')
     wf_out = [];
