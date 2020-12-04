@@ -39,7 +39,7 @@ ops.lateral_calibration = [{'None'}, {[]};ops.lateral_calibration];
 if ~exist(ops.AO_correction_dir, 'dir')
     mkdir(ops.AO_correction_dir)
 end
-AO_fnames = f_SLM_get_file_names(ops.AO_correction_dir, '*ernike*.mat', false);
+AO_fnames = f_SLM_get_file_names(ops.AO_correction_dir, '*AO_correction*.mat', false);
 ops.AO_correction = cell(numel(AO_fnames),2);
 for n_fl = 1:numel(axial_calibration_fnames)
     ops.AO_correction{n_fl, 1} = AO_fnames{n_fl};

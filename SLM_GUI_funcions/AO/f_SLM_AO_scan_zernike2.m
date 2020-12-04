@@ -47,7 +47,6 @@ if app.ScanZernikeButton.Value
         end
         
         % for inserting different AO at each plane
-        %coord = app.current_SLM_coord;
         %SLM_Image = f_SLM_gen_holo_multiplane_image(app, coord);
         
         % generate pointers
@@ -78,7 +77,6 @@ if app.ScanZernikeButton.Value
         zernike_AO_data.zernike_scan_sequence = zernike_scan_sequence;
         zernike_AO_data.time_stamp = time_stamp;
         zernike_AO_data.zernike_table = zernike_table;
-        zernike_AO_data.coordinates = app.UITablecurrentcoord.Data;
         
         save(sprintf('%s\\%s\\%s_%d_%d_%d_%dh_%dm.mat',...
             app.SLM_ops.GUI_dir, app.AOsavedirEditField.Value,...

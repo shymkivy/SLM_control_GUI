@@ -1,46 +1,53 @@
-function [wf_out, used_modes, used_weights] = f_SLM_AO_compute_wf(app, reg1, num_modes)
-used_weights = 0;
-used_modes = 0;
-
-if strcmpi(reg1.AO_correction, 'none')
+function [wf_out, params] = f_SLM_AO_compute_wf(app, reg1)
+params = struct;
+if isempty(reg1.AO_correction)
+    wf_out = [];
+elseif strcmpi(reg1.AO_correction, 'none')
     wf_out = [];
 else
-    if num_modes
-        idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
-        zer_data = app.SLM_ops.AO_correction{idx_AO,2}.zernike_computed_weights;
-        intens_change_vals = [zer_data.intensity_change];
-        [~, idx_sort] = sort(intens_change_vals, 'descend');
-        
-        [m_idx, n_idx] = f_SLM_get_reg_deets(app, reg1.name_tag);
-        
-        SLMm = sum(m_idx);
-        SLMn = sum(n_idx);
-        
-        beam_width = max([SLMm SLMn]);
-        
-        xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-        xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
-        
-        [fX, fY] = meshgrid(xln, xlm);
-        [theta, rho] = cart2pol( fX, fY );
-        
-        
-        % generate all polynomials
-        all_modes = zeros(SLMm, SLMn, num_modes);
-        for n_mode_idx = 1:num_modes
-            n_mode = idx_sort(n_mode_idx);
-            Z_nm = f_SLM_zernike_pol(rho, theta, zer_data(n_mode).Zn, zer_data(n_mode).Zm);
-            all_modes(:,:,n_mode_idx) = Z_nm*zer_data(n_mode).best_intensity_weight;
-        end
-        
-        used_modes = [zer_data(idx_sort(1:num_modes)).mode];
-        used_weights = [zer_data(idx_sort(1:num_modes)).best_intensity_weight];
-        
-        wf_out = sum(all_modes,3);
-        %figure; imagesc(wf_out)
-    else
-        wf_out = [];
+    idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
+    AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
+
+    [m_idx, n_idx] = f_SLM_get_reg_deets(app, reg1.name_tag); 
+    SLMm = sum(m_idx);
+    SLMn = sum(n_idx);
+    beam_width = app.BeamdiameterpixEditField.Value;
+    xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+    xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+    [fX, fY] = meshgrid(xln, xlm);
+    [theta, rho] = cart2pol( fX, fY );
+    
+    if app.AOzerooutsideunitcircCheckBox.Value
+        rho(rho>1) = 0;
     end
+    
+    num_modes = size(AO_correction,1);
+    max_mode = max(AO_correction(:,1));
+    
+    % compute n m
+    zernike_nm_list_cell = cell(max_mode+1,1);
+    for mode = 0:max_mode
+        n_modes = (-mode:2:mode)';
+        m_modes = ones(mode+1,1)*mode;
+        zernike_nm_list_cell{mode+1} = [m_modes,n_modes]; 
+    end
+    zernike_nm_list = cat(1, zernike_nm_list_cell{:});
+    
+    % generate all polynomials
+    all_modes = zeros(SLMm, SLMn, num_modes);
+    for n_mode_idx = 1:num_modes
+        n_mode = AO_correction(n_mode_idx,1);
+        Z_nm = f_SLM_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
+        all_modes(:,:,n_mode_idx) = Z_nm*AO_correction(n_mode_idx,2);
+    end
+
+    wf_out = sum(all_modes,3);
+    %figure; imagesc(wf_out)
+    
+    params.AO_correction = AO_correction;
+    params.beam_width = beam_width;
+    params.zero_around_unit_circ = app.AOzerooutsideunitcircCheckBox.Value;
+    params.AO_iteration = size(AO_correction,1)+1;
 end
 
 end

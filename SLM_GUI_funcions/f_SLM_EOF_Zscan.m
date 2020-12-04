@@ -50,7 +50,7 @@ if app.PlotSLMupdateratesCheckBox.Value
     end
 end
 
-app.SLM_Image = app.SLM_blank_im;
-f_SLM_upload_image_to_SLM(app);
+%app.SLM_Image = app.SLM_blank_im;
+%f_SLM_upload_image_to_SLM(app);
 disp('Done');
 end

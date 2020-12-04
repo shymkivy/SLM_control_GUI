@@ -8,12 +8,9 @@ if app.ScanZernikeButton.Value
         
         SLMm = sum(m_idx);
         SLMn = sum(n_idx);
-        
-        beam_width = max([SLMm SLMn]);
-        
+        beam_width = app.BeamdiameterpixEditField.Value;
         xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
         xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
-        
         [fX, fY] = meshgrid(xln, xlm);
         [theta, rho] = cart2pol( fX, fY );
         
@@ -21,10 +18,7 @@ if app.ScanZernikeButton.Value
         %% create AO file
         if app.ApplyAOcorrectionButton.Value
             reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
-            [AO_wf, used_modes, used_weights] = f_SLM_AO_compute_wf(app, reg1, app.NumtopmodestoincludeSpinner.Value);
-            AO_data.AO_wf = AO_wf;
-            AO_data.used_modes = used_modes;
-            AO_data.used_weights = used_weights;
+            [AO_wf, AO_params] = f_SLM_AO_compute_wf(app, reg1);
         end
         
         %% create pointers
@@ -58,7 +52,9 @@ if app.ScanZernikeButton.Value
         if app.ShufflemodesCheckBox.Value
             zernike_scan_sequence = zernike_scan_sequence(randsample(num_scans,num_scans),:);
         end
-
+        
+        init_image = app.SLM_Image;
+        
         % generate pointers
         holo_pointers = cell(num_scans,1);
         for n_plane = 1:num_scans
@@ -67,8 +63,8 @@ if app.ScanZernikeButton.Value
             if n_mode == 999
                 holo_im = app.SLM_ref_im;
             else
-                holo_im = app.SLM_Image;
-                holo_im(m_idx,n_idx) = angle(exp(1i*(app.SLM_Image(m_idx,n_idx)-pi + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
+                holo_im = init_image;
+                holo_im(m_idx,n_idx) = angle(exp(1i*(init_image(m_idx,n_idx)-pi + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
             end
             if app.ApplyAOcorrectionButton.Value
                 if ~isempty(AO_wf)
@@ -85,6 +81,9 @@ if app.ScanZernikeButton.Value
     
         f_SLM_EOF_Zscan(app, holo_pointers, num_scans, app.ScanZernikeButton, app.ScansperVolZEditField.Value);
         
+        app.SLM_Image = init_image;
+        f_SLM_upload_image_to_SLM(app);
+        
         if app.ApplyAOcorrectionButton.Value
             zernike_AO_data.current_correction_weights = app.AO_correction_data;
         else
@@ -93,13 +92,12 @@ if app.ScanZernikeButton.Value
         zernike_AO_data.zernike_scan_sequence = zernike_scan_sequence;
         zernike_AO_data.time_stamp = time_stamp;
         zernike_AO_data.zernike_table = zernike_table;
-        zernike_AO_data.coordinates = app.UITablecurrentcoord.Data;
         
         save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value,...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5)), 'zernike_AO_data', 'AO_data');
+            time_stamp(5)), 'zernike_AO_data', 'AO_params');
         
         app.ScanZernikeButton.Value = 0;
         app.ZernikeReadyLamp.Color = [0.80,0.80,0.80];

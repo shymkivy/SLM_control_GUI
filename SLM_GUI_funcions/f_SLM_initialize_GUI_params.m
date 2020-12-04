@@ -35,7 +35,11 @@ if ~isfield(app.region_list, 'AO_wf')
 end
 
 f_SLM_reg_update(app);
-f_SLM_compute_xyz_affine_tf_mat(app);
+
+for n_reg = 1:numel(app.region_list)
+    app.region_list(n_reg).xyz_affine_tf_mat = f_SLM_compute_xyz_affine_tf_mat_reg(app, app.region_list(n_reg));
+    app.region_list(n_reg).AO_wf = f_SLM_AO_compute_wf(app, app.region_list(n_reg));
+end
 
 %% xyz table
 % xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
@@ -97,10 +101,6 @@ app.UIImagePhaseTable.Data = array2table([1, 1, 0, 0, 0, app.ObjectiveNAEditFiel
 app.ZernikeListTable.Data = table();
 f_SLM_AO_fill_modes_table(app);
 f_SLM_LUT_update_total_frames(app);
-
-% current coord initialize
-app.current_SLM_coord = f_SLM_mpl_get_coords(app, 'zero');
-app.UITablecurrentcoord.Data = app.current_SLM_coord.xyzp;
 
 % initialize af matrix
 app.ApplyXYZcalibrationButton.Value = 1;

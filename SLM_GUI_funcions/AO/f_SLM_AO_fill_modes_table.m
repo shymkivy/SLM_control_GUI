@@ -17,6 +17,11 @@ for mode = 0:max_modes
 end
 
 zernike_table_list = cat(1, zernike_cell_list{:});
+
+if app.AOignoredefocusmodesCheckBox.Value
+    scan_modes(zernike_table_list(:,2) == 0) = 0;
+end
+
 app.ZernikeListTable.Data = [(round(1:num_modes)'),round(zernike_table_list), repmat([-W_lim, W_step, W_lim], num_modes, 1), round(scan_modes)];
 
 f_SLM_AO_update_total_modes(app);
