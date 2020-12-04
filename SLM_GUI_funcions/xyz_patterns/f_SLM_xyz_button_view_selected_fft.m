@@ -4,13 +4,11 @@ if size(app.UIImagePhaseTableSelection,1) > 0
     coord = f_SLM_mpl_get_coords(app, 'table_selection');
     
     % get region
-    [m, n] = f_SLM_xyz_get_regmn(app);
-    SLMm = m(2) - m(1) + 1;
-    SLMn = n(2) - n(1) + 1;
-    
-    holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn);
-    
-    f_SLM_view_hologram_fft(app, holo_image, app.fftdefocusumEditField.Value*10e-6);
+    [m_idx, n_idx] = f_SLM_get_reg_deets(app, app.GroupRegionDropDown.Value);
+
+    holo_image = f_SLM_xyz_gen_holo(app, coord, app.GroupRegionDropDown.Value); 
+
+    f_SLM_view_hologram_fft(app, holo_image(m_idx, n_idx), app.fftdefocusumEditField.Value*10e-6);
     title(sprintf('PSF at %.1f um', app.fftdefocusumEditField.Value));
 end
 

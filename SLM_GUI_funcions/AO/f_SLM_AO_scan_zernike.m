@@ -64,11 +64,11 @@ if app.ScanZernikeButton.Value
                 holo_im = app.SLM_ref_im;
             else
                 holo_im = init_image;
-                holo_im(m_idx,n_idx) = angle(exp(1i*(init_image(m_idx,n_idx)-pi + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
+                holo_im(m_idx,n_idx) = angle(exp(1i*(init_image(m_idx,n_idx) + all_modes(:,:,n_mode)*n_weight - pi))) + pi;
             end
             if app.ApplyAOcorrectionButton.Value
                 if ~isempty(AO_wf)
-                    holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx)-pi + AO_wf - pi))) + pi;
+                    holo_im = angle(exp(1i*(holo_im + AO_wf - pi))) + pi;
                 end
             end
             

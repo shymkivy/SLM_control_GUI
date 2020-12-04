@@ -40,8 +40,10 @@ else
         Z_nm = f_SLM_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
         all_modes(:,:,n_mode_idx) = Z_nm*AO_correction(n_mode_idx,2);
     end
-
-    wf_out = sum(all_modes,3);
+    all_modes_sum = sum(all_modes,3);
+    
+    wf_out = app.SLM_blank_im;
+    wf_out(m_idx, n_idx) = all_modes_sum - min(all_modes_sum(:));
     %figure; imagesc(wf_out)
     
     params.AO_correction = AO_correction;

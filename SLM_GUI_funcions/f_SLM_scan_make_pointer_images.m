@@ -36,14 +36,14 @@ if ~strcmpi(pattern, 'none')
                                         app.ObjectiveRIEditField.Value,...
                                         app.WavelengthnmEditField.Value*10e-9);
 
-        holo_image = f_SLM_AO_add_correction(app,holo_image);
+        holo_image = f_SLM_AO_add_correction(app,holo_image, reg1.AO_wf);
         holo_patterns(:,n_gr) = f_SLM_im_to_pointer(holo_image);                
     end
 end
 
 if add_blank
     holo_zero = zeros(SLMm, SLMn, 'uint8');
-    holo_zero = f_SLM_AO_add_correction(app,holo_zero);
+    holo_zero = f_SLM_AO_add_correction(app,holo_zero, reg1.AO_wf);
     holo_zero = f_SLM_im_to_pointer(holo_zero);
     holo_patterns = [holo_zero,holo_patterns];
 end

@@ -20,7 +20,7 @@ function [ phase ] = f_SLM_PhaseHologram_YS( xyzp, SLMm, SLMn, weight, objective
                               + 2*pi.*xyzp(idx,2).*v ...
                               + xyzp(idx,3).*defocus(:,:,idx)) )*weight(idx);
     end
-    phase=angle(SLMplane)+pi;
+    phase=angle(SLMplane);
 end
 
 function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength )

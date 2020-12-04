@@ -1,6 +1,6 @@
 function f_SLM_view_hologram_fft(app, holo_image, defocus_dist)
 
-    dims = [app.SLMheightEditField.Value, app.SLMwidthEditField.Value];
+    dims = size(holo_image);
     siz = max(dims);
 
     phase_sq = zeros(siz,siz);
