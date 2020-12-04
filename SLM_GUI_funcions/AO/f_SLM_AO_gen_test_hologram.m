@@ -1,4 +1,4 @@
-function [phase, n, m] = f_SLM_AO_gen_test_hologram(app)
+function [holo_out, n, m] = f_SLM_AO_gen_test_hologram(app)
 
 % Z0_0    = 1;
 % Z1_n1   = 2*rho.*sin(theta);
@@ -30,6 +30,10 @@ xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
 
+if app.AOzerooutsideunitcircCheckBox.Value
+    rho(rho>1) = 0;
+end
+
 weight = app.weightEditField.Value;
 mode_index = app.ModeindexEditField.Value;
 
@@ -39,7 +43,13 @@ m = zernike_data(mode_index,3);
 
 [Z_nm, ~, ~] = f_SLM_zernike_pol(rho, theta, n, m);
 
-phase = angle(exp(1i*Z_nm*weight)) + pi;
+phase = Z_nm*weight;
+phase = phase - min(phase(:));
+
+phase = angle(exp(1i*(phase-pi))) + pi;
+
+holo_out = app.SLM_blank_im;
+holo_out(m_idx, n_idx) = phase;
 % convert to 8bit
 %phase8bit = round(phase/2/pi*255);
 end
