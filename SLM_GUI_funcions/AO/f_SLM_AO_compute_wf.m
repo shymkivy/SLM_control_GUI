@@ -1,5 +1,8 @@
 function [wf_out, params] = f_SLM_AO_compute_wf(app, reg1)
 params = struct;
+params.beam_width = app.BeamdiameterpixEditField.Value;
+params.AO_iteration = 1;
+params.zero_around_unit_circ = app.AOzerooutsideunitcircCheckBox.Value;
 if isempty(reg1.AO_correction)
     wf_out = [];
 elseif strcmpi(reg1.AO_correction, 'none')
@@ -46,8 +49,6 @@ else
     %figure; imagesc(wf_out)
     
     params.AO_correction = AO_correction;
-    params.beam_width = beam_width;
-    params.zero_around_unit_circ = app.AOzerooutsideunitcircCheckBox.Value;
     params.AO_iteration = size(AO_correction,1)+1;
 end
 
