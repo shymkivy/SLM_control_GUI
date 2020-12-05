@@ -18,7 +18,6 @@ m_p = abs(m);
 
 k_max = (n-m_p)/2;
 
-
 R = zeros(SLMm, SLMn,k_max+1);
 
 for k = 0:k_max
@@ -34,4 +33,5 @@ elseif m < 0
 else
     Z_nm = R_nm;
 end
+
 end

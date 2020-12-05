@@ -12,6 +12,8 @@ end
 f_SLM_lut_load_list(app);
 f_SLM_lut_correctios_load_list(app);
 
+ops = app.SLM_ops;
+
 % xyz calibration
 if ~exist(ops.xyz_calibration_dir, 'dir')
     mkdir(ops.xyz_calibration_dir)
@@ -46,6 +48,16 @@ for n_fl = 1:numel(AO_fnames)
     ops.AO_correction{n_fl, 2} = load([ops.AO_correction_dir '\' AO_fnames{n_fl}]);
 end
 ops.AO_correction = [{'None'}, {[]};ops.AO_correction];
+
+%% update dropdowns
+app.LUTDropDown.Items = app.lut_list;
+app.LUTDropDown.Value = ops.lut_fname;
+
+app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
+app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
+app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
+app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
+
 %%
 app.SLM_ops = ops;
 end

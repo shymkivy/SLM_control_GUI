@@ -13,12 +13,13 @@ end
 %%
 f_SLM_GUI_default_ops(app);
 f_SLM_load_calibration(app);
-f_SLM_ops_load(app);
 
 app.SLM_ops = f_SLM_BNS_initialize(app.SLM_ops);
 app.ActivateSLMButton.Value = 1;
 app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
 
 f_SLM_initialize_GUI_params(app);
+
+f_SLM_ops_load(app);
 
 end

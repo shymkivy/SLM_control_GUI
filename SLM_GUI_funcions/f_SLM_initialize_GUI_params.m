@@ -96,6 +96,7 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 %%
 % Multiplane imaging
 app.UIImagePhaseTable.Data = array2table([1, 1, 0, 0, 0, app.ObjectiveNAEditField.Value 1]);
+f_SLM_pat_save(app);
 
 % AO zernike table
 app.ZernikeListTable.Data = table();
@@ -143,8 +144,6 @@ app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);
 if ~exist(ops.save_AO_dir, 'dir')
     mkdir(ops.save_AO_dir);
 end
-ops.save_AO_dir
-f_SLM_AO_generate_AO_image(app);  
 
 % initialize DAQ
 f_SLM_initialize_DAQ(app);

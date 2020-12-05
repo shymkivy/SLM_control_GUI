@@ -293,4 +293,4 @@ fprintf('Correcting mode %d, weight %.2f\n',best_mode ,best_mode_w);
 %%
 %zernike_computed_weights = mode_data.zernike_computed_weights;
 
-save([dir_path 'AO_correction2_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
+save([dir_path '\' 'AO_correction2_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');

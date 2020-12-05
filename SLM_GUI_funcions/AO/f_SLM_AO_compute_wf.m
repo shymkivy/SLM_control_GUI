@@ -17,10 +17,6 @@ else
     [fX, fY] = meshgrid(xln, xlm);
     [theta, rho] = cart2pol( fX, fY );
     
-    if app.AOzerooutsideunitcircCheckBox.Value
-        rho(rho>1) = 0;
-    end
-    
     num_modes = size(AO_correction,1);
     max_mode = max(AO_correction(:,1));
     
@@ -41,9 +37,12 @@ else
         all_modes(:,:,n_mode_idx) = Z_nm*AO_correction(n_mode_idx,2);
     end
     all_modes_sum = sum(all_modes,3);
+    if app.AOzerooutsideunitcircCheckBox.Value
+        all_modes_sum(rho>1) = 0;
+    end
     
     wf_out = app.SLM_blank_im;
-    wf_out(m_idx, n_idx) = all_modes_sum - min(all_modes_sum(:));
+    wf_out(m_idx, n_idx) = all_modes_sum;
     %figure; imagesc(wf_out)
     
     params.AO_correction = AO_correction;

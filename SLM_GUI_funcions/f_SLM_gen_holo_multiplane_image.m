@@ -27,5 +27,5 @@ function holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
         SLM_phase(:,:,n_point) = f_SLM_PhaseHologram_YS(xyzp(n_point,:), SLMm,SLMn,weight(n_point),objectiveNA(n_point),objectiveRI,illuminationWavelength);
     end
     
-    holo_image=angle(sum(exp(1i*(SLM_phase-pi)),3))+pi;
+    holo_image=angle(sum(exp(1i*(SLM_phase)),3))+pi;
 end

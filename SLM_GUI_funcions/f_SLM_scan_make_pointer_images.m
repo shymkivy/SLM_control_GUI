@@ -6,7 +6,7 @@ end
     
 if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, [app.xyz_patterns.name_tag]);
-    idx_reg = strcmpi(app.xyz_patterns(idx_pat).SLM_reg, [app.region_list.name_tag]);
+    idx_reg = strcmpi(app.xyz_patterns(idx_pat).SLM_region, [app.region_list.name_tag]);
 
     reg1 = app.region_list(idx_reg);
     m = reg1.height_range;

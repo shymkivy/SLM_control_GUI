@@ -30,10 +30,6 @@ xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
 
-if app.AOzerooutsideunitcircCheckBox.Value
-    rho(rho>1) = 0;
-end
-
 weight = app.weightEditField.Value;
 mode_index = app.ModeindexEditField.Value;
 
@@ -42,11 +38,13 @@ n = zernike_data(mode_index,2);
 m = zernike_data(mode_index,3);
 
 [Z_nm, ~, ~] = f_SLM_zernike_pol(rho, theta, n, m);
+if app.AOzerooutsideunitcircCheckBox.Value
+    Z_nm(rho>1) = 0;
+end
 
 phase = Z_nm*weight;
-phase = phase - min(phase(:));
 
-phase = angle(exp(1i*(phase-pi))) + pi;
+phase = angle(exp(1i*(phase))) + pi;
 
 holo_out = app.SLM_blank_im;
 holo_out(m_idx, n_idx) = phase;
