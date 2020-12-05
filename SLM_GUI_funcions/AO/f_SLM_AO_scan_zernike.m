@@ -16,6 +16,8 @@ if app.ScanZernikeButton.Value
         
         time_stamp = clock;
         %% create AO file
+        AO_params = struct;
+        AO_params.AO_iteration = 1;
         if app.ApplyAOcorrectionButton.Value
             reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
             [AO_wf, AO_params] = f_SLM_AO_compute_wf(app, reg1);
@@ -93,9 +95,9 @@ if app.ScanZernikeButton.Value
         zernike_AO_data.time_stamp = time_stamp;
         zernike_AO_data.zernike_table = zernike_table;
         
-        save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
+        save(sprintf('%s\\%s_iter%d_%d_%d_%d_%dh_%dm.mat',...
             app.SLM_ops.save_AO_dir,...
-            app.SavefiletagEditField.Value,...
+            app.SavefiletagEditField.Value,  AO_params.AO_iteration,...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
             time_stamp(5)), 'zernike_AO_data', 'AO_params');
         
