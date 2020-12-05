@@ -1,10 +1,10 @@
 close all;
 clear;
 
-dir_path = 'E:\data\SLM\AO\12_3_20\';
-mov_name = 'AO_0um_0modes-002';
-load_file_name = 'AO_0um_0modes-002_12_3_20_16h_27m';
-save_date = '12_3_20';
+dir_path = 'E:\data\SLM\AO\12_4_20';
+mov_name = 'zernike_100um_0modes-001';
+load_file_name = 'zernike_scan_data_iter1_12_4_20_19h_3m';
+save_date = '12_4_20';
 
 params.smooth_type = 'gauss';                   %'gauss' or 'mean'
 params.intensity_integration = 'halfmax';       % 'halfmax', 'full';
@@ -283,4 +283,4 @@ legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprin
 fprintf('Correcting mode %d, weight %.2f\n',best_mode ,best_mode_w);
 %%
 %zernike_computed_weights = mode_data.zernike_computed_weights;
-save([dir_path 'AO_correction_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
+save([dir_path 'AO_correction2_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
