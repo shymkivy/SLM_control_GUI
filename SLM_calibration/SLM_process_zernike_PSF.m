@@ -1,10 +1,10 @@
 close all;
 clear;
 
-dir_path = 'E:\data\SLM\AO\12_3_20\';
-mov_name = 'AO_0um_0modes-002';
-load_file_name = 'AO_0um_0modes-002_12_3_20_16h_27m';
-save_date = '12_3_20';
+dir_path = 'C:\Users\rylab_dataPC\Desktop\Yuriy\SLM_outputs\SLM_AO_outputs\12_4_20';
+mov_name = 'zernike_100um_11modes-001';
+load_file_name = 'zernike_scan_data_iter12_12_4_20_21h_18m';
+save_date = '12_4_20';
 
 params.smooth_type = 'gauss';                   %'gauss' or 'mean'
 params.intensity_integration = 'halfmax';       % 'halfmax', 'full';
@@ -18,9 +18,9 @@ params.do_interp = 1;
 params.interp_factor = 5;
 
 %%
-im_stack = f_collect_prairie_tiffs3([dir_path mov_name]);
+im_stack = f_collect_prairie_tiffs3([dir_path '\' mov_name]);
 
-load([dir_path load_file_name '.mat']);
+load([dir_path '\' load_file_name '.mat']);
 
 %zernike_AO_data.current_correction;
 scanned_sequence = zernike_AO_data.zernike_scan_sequence;
@@ -267,7 +267,7 @@ end
 best_mode = zernike_computed_weights(best_mode_ind).mode;
 best_mode_w = zernike_computed_weights(best_mode_ind).best_sm_peak_x_intens_weight;
 
-AO_correction = [best_mode, best_mode_w];
+AO_correction = [AO_params.AO_correction; best_mode, best_mode_w]
 %%
 figure; hold on; axis tight
 plot([zernike_computed_weights.mode], [zernike_computed_weights.intensity_change]);
@@ -281,6 +281,9 @@ legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprin
 
 
 fprintf('Correcting mode %d, weight %.2f\n',best_mode ,best_mode_w);
+
+%use_mode = input('Which mode to use?');
+
 %%
 %zernike_computed_weights = mode_data.zernike_computed_weights;
-save([dir_path 'AO_correction_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
+save([dir_path '\' 'AO_correction_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');

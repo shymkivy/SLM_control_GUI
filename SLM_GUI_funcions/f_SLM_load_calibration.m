@@ -41,7 +41,7 @@ if ~exist(ops.AO_correction_dir, 'dir')
 end
 AO_fnames = f_SLM_get_file_names(ops.AO_correction_dir, '*AO_correction*.mat', false);
 ops.AO_correction = cell(numel(AO_fnames),2);
-for n_fl = 1:numel(axial_calibration_fnames)
+for n_fl = 1:numel(AO_fnames)
     ops.AO_correction{n_fl, 1} = AO_fnames{n_fl};
     ops.AO_correction{n_fl, 2} = load([ops.AO_correction_dir '\' AO_fnames{n_fl}]);
 end
