@@ -24,6 +24,12 @@ try
     app.DAQ_ai_chan = find(daq_ai_chan);
 
     % setup frame trigger
+    ao_id = sprintf('ao%d', 0);
+    app.DAQ_session.addAnalogOutputChannel(app.NIDAQdeviceEditField.Value, ao_id, 'Voltage');
+%     app.DAQ_session.outputSingleScan(5);
+%     pause(0.001);
+%     app.DAQ_session.outputSingleScan(0);
+    
     app.InitializeDAQLamp.Color = [0 1 0];
 catch
     fprintf('Warning: DAQ not initialized, check connections and DAQ params\n');
