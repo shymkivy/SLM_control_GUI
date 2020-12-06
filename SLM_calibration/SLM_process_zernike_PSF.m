@@ -1,12 +1,14 @@
-close all;
+%close all;
 clear;
 
 
-dir_path = 'E:\data\SLM\AO\12_4_20';
-mov_name = 'zernike_100um_0modes-001';
-load_file_name = 'zernike_scan_data_iter1_12_4_20_19h_3m';
+dir_path = 'C:\Users\rylab_dataPC\Desktop\Yuriy\SLM_outputs\SLM_AO_outputs\12_5_20';
+mov_name = 'AO_scan_100um_23modes-001';
+load_file_name = 'zernike_scan_data_iter24_12_5_20_21h_16m';
 
-save_date = '12_4_20';
+save_date = '12_5_20';
+
+params.n_corrections_to_use = 1;
 
 params.smooth_type = 'gauss';                   %'gauss' or 'mean'
 params.intensity_integration = 'halfmax';       % 'halfmax', 'full';
@@ -125,7 +127,7 @@ end
 plot_images = 1;
 
 y_lim = [min(im_stack(:)) max(im_stack(:))];
-plot_modes = 1:15;
+plot_modes = 1:50;
 plot_weights = [16,1]; % plot 10,including every other one
 for n_mode_ind = 1:(num_scanned_modes-1)
     n_mode = scanned_modes(n_mode_ind);
@@ -265,14 +267,20 @@ for n_mode_ind = 1:(num_scanned_modes-1)
 end
 
 %%
-[~, best_mode_ind] = max([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]);
-best_mode = zernike_computed_weights(best_mode_ind).mode;
-best_mode_w = zernike_computed_weights(best_mode_ind).best_sm_peak_x_intens_weight;
+
+[~, best_mode_ind] = sort([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change], 'descend');
+
+% [~, best_mode_ind] = max([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]);
+% best_mode = zernike_computed_weights(best_mode_ind).mode;
+% best_mode_w = zernike_computed_weights(best_mode_ind).best_sm_peak_x_intens_weight;
+
+best_mode = [zernike_computed_weights(best_mode_ind(1:params.n_corrections_to_use)).mode];
+best_mode_w = [zernike_computed_weights(best_mode_ind(1:params.n_corrections_to_use)).best_sm_peak_x_intens_weight];
 
 if isfield(AO_params, 'AO_correction')
-    AO_correction = [AO_params.AO_correction; best_mode, best_mode_w];
+    AO_correction = [AO_params.AO_correction; best_mode', best_mode_w']
 else
-    AO_correction = [best_mode, best_mode_w];
+    AO_correction = [best_mode', best_mode_w']
 end
 %%
 figure; hold on; axis tight
@@ -281,16 +289,16 @@ plot([zernike_computed_weights.mode], [zernike_computed_weights.peak_change]);
 plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*50);
 plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]), 'Linewidth', 2);
 plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]), 'Linewidth', 2);
-plot(best_mode, sqrt([zernike_computed_weights(best_mode_ind).sm_peak_x_intens_change]), '*g','MarkerSize',14,'Linewidth',2);
+plot(best_mode(1), sqrt([zernike_computed_weights(best_mode_ind(1)).sm_peak_x_intens_change]), '*g','MarkerSize',14,'Linewidth',2);
 title('AO change per mode');
-legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprintf('mode to correct, w=%.2f', best_mode_w));
+legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprintf('mode to correct, w=%.2f', best_mode_w(1)));
 
 
-fprintf('Correcting mode %d, weight %.2f\n',best_mode ,best_mode_w);
+%fprintf('Correcting mode %d, weight %.2f\n',best_mode ,best_mode_w);
 
 %use_mode = input('Which mode to use?');
 
 %%
 %zernike_computed_weights = mode_data.zernike_computed_weights;
 
-save([dir_path '\' 'AO_correction2_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
+save([dir_path '\' 'AO_correction_iter' num2str(size(AO_correction,1)) '_' load_file_name '.mat'], 'zernike_computed_weights', 'AO_correction');
