@@ -6,7 +6,15 @@ if app.ScanZernikeButton.Value
         time_stamp = clock;
         
         %%
-        [holo_pointers, zernike_scan_sequence, AO_params] = f_SLM_AO_make_zernike_pointers(app);
+        %% create AO file
+        AO_params = struct;
+        AO_params.AO_iteration = 1;
+        if app.ApplyAOcorrectionButton.Value
+            reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
+            [AO_wf, AO_params] = f_SLM_AO_compute_wf(app, reg1);
+        end
+        
+        [holo_pointers, zernike_scan_sequence] = f_SLM_AO_make_zernike_pointers(app, AO_wf);
         
         num_scans = numel(holo_pointers);
         
