@@ -16,7 +16,8 @@ frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
 while imaging
-    scan_frame = inputSingleScan(session)+1;
+    scan1 = inputSingleScan(session);
+    scan_frame = scan1(1)+1;
     ai_input = session.inputSingleScan;
     n_stim = round(ai_input/5*num_stim);
     if (scan_frame > SLM_frame) || (n_stim~=SLM_stim)

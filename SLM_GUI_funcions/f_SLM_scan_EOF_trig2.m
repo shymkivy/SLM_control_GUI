@@ -15,7 +15,8 @@ frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
 while imaging
-    scan_frame = inputSingleScan(session)+1;
+    scan1 = inputSingleScan(session);
+    scan_frame = scan1(1)+1;
     ai_input = session.inputSingleScan;
     if scan_frame > SLM_frame
         f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
