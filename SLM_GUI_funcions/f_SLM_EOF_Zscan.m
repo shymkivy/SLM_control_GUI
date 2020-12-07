@@ -5,8 +5,7 @@ if ~exist('scans_per_vol', 'var') || isempty(scans_per_vol)
     scans_per_vol = 1;
 end
 
-session = app.DAQ_session;
-resetCounters(session);
+resetCounters(app.DAQ_session);
 pause(0.05);
 
 imaging = true;
@@ -20,7 +19,7 @@ frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
 while imaging
-    scan1 = inputSingleScan(session);
+    scan1 = inputSingleScan(app.DAQ_session);
     scan_frame = scan1(1)+1;
     if scan_frame > SLM_frame*scans_per_vol
         f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
@@ -40,7 +39,7 @@ while imaging
     end
 end
 
-resetCounters(session);
+resetCounters(app.DAQ_session);
 if app.PlotSLMupdateratesCheckBox.Value
     if num_planes_all>3
         figure;

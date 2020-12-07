@@ -65,7 +65,7 @@ app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 
-
+app.ScanframesdirpathEditField.Value = app.SLM_ops.AO_recording_dir;
 %%
 % blank
 app.BlankPixelValueEditField.Value = 0;

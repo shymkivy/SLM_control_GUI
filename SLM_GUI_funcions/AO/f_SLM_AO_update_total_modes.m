@@ -17,6 +17,7 @@ end
 
 total_modes = total_modes * app.ScanspermodeEditField.Value;
 
-app.TotalVolumesmodesEditField.Value = total_modes;
-app.TotalframesEditField_AO.Value = total_modes*app.ScansperVolZEditField.Value;
+app.NumscanvolumesEditField.Value = total_modes;
+app.NumscanframesEditField.Value = total_modes*app.ScansperVolZEditField.Value;
+app.NumscanframesOpEditField.Value = total_modes*app.NumiterationsSpinner.Value + 1;
 end
