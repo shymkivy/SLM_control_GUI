@@ -6,7 +6,7 @@ fnames = {files1.name}';
 num_frames = numel(fnames);
 all_frames = zeros(256,256,num_frames);
 for n_fr = 1:num_frames
-    all_frames(:,:,n_fr) = imread([path1 '\' fnames{1}]);  
+    all_frames(:,:,n_fr) = imread([path1 '\' fnames{n_fr}]);  
 %     fileID = Tiff([path1 '\' fnames{1}],'r');
 %     all_frames(:,:,n_fr) = read(fileID);
 %     close(fileID);

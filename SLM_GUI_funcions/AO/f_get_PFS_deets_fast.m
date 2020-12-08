@@ -24,6 +24,10 @@ X_fwhm = sum(X_trace_sm>(X_peak/2))/interp_factor;
 Y_peak = max(Y_trace_sm);
 Y_fwhm = sum(Y_trace_sm>(Y_peak/2))/interp_factor;
 
+if ~exist('intensity_win', 'var')
+    intensity_win = ceil((X_fwhm+Y_fwhm)/4);
+end
+
 m_idx = (cent_mn_no_interp(1)-intensity_win):(cent_mn_no_interp(1)+intensity_win);
 m_idx = m_idx(m_idx>0);
 m_idx = m_idx(m_idx<=im_size);
