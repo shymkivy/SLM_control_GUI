@@ -2,9 +2,9 @@
 clear;
 
 
-dir_path = 'C:\Users\rylab_dataPC\Desktop\Yuriy\SLM_outputs\SLM_AO_outputs\12_5_20';
-mov_name = 'AO_scan_100um_23modes-001';
-load_file_name = 'zernike_scan_data_iter24_12_5_20_21h_16m';
+dir_path = 'E:\data\SLM\AO\12_4_20';
+mov_name = 'zernike_100um_0modes-001';
+load_file_name = 'zernike_scan_data_iter1_12_4_20_19h_3m';
 
 save_date = '12_5_20';
 
