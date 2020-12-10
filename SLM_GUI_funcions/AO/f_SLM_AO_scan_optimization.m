@@ -1,11 +1,13 @@
 function f_SLM_AO_scan_optimization(app)
 disp('Starting optimization...');
 
+time_stamp = clock;
 %%
 bead_im_window = 20;
-n_corrections_to_use = 1;
 
-an_params.plot_stuff = 0;
+an_params.n_corrections_to_use = 1;
+an_params.correction_weight_step = 1;
+an_params.plot_stuff = 1;
 
 sigma_pixels = 1;
 kernel_half_size = ceil(sqrt(-log(0.1)*2*sigma_pixels^2));
@@ -25,15 +27,15 @@ xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
 
-%% initial AO_wf
-AO_wf = [];
-AO_correction = [];
-AO_params = struct;
-AO_params.AO_iteration = 1;
-if app.ApplyAOcorrectionButton.Value
-    reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
-    [AO_wf, AO_params] = f_SLM_AO_compute_wf(app, reg1);
-    AO_correction = AO_params.AO_correction;
+%% initial AO_wfcl
+AO_wf = zeros(SLMm, SLMn);
+if isempty(reg1.AO_correction)
+    AO_correction = [];
+elseif strcmpi(reg1.AO_correction, 'none')
+    AO_correction = [];
+else
+    idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
+    AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
 end
 
 %%
@@ -43,8 +45,6 @@ app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_image);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
 
 %%
-
-
 % create patterns
 zernike_table = app.ZernikeListTable.Data;
 
@@ -73,13 +73,12 @@ for n_mode = 1:num_modes
     end
 end
 
-%
 zernike_scan_sequence = cat(1,all_patterns{:});
 zernike_scan_sequence = repmat(zernike_scan_sequence,app.ScanspermodeEditField.Value,1);
 num_scans = size(zernike_scan_sequence,1);
 
 %%
-%%
+resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
 app.DAQ_session.outputSingleScan(0);
 
@@ -89,28 +88,11 @@ num_frames = 0;
 path1 = app.ScanframesdirpathEditField.Value;
 exist(path1, 'dir');
 
-scan1 = inputSingleScan(app.DAQ_session);
-trig_num = scan1(1)+1;
-
-% trigger first frame
-app.DAQ_session.outputSingleScan(5);
-app.DAQ_session.outputSingleScan(5);
-pause(0.001);
-app.DAQ_session.outputSingleScan(0);
-app.DAQ_session.outputSingleScan(0);
-
-
-% wait for scan to end
-scan1 = inputSingleScan(app.DAQ_session);
-trig_num2 = scan1(1)+1;
-while trig_num2 <= trig_num
-    scan1 = inputSingleScan(app.DAQ_session);
-    trig_num2 = scan1(1)+1;
-    pause(0.001);
-end
+f_SLM_scan_triggered_frame(app.DAQ_session);
+num_scans_done = 1;
 
 % wait for frame to convert
-while ~num_frames
+while num_frames < num_scans_done
     files1 = dir([path1 '\' '*tif']);
     fnames = {files1.name}';
     num_frames = numel(fnames);
@@ -120,7 +102,7 @@ end
 frames = f_AO_op_get_all_frames(path1);
 num_frames = size(frames,3);
 
-figure; axis equal tight;
+f1 = figure; axis equal tight;
 imagesc(frames(:,:,num_frames));
 title('Click on bead (1 click)')
 bead_mn = zeros(1,2);
@@ -141,24 +123,22 @@ if app.PlotprogressCheckBox.Value
     sp1 = subplot(1,2,1); hold on; axis tight equal;
     imagesc(im_cut);
     plot(deets_pre.cent_mn(2),deets_pre.cent_mn(1), 'ro');
-    sp2 = subplot(1,2,2); axis tight;
-    plot(0, deets_pre.intensity_raw);
+    sp2 = subplot(1,2,2); hold on; axis tight;
+    plot(0, deets_pre.intensity_raw, '-o');
     pl_idx_line = isprop(sp1.Children, 'LineStyle');
 end
 
 %% scan
-resetCounters(app.DAQ_session);
-pause(0.01);
-
 current_AO_wf = AO_wf;
 
 holo_im_pointer = f_SLM_initialize_pointer(app);
 for n_it = 1:app.NumiterationsSpinner.Value
+    im_m_idx = (-bead_im_window:bead_im_window) + bead_mn(1);
+    im_n_idx = (-bead_im_window:bead_im_window) + bead_mn(2);
+    
     % add current wavefront correction
     current_im = init_image;
-    if ~isempty(current_AO_wf)
-        current_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + current_AO_wf))) + pi;
-    end
+    current_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + current_AO_wf))) + pi;
     
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
@@ -169,8 +149,6 @@ for n_it = 1:app.NumiterationsSpinner.Value
     fprintf('Iteration %d...\n', n_it);
     
     for n_scan = 1:num_scans
-        scan1 = inputSingleScan(app.DAQ_session);
-        trig_num = scan1(1);
         %% add zernike pol on top of image
         n_mode = zernike_scan_sequence2(n_scan,1);
         n_weight = zernike_scan_sequence2(n_scan,2);
@@ -185,28 +163,14 @@ for n_it = 1:app.NumiterationsSpinner.Value
         %%
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
-        % send trigger
-        app.DAQ_session.outputSingleScan(5);
-        app.DAQ_session.outputSingleScan(5);
-        pause(0.002);
-        app.DAQ_session.outputSingleScan(0);
-        app.DAQ_session.outputSingleScan(0);
-
-        % wait for scan to end
-        scan1 = inputSingleScan(app.DAQ_session);
-        trig_num2 = scan1(1);
-        while trig_num2 <= trig_num
-            scan1 = inputSingleScan(app.DAQ_session);
-            trig_num2 = scan1(1);
-            pause(0.001);
-        end
-
-        %prairie needs delay to get ready for triggered frame
-        pause(0.5);
+        
+        f_SLM_scan_triggered_frame(app.DAQ_session);
+        num_scans_done = num_scans_done + 1;
+        
     end
-    %% get frames
+    %% get frames and analyze 
     
-    while num_frames<=(n_it*num_scans)
+    while num_frames < num_scans_done
         files1 = dir([path1 '\' '*tif']);
         fnames = {files1.name}';
         num_frames = numel(fnames);
@@ -216,47 +180,33 @@ for n_it = 1:app.NumiterationsSpinner.Value
     frames = f_AO_op_get_all_frames(path1);
     frames2 = frames(im_m_idx, im_n_idx,(end-num_scans+1):end);
     
-    [best_mode_list, best_mode_w_list] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, an_params);
+    [AO_correction_new] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, an_params);
     
-    AO_correction = [AO_correction; best_mode_list(1:n_corrections_to_use)', best_mode_w_list(1:n_corrections_to_use)'];
-    
-    %% make new wf
+    AO_correction = [AO_correction; {AO_correction_new}];
+
+    %% scan all corrections
     current_AO_wf = zeros(SLMm, SLMn);
-    for n_mode = 1:size(AO_correction,1)
-        current_AO_wf = current_AO_wf + all_modes(:,:,AO_correction(n_mode, 1))*AO_correction(n_mode, 2);
-    end
-    
-    %%
-    current_im = init_image;
-    if ~isempty(current_AO_wf)
+    for n_corr = 0:numel(AO_correction)
+        if n_corr
+            correction = AO_correction{n_corr};
+            for n_mode = 1:size(correction,1)
+                current_AO_wf = current_AO_wf + all_modes(:,:,correction(n_mode, 1))*correction(n_mode, 2);
+            end
+        end
+        %%
+        current_im = init_image;
         current_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + current_AO_wf))) + pi;
-    end
-    holo_im_pointer.Value = f_SLM_im_to_pointer(current_im);
-    
-    f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
-    pause(0.005); % wait 3ms for SLM to stabilize
-    
-    % send trigger
-    app.DAQ_session.outputSingleScan(5);
-    app.DAQ_session.outputSingleScan(5);
-    pause(0.002);
-    app.DAQ_session.outputSingleScan(0);
-    app.DAQ_session.outputSingleScan(0);
+        holo_im_pointer.Value = f_SLM_im_to_pointer(current_im);
 
-    % wait for scan to end
-    scan1 = inputSingleScan(app.DAQ_session);
-    trig_num2 = scan1(1);
-    while trig_num2 <= trig_num
-        scan1 = inputSingleScan(app.DAQ_session);
-        trig_num2 = scan1(1);
-        pause(0.001);
-    end
+        f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
+        pause(0.01); % wait 3ms for SLM to stabilize
 
-    %prairie needs delay to get ready for triggered frame
-    pause(0.5);
+        f_SLM_scan_triggered_frame(app.DAQ_session);
+        num_scans_done = num_scans_done + 1;
+    end
     
     % wait for frame to convert
-    while ~num_frames
+    while num_frames<num_scans_done
         files1 = dir([path1 '\' '*tif']);
         fnames = {files1.name}';
         num_frames = numel(fnames);
@@ -264,19 +214,35 @@ for n_it = 1:app.NumiterationsSpinner.Value
     end
 
     frames = f_AO_op_get_all_frames(path1);
-    num_frames = size(frames,3);
+    frames2 = frames(im_m_idx, im_n_idx,(end-numel(AO_correction)):end);
+    deets_corr = cell(numel(AO_correction)+1,1);
+    intensit = zeros(numel(AO_correction)+1,1);
+    for n_fr = 1:(numel(AO_correction)+1)
+        deets_corr{n_fr} = f_get_PFS_deets_fast(frames2(:,:,n_fr), conv_kernel);
+        intensit(n_fr) = deets_corr{n_fr}.intensity_raw;
+    end
+    cent_mn = deets_corr{n_fr}.cent_mn;
     %% maybe plot
     if app.PlotprogressCheckBox.Value
-        sp1.Children(~pl_idx_line).CData = last_frame(im_m_idx, im_n_idx);
-        sp1.Children(pl_idx_line).XData = deets_all{n_it, n_scan}.cent_mn(2);
-        sp1.Children(pl_idx_line).YData = deets_all{n_it, n_scan}.cent_mn(1);
+        figure(f1);
+        sp1.Children(~pl_idx_line).CData = frames2(:,:,end);
+        sp1.Children(pl_idx_line).XData = cent_mn(2);
+        sp1.Children(pl_idx_line).YData = cent_mn(1);
 
-        sp2.Children.XData = [sp2.Children.XData; n_it];
-        sp2.Children.YData = [sp2.Children.YData; deets_all{n_it, n_scan}.intensity_raw];
+        subplot(sp2);
+        plot(0:numel(AO_correction), intensit, '-o');
     end
+    
+    bead_mn = bead_mn + round(cent_mn) - [bead_im_window bead_im_window];
 end
 
+save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
+            app.SLM_ops.save_AO_dir,...
+            app.SavefiletagEditField.Value, ...
+            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
+            time_stamp(5)), 'AO_correction');
 
+        app.
 %% save stuff
 disp('Done');
 end
