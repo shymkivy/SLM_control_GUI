@@ -3,6 +3,8 @@ params = struct;
 params.beam_width = app.BeamdiameterpixEditField.Value;
 params.AO_iteration = 1;
 params.zero_around_unit_circ = app.AOzerooutsideunitcircCheckBox.Value;
+params.AO_correction = [];
+
 if isempty(reg1.AO_correction)
     wf_out = [];
 elseif strcmpi(reg1.AO_correction, 'none')

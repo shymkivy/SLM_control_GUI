@@ -3,22 +3,22 @@ disp('Starting optimization...');
 
 time_stamp = clock;
 %%
-bead_im_window = 20;
-
-an_params.n_corrections_to_use = 1;
-an_params.correction_weight_step = 1;
-an_params.plot_stuff = 1;
-
-sigma_pixels = 1;
-kernel_half_size = ceil(sqrt(-log(0.1)*2*sigma_pixels^2));
-[X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);
-conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*sigma_pixels^2));
-conv_kernel = conv_kernel/sum(conv_kernel(:));
-
-an_params.conv_kernel = conv_kernel;
+ao_params.bead_im_window = 20;
+ao_params.n_corrections_to_use = 1;
+ao_params.correction_weight_step = 1;
+ao_params.plot_stuff = 1;
+ao_params.sigma_pixels = 1;
+ao_params.coord = app.current_SLM_coord;
+ao_params.region = app.current_SLM_region;
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_SLM_get_reg_deets(app, app.AOregionDropDown.Value);
+kernel_half_size = ceil(sqrt(-log(0.1)*2*ao_params.sigma_pixels^2));
+[X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);
+conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
+conv_kernel = conv_kernel/sum(conv_kernel(:));
+
+%%
+[m_idx, n_idx, ~,  reg1] = f_SLM_get_reg_deets(app, ao_params.region);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 beam_width = app.BeamdiameterpixEditField.Value;
@@ -110,14 +110,14 @@ bead_mn = zeros(1,2);
 bead_mn = round(bead_mn);
 
 %%
-im_m_idx = (-bead_im_window:bead_im_window) + bead_mn(1);
-im_n_idx = (-bead_im_window:bead_im_window) + bead_mn(2);
+im_m_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(1);
+im_n_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(2);
 
 im_cut = frames(im_m_idx, im_n_idx,num_frames);
 
 deets_pre = f_get_PFS_deets_fast(im_cut, conv_kernel);
 
-an_params.intensity_win = ceil((deets_pre.X_fwhm + deets_pre.Y_fwhm)/4);
+ao_params.intensity_win = ceil((deets_pre.X_fwhm + deets_pre.Y_fwhm)/4);
 %%
 if app.PlotprogressCheckBox.Value
     sp1 = subplot(1,2,1); hold on; axis tight equal;
@@ -180,7 +180,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     frames = f_AO_op_get_all_frames(path1);
     frames2 = frames(im_m_idx, im_n_idx,(end-num_scans+1):end);
     
-    [AO_correction_new] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, an_params);
+    [AO_correction_new] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
     
     AO_correction = [AO_correction; {AO_correction_new}];
 
@@ -233,16 +233,16 @@ for n_it = 1:app.NumiterationsSpinner.Value
         plot(0:numel(AO_correction), intensit, '-o');
     end
     
-    bead_mn = bead_mn + round(cent_mn) - [bead_im_window bead_im_window];
+    bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window ao_params.bead_im_window];
 end
 
 save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value, ...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5)), 'AO_correction');
+            time_stamp(5)), 'AO_correction', 'ao_params');
 
-        app.
+        
 %% save stuff
 disp('Done');
 end

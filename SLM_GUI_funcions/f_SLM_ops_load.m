@@ -13,8 +13,7 @@ if exist(fname, 'file')
     
     app.SelectRegionDropDown.Value = load_data.dd.SelectRegionDropDown;
     app.PatterngroupDropDown.Value = load_data.dd.PatterngroupDropDown;
-    app.SelectRegionDropDownGH.Value = load_data.ddSelectRegionDropDownGH;
-    app.AOregionDropDown.Value = load_data.dd.AOregionDropDown;
+    app.CurrentregionDropDown.Value = load_data.dd.CurrentregionDropDown;
     
     f_SLM_reg_update(app);
     f_SLM_pat_update(app);

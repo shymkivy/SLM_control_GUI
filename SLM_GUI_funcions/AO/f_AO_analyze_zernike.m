@@ -140,7 +140,7 @@ for n_mode_ind = 1:(num_scanned_modes-1)
     end
 end
 
-[~, best_mode_ind] = sort([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change], 'descend');
+[~, best_mode_ind] = sort([zernike_computed_weights.intensity_change], 'descend');
 
 % [~, best_mode_ind] = max([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]);
 % best_mode = zernike_computed_weights(best_mode_ind).mode;
@@ -156,7 +156,7 @@ if params.plot_stuff
     plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*50);
     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]), 'Linewidth', 2);
     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]), 'Linewidth', 2);
-    plot(best_mode_list(1), sqrt([zernike_computed_weights(best_mode_ind(1)).sm_peak_x_intens_change]), '*g','MarkerSize',14,'Linewidth',2);
+    plot(best_mode_list(1), sqrt([zernike_computed_weights(best_mode_ind(1)).intensity_change]), '*g','MarkerSize',14,'Linewidth',2);
     title('AO change per mode');
     legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprintf('mode to correct, w=%.2f', best_mode_w_list(1)));
 end

@@ -7,10 +7,7 @@ app.LUTDropDown.Value = ops.lut_fname;
 
 %% initialize region list
 app.SelectRegionDropDown.Items = [app.region_list.name_tag];
-app.GroupRegionDropDown.Items = [app.region_list.name_tag];
-app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
-app.AOregionDropDown.Items = [app.region_list.name_tag];
-
+app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 
 %%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
@@ -56,6 +53,7 @@ app.SLMwidthEditField.Value = ops.width;
 
 app.ObjectiveMagXEditField.Value = ops.objective_mag;
 app.ObjectiveNAEditField.Value = ops.objective_NA;
+app.ManualNAEditField.Value = ops.objective_NA;
 app.ObjectiveRIEditField.Value = ops.objective_RI;
 app.WavelengthnmEditField.Value = ops.wavelength;
 app.BeamdiameterpixEditField.Value = ops.beam_diameter;

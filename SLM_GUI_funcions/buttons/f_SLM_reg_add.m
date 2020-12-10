@@ -9,9 +9,7 @@ else
     app.region_list = [app.region_list; reg1];
     app.SelectRegionDropDown.Items = [app.region_list.name_tag];
     app.SelectRegionDropDown.Value = reg1.name_tag;
-    app.GroupRegionDropDown.Items = [app.region_list.name_tag];
-    app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
-    app.AOregionDropDown.Items = [app.region_list.name_tag];
+    app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 end
 
 end

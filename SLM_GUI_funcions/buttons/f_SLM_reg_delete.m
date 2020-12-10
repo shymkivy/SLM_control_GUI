@@ -6,7 +6,7 @@ if sum(idx1)
     app.SelectRegionDropDown.Items(idx1) = [];
     f_SLM_reg_update(app);
     app.SelectRegionDropDown.Items = [app.region_list.name_tag];
-    app.SelectRegionDropDownGH.Items = [app.region_list.name_tag];
+    app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 else
     disp('Delete did not work')
 end
