@@ -4,7 +4,7 @@ if app.ApplyAOcorrectionButton.Value
     [~, ~, ~,  reg1] = f_SLM_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
     reg1.AO_correction = app.AOcorrectionDropDown_2.Value;
-    [AO_wf, AO_params] = f_SLM_AO_compute_wf(app, reg1);
+    [AO_wf, AO_params] = f_SLM_AO_compute_wf2(app, reg1);
     
     if isempty(AO_wf)
         AO_wf = app.SLM_blank_im;
