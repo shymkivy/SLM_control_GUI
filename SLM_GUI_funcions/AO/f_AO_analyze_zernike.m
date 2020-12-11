@@ -2,6 +2,13 @@ function [AO_correction, mode_data] = f_AO_analyze_zernike(frames2, zernike_scan
 num_scans = size(zernike_scan_sequence,1);
 deets_all = cell(num_scans,1);
 
+
+%%
+kernel_half_size = ceil(sqrt(-log(0.1)*2*params.sigma_pixels^2));
+[X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);
+conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*params.sigma_pixels^2));
+conv_kernel = conv_kernel/sum(conv_kernel(:));
+
 %% find best mode and weight
 scanned_modes = unique(zernike_scan_sequence(:,1));
 weights1 = zernike_scan_sequence((zernike_scan_sequence(:,1)==scanned_modes(1)),2);
@@ -31,7 +38,7 @@ end
 
 %%
 for n_scan = 1:num_scans
-    deets_all{n_scan} = f_get_PFS_deets_fast(mode_data(n_scan).im, params.conv_kernel, params.intensity_win);
+    deets_all{n_scan} = f_get_PFS_deets_fast(mode_data(n_scan).im, conv_kernel, params.intensity_win);
     fnames = fieldnames(deets_all{1,1});
     for n_fl = 1:numel(fnames)
         mode_data(n_scan).(fnames{n_fl}) = deets_all{n_scan}.(fnames{n_fl});
@@ -153,10 +160,10 @@ if params.plot_stuff
     figure; hold on; axis tight
     plot([zernike_computed_weights.mode], [zernike_computed_weights.intensity_change]);
     plot([zernike_computed_weights.mode], [zernike_computed_weights.peak_change]);
-    plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*50);
+    plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*5);
     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]), 'Linewidth', 2);
     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]), 'Linewidth', 2);
-    plot(best_mode_list(1), sqrt([zernike_computed_weights(best_mode_ind(1)).intensity_change]), '*g','MarkerSize',14,'Linewidth',2);
+    plot(best_mode_list(1), [zernike_computed_weights(best_mode_ind(1)).intensity_change], '*g','MarkerSize',14,'Linewidth',2);
     title('AO change per mode');
     legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprintf('mode to correct, w=%.2f', best_mode_w_list(1)));
 end

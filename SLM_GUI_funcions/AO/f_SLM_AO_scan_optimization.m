@@ -3,7 +3,7 @@ disp('Starting optimization...');
 
 time_stamp = clock;
 %%
-ao_params.bead_im_window = 20;
+ao_params.bead_im_window = 30;
 ao_params.n_corrections_to_use = 1;
 ao_params.correction_weight_step = 1;
 ao_params.plot_stuff = 1;
@@ -26,6 +26,10 @@ xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
 xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
+
+ao_params.beam_width = beam_width;
+ao_params.m_idx = m_idx;
+ao_params.n_idx = n_idx;
 
 %% initial AO_wfcl
 AO_wf = zeros(SLMm, SLMn);
@@ -117,7 +121,8 @@ im_cut = frames(im_m_idx, im_n_idx,num_frames);
 
 deets_pre = f_get_PFS_deets_fast(im_cut, conv_kernel);
 
-ao_params.intensity_win = ceil((deets_pre.X_fwhm + deets_pre.Y_fwhm)/4);
+%ao_params.intensity_win = ceil((deets_pre.X_fwhm + deets_pre.Y_fwhm)/4);
+ao_params.intensity_win = 3;
 %%
 if app.PlotprogressCheckBox.Value
     sp1 = subplot(1,2,1); hold on; axis tight equal;
@@ -133,12 +138,14 @@ current_AO_wf = AO_wf;
 
 holo_im_pointer = f_SLM_initialize_pointer(app);
 for n_it = 1:app.NumiterationsSpinner.Value
-    im_m_idx = (-bead_im_window:bead_im_window) + bead_mn(1);
-    im_n_idx = (-bead_im_window:bead_im_window) + bead_mn(2);
-    
-    % add current wavefront correction
-    current_im = init_image;
-    current_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + current_AO_wf))) + pi;
+    if isempty(AO_correction)
+        current_AO_wf = zeros(SLMm, SLMn);
+    else
+        current_AO_wf = f_SLM_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
+    end
+        
+    im_m_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(1);
+    im_n_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(2);
     
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
@@ -155,8 +162,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
         if n_mode == 999
             holo_im = app.SLM_ref_im;
         else
-            holo_im = current_im;
-            holo_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + all_modes(:,:,n_mode)*n_weight))) + pi;
+            holo_im = init_image;
+            holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx) + current_AO_wf + all_modes(:,:,n_mode)*n_weight))) + pi;
         end
         holo_im_pointer.Value = f_SLM_im_to_pointer(holo_im);
         
@@ -185,22 +192,34 @@ for n_it = 1:app.NumiterationsSpinner.Value
     AO_correction = [AO_correction; {AO_correction_new}];
 
     %% scan all corrections
-    current_AO_wf = zeros(SLMm, SLMn);
-    for n_corr = 0:numel(AO_correction)
-        if n_corr
-            correction = AO_correction{n_corr};
-            for n_mode = 1:size(correction,1)
-                current_AO_wf = current_AO_wf + all_modes(:,:,correction(n_mode, 1))*correction(n_mode, 2);
-            end
-        end
+    all_corr = zeros(SLMm, SLMn, numel(AO_correction)+1);
+    for n_corr = 1:numel(AO_correction)
+        full_corr = cat(1,AO_correction{1:n_corr,1});
+        all_corr(:,:,n_corr+1) = f_SLM_AO_corr_to_phase(full_corr,all_modes);
+    end
+    
+    % make scan seq
+    scan_seq = repmat(1:(numel(AO_correction)+1), 1, app.ScanspermodeEditField.Value)';
+    
+    num_scans_ver = numel(scan_seq);
+    
+    if app.ShufflemodesCheckBox.Value
+        scan_seq2 = scan_seq(randsample(num_scans_ver,num_scans_ver),:);
+    else
+        scan_seq2 = scan_seq;
+    end
+    
+    for n_scan = 1:num_scans_ver
+        %% add zernike pol on top of image
+
+        holo_im = init_image;
+        holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx) + all_corr(:,:,scan_seq2(n_scan))))) + pi;
+        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_im);
+        
         %%
-        current_im = init_image;
-        current_im(m_idx,n_idx) = angle(exp(1i*(current_im(m_idx,n_idx) + current_AO_wf))) + pi;
-        holo_im_pointer.Value = f_SLM_im_to_pointer(current_im);
-
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
-        pause(0.01); % wait 3ms for SLM to stabilize
-
+        pause(0.005); % wait 3ms for SLM to stabilize
+        
         f_SLM_scan_triggered_frame(app.DAQ_session);
         num_scans_done = num_scans_done + 1;
     end
@@ -214,18 +233,29 @@ for n_it = 1:app.NumiterationsSpinner.Value
     end
 
     frames = f_AO_op_get_all_frames(path1);
-    frames2 = frames(im_m_idx, im_n_idx,(end-numel(AO_correction)):end);
-    deets_corr = cell(numel(AO_correction)+1,1);
+    frames2 = frames(im_m_idx, im_n_idx,(end-num_scans_ver+1):end);
+
     intensit = zeros(numel(AO_correction)+1,1);
     for n_fr = 1:(numel(AO_correction)+1)
-        deets_corr{n_fr} = f_get_PFS_deets_fast(frames2(:,:,n_fr), conv_kernel);
-        intensit(n_fr) = deets_corr{n_fr}.intensity_raw;
+        n_fr2 = find(scan_seq2 == n_fr);
+        for n_fr3 = 1:numel(n_fr2)
+            if n_fr3 == 1
+                deets_corr = f_get_PFS_deets_fast(frames2(:,:,n_fr2(n_fr3)), conv_kernel);
+            else
+                deets_corr(n_fr3) = f_get_PFS_deets_fast(frames2(:,:,n_fr2(n_fr3)), conv_kernel);
+            end
+        end
+        
+        curr_fr = mean(frames2(:,:,n_fr2),3);
+        
+        intensit(n_fr) = mean([deets_corr.intensity_raw]);
+        cent_mn = mean([deets_corr.cent_mn],2);
     end
-    cent_mn = deets_corr{n_fr}.cent_mn;
+    
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(f1);
-        sp1.Children(~pl_idx_line).CData = frames2(:,:,end);
+        sp1.Children(~pl_idx_line).CData = curr_fr;
         sp1.Children(pl_idx_line).XData = cent_mn(2);
         sp1.Children(pl_idx_line).YData = cent_mn(1);
 
