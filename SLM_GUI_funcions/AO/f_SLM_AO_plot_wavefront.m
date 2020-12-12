@@ -7,7 +7,7 @@ if app.ApplyAOcorrectionButton.Value
     [AO_wf, AO_params] = f_SLM_AO_compute_wf2(app, reg1);
     
     if isstruct(AO_wf)
-        Z = app.current_SLM_coord.xyzp(3)*1e5;
+        Z = mean(app.current_SLM_coord.xyzp(:,3)*1e5);
         [dist1, idx] = min(abs(Z - [AO_wf.Z]));
         if dist1 <= 20
             AO_wf2 = AO_wf(idx).wf_out;

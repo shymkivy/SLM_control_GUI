@@ -44,7 +44,8 @@ end
 
 %%
 init_image = app.SLM_Image;
-SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, AO_wf);
+%% fix fix fix
+SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, []); %AO_wf
 app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_image);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
 

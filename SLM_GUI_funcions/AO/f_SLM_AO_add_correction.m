@@ -3,7 +3,7 @@ function SLM_image_out = f_SLM_AO_add_correction(app, SLM_image_in, AO_wf)
 if app.ApplyAOcorrectionButton.Value
     if ~isempty(AO_wf)
         if isstruct(AO_wf)
-            Z = app.current_SLM_coord.xyzp(3)*1e5;
+            Z = mean(app.current_SLM_coord.xyzp(:,3)*1e5);
             [dist1, idx] = min(abs(Z - [AO_wf.Z]));
             if dist1 <= 20
                 AO_wf2 = AO_wf(idx).wf_out;

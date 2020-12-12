@@ -3,7 +3,7 @@ function f_SLM_AO_plot_current_correction(app)
 AO_wf = app.current_SLM_AO_Image;
 
 if isstruct(AO_wf)
-    Z = app.current_SLM_coord.xyzp(3)*1e5;
+    Z = mean(app.current_SLM_coord.xyzp(:,3)*1e5);
     [dist1, idx] = min(abs(Z - [AO_wf.Z]));
     if dist1 <= 20
         AO_wf2 = AO_wf(idx).wf_out;
