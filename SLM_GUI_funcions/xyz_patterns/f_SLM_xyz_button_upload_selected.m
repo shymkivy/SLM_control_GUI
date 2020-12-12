@@ -5,6 +5,7 @@ if size(app.UIImagePhaseTableSelection,1) > 0
     app.current_SLM_coord = coord;
     app.current_SLM_region = app.CurrentregionDropDown.Value;
     
+    
     holo_image = f_SLM_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
     
     app.SLM_Image =  holo_image; 
