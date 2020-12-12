@@ -1,4 +1,4 @@
-function [holo_patterns, reg_idx] = f_SLM_scan_make_pointer_images(app, pattern, add_blank)
+function [holo_phase, reg_idx] = f_SLM_scan_make_pointer_images(app, pattern, add_blank)
 
 if ~exist('add_blank', 'var')
     add_blank = false;
@@ -22,7 +22,7 @@ if ~strcmpi(pattern, 'none')
     %% precompute hologram patterns
     num_groups = numel(groups);
     
-    holo_patterns = zeros(SLMm*SLMn, num_groups, 'uint8');
+    holo_phase = zeros(SLMm*SLMn, num_groups, 'uint8');
     for n_gr = 1:num_groups
         curr_gr = groups(n_gr);
         gr_subtable = group_table(group_table(:,2) == curr_gr,:);
@@ -50,18 +50,19 @@ if ~strcmpi(pattern, 'none')
         end                
                                     
         holo_image = f_SLM_AO_add_correction(app,holo_image, AO_wf2);
-        holo_patterns(:,n_gr) = f_SLM_im_to_pointer(holo_image);                
+        holo_phase1 = angle(holo_image)+pi;
+        holo_phase(:,n_gr) = f_SLM_im_to_pointer(holo_phase1);                
     end
     
     if add_blank
         holo_zero = zeros(SLMm, SLMn, 'uint8');
         holo_zero = f_SLM_AO_add_correction(app,holo_zero, reg1.AO_wf);
         holo_zero = f_SLM_im_to_pointer(holo_zero);
-        holo_patterns = [holo_zero,holo_patterns];
+        holo_phase = [holo_zero,holo_phase];
     end
 
 else
-    holo_patterns = [];
+    holo_phase = [];
     reg_idx = [];
 end
 

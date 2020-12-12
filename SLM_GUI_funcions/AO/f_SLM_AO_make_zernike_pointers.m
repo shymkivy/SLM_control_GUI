@@ -57,20 +57,19 @@ for n_plane = 1:num_scans
         holo_im = app.SLM_ref_im;
     else
         holo_im = init_image;
-        holo_im(m_idx,n_idx) = angle(exp(1i*(init_image(m_idx,n_idx) + all_modes(:,:,n_mode)*n_weight))) + pi;
+        holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
     end
 
     if app.ApplyAOcorrectionButton.Value
         if ~isempty(AO_wf)
-            holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx) - pi;
-            holo_im = angle(exp(1i*(holo_im + AO_wf)));
-            holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx) + pi;
+            holo_im = holo_im.*exp(1i*(AO_wf));
         end
     end
 
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
+    holo_phase = angle(holo_im) + pi;
     holo_pointers{n_plane} = f_SLM_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_SLM_im_to_pointer(holo_im);
+    holo_pointers{n_plane}.Value = f_SLM_im_to_pointer(holo_phase);
 end
 
 end

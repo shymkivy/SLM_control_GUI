@@ -13,7 +13,7 @@ if app.ApplyAOcorrectionButton.Value
         else
             AO_wf2 = AO_wf;
         end
-        SLM_image_out = angle(exp(1i*(SLM_image_in-pi+AO_wf2))) + pi;
+        SLM_image_out = SLM_image_in.*exp(1i*(AO_wf2));
     else
         SLM_image_out = SLM_image_in;
     end

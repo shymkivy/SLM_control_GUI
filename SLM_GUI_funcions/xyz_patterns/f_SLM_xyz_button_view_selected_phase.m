@@ -6,7 +6,7 @@ if size(app.UIImagePhaseTableSelection,1) > 0
     holo_image = f_SLM_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);   
     
     f_SLM_view_hologram_phase(app, holo_image);
-    title(sprintf('Defocus %.1f um', app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),2).Variables));
+    title(sprintf('Defocus %.1f um', app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),3).Variables));
 end
 
 end

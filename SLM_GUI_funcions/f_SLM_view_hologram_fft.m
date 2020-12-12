@@ -32,7 +32,7 @@ function f_SLM_view_hologram_fft(app, holo_image, defocus_dist)
     holo_image1 = phase_sq;
     holo_image1((1 + (siz - dims(1))/2):(siz - (siz - dims(1))/2),(1 + (siz - dims(2))/2):(siz - (siz - dims(2))/2)) = holo_image;
 
-    SLM_complex_wave=pupil_amp.*(exp(1i.*(holo_image1-pi))./exp(1i.*(defocus_dist.*defocus)));
+    SLM_complex_wave=pupil_amp.*(holo_image1./exp(1i.*(defocus_dist.*defocus)));
 
 %             phase=angle(SLM_complex_wave)+pi;
 %             amp = abs(SLM_complex_wave);

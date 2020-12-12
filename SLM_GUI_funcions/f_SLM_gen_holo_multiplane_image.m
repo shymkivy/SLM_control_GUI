@@ -23,11 +23,11 @@ function holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
     objectiveRI = app.ObjectiveRIEditField.Value;
     illuminationWavelength = app.WavelengthnmEditField.Value*10e-9;
     
-   holo_image = f_SLM_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength) + pi;
+    holo_image = f_SLM_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength);
     
 %    SLM_phase = zeros(SLMm, SLMn, num_points);
 %     for n_point = 1:num_points
 %         SLM_phase(:,:,n_point) = f_SLM_PhaseHologram_YS(xyzp(n_point,:), SLMm,SLMn,weight(n_point),objectiveNA(n_point),objectiveRI,illuminationWavelength);
 %     end
-%    holo_image=angle(sum(exp(1i*(SLM_phase)),3))+pi;
+%    holo_image=angle(sum(exp(1i*(SLM_phase)),3))+pi;  %%% wrrong <--------
 end

@@ -45,8 +45,9 @@ end
 %%
 init_image = app.SLM_Image;
 %% fix fix fix
-SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, []); %AO_wf
-app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_image);
+% SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, []); %AO_wf
+SLM_phase = angle(init_image) + pi;
+app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_phase);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
 
 %%
@@ -135,14 +136,14 @@ if app.PlotprogressCheckBox.Value
 end
 
 %% scan
-current_AO_wf = AO_wf;
+current_AO_phase = AO_wf;
 
 holo_im_pointer = f_SLM_initialize_pointer(app);
 for n_it = 1:app.NumiterationsSpinner.Value
     if isempty(AO_correction)
-        current_AO_wf = zeros(SLMm, SLMn);
+        current_AO_phase = zeros(SLMm, SLMn);
     else
-        current_AO_wf = f_SLM_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
+        current_AO_phase = f_SLM_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
         
     im_m_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(1);
@@ -164,9 +165,10 @@ for n_it = 1:app.NumiterationsSpinner.Value
             holo_im = app.SLM_ref_im;
         else
             holo_im = init_image;
-            holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx) + current_AO_wf + all_modes(:,:,n_mode)*n_weight))) + pi;
+            holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end
-        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_im);
+        holo_phase = angle(holo_im) + pi;
+        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
         
         %%
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
@@ -214,8 +216,9 @@ for n_it = 1:app.NumiterationsSpinner.Value
         %% add zernike pol on top of image
 
         holo_im = init_image;
-        holo_im(m_idx,n_idx) = angle(exp(1i*(holo_im(m_idx,n_idx) + all_corr(:,:,scan_seq2(n_scan))))) + pi;
-        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_im);
+        holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(all_corr(:,:,scan_seq2(n_scan))));
+        holo_phase = angle(holo_im) + pi;
+        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
         
         %%
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
