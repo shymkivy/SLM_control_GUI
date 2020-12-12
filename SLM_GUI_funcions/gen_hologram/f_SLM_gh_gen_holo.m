@@ -13,9 +13,11 @@ pointer = f_SLM_gh_gen_image(app, pattern, SLMm, SLMn);
 pointer = f_SLM_lut_apply_corr(app, pointer, app.CurrentregionDropDown.Value);
 
 holo_image = app.SLM_Image_gh_preview;
-holo_image(m_idx,n_idx) = f_SLM_poiner_to_im(app, pointer, SLMm, SLMn);
+holo_image(m_idx,n_idx) = exp(1i*(f_SLM_poiner_to_im(app, pointer, SLMm, SLMn)-pi));
 
-app.SLM_Image_plot.CData = holo_image;
+app.SLM_Image_plot.CData = angle(holo_image)+pi;
 app.SLM_Image_gh_preview = holo_image;
-            
+
+
+
 end

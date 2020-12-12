@@ -158,14 +158,14 @@ best_mode_w_list = [zernike_computed_weights(best_mode_ind).best_sm_peak_x_inten
 
 if params.plot_stuff
     figure; hold on; axis tight
-    plot([zernike_computed_weights.mode], [zernike_computed_weights.intensity_change]);
-    plot([zernike_computed_weights.mode], [zernike_computed_weights.peak_change]);
-    plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*5);
-    plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]), 'Linewidth', 2);
-    plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]), 'Linewidth', 2);
+    plot([zernike_computed_weights.mode], [zernike_computed_weights.intensity_change], 'Linewidth', 2);
+    plot([zernike_computed_weights.mode], [zernike_computed_weights.peak_change], 'Linewidth', 2);
+    plot([zernike_computed_weights.mode], [zernike_computed_weights.fwhm_change]*5, 'Linewidth', 2);
+%     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]), 'Linewidth', 2);
+%     plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_div_fwhm_change]), 'Linewidth', 2);
     plot(best_mode_list(1), [zernike_computed_weights(best_mode_ind(1)).intensity_change], '*g','MarkerSize',14,'Linewidth',2);
     title('AO change per mode');
-    legend('intensity', 'peak mag', 'fwhm', 'peak*intens', 'peak*intens/fwhm', sprintf('mode to correct, w=%.2f', best_mode_w_list(1)));
+    legend('intensity', 'peak mag', 'fwhm*5', sprintf('mode to correct, w=%.2f', best_mode_w_list(1)));
 end
 
 
