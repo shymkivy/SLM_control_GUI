@@ -6,20 +6,18 @@ end
     
 if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, [app.xyz_patterns.name_tag]);
-    idx_reg = strcmpi(app.xyz_patterns(idx_pat).SLM_region, [app.region_list.name_tag]);
 
-    reg1 = app.region_list(idx_reg);
-    m = reg1.height_range;
-    n = reg1.width_range;
-    SLMm = m(2) - m(1) + 1;
-    SLMn = n(2) - n(1) + 1;
+    [m_idx, n_idx, xyz_affine_tf_mat, reg1] = f_SLM_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
+    
+    SLMm = sum(m_idx);
+    SLMn = sum(n_idx);
     
     reg_idx = false(app.SLM_ops.height,app.SLM_ops.width);
-    reg_idx(m(1):m(2),n(1):n(2)) = 1;
+    reg_idx(m_idx,n_idx) = 1;
     reg_idx = reshape(rot90(reg_idx, 3), [],1);
     
     group_table = app.xyz_patterns(idx_pat).xyz_pts.Variables;
-    groups = unique(group_table(:,1));
+    groups = unique(group_table(:,2));
 
     %% precompute hologram patterns
     num_groups = numel(groups);
@@ -27,25 +25,45 @@ if ~strcmpi(pattern, 'none')
     holo_patterns = zeros(SLMm*SLMn, num_groups, 'uint8');
     for n_gr = 1:num_groups
         curr_gr = groups(n_gr);
-        gr_subtable = group_table(group_table(:,1) == curr_gr,:);
-
-        holo_image = f_SLM_PhaseHologram_YS([gr_subtable(:,3:4), gr_subtable(:,2)*10e-6],...
+        gr_subtable = group_table(group_table(:,2) == curr_gr,:);
+        
+        xyzp = [gr_subtable(:,4:5), gr_subtable(:,3)*10e-6];
+        xyzp2 = (xyz_affine_tf_mat*xyzp')';
+        
+        holo_image = f_SLM_PhaseHologram_YS(xyzp2,...
                                         SLMm, SLMn,...
+                                        gr_subtable(:,7),...
                                         gr_subtable(:,6),...
-                                        gr_subtable(:,5),...
                                         app.ObjectiveRIEditField.Value,...
                                         app.WavelengthnmEditField.Value*10e-9);
-
-        holo_image = f_SLM_AO_add_correction(app,holo_image, reg1.AO_wf);
+        
+        if isstruct(reg1.AO_wf)
+            Z = mean(gr_subtable(:,3));
+            [dist1, idx] = min(abs(Z - [reg1.AO_wf.Z]));
+            if dist1 <= 20
+                AO_wf2 = reg1.AO_wf(idx).wf_out;
+            else
+                AO_wf2 = zeros(size(reg1.AO_wf(idx).wf_out));
+            end
+        else
+            AO_wf2 = reg1.AO_wf;
+        end                
+                                    
+        holo_image = f_SLM_AO_add_correction(app,holo_image, AO_wf2);
         holo_patterns(:,n_gr) = f_SLM_im_to_pointer(holo_image);                
     end
+    
+    if add_blank
+        holo_zero = zeros(SLMm, SLMn, 'uint8');
+        holo_zero = f_SLM_AO_add_correction(app,holo_zero, reg1.AO_wf);
+        holo_zero = f_SLM_im_to_pointer(holo_zero);
+        holo_patterns = [holo_zero,holo_patterns];
+    end
+
+else
+    holo_patterns = [];
+    reg_idx = [];
 end
 
-if add_blank
-    holo_zero = zeros(SLMm, SLMn, 'uint8');
-    holo_zero = f_SLM_AO_add_correction(app,holo_zero, reg1.AO_wf);
-    holo_zero = f_SLM_im_to_pointer(holo_zero);
-    holo_patterns = [holo_zero,holo_patterns];
-end
 
 end

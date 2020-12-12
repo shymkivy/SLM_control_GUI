@@ -5,7 +5,7 @@ if app.InitializeimagingButton.Value
         disp('Initializing multiplane imaging...');
         
         [holo_patterns_ctr, reg_idx_ctr] = f_SLM_scan_make_pointer_images(app, app.PatternDropDownCtr.Value);
-        [holo_patterns_ai, reg_idx_ai] = f_SLM_scan_make_pointer_images(app, app.PatternDropDownAI.Value, 1);
+        [holo_patterns_ai, reg_idx_ai] = f_SLM_scan_make_pointer_images(app, app.PatternDropDownAI.Value, 0);
         
         num_groups = size(holo_patterns_ctr,2);
         volumes = app.NumVolumesEditField.Value;
