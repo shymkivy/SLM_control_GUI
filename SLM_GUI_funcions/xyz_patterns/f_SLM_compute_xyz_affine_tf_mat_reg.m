@@ -25,7 +25,8 @@ if app.ApplyXYZcalibrationButton.Value
         
         % add affine XY input to pixel transformation
         xyz_affine_tf_mat(1:2,1:2) = lateral_affine_transform_mat;
-        xyz_affine_tf_mat(3,3) = axial_in_um_fraction;
+        %xyz_affine_tf_mat(3,3) = axial_in_um_fraction;
+        xyz_affine_tf_mat(3,3) = -1;
         
 %         figure; hold on;
 %         plot(ax_cal(:,1), ax_cal(:,2), 'o')
