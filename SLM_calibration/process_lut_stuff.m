@@ -1,7 +1,7 @@
 % drag file into variables
 data_dir = 'E:\data\SLM\lut_calibration';
 
-fname = 'photodiode_lut_1064_64r_11_12_20_12h_22m.mat';
+fname = 'photodiode_lut_940_64r_11_10_20_15h_32m.mat';
 
 load([data_dir '\' fname])
 
