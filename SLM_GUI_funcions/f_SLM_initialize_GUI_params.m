@@ -52,8 +52,8 @@ app.SLMheightEditField.Value = ops.height;
 app.SLMwidthEditField.Value = ops.width;
 
 app.ObjectiveMagXEditField.Value = ops.objective_mag;
-app.ObjectiveNAEditField.Value = ops.objective_NA;
-app.ManualNAEditField.Value = ops.objective_NA;
+app.EffectiveNAEditField.Value = ops.effective_NA;
+app.ManualNAEditField.Value = ops.effective_NA;
 app.ObjectiveRIEditField.Value = ops.objective_RI;
 app.WavelengthnmEditField.Value = ops.wavelength;
 app.BeamdiameterpixEditField.Value = ops.beam_diameter;
@@ -93,7 +93,7 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
 % Multiplane imaging
-app.UIImagePhaseTable.Data = array2table([1, 1, 0, 0, 0, app.ObjectiveNAEditField.Value 1]);
+app.UIImagePhaseTable.Data = array2table([1, 1, 0, 0, 0, app.EffectiveNAEditField.Value 1]);
 f_SLM_pat_save(app);
 
 % AO zernike table

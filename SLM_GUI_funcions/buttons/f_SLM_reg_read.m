@@ -4,6 +4,7 @@ region1.name_tag = {app.RegionnameEditField.Value};
 region1.height_range = [app.regionheightminEditField.Value, app.regionheightmaxEditField.Value];
 region1.width_range = [app.regionwidthminEditField.Value, app.regionwidthmaxEditField.Value];
 region1.wavelength = app.regionWavelengthnmEditField.Value;
+region1.effective_NA = app.regionEffectiveNAEditField.Value;
 if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
     region1.lut_correction = [];
 else

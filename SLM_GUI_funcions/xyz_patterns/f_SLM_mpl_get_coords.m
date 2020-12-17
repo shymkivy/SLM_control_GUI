@@ -10,7 +10,7 @@ if strcmp(from_where, 'custom')
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;
     else
-        coord.NA = app.ObjectiveNAEditField.Value;
+        coord.NA = app.EffectiveNAEditField.Value;
     end
     
 elseif strcmp(from_where, 'table_selection')
@@ -58,7 +58,7 @@ elseif strcmp(from_where, 'z_plane')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
-    coord.NA = app.ObjectiveNAEditField.Value;
+    coord.NA = app.EffectiveNAEditField.Value;
 end
 
 

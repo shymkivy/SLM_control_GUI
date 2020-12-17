@@ -9,6 +9,7 @@ if sum(indx1)
     app.regionwidthminEditField.Value = reg1.width_range(1);
     app.regionwidthmaxEditField.Value = reg1.width_range(2);
     app.regionWavelengthnmEditField.Value = reg1.wavelength;
+    app.regionEffectiveNAEditField.Value = reg1.effective_NA;
     
     % update dropdown
     lut_fname = {app.LUTDropDown.Value};
