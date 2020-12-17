@@ -270,13 +270,14 @@ for n_it = 1:app.NumiterationsSpinner.Value
     bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window ao_params.bead_im_window];
 end
 
-save(sprintf('%s\\%s_%d_%d_%d_%dh_%dm.mat',...
+name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value, ...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5)), 'AO_correction', 'ao_params');
+            time_stamp(5));
 
-        
+save([name_tag '.mat'], 'AO_correction', 'ao_params');
+saveas(f1,[name_tag '.fig']);
 %% save stuff
 disp('Done');
 end
