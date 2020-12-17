@@ -41,7 +41,7 @@ else
     idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
     AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
 end
-
+AO_correction = [];
 %%
 init_image = app.SLM_Image;
 %% fix fix fix

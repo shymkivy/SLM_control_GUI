@@ -18,7 +18,7 @@ disp('Ready to start imaging');
 while imaging
     scan1 = inputSingleScan(session);
     scan_frame = scan1(1)+1;
-    ai_input = session.inputSingleScan;
+    ai_input = scan1(2);
     n_stim = round(ai_input/5*num_stim);
     if (scan_frame > SLM_frame) || (n_stim~=SLM_stim)
         f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});

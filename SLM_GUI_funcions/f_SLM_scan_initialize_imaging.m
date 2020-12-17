@@ -18,15 +18,15 @@ if app.InitializeimagingButton.Value
                 for n_st = 1:num_stim
                     holo_pointers{n_gr,n_st} = f_SLM_initialize_pointer(app);
                     holo_pointers{n_gr,n_st}.Value(reg_idx_ctr) = holo_patterns_ctr(:,n_gr);
-                    holo_pointers{n_gr,n_st}.Value(reg_idx_ai) = holo_patterns_ai(:,n_st);
+                    holo_pointers{n_gr,n_st}.Value(~reg_idx_ctr) = holo_patterns_ai(:,n_st);
                 end
             end
             
             %figure; imagesc(reshape(holo_pointers{1,2}.Value,1920,[]));
             
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-
-            f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, app.InitializeimagingButton);
+            f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, app.InitializeimagingButton)
+            %f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, app.InitializeimagingButton);
 
             app.InitializeimagingButton.Value = 0;
             app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
