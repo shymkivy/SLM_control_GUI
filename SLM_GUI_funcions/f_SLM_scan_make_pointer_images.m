@@ -50,8 +50,10 @@ if ~strcmpi(pattern, 'none')
         end                
         
         
+        if ~isempty(AO_wf2)
+            holo_image = holo_image.*exp(1i*(AO_wf2(m_idx,n_idx)));
+        end
         
-        holo_image = holo_image.*exp(1i*(AO_wf2(m_idx,n_idx)));
         holo_phase1 = angle(holo_image)+pi;
         holo_phase(:,n_gr) = f_SLM_im_to_pointer(holo_phase1);                
     end

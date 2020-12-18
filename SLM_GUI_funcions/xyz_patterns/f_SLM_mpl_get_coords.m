@@ -10,7 +10,8 @@ if strcmp(from_where, 'custom')
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;
     else
-        coord.NA = app.EffectiveNAEditField.Value;
+        [~, ~, ~, reg1] = f_SLM_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        coord.NA = reg1.effective_NA;
     end
     
 elseif strcmp(from_where, 'table_selection')

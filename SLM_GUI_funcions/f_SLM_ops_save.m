@@ -7,6 +7,6 @@ saved_data.dd.SelectRegionDropDown = app.SelectRegionDropDown.Value;
 saved_data.dd.PatterngroupDropDown = app.PatterngroupDropDown.Value;
 saved_data.dd.CurrentregionDropDown = app.CurrentregionDropDown.Value;
 
-save('SLM_GUI_local_ops.mat', 'saved_data');
+save([app.SLM_ops.GUI_dir '\SLM_GUI_local_ops.mat'], 'saved_data');
 
 end
