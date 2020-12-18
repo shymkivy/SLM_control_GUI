@@ -37,6 +37,7 @@ ops.effective_NA = 0.48; %
 % % 25X olympus specific params
 % ops.objective_mag = 25;
 % ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
+% 
 
 % determines the size of all radial patterns (defocus and zernike)
 ops.beam_diameter = 1152;       % in pixels
@@ -60,8 +61,8 @@ roi1.name_tag = {'Full SLM'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 1];
 roi1.wavelength = 940;
-roi1.effective_NA = .605;
-roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_25x_11_25_20.mat'};
+roi1.effective_NA = 0.48;
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z3_20x_11_25_20.mat'};
 roi1.axial_calibration = [];
 app.region_list = [app.region_list; roi1];
 
@@ -69,7 +70,7 @@ roi1.name_tag = {'Left half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0, 0.5];
 roi1.wavelength = 1064;
-roi1.effective_NA = 1.05;
+roi1.effective_NA = 0.48;
 roi1.lateral_affine_transform = [];
 roi1.axial_calibration = [];
 app.region_list = [app.region_list; roi1];
@@ -78,8 +79,8 @@ roi1.name_tag = {'Right half'};
 roi1.height_range = [0, 1];
 roi1.width_range = [0.5, 1];
 roi1.wavelength = 940;
-roi1.effective_NA = .605;
-roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z2_um_25x_11_25_20.mat'};
+roi1.effective_NA = 0.48;
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_z3_20x_11_25_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
 roi1.axial_calibration = [];
 app.region_list = [app.region_list; roi1];
 

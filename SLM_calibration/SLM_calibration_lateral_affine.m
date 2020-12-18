@@ -1,16 +1,18 @@
+%% XY affine calibration
+% collect all images in same folder and name each with disp value "X_20" or "Y_-50"
 clear
 
 %%
-
-fov_size_x = 253.3; % um for 
-fov_size_y = 260;   % um
+% 20x full 637.5um
+fov_size_x = 212.5; % um for 
+fov_size_y = 212.5;   % um
 fov_pix_x = 256;
 foc_pix_y = 256;
 
 xy_calib = [fov_size_x/fov_pix_x, fov_size_y/foc_pix_y];
 
 %%
-files_dir = 'C:\Users\ys2605\Desktop\stuff\SLM_outputs\XYZcalibration\XYZcalibration\11_25_20\zoom2\all_im';
+files_dir = 'E:\data\SLM\XYZcalibration\XYZcalibration\12_17_20\xy_zoom3\all_im';
 
 % for 20X zoom 1 256 pixel/um ratio
 %%
