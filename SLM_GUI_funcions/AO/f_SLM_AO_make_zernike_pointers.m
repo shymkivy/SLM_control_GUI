@@ -48,15 +48,24 @@ end
 
 init_image = app.SLM_Image;
 
+if app.InsertrefimageinscansCheckBox.Value
+    ref_coords = f_SLM_mpl_get_coords(app, 'zero');
+    ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
+                   -app.SLM_ops.ref_offset, 0, 0;...
+                    0, app.SLM_ops.ref_offset, 0;...
+                    0,-app.SLM_ops.ref_offset, 0];
+    ref_im = f_SLM_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
+end
+
 % generate pointers
 holo_pointers = cell(num_scans,1);
 for n_plane = 1:num_scans
     n_mode = zernike_scan_sequence(n_plane,1);
     n_weight = zernike_scan_sequence(n_plane,2);
+    holo_im = init_image;
     if n_mode == 999
-        holo_im = app.SLM_ref_im;
+        holo_im(m_idx,n_idx) = ref_im;
     else
-        holo_im = init_image;
         holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
     end
 

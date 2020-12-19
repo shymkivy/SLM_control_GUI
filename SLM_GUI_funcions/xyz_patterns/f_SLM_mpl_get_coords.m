@@ -59,7 +59,8 @@ elseif strcmp(from_where, 'z_plane')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
-    coord.NA = app.EffectiveNAEditField.Value;
+    [~, ~, ~, reg1] = f_SLM_get_reg_deets(app, app.CurrentregionDropDown.Value);
+    coord.NA = reg1.effective_NA;
 end
 
 

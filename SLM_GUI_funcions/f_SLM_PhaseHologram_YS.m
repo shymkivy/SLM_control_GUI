@@ -1,4 +1,4 @@
-function [ phase ] = f_SLM_PhaseHologram_YS( xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength  )
+function [ phase ] = f_SLM_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength)
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 %   Detailed explanation goes here
     

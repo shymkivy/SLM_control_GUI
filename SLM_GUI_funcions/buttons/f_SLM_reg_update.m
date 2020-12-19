@@ -33,11 +33,7 @@ if sum(indx1)
     else
         app.LateralaffinetransformDropDown.Value = reg1.lateral_affine_transform;
     end
-    if isempty(reg1.axial_calibration)
-        app.AxialcalibrationDropDown.Value = {'None'};
-    else
-        app.AxialcalibrationDropDown.Value = reg1.axial_calibration;
-    end
+
     if isempty(reg1.AO_correction)
         app.AOcorrectionDropDown.Value = {'None'};
     else

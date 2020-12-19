@@ -4,47 +4,62 @@ if app.InitializeimagingButton.Value
     try
         disp('Initializing multiplane imaging...');
         
-        [holo_patterns_ctr, reg_idx_ctr] = f_SLM_scan_make_pointer_images(app, app.PatternDropDownCtr.Value);
-        [holo_patterns_ai, reg_idx_ai] = f_SLM_scan_make_pointer_images(app, app.PatternDropDownAI.Value, 0);
+        [holo_patterns_ctr, out_params_imaging] = f_SLM_scan_make_images(app, app.PatternDropDownCtr.Value);
         
-        num_groups = size(holo_patterns_ctr,2);
+        num_planes = size(holo_patterns_ctr,3);
         volumes = app.NumVolumesEditField.Value;
-        num_planes_all = num_groups*volumes;
+        num_scans_all = num_planes*volumes;
         
-        if app.AllButton.Value
+        % make imaging core holograms
+        holo_phase_core = zeros(app.SLM_ops.height, app.SLM_ops.width, num_planes)+pi;
+        for n_pl = 1:num_planes
+            holo_phase_core(out_params_imaging.m_idx, out_params_imaging.n_idx, n_pl) = holo_patterns_ctr(:,:, n_pl);
+        end
+        
+        if ~strcmpi(app.PatternDropDownAI.Value, 'none')
+            [holo_patterns_ai, out_params_stim] = f_SLM_scan_make_images(app, app.PatternDropDownAI.Value, 0);
             num_stim = size(holo_patterns_ai,2);
-            holo_pointers = cell(num_groups,num_stim);
-            for n_gr = 1:num_groups
-                for n_st = 1:num_stim
+        else
+            num_stim = 0;
+        end
+        
+        if ~num_stim % of only imaging
+            holo_pointers = cell(num_planes,1);
+            for n_gr = 1:num_planes
+                holo_pointers{n_gr,1} = f_SLM_initialize_pointer(app);
+                holo_pointers{n_gr,1}.Value = f_SLM_im_to_pointer(holo_phase_core(:,:,n_gr));
+            end
+            app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
+            f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            
+        elseif app.AllButton.Value
+            holo_pointers = cell(num_planes,num_stim+1);
+            for n_gr = 1:num_planes
+                for n_st = 1:(num_stim+1)
                     holo_pointers{n_gr,n_st} = f_SLM_initialize_pointer(app);
                     holo_pointers{n_gr,n_st}.Value(reg_idx_ctr) = holo_patterns_ctr(:,n_gr);
                     holo_pointers{n_gr,n_st}.Value(~reg_idx_ctr) = holo_patterns_ai(:,n_st);
                 end
             end
             
-            %figure; imagesc(reshape(holo_pointers{1,2}.Value,1920,[]));
-            
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, app.InitializeimagingButton)
+            f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             %f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, app.InitializeimagingButton);
-
-            app.InitializeimagingButton.Value = 0;
-            app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
+            
         elseif app.EOFonlyButton.Value
-            holo_pointers = cell(num_groups,1);
-            for n_gr = 1:num_groups
+            holo_pointers = cell(num_planes,1);
+            for n_gr = 1:num_planes
                 holo_pointers{n_gr} = f_SLM_initialize_pointer(app);
                 holo_pointers{n_gr}.Value(reg_idx_ctr) = holo_patterns_ctr(:,n_gr);                
             end
-
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-
-            f_SLM_scan_EOF_trig2(app, holo_pointers, holo_patterns_ai, reg_idx_ai, num_planes_all, app.InitializeimagingButton);
-
-            app.InitializeimagingButton.Value = 0;
-            app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
+            f_SLM_scan_EOF_trig2(app, holo_pointers, holo_patterns_ai, reg_idx_ai, num_scans_all, app.InitializeimagingButton);
+            
         end
+        app.InitializeimagingButton.Value = 0;
+        app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
         
+        %figure; imagesc(f_SLM_poiner_to_im(holo_pointers{1}, 1152, 1920));
     catch
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];

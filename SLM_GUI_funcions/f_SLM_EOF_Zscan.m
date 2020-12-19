@@ -1,8 +1,8 @@
-function f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_vol)
+function f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
 % end of frame scan
 
-if ~exist('scans_per_vol', 'var') || isempty(scans_per_vol)
-    scans_per_vol = 1;
+if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
+    scans_per_frame = 1;
 end
 
 resetCounters(app.DAQ_session);
@@ -21,10 +21,10 @@ disp('Ready to start imaging');
 while imaging
     scan1 = inputSingleScan(app.DAQ_session);
     scan_frame = scan1(1)+1;
-    if scan_frame > SLM_frame*scans_per_vol
+    if scan_frame > SLM_frame*scans_per_frame
         f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
         frame_start_times(scan_frame) = toc;
-        SLM_frame = round((scan_frame-1)/scans_per_vol+1);
+        SLM_frame = round((scan_frame-1)/scans_per_frame+1);
         if scan_frame > num_planes_all
             imaging = 0;
         end

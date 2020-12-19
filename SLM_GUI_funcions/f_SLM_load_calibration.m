@@ -19,15 +19,6 @@ if ~exist(ops.xyz_calibration_dir, 'dir')
     mkdir(ops.xyz_calibration_dir)
 end
 
-% load axial
-axial_calibration_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*axial_calibration*.csv', false);
-ops.axial_calibration = cell(numel(axial_calibration_fnames),2);
-for n_fl = 1:numel(axial_calibration_fnames)
-    ops.axial_calibration(n_fl,1) = axial_calibration_fnames(n_fl);
-    ops.axial_calibration{n_fl,2} = csvread([ops.xyz_calibration_dir '\' axial_calibration_fnames{n_fl}], 1, 0);
-end
-ops.axial_calibration = [{'None'}, {[]};ops.axial_calibration];
-
 % load lateral
 lateral_calib_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*lateral_affine*.mat', false);
 ops.lateral_calibration = cell(numel(lateral_calib_fnames),2);
@@ -54,7 +45,6 @@ app.LUTDropDown.Items = app.lut_list;
 app.LUTDropDown.Value = ops.lut_fname;
 
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
-app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
 app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
 

@@ -11,7 +11,6 @@ app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 
 %%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
-app.AxialcalibrationDropDown.Items = ops.axial_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
 app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
 
@@ -62,6 +61,7 @@ app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
+app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
 
 app.ScanframesdirpathEditField.Value = app.SLM_ops.AO_recording_dir;
 %%
@@ -110,36 +110,18 @@ app.SLM_blank_im = exp(1i*(zeros(app.SLM_ops.height,app.SLM_ops.width)));
 app.SLM_blank_pointer = f_SLM_initialize_pointer(app);
 app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(angle(app.SLM_blank_im));
 
-% initialize X offset image
-app.SLM_X_offset_im_pointer = f_SLM_initialize_pointer(app);
-coords = f_SLM_mpl_get_coords(app, 'zero');
-coords.xyzp = [app.SLM_ops.X_offset, 0, 0];
-app.SLM_X_offset_im = f_SLM_gen_holo_multiplane_image(app, coords);
-holo_phase = angle(app.SLM_X_offset_im) + pi;
-app.SLM_X_offset_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
-
-% initialize ref image
-app.SLM_ref_im_pointer = f_SLM_initialize_pointer(app);
-coords = f_SLM_mpl_get_coords(app, 'zero');
-coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
-               -app.SLM_ops.ref_offset, 0, 0;...
-                0, app.SLM_ops.ref_offset, 0;...
-                0,-app.SLM_ops.ref_offset, 0];
-app.SLM_ref_im = f_SLM_gen_holo_multiplane_image(app, coords);
-holo_phase = angle(app.SLM_ref_im) + pi;
-app.SLM_ref_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
-
 % initialize other pointers
-app.SLM_Image = exp(1i*(zeros(app.SLM_ops.height,app.SLM_ops.width)));
+app.SLM_Image = app.SLM_blank_im;
 app.SLM_Image_pointer = f_SLM_initialize_pointer(app);
-app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, zeros(app.SLM_ops.height,app.SLM_ops.width));
+
+app.SLM_Image_gh_preview = app.SLM_blank_im;
+app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, angle(app.SLM_blank_im)+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);
 
-app.SLM_Image_gh_preview = app.SLM_Image;
-
-app.ViewHologramImage_pointer = f_SLM_initialize_pointer(app);
+app.current_SLM_coord = f_SLM_mpl_get_coords(app, 'zero');
+app.current_SLM_AO_Image = [];
 
 if ~exist(ops.save_AO_dir, 'dir')
     mkdir(ops.save_AO_dir);

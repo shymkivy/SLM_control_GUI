@@ -9,7 +9,7 @@ ao_params.correction_weight_step = 1;
 ao_params.plot_stuff = 1;
 ao_params.sigma_pixels = 1;
 ao_params.coord = app.current_SLM_coord;
-ao_params.region = app.current_SLM_region;
+ao_params.region = app.CurrentregionDropDown.Value;
 
 %%
 kernel_half_size = ceil(sqrt(-log(0.1)*2*ao_params.sigma_pixels^2));
@@ -31,21 +31,22 @@ ao_params.beam_width = beam_width;
 ao_params.m_idx = m_idx;
 ao_params.n_idx = n_idx;
 
-%% initial AO_wfcl
-AO_wf = zeros(SLMm, SLMn);
-if isempty(reg1.AO_correction)
-    AO_correction = [];
-elseif strcmpi(reg1.AO_correction, 'none')
-    AO_correction = [];
-else
-    idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
-    AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
-end
-AO_correction = [];
 %%
 init_image = app.SLM_Image;
-%% fix fix fix
-% SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, []); %AO_wf
+
+if ~isempty(app.current_SLM_AO_Image)
+    init_image = init_image.*app.current_SLM_AO_Image;
+end
+
+if app.InsertrefimageinscansCheckBox.Value
+    ref_coords = f_SLM_mpl_get_coords(app, 'zero');
+    ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
+                   -app.SLM_ops.ref_offset, 0, 0;...
+                    0, app.SLM_ops.ref_offset, 0;...
+                    0,-app.SLM_ops.ref_offset, 0];
+    ref_im = f_SLM_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
+end
+%% first upload
 SLM_phase = angle(init_image) + pi;
 app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_phase);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
@@ -89,7 +90,6 @@ app.DAQ_session.outputSingleScan(0);
 app.DAQ_session.outputSingleScan(0);
 
 num_frames = 0;
-
 %path1 = '\\PRAIRIE2000\p2f\Yuriy\AO\12_6_20\test-006';
 path1 = app.ScanframesdirpathEditField.Value;
 exist(path1, 'dir');
@@ -136,9 +136,9 @@ if app.PlotprogressCheckBox.Value
 end
 
 %% scan
-current_AO_phase = AO_wf;
-
+AO_correction = [];
 holo_im_pointer = f_SLM_initialize_pointer(app);
+
 for n_it = 1:app.NumiterationsSpinner.Value
     if isempty(AO_correction)
         current_AO_phase = zeros(SLMm, SLMn);
@@ -161,10 +161,11 @@ for n_it = 1:app.NumiterationsSpinner.Value
         %% add zernike pol on top of image
         n_mode = zernike_scan_sequence2(n_scan,1);
         n_weight = zernike_scan_sequence2(n_scan,2);
+        
+        holo_im = init_image;
         if n_mode == 999
-            holo_im = app.SLM_ref_im;
+            holo_im(m_idx,n_idx) = ref_im;
         else
-            holo_im = init_image;
             holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end
         holo_phase = angle(holo_im) + pi;

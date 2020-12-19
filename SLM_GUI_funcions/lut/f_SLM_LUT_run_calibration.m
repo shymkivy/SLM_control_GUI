@@ -27,6 +27,7 @@ if app.RunLUTcalibrationButton.Value
             pix_range = repmat((0:(bit_depth-1))',1,num_regions);
             region_range = repmat(0:(num_regions-1),bit_depth,1);
         end
+        
         pix_region_table = cat(3,pix_range , region_range);
         pix_region_table = reshape(pix_region_table,[],2);
         
