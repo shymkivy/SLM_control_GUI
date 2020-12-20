@@ -7,6 +7,7 @@ app.SLM_Image_plot.CData = app.SLM_Image;
 app.current_SLM_coord = f_SLM_mpl_get_coords(app, 'zero');
 app.current_SLM_AO_Image = [];
 
+f_SLM_upload_image_to_SLM(app);   
 disp('SLM blank uploaded');
 
 end

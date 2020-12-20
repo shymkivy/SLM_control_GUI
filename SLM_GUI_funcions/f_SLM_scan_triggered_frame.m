@@ -20,6 +20,6 @@ while trig_num2 <= trig_num
 end
 
 %prairie needs delay to get ready for triggered frame
-pause(0.5);
+pause(0.8);
 
 end

@@ -3,7 +3,7 @@ disp('Starting optimization...');
 
 time_stamp = clock;
 %%
-ao_params.bead_im_window = 30;
+ao_params.bead_im_window = 40;
 ao_params.n_corrections_to_use = 1;
 ao_params.correction_weight_step = 1;
 ao_params.plot_stuff = 1;
@@ -164,7 +164,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         
         holo_im = init_image;
         if n_mode == 999
-            holo_im(m_idx,n_idx) = ref_im;
+            holo_im(m_idx,n_idx) = ref_im(m_idx,n_idx);
         else
             holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end
