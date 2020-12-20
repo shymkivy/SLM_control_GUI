@@ -1,5 +1,5 @@
 function AO_wf = f_SLM_AO_get_correction(app, reg1, Z)
-z_tol = 20; 
+z_tol = app.AOcorrZtoleranceEditField.Value; 
 Z2 = mean(Z);
 
 if isstruct(reg1.AO_wf)

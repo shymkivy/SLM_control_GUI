@@ -3,10 +3,11 @@ disp('Starting optimization...');
 
 time_stamp = clock;
 %%
-ao_params.bead_im_window = 40;
+ao_params.bead_im_window = app.BeadwindowsizeEditField.Value;
 ao_params.n_corrections_to_use = 1;
 ao_params.correction_weight_step = 1;
-ao_params.plot_stuff = 1;
+ao_params.plot_stuff = app.PlotprogressCheckBox.Value;
+ao_params.plot_stuff_extra = app.PlotextradeetsCheckBox.Value;
 ao_params.sigma_pixels = 1;
 ao_params.coord = app.current_SLM_coord;
 ao_params.region = app.CurrentregionDropDown.Value;
@@ -18,7 +19,7 @@ conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
 conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_SLM_get_reg_deets(app, ao_params.region);
+[m_idx, n_idx, ~,  ~] = f_SLM_get_reg_deets(app, ao_params.region);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 beam_width = app.BeamdiameterpixEditField.Value;
@@ -116,8 +117,8 @@ bead_mn = zeros(1,2);
 bead_mn = round(bead_mn);
 
 %%
-im_m_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(1);
-im_n_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(2);
+im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
+im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
 
 im_cut = frames(im_m_idx, im_n_idx,num_frames);
 
@@ -140,14 +141,16 @@ AO_correction = [];
 holo_im_pointer = f_SLM_initialize_pointer(app);
 
 for n_it = 1:app.NumiterationsSpinner.Value
+    ao_params.iteration = n_it;
+    
     if isempty(AO_correction)
         current_AO_phase = zeros(SLMm, SLMn);
     else
         current_AO_phase = f_SLM_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
         
-    im_m_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(1);
-    im_n_idx = (-ao_params.bead_im_window:ao_params.bead_im_window) + bead_mn(2);
+    im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
+    im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
     
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
@@ -268,7 +271,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         plot(0:numel(AO_correction), intensit, '-o');
     end
     
-    bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window ao_params.bead_im_window];
+    bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
 end
 
 name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
