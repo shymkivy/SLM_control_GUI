@@ -95,7 +95,7 @@ num_frames = 0;
 path1 = app.ScanframesdirpathEditField.Value;
 exist(path1, 'dir');
 
-f_SLM_scan_triggered_frame(app.DAQ_session);
+f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
 num_scans_done = 1;
 
 % wait for frame to convert
@@ -178,7 +178,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
-        f_SLM_scan_triggered_frame(app.DAQ_session);
+        f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
         num_scans_done = num_scans_done + 1;
         
     end
@@ -228,7 +228,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
-        f_SLM_scan_triggered_frame(app.DAQ_session);
+        f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
         num_scans_done = num_scans_done + 1;
     end
     

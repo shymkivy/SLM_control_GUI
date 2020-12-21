@@ -1,4 +1,4 @@
-function f_SLM_scan_triggered_frame(session)
+function f_SLM_scan_triggered_frame(session, delay)
 
 scan1 = inputSingleScan(session);
 trig_num = scan1(1);
@@ -20,6 +20,6 @@ while trig_num2 <= trig_num
 end
 
 %prairie needs delay to get ready for triggered frame
-pause(0.8);
+pause(delay);
 
 end
