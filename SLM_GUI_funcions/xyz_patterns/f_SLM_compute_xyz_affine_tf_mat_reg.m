@@ -8,7 +8,7 @@ if app.ApplyXYZcalibrationButton.Value
             lat_cal = app.SLM_ops.lateral_calibration{idx_lat,2};
             
             % convert affine mat to um
-            lateral_affine_transform_mat = diag(lat_cal.xy_calib)\lat_cal.lateral_affine_transform_mat;
+            lateral_affine_transform_mat = diag(lat_cal.xy_pix_step)\lat_cal.lateral_affine_transform_mat;
         end
 
         xyz_affine_tf_mat = zeros(3,3);
