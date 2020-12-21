@@ -12,7 +12,6 @@ app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 %%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
-app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
 
 %% update lut corrections
 if ~isfield(app.region_list, 'lut_correction')

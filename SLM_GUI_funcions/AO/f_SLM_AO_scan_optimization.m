@@ -34,9 +34,9 @@ ao_params.n_idx = n_idx;
 
 %%
 init_image = app.SLM_Image;
-
-if ~isempty(app.current_SLM_AO_Image)
-    init_image = init_image.*app.current_SLM_AO_Image;
+AO_wf = f_SLM_AO_get_correction(app);
+if ~isempty(AO_wf)
+    init_image = init_image.*exp(1i*AO_wf);
 end
 
 if app.InsertrefimageinscansCheckBox.Value

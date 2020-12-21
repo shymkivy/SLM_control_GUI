@@ -6,9 +6,9 @@ SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
 idx_reg = strcmpi(app.CurrentregionDropDown.Value, [app.region_list.name_tag]);
-wavelength = app.region_list(idx_reg).wavelength*10e-9;
+wavelength = app.region_list(idx_reg).wavelength*1e-9;
 
-defocus_weight = app.DeficusWeightEditField.Value*10e-6;
+defocus_weight = app.DeficusWeightEditField.Value*1e-6;
 
 defocus = f_SLM_DefocusPhase_YS(SLMm, SLMn,...
                 app.SLM_ops.effective_NA,...

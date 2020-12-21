@@ -1,5 +1,14 @@
-function AO_wf = f_SLM_AO_get_correction(app, reg1, Z)
-z_tol = app.AOcorrZtoleranceEditField.Value; 
+function AO_wf = f_SLM_AO_get_correction(app, reg_name, Z)
+
+if ~exist('reg_name', 'var')
+    reg_name = app.CurrentregionDropDown.Value;
+end
+[~,~,~,reg1] = f_SLM_get_reg_deets(app,reg_name);
+
+if ~exist('Z', 'var')
+    Z = app.current_SLM_coord.xyzp(:,3)*1e6;
+end
+z_tol = app.AOcorrZtoleranceEditField.Value;
 Z2 = mean(Z);
 
 if isstruct(reg1.AO_wf)
@@ -11,6 +20,8 @@ if isstruct(reg1.AO_wf)
     end
 else
     AO_wf = reg1.AO_wf;
-end     
+end
+
+%figure; imagesc(AO_wf)
 
 end

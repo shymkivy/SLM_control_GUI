@@ -5,8 +5,6 @@ function f_SLM_gh_gen_holo(app, pattern)
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
-app.current_SLM_region = app.CurrentregionDropDown.Value;
-
 pointer = f_SLM_gh_gen_image(app, pattern, SLMm, SLMn);
 
 % lut correction

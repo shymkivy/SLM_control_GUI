@@ -21,7 +21,7 @@ function holo_image = f_SLM_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
     end
     
     objectiveRI = app.ObjectiveRIEditField.Value;
-    illuminationWavelength = app.WavelengthnmEditField.Value*10e-9;
+    illuminationWavelength = app.WavelengthnmEditField.Value*1e-9;
     
     holo_image = f_SLM_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength);
     

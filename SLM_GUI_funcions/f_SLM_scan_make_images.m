@@ -27,7 +27,7 @@ if ~strcmpi(pattern, 'none')
         curr_gr = groups(n_gr);
         gr_subtable = group_table(group_table(:,2) == curr_gr,:);
         
-        xyzp = [gr_subtable(:,4:5), gr_subtable(:,3)*10e-6];
+        xyzp = [gr_subtable(:,4:5), gr_subtable(:,3)*1e-6];
         xyzp2 = (xyz_affine_tf_mat*xyzp')';
         
         holo_complex = f_SLM_PhaseHologram_YS(xyzp2,...
@@ -35,7 +35,7 @@ if ~strcmpi(pattern, 'none')
                                         gr_subtable(:,7),...
                                         gr_subtable(:,6),...
                                         app.ObjectiveRIEditField.Value,...
-                                        app.WavelengthnmEditField.Value*10e-9);
+                                        app.WavelengthnmEditField.Value*1e-9);
         
         AO_wf = f_SLM_AO_get_correction(app, reg1, gr_subtable(:,3));                         
                    

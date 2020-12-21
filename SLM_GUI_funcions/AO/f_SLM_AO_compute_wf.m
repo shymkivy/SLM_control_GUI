@@ -46,7 +46,7 @@ else
         all_modes_sum(rho>1) = 0;
     end
     
-    wf_out = app.SLM_blank_im;
+    wf_out = zeros(app.SLM_ops.height, app.SLM_ops.width);
     wf_out(m_idx, n_idx) = all_modes_sum;
     %figure; imagesc(wf_out)
     

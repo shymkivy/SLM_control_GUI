@@ -46,7 +46,6 @@ app.LUTDropDown.Value = ops.lut_fname;
 
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
-app.AOcorrectionDropDown_2.Items = ops.AO_correction(:,1);
 
 %%
 app.SLM_ops = ops;

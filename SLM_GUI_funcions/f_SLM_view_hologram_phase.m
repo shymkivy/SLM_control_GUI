@@ -1,6 +1,6 @@
 function f_SLM_view_hologram_phase(app, holo_image)
 
-holo_phase = angle(holo_image)+pi;
+holo_phase = angle(holo_image) + pi;
 
 figure;
 app.hologram_fig_plot = newplot;
