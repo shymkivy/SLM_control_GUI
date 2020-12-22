@@ -5,16 +5,16 @@ clear
 %%
 % 20x full 637.4um
 full_fov_size = 637.4;
-zoom = 1;
+zoom = 6;
 fov_pix_x = 256;
 foc_pix_y = 256;
 
 xy_pix_step = [full_fov_size/zoom/fov_pix_x, full_fov_size/zoom/foc_pix_y];
 
-save_name = 'lateral_affine_transform_mat_fianium_z1_12_21_20';
+save_name = 'lateral_calib_maitai_z6_12_21_20';
 
 %%
-files_dir = 'E:\data\SLM\XYZcalibration\XYZcalibration\stim_calib_12_21_20\combined';
+files_dir = 'E:\data\SLM\XYZcalibration\XYZcalibration\12_21_20\6z\combined';
 
 % for 20X zoom 1 256 pixel/um ratio
 %%
@@ -65,18 +65,26 @@ end
 close;
 
 displacement_mat = first_ord_coords-zero_ord_coords;
-displacement_mat2 = displacement_mat*diag(xy_pix_step);
+% displacement_mat2 = displacement_mat*diag(xy_pix_step);
+% 
+% figure; plot(input_coords(:,1), displacement_mat2(:,1),  '-o');
+% xlabel('x input'); ylabel('x displacement');
+% 
+% figure; plot(input_coords(:,2), displacement_mat2(:,2),  '-o')
+% xlabel('y input'); ylabel('y displacement');
+% 
+% % transform_mat*input_coords = displacement_mat
+% 
+% lateral_affine_transform_mat = inv(input_coords\displacement_mat);
 
-figure; plot(input_coords(:,1), displacement_mat2(:,1),  '-o');
-xlabel('x input'); ylabel('x displacement');
-
-figure; plot(input_coords(:,2), displacement_mat2(:,2),  '-o')
-xlabel('y input'); ylabel('y displacement');
-
-% transform_mat*input_coords = displacement_mat
-lateral_affine_transform_mat = inv(input_coords\displacement_mat);
+% aff1 = input_coords\displacement_mat;
+% aff1_inv = inv(input_coords\displacement_mat);
+% input_coords*aff1*aff1_inv
+% displacement_mat*aff1_inv
+% input_coords*aff1
 
 %lateral_affine_transform_mat3 = diag(xy_calib)\lateral_affine_transform_mat;
 %lateral_affine_transform_mat2 = inv(input_coords\displacement_mat2);
 
-save([files_dir '\' save_name '.mat'], 'lateral_affine_transform_mat', 'xy_pix_step')
+%save([files_dir '\' save_name '.mat'], 'lateral_affine_transform_mat', 'xy_pix_step')
+save([files_dir '\' save_name '.mat'], 'displacement_mat', 'input_coords', 'xy_pix_step');

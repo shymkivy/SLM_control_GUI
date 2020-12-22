@@ -8,7 +8,7 @@ SLMn = sum(n_idx);
 app.current_SLM_coord = coord;
 
 % calib
-coord.xyzp = (xyz_affine_tf_mat*coord.xyzp')';
+coord.xyzp = coord.xyzp*xyz_affine_tf_mat;
 
 % make im;
 holo_image = app.SLM_Image;

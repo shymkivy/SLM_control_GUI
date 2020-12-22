@@ -20,7 +20,7 @@ if ~exist(ops.xyz_calibration_dir, 'dir')
 end
 
 % load lateral
-lateral_calib_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*lateral_affine*.mat', false);
+lateral_calib_fnames = f_SLM_get_file_names(ops.xyz_calibration_dir, '*lateral_*.mat', false);
 ops.lateral_calibration = cell(numel(lateral_calib_fnames),2);
 for n_fl = 1:numel(lateral_calib_fnames)
     ops.lateral_calibration(n_fl,1) = lateral_calib_fnames(n_fl);

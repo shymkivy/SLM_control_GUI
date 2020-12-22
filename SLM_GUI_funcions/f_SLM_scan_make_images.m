@@ -28,7 +28,7 @@ if ~strcmpi(pattern, 'none')
         gr_subtable = group_table(group_table(:,2) == curr_gr,:);
         
         xyzp = [gr_subtable(:,4:5), gr_subtable(:,3)*1e-6];
-        xyzp2 = (xyz_affine_tf_mat*xyzp')';
+        xyzp2 = xyzp*xyz_affine_tf_mat;
         
         holo_complex = f_SLM_PhaseHologram_YS(xyzp2,...
                                         SLMm, SLMn,...
