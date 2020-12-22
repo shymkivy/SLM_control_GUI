@@ -71,7 +71,7 @@ roi1.height_range = [0, 1];
 roi1.width_range = [0, 0.5];
 roi1.wavelength = 1064;
 roi1.effective_NA = 0.415;
-roi1.lateral_affine_transform = [];
+roi1.lateral_affine_transform = {'lateral_affine_transform_mat_fianium_z1_20x_12_21_20.mat'};
 app.region_list = [app.region_list; roi1];
 
 roi1.name_tag = {'Right half'};
