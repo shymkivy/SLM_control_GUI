@@ -8,6 +8,7 @@ full_fov_size = 637.4;
 zoom = 6;
 fov_pix_x = 256;
 foc_pix_y = 256;
+beads = 1;
 
 xy_pix_step = [full_fov_size/zoom/fov_pix_x, full_fov_size/zoom/foc_pix_y];
 
@@ -38,6 +39,9 @@ for n_file = 1:num_files
     elseif contains(lower(file_names{n_file}),'y')
         input_coords(n_file,2) = dist;
     end
+end
+if beads
+    input_coords = -input_coords;
 end
 
 temp_Y = imread([files_dir '\' file_names{1}], 'tif');
