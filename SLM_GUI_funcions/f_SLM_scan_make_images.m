@@ -37,10 +37,10 @@ if ~strcmpi(pattern, 'none')
                                         app.ObjectiveRIEditField.Value,...
                                         app.WavelengthnmEditField.Value*1e-9);
         
-        AO_wf = f_SLM_AO_get_correction(app, reg1, gr_subtable(:,3));                         
+        AO_wf = f_SLM_AO_get_correction(app, reg1.name_tag, gr_subtable(:,3));                         
                    
         if ~isempty(AO_wf)
-            holo_complex = holo_complex.*exp(1i*(AO_wf));
+            holo_complex = holo_complex.*exp(1i*(AO_wf(m_idx, n_idx)));
         end
         
         holo_phase_all(:,:,n_gr) = angle(holo_complex)+pi;

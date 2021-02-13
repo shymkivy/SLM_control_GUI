@@ -1,4 +1,4 @@
-function f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
+function scan_data  = f_SLM_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
 % end of frame scan
 
 if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
@@ -14,7 +14,8 @@ SLM_frame = 1;
 num_planes = numel(holo_pointers);
 tic;
 
-f_SLM_BNS_update(app.SLM_ops, holo_pointers{1}); 
+f_SLM_BNS_update(app.SLM_ops, holo_pointers{1});
+pause(0.01);
 frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
@@ -39,15 +40,9 @@ while imaging
     end
 end
 
+pause(1);
 resetCounters(app.DAQ_session);
-if app.PlotSLMupdateratesCheckBox.Value
-    if num_planes_all>3
-        figure;
-        plot(diff(frame_start_times(2:end-1)));
-        xlabel('frame'); ylabel('time (ms)');
-        title('SLM update rate');
-    end
-end
+scan_data.frame_start_times = frame_start_times;
 
 disp('Done');
 end

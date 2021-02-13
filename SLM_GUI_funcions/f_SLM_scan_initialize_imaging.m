@@ -3,6 +3,7 @@ function f_SLM_scan_initialize_imaging(app)
 if app.InitializeimagingButton.Value
     try
         disp('Initializing multiplane imaging...');
+        time_stamp = clock;
         
         [holo_patterns_ctr, out_params_imaging] = f_SLM_scan_make_images(app, app.PatternDropDownCtr.Value);
         
@@ -30,7 +31,7 @@ if app.InitializeimagingButton.Value
                 holo_pointers{n_gr,1}.Value = f_SLM_im_to_pointer(holo_phase_core(:,:,n_gr));
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            scan_data = f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             
         elseif app.AllButton.Value
             holo_pointers = cell(num_planes,num_stim+1);
@@ -43,7 +44,7 @@ if app.InitializeimagingButton.Value
             end
             
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            scan_data = f_SLM_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             %f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, app.InitializeimagingButton);
             
         elseif app.EOFonlyButton.Value
@@ -53,17 +54,38 @@ if app.InitializeimagingButton.Value
                 holo_pointers{n_gr}.Value(reg_idx_ctr) = holo_patterns_ctr(:,n_gr);                
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            f_SLM_scan_EOF_trig2(app, holo_pointers, holo_patterns_ai, reg_idx_ai, num_scans_all, app.InitializeimagingButton);
+            scan_data = f_SLM_scan_EOF_trig2(app, holo_pointers, holo_patterns_ai, reg_idx_ai, num_scans_all, app.InitializeimagingButton);
             
         end
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
         
+        if app.PlotSLMupdateratesCheckBox.Value
+            if numel(scan_data.frame_start_times)>3
+                figure;
+                plot(diff(scan_data.frame_start_times(2:end-1)));
+                xlabel('frame'); ylabel('time (ms)');
+                title('SLM update rate');
+            end
+        end
+        scan_data.im_pattern = app.xyz_patterns(strcmpi([app.xyz_patterns.name_tag], {app.PatternDropDownCtr.Value}));
+        scan_data.volumes = volumes;
+        
+        name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
+            app.SLM_ops.save_dir,...
+            'mpl_scan', ...
+            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
+            time_stamp(5));
+        
+        save([name_tag '.mat'], 'scan_data');
+   
+        disp('Done');
+        
         %figure; imagesc(f_SLM_poiner_to_im(holo_pointers{1}, 1152, 1920));
     catch
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
-        disp('Imaging run failed')
+        disp('Imaging run fangiled')
         f_SLM_BNS_update(app.SLM_ops, app.SLM_blank_pointer);
     end
 else

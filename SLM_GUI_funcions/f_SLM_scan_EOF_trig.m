@@ -1,4 +1,4 @@
-function f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, imaging_button)
+function scan_data = f_SLM_scan_EOF_trig(app, holo_pointers, num_planes_all, imaging_button)
 
 session = app.DAQ_session;
 resetCounters(session);
@@ -12,6 +12,7 @@ SLM_stim = 0;
 tic;
 
 f_SLM_BNS_update(app.SLM_ops, holo_pointers{1}); 
+pause(0.01)
 frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
@@ -39,15 +40,9 @@ while imaging
     end
 end
 
+pause(1);
 resetCounters(session);
-if app.PlotSLMupdateratesCheckBox.Value
-    if num_planes_all>3
-        figure;
-        plot(diff(frame_start_times(2:end-1)));
-        xlabel('frame'); ylabel('time (ms)');
-        title('SLM update rate');
-    end
-end
+scan_data.frame_start_times = frame_start_times;
 
 disp('Done');
 end
