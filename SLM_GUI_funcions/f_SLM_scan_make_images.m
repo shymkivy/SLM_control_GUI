@@ -18,7 +18,7 @@ if ~strcmpi(pattern, 'none')
     
     group_table = app.xyz_patterns(idx_pat).xyz_pts.Variables;
     groups = unique(group_table(:,2));
-
+    
     %% precompute hologram patterns
     num_groups = numel(groups);
     
