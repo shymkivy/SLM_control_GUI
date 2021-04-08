@@ -4,8 +4,22 @@ GUI to control holographic imaging/stimulation microscope
 
 under construction
 
-# Adaptive Optics:
+# Generate Hologram
+This is designed to upload any of the provided holograms to any region of SLM. 
+1. select the pattern and parameters
+2. Press "Generate ____"
+3. Press "Upload Hologram"
 
+# XYZ patterns
+There are 3 levels of organization
+1. Each point in XYZ has its own index
+2. Pattern is a collection of points that will be generated simultaneously
+3. Pattern group is a collection of patterns that can be uploaded in some sequence during a scan and with stimulation.  
+
+# Scan
+Here one can select a saved pattern group for volumetric and/or multiplexed imaging
+
+# Adaptive Optics:
 AO auto optimization scan explained:
 
 Process:
