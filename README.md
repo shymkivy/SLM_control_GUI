@@ -1,8 +1,11 @@
 # SLM_microscope_GUI
+under construction
+Author: Yuriy Shymkiv, shymkivy@gmail.com
+
 GUI to control holographic imaging/stimulation microscope
 	image processing toolbox
 
-under construction
+
 
 # Generate Hologram
 This is designed to upload any of the provided holograms to any region of SLM. 
@@ -47,8 +50,6 @@ On microscope side (works with PrairieView):
 To start:
 1. Start microscope scan, which will be waiting for trigger
 2. press "Start optimization scan" in SLM_GUI
-
-
 
 
 
