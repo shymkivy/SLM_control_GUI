@@ -1,14 +1,15 @@
 # SLM_microscope_GUI
 
 GUI to control holographic imaging/stimulation microscope
-	req: matlab image processing toolbox
-
+	
 Author: Yuriy Shymkiv, shymkivy@gmail.com
 
 under construction, but sections below work, more or less
 
+# Installation 
+MATLAB 2019 (MATLAB 2020 has issues with updating graphics)
 
-
+req: image processing toolbox
 
 
 # Generate Hologram
