@@ -1,7 +1,8 @@
 # SLM_microscope_GUI
-under construction
 
 Author: Yuriy Shymkiv, shymkivy@gmail.com
+
+under construction, but sections below work, more or less
 
 GUI to control holographic imaging/stimulation microscope
 	image processing toolbox
