@@ -4,5 +4,6 @@ GUI to control holographic imaging/stimulation microscope
 
 under construction
 
-Adaptive Optics:
-	AO auto optimization scan:
+# Adaptive Optics:
+
+AO auto optimization scan:
