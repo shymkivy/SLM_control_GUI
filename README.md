@@ -11,6 +11,17 @@ MATLAB 2019 (MATLAB 2020 has issues with updating graphics)
 
 req: image processing toolbox
 
+Download code and run "SLM_control_GUI" from its directory
+
+# Parameter setting
+
+Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
+1. SLM needs to be installed (BNS 1152x1920). SDK path needs to be correct inside "f_SLM_BNS_initialize.m" file
+2. Default lut file specified by "ops.lut_fname" needs to be present in '\SLM_microscope_GUI\SLM_calibration\lut_calibration\' directory
+3. "ops.effective_NA" effects the defocus distance and needs to be adjusted for specific objective (calibrate with beads)
+4. "ops.NI_DAQ_dvice" channel name and appropriate AO, AI, and counter channels need to be specified and connected to 2p microscope. "End of Frame" trigger from microscope goes into counter and used for fast updating of SLM patterns following the end of frames. AO from DAQ controlled by GUI goes into microscope trigger in (for scanneing with triggering of every frame). AI channel will be used to read what stimulation pattern is supposed to be uploaded at the time of scan.
+5. There is a "default roi list" wich refers to regions of the SLM that will be used independantly. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
+
 
 # Generate Hologram
 This is designed to upload any of the provided holograms to any region of SLM. 
