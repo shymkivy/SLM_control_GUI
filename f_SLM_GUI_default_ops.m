@@ -31,13 +31,12 @@ ops.height = 1152;      % automatically get from SLM
 ops.width = 1920;       % automatically get from SLM
 
 % 20X olympus specific params
-ops.objective_mag = 20; %
-ops.effective_NA = 0.48; % 0.48 for 20x; 
+% ops.objective_mag = 20; %
+% ops.effective_NA = 0.48; % 0.48 for 20x; 
 
 % % 25X olympus specific params
-% ops.objective_mag = 25;
-% ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
-% 
+ops.objective_mag = 25;
+ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
 
 % determines the size of all radial patterns (defocus and zernike)
 ops.beam_diameter = 1152;       % in pixels
