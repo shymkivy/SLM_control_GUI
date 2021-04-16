@@ -19,7 +19,7 @@ conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
 conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %%
-[m_idx, n_idx, ~,  ~] = f_SLM_get_reg_deets(app, ao_params.region);
+[m_idx, n_idx, ~,  ~] = f_sg_get_reg_deets(app, ao_params.region);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 beam_width = app.BeamdiameterpixEditField.Value;
@@ -40,16 +40,16 @@ if ~isempty(AO_wf)
 end
 
 if app.InsertrefimageinscansCheckBox.Value
-    ref_coords = f_SLM_mpl_get_coords(app, 'zero');
+    ref_coords = f_sg_mpl_get_coords(app, 'zero');
     ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_SLM_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
+    ref_im = f_sg_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
 end
 %% first upload
 SLM_phase = angle(init_image) + pi;
-app.SLM_Image_pointer.Value = f_SLM_im_to_pointer(SLM_phase);
+app.SLM_Image_pointer.Value = f_sg_im_to_pointer(SLM_phase);
 f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
 
 %%
@@ -95,7 +95,7 @@ num_frames = 0;
 path1 = app.ScanframesdirpathEditField.Value;
 exist(path1, 'dir');
 
-f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
 num_scans_done = 1;
 
 % wait for frame to convert
@@ -138,7 +138,7 @@ end
 
 %% scan
 AO_correction = [];
-holo_im_pointer = f_SLM_initialize_pointer(app);
+holo_im_pointer = f_sg_initialize_pointer(app);
 
 for n_it = 1:app.NumiterationsSpinner.Value
     ao_params.iteration = n_it;
@@ -172,13 +172,13 @@ for n_it = 1:app.NumiterationsSpinner.Value
             holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end
         holo_phase = angle(holo_im) + pi;
-        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
+        holo_im_pointer.Value = f_sg_im_to_pointer(holo_phase);
         
         %%
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
-        f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+        f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
         num_scans_done = num_scans_done + 1;
         
     end
@@ -222,13 +222,13 @@ for n_it = 1:app.NumiterationsSpinner.Value
         holo_im = init_image;
         holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(all_corr(:,:,scan_seq2(n_scan))));
         holo_phase = angle(holo_im) + pi;
-        holo_im_pointer.Value = f_SLM_im_to_pointer(holo_phase);
+        holo_im_pointer.Value = f_sg_im_to_pointer(holo_phase);
         
         %%
         f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
-        f_SLM_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+        f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
         num_scans_done = num_scans_done + 1;
     end
     

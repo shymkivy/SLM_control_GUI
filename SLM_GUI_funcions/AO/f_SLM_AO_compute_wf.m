@@ -13,7 +13,7 @@ else
     idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
     AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
 
-    [m_idx, n_idx] = f_SLM_get_reg_deets(app, reg1.name_tag); 
+    [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.name_tag); 
     SLMm = sum(m_idx);
     SLMn = sum(n_idx);
     beam_width = app.BeamdiameterpixEditField.Value;

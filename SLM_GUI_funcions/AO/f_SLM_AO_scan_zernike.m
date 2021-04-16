@@ -19,10 +19,10 @@ if app.ScanZernikeButton.Value
         init_image = app.SLM_Image;
         app.ZernikeReadyLamp.Color = [0.00,1.00,0.00];
     
-        f_SLM_EOF_Zscan(app, holo_pointers, num_scans, app.ScanZernikeButton, app.ScansperVolZEditField.Value);
+        f_sg_EOF_Zscan(app, holo_pointers, num_scans, app.ScanZernikeButton, app.ScansperVolZEditField.Value);
         
         app.SLM_Image = init_image;
-        f_SLM_upload_image_to_SLM(app);
+        f_sg_upload_image_to_SLM(app);
         
         if app.ApplyAOcorrectionButton.Value
             zernike_AO_data.current_correction_weights = app.AO_correction_data;

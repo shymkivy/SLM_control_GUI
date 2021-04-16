@@ -23,7 +23,7 @@ else
             params.beam_width = data.AO_correction(n_corr).ao_params.beam_width;
             full_correction = cat(1,data.AO_correction(n_corr).AO_correction{:,1});
             
-            [m_idx, n_idx] = f_SLM_get_reg_deets(app, reg1.name_tag); 
+            [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.name_tag); 
             SLMm = sum(m_idx);
             SLMn = sum(n_idx);
             beam_width = params.beam_width;
@@ -64,7 +64,7 @@ else
         params.beam_width = data.ao_params.beam_width;
         full_correction = cat(1,data.AO_correction{:,1});
 
-        [m_idx, n_idx] = f_SLM_get_reg_deets(app, reg1.name_tag); 
+        [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.name_tag); 
         SLMm = sum(m_idx);
         SLMn = sum(n_idx);
         beam_width = params.beam_width;

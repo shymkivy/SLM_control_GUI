@@ -8,6 +8,6 @@ app.SLM_ops.lut_fname = app.LUTDropDown.Value;
 f_SLM_BNS_update_lut(app.SLM_ops);
 
 f_SLM_lut_correctios_load_list(app);
-f_SLM_reg_update(app);
+f_sg_reg_update(app);
 
 end

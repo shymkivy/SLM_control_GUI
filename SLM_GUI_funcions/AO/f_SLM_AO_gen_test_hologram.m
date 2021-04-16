@@ -17,7 +17,7 @@ function [holo_out, n, m] = f_SLM_AO_gen_test_hologram(app)
 % Z4_4    = sqrt(10)*rho.^4.*cos(4*theta);
 
 % generate coordinates
-[m_idx, n_idx] = f_SLM_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[m_idx, n_idx] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);

@@ -2,7 +2,7 @@ function f_SLM_lut_correctios_load_list(app)
 
 corrections_dir = [app.SLM_ops.lut_dir '\' app.SLM_ops.lut_fname(1:end-4) '_correction'];
 
-[lut_corr, ~] = f_SLM_get_file_names(corrections_dir, '*.mat', 0);
+[lut_corr, ~] = f_sg_get_file_names(corrections_dir, '*.mat', 0);
 lut_corr = [{'None'}; lut_corr];
 app.lut_corrections_list = cell(numel(lut_corr),2);
 app.lut_corrections_list(:,1) = lut_corr;

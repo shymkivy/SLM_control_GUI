@@ -1,7 +1,7 @@
 function [holo_pointers, zernike_scan_sequence] = f_SLM_AO_make_zernike_pointers(app, AO_wf)
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_SLM_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[m_idx, n_idx, ~,  reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
@@ -49,12 +49,12 @@ end
 init_image = app.SLM_Image;
 
 if app.InsertrefimageinscansCheckBox.Value
-    ref_coords = f_SLM_mpl_get_coords(app, 'zero');
+    ref_coords = f_sg_mpl_get_coords(app, 'zero');
     ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_SLM_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
+    ref_im = f_sg_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
 end
 
 % generate pointers
@@ -73,8 +73,8 @@ for n_plane = 1:num_scans
 
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
     holo_phase = angle(holo_im) + pi;
-    holo_pointers{n_plane} = f_SLM_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_SLM_im_to_pointer(holo_phase);
+    holo_pointers{n_plane} = f_sg_initialize_pointer(app);
+    holo_pointers{n_plane}.Value = f_sg_im_to_pointer(holo_phase);
 end
 
 end
