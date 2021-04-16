@@ -2,12 +2,14 @@
 % can either use TDLC and grab frames or wait for trigger with some other method
 % start by running the global calibration
 % if need regional, use previos global for blaze deflect blank
+% for better calibration, especially regional better to use photodiode and
+% first order, not zero
 
 % lut pipeline step 1/3
 
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
-ops.use_photodiode = 1;
+ops.use_photodiode = 0;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
@@ -25,18 +27,20 @@ slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 %%
 %save_pref = '940_slm5221_maitai';
 save_pref = '1064_slm5221_fianium';
-%%
-blaze_deflect_blank = 0;
+%% tried to deflect zero order with regional calibration for camera but signal too weak, use photodiode instead and ignore
+use_blaze_deflect_blank = 0;    % use feature or not
 blaze_period = 20;
 blaze_increaseing = 1;
 blaze_horizontal = 0;
 blaze_reverse_dir = 1;
 bkg_lut_correction = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
 
-%% add paths
-ops.working_dir = fileparts(which('SLM_lut_calibrationTLDC.m'));
+%% add paths and create save name
+ops.working_dir = fileparts(which('SLM_lut_s1_run_calibration.m'));
 addpath([ops.working_dir '\..\']);
+addpath([ops.working_dir '\..\SLM_GUI_funcions']);
 addpath([ops.working_dir '\..\SLM_GUI_funcions\BNS']);
+addpath([ops.working_dir '\calibration_functions']);
 
 ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
 ops.save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
@@ -46,7 +50,7 @@ if ~exist(ops.save_path, 'dir')
 end
 
 %%
-if blaze_deflect_blank
+if use_blaze_deflect_blank
     lut_path = [ops.working_dir '\lut_calibration\linear_correction\' bkg_lut_correction];
     lut_load = load(lut_path);
     LUT_correction = lut_load.LUT_correction;
@@ -145,7 +149,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         phd_fig.Children.Title.String = 'Photodiode';
     end
     
-    if blaze_deflect_blank
+    if use_blaze_deflect_blank
         pointer_bkg = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
         calllib('ImageGen', 'Generate_Grating',...
                 pointer_bkg,...
@@ -175,7 +179,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
             calllib('ImageGen', 'Mask_Image', SLM_mask, ops.width, ops.height, Region, ops.NumRegions); % 
             
-            if blaze_deflect_blank
+            if use_blaze_deflect_blank
                 SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
             end
             

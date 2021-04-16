@@ -3,18 +3,12 @@ plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_i
 plot([zernike_computed_weights.mode], sqrt([zernike_computed_weights.sm_peak_x_intens_change]))
 
 
-
-
-
 num_freqs = 20;
 freqs = 1:num_freqs;
 freq_amp = rand(numel(freqs),1)*2 - 1;
 
 
 x = -10:0.001:10;
-
-
-
 
 
 sig_dec = zeros(num_freqs, numel(x));
