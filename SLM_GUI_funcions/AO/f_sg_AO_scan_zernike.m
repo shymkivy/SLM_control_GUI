@@ -1,4 +1,4 @@
-function f_SLM_AO_scan_zernike(app)
+function f_sg_AO_scan_zernike(app)
 
 if app.ScanZernikeButton.Value
     try
@@ -8,10 +8,10 @@ if app.ScanZernikeButton.Value
         %%
         %% create AO file
         if app.ApplyAOcorrectionButton.Value
-            AO_wf = f_SLM_AO_get_correction(app);
+            AO_wf = f_sg_AO_get_correction(app);
         end
         
-        [holo_pointers, zernike_scan_sequence] = f_SLM_AO_make_zernike_pointers(app, AO_wf);
+        [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_wf);
         
         num_scans = numel(holo_pointers);
         

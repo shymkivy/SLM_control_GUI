@@ -1,4 +1,4 @@
-function [holo_out, n, m] = f_SLM_AO_gen_test_hologram(app)
+function [holo_out, n, m] = f_sg_AO_gen_test_hologram(app)
 
 % Z0_0    = 1;
 % Z1_n1   = 2*rho.*sin(theta);
@@ -37,7 +37,7 @@ zernike_data = app.ZernikeListTable.Data;
 n = zernike_data(mode_index,2);
 m = zernike_data(mode_index,3);
 
-[Z_nm, ~, ~] = f_SLM_zernike_pol(rho, theta, n, m);
+[Z_nm, ~, ~] = f_sg_zernike_pol(rho, theta, n, m);
 if app.AOzerooutsideunitcircCheckBox.Value
     Z_nm(rho>1) = 0;
 end

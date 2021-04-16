@@ -1,4 +1,4 @@
-function f_SLM_lut_load_list(app)
+function f_sg_lut_load_list(app)
 
 % load global lut files
 [LUT_list, ~] = f_sg_get_file_names(app.SLM_ops.lut_dir, '*.lut', 0);

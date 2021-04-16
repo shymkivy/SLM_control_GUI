@@ -1,4 +1,4 @@
-function f_SLM_lut_correctios_load_list(app)
+function f_sg_lut_correctios_load_list(app)
 
 corrections_dir = [app.SLM_ops.lut_dir '\' app.SLM_ops.lut_fname(1:end-4) '_correction'];
 

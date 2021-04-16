@@ -1,4 +1,4 @@
-function f_SLM_lut_im_stack_to_intens()
+function f_sg_lut_im_stack_to_intens()
 
 figure;
 plot_int = floor(size(calib_im_series,3)/6);

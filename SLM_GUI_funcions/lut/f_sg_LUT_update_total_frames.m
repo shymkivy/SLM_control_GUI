@@ -1,4 +1,4 @@
-function f_SLM_LUT_update_total_frames(app)
+function f_sg_LUT_update_total_frames(app)
 
 bit_depth = app.BitDepthEditField.Value;
 num_regions = app.NumRegionsEditField.Value;

@@ -9,8 +9,8 @@ if ~exist(ops.lut_dir, 'dir')
     mkdir(ops.lut_dir)
 end
 
-f_SLM_lut_load_list(app);
-f_SLM_lut_correctios_load_list(app);
+f_sg_lut_load_list(app);
+f_sg_lut_correctios_load_list(app);
 
 ops = app.SLM_ops;
 

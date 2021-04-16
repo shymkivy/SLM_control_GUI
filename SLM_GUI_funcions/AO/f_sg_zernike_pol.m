@@ -1,4 +1,4 @@
-function [Z_nm, n, m] = f_SLM_zernike_pol(rho, theta, n, m)
+function [Z_nm, n, m] = f_sg_zernike_pol(rho, theta, n, m)
 
 [SLMm, SLMn] = size(rho);
 % m = -1;

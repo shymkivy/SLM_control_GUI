@@ -25,6 +25,6 @@ end
 
 region1.xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, region1);
 
-region1.AO_wf = f_SLM_AO_compute_wf2(app, region1);
+region1.AO_wf = f_sg_AO_compute_wf2(app, region1);
 
 end

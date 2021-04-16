@@ -6,8 +6,8 @@ if ~exist('add_ao', 'var')
 end
 
 if add_ao
-    AO_wf = f_SLM_AO_get_correction(app);
-    SLM_image = f_SLM_AO_add_correction(app, app.SLM_Image, AO_wf);
+    AO_wf = f_sg_AO_get_correction(app);
+    SLM_image = f_sg_AO_add_correction(app, app.SLM_Image, AO_wf);
     app.current_SLM_AO_Image = AO_wf;
 else
     SLM_image = app.SLM_Image;

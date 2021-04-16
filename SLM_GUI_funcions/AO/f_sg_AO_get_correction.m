@@ -1,4 +1,4 @@
-function AO_wf = f_SLM_AO_get_correction(app, reg_name, Z)
+function AO_wf = f_sg_AO_get_correction(app, reg_name, Z)
 
 if ~exist('reg_name', 'var')
     reg_name = app.CurrentregionDropDown.Value;

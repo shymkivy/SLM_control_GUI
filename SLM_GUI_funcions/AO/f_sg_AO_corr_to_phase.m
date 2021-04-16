@@ -1,4 +1,4 @@
-function phase = f_SLM_AO_corr_to_phase(correction,all_modes)
+function phase = f_sg_AO_corr_to_phase(correction,all_modes)
 
 [SLMm, SLMn,~] = size(all_modes);
 phase = zeros(SLMm, SLMn);

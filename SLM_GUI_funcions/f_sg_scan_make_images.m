@@ -37,7 +37,7 @@ if ~strcmpi(pattern, 'none')
                                         app.ObjectiveRIEditField.Value,...
                                         app.WavelengthnmEditField.Value*1e-9);
         
-        AO_wf = f_SLM_AO_get_correction(app, reg1.name_tag, gr_subtable(:,3));                         
+        AO_wf = f_sg_AO_get_correction(app, reg1.name_tag, gr_subtable(:,3));                         
                    
         if ~isempty(AO_wf)
             holo_complex = holo_complex.*exp(1i*(AO_wf(m_idx, n_idx)));
@@ -50,7 +50,7 @@ if ~strcmpi(pattern, 'none')
     if add_blank
         holo_zero = zeros(SLMm, SLMn);
 
-        AO_wf = f_SLM_AO_get_correction(app, reg1, 0); 
+        AO_wf = f_sg_AO_get_correction(app, reg1, 0); 
 
         if ~isempty(AO_wf)
             holo_zero = holo_zero.*exp(1i*(AO_wf));

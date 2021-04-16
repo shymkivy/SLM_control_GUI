@@ -1,4 +1,4 @@
-function f_SLM_AO_fill_modes_table(app)
+function f_sg_AO_fill_modes_table(app)
 
 max_modes = app.MaxmodesEditField.Value;
 W_lim = app.WeightlimitEditField.Value;
@@ -24,6 +24,6 @@ end
 
 app.ZernikeListTable.Data = [(round(1:num_modes)'),round(zernike_table_list), repmat([-W_lim, W_step, W_lim], num_modes, 1), round(scan_modes)];
 
-f_SLM_AO_update_total_modes(app);
+f_sg_AO_update_total_modes(app);
 
 end

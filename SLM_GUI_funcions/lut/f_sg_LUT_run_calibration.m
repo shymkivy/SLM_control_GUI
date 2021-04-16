@@ -1,4 +1,4 @@
-function f_SLM_LUT_run_calibration(app)
+function f_sg_LUT_run_calibration(app)
 
 if app.RunLUTcalibrationButton.Value
     try
@@ -49,7 +49,7 @@ if app.RunLUTcalibrationButton.Value
         %%
         app.RunLUTcalibReadyLamp.Color = [0.00,1.00,0.00];
 
-        f_SLM_EOF_scan(app, pointers_cell, num_pointers, app.RunLUTcalibrationButton);
+        f_sg_EOF_scan(app, pointers_cell, num_pointers, app.RunLUTcalibrationButton);
         
         % store data from scan if succesfull
         app.AO_last_LUT_data{1} = pix_region_table;

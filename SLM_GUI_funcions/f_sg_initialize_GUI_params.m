@@ -33,7 +33,7 @@ f_sg_reg_update(app);
 
 for n_reg = 1:numel(app.region_list)
     app.region_list(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_list(n_reg));
-    app.region_list(n_reg).AO_wf = f_SLM_AO_compute_wf(app, app.region_list(n_reg));
+    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_list(n_reg));
 end
 
 %% xyz table
@@ -97,8 +97,8 @@ f_sg_pat_save(app);
 
 % AO zernike table
 app.ZernikeListTable.Data = table();
-f_SLM_AO_fill_modes_table(app);
-f_SLM_LUT_update_total_frames(app);
+f_sg_AO_fill_modes_table(app);
+f_sg_LUT_update_total_frames(app);
 
 % initialize af matrix
 app.ApplyXYZcalibrationButton.Value = 1;

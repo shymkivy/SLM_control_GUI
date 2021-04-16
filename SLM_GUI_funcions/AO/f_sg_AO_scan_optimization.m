@@ -1,4 +1,4 @@
-function f_SLM_AO_scan_optimization(app)
+function f_sg_AO_scan_optimization(app)
 disp('Starting optimization...');
 
 time_stamp = clock;
@@ -34,7 +34,7 @@ ao_params.n_idx = n_idx;
 
 %%
 init_image = app.SLM_Image;
-AO_wf = f_SLM_AO_get_correction(app);
+AO_wf = f_sg_AO_get_correction(app);
 if ~isempty(AO_wf)
     init_image = init_image.*exp(1i*AO_wf);
 end
@@ -60,7 +60,7 @@ zernike_table = app.ZernikeListTable.Data;
 num_modes = size(zernike_table,1);
 all_modes = zeros(SLMm, SLMn, num_modes);
 for n_mode = 1:num_modes
-    Z_nm = f_SLM_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
+    Z_nm = f_sg_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
     if app.AOzerooutsideunitcircCheckBox.Value
         Z_nm(rho>1) = 0;
     end
@@ -146,7 +146,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     if isempty(AO_correction)
         current_AO_phase = zeros(SLMm, SLMn);
     else
-        current_AO_phase = f_SLM_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
+        current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
         
     im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
@@ -202,7 +202,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     all_corr = zeros(SLMm, SLMn, numel(AO_correction)+1);
     for n_corr = 1:numel(AO_correction)
         full_corr = cat(1,AO_correction{1:n_corr,1});
-        all_corr(:,:,n_corr+1) = f_SLM_AO_corr_to_phase(full_corr,all_modes);
+        all_corr(:,:,n_corr+1) = f_sg_AO_corr_to_phase(full_corr,all_modes);
     end
     
     % make scan seq

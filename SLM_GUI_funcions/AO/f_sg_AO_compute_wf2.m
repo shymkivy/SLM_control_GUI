@@ -1,4 +1,4 @@
-function [wf_out, params] = f_SLM_AO_compute_wf2(app, reg1)
+function [wf_out, params] = f_sg_AO_compute_wf2(app, reg1)
 params = struct;
 params.beam_width = app.BeamdiameterpixEditField.Value;
 params.AO_iteration = 1;
@@ -48,7 +48,7 @@ else
             all_modes = zeros(SLMm, SLMn, num_modes);
             for n_mode_idx = 1:num_modes
                 n_mode = full_correction(n_mode_idx,1);
-                Z_nm = f_SLM_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
+                Z_nm = f_sg_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
                 all_modes(:,:,n_mode_idx) = Z_nm*full_correction(n_mode_idx,2);
             end
 
@@ -89,7 +89,7 @@ else
         all_modes = zeros(SLMm, SLMn, num_modes);
         for n_mode_idx = 1:num_modes
             n_mode = full_correction(n_mode_idx,1);
-            Z_nm = f_SLM_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
+            Z_nm = f_sg_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
             all_modes(:,:,n_mode_idx) = Z_nm*full_correction(n_mode_idx,2);
         end
 

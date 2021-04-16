@@ -1,4 +1,4 @@
-function SLM_image_out = f_SLM_AO_add_correction(app, SLM_image_in, AO_wf)
+function SLM_image_out = f_sg_AO_add_correction(app, SLM_image_in, AO_wf)
 
 if app.ApplyAOcorrectionButton.Value
     if ~isempty(AO_wf)

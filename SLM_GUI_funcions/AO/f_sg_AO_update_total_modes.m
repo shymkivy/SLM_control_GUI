@@ -1,4 +1,4 @@
-function f_SLM_AO_update_total_modes(app)
+function f_sg_AO_update_total_modes(app)
 
 zernike_table = app.ZernikeListTable.Data;
 zernike_table = zernike_table(logical(zernike_table(:,7)),:);
