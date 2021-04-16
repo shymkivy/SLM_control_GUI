@@ -50,7 +50,7 @@ end
 %% first upload
 SLM_phase = angle(init_image) + pi;
 app.SLM_Image_pointer.Value = f_sg_im_to_pointer(SLM_phase);
-f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
+f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
 
 %%
 % create patterns
@@ -175,7 +175,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         holo_im_pointer.Value = f_sg_im_to_pointer(holo_phase);
         
         %%
-        f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
+        f_SLM_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
         f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
@@ -225,7 +225,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         holo_im_pointer.Value = f_sg_im_to_pointer(holo_phase);
         
         %%
-        f_SLM_BNS_update(app.SLM_ops, holo_im_pointer)
+        f_SLM_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
         f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);

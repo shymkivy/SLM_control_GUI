@@ -11,7 +11,7 @@ SLM_stim = 0;
 [num_planes, num_stim] = size(holo_pointers);
 tic;
 
-f_SLM_BNS_update(app.SLM_ops, holo_pointers{1}); 
+f_SLM_update(app.SLM_ops, holo_pointers{1}); 
 pause(0.01)
 frame_start_times(1) = toc;
 
@@ -22,7 +22,7 @@ while imaging
     ai_input = scan1(2);
     n_stim = round(ai_input/5*num_stim);
     if (scan_frame > SLM_frame) || (n_stim~=SLM_stim)
-        f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
+        f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
         frame_start_times(scan_frame) = toc;
         SLM_frame = scan_frame;
         SLM_stim = n_stim;

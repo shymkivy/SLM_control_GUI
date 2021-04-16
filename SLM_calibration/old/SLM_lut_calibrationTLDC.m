@@ -4,7 +4,7 @@
 %% Try closing thing from past
 
 try
-    [~] = f_SLM_BNS_close(ops);
+    [~] = f_SLM_close(ops);
 catch
 end
 try
@@ -30,7 +30,7 @@ save_path = [pwd2 '\..\..\SLM_outputs\lut_calibration'];
 save_csv_path = [save_path '\lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
-ops = f_SLM_BNS_initialize();
+ops = f_SLM_initialize();
 
 %% Set up the camera
 % Camera parameters
@@ -77,7 +77,7 @@ if ops.SDK_created == 1
     PixelValue = 0;
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, PixelValue);
     
-    f_SLM_BNS_update(ops, SLM_image);
+    f_SLM_update(ops, SLM_image);
 	
     SLM_fig = figure;
     SLM_im = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
@@ -107,7 +107,7 @@ if ops.SDK_created == 1
             calllib('ImageGen', 'Mask_Image', SLM_image, ops.width, ops.height, Region, NumRegions); % 
             
             %write the image
-            f_SLM_BNS_update(ops, SLM_image);
+            f_SLM_update(ops, SLM_image);
             SLM_im.CData = reshape(SLM_image.Value, ops.width, ops.height)';
             
             %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
@@ -201,12 +201,12 @@ if ops.SDK_created == 1
     end
     
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, PixelValue);
-    f_SLM_BNS_update(ops, SLM_image);
+    f_SLM_update(ops, SLM_image);
 end
 
 
 %% close SLM
-ops = f_SLM_BNS_close(ops);
+ops = f_SLM_close(ops);
 
 
 %% Close the camera 

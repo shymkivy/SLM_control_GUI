@@ -6,6 +6,10 @@ else
     ops = struct;
 end
 
+%% Which SLM????
+ops.SLM_type = 0; % this is BNS 1920
+%ops.SLM_type = 1; % BNS 512 with OverDrive (OD)
+
 %% directories
 % where to save outputs
 ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
@@ -23,6 +27,14 @@ ops.AO_recording_dir = 'E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001';
 %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
+
+%% specific for BNS 512
+if ops.SLM_type == 1
+    ops.ops.SLM_SDK_dir
+    %ops.cal_image_path = '';    % default will create blank
+    ops.init_reg_lut_fname = '';
+end
+
 %% default xyz
 
 

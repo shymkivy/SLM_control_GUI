@@ -46,7 +46,7 @@ if app.ScanZernikeButton.Value
         app.ScanZernikeButton.Value = 0;
         app.ZernikeReadyLamp.Color = [0.80,0.80,0.80];
         pause(0.05);
-        f_SLM_BNS_update(app.SLM_ops, app.SLM_blank_pointer);
+        f_SLM_update(app.SLM_ops, app.SLM_blank_pointer);
     end
 else
     app.ZernikeReadyLamp.Color = [0.80,0.80,0.80];

@@ -24,6 +24,11 @@ ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %
 
 slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
+%% Which SLM????
+ops.SLM_type = 0; % 0 = this is BNS 1920
+%ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
+
+
 %%
 %save_pref = '940_slm5221_maitai';
 save_pref = '1064_slm5221_fianium';
@@ -78,9 +83,9 @@ end
 
 %% Initialize SLM
 try %#ok<*TRYNC>
-    f_SLM_BNS_close(ops);
+    f_SLM_close(ops);
 end
-ops = f_SLM_BNS_initialize(ops);
+ops = f_SLM_initialize(ops);
 
 %%
 cont1 = input('Turn laser on and reply [y] to continue:', 's');
@@ -121,7 +126,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     %allocate arrays for our images
     SLM_image = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);
-    f_SLM_BNS_update(ops, SLM_image);
+    f_SLM_update(ops, SLM_image);
     
     SLM_mask = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
     calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
@@ -184,7 +189,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             end
             
             if ops.use_photodiode
-                f_SLM_BNS_update(ops, SLM_image);
+                f_SLM_update(ops, SLM_image);
                 pause(0.01); %let the SLM settle for 10 ms
                 % scan intensity
                 data = startForeground(session);
@@ -195,7 +200,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             end
             
             if ops.use_TLDC   % Thorlabs camera
-                f_SLM_BNS_update(ops, SLM_image);
+                f_SLM_update(ops, SLM_image);
                 pause(0.01); %let the SLM settle for 10 ms
                 TLDC_get_Cam_Im(cam_out.hdl_cam);
                 cam_im.CData = cam_out.cam_frame';
@@ -215,7 +220,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         end
     end
     calllib('ImageGen', 'Generate_Solid', SLM_image, ops.width, ops.height, ops.PixelValue);
-    f_SLM_BNS_update(ops, SLM_image);
+    f_SLM_update(ops, SLM_image);
     
     if ops.use_photodiode
         save([ops.save_path '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
@@ -238,7 +243,7 @@ end
 cont1 = input('Done, turnb off laser and press [y] close SLM:', 's');
 
 try 
-    f_SLM_BNS_close(ops);
+    f_SLM_close(ops);
 end
 if ops.use_TLDC
     TLDC_set_Cam_Close(cam_out.hdl_cam);            

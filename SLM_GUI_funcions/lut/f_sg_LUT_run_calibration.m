@@ -62,13 +62,13 @@ if app.RunLUTcalibrationButton.Value
         
         app.RunLUTcalibrationButton.Value = 0;
         app.RunLUTcalibReadyLamp.Color = [0.80,0.80,0.80];
-        f_SLM_BNS_update(app.SLM_ops, app.SLM_blank_pointer);
+        f_SLM_update(app.SLM_ops, app.SLM_blank_pointer);
     catch
         disp('LUT calibration failed');
         app.RunLUTcalibrationButton.Value = 0;
         app.RunLUTcalibReadyLamp.Color = [0.80,0.80,0.80];
         pause(0.05);
-        f_SLM_BNS_update(app.SLM_ops, app.SLM_blank_pointer);
+        f_SLM_update(app.SLM_ops, app.SLM_blank_pointer);
     end
 else
     app.RunLUTcalibReadyLamp.Color = [0.80,0.80,0.80];

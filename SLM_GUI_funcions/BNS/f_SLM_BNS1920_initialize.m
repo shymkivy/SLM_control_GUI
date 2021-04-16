@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS_initialize(ops)
+function ops = f_SLM_BNS1920_initialize(ops)
 
 %% SLM params
 if ~exist('ops', 'var')
@@ -49,8 +49,8 @@ ops.num_boards_found = libpointer('uint32Ptr', 0);
 ops.constructed_okay = libpointer('int32Ptr', 0);
 ops.is_nematic_type = 1; %  for SLMs built with Nematic Liquid Crystal
 ops.RAM_write_enable = 1;
-ops.use_GPU = 0;
-ops.max_transients = 10;
+ops.use_GPU = 0;    % this is specific to ODP slms (512)
+ops.max_transients = 10; % this is specific to ODP slms (512)
 ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
 ops.external_Pulse = 0;
 ops.timeout_ms = 5000;

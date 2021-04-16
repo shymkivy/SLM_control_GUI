@@ -14,7 +14,7 @@ SLM_frame = 1;
 num_planes = numel(holo_pointers);
 tic;
 
-f_SLM_BNS_update(app.SLM_ops, holo_pointers{1});
+f_SLM_update(app.SLM_ops, holo_pointers{1});
 pause(0.01);
 frame_start_times(1) = toc;
 
@@ -23,7 +23,7 @@ while imaging
     scan1 = inputSingleScan(app.DAQ_session);
     scan_frame = scan1(1)+1;
     if scan_frame > SLM_frame*scans_per_frame
-        f_SLM_BNS_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
+        f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
         frame_start_times(scan_frame) = toc;
         SLM_frame = round((scan_frame-1)/scans_per_frame+1);
         if scan_frame > num_planes_all

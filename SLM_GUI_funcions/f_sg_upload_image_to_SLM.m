@@ -15,6 +15,6 @@ end
 
 holo_phase = angle(SLM_image)+pi;
 app.SLM_Image_pointer.Value = f_sg_im_to_pointer(holo_phase);
-f_SLM_BNS_update(app.SLM_ops, app.SLM_Image_pointer);
+f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
 
 end

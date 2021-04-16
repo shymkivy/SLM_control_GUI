@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS_close(ops)
+function ops = f_SLM_BNS1920_close(ops)
 
 if ops.constructed_okay.value == 0
     % Always call Delete_SDK before exiting

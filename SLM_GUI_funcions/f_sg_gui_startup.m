@@ -14,7 +14,7 @@ end
 f_SLM_GUI_default_ops(app);
 f_sg_load_calibration(app);
 
-app.SLM_ops = f_SLM_BNS_initialize(app.SLM_ops);
+app.SLM_ops = f_SLM_initialize(app.SLM_ops);
 app.ActivateSLMButton.Value = 1;
 app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
 
