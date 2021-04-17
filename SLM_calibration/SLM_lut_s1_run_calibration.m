@@ -17,7 +17,7 @@ if ops.use_TLDC
     end
 end
 %% Parameters
-ops.use_TLDC = 1;           % otherwise wait for trigger
+ops.use_TLDC = 0;           % otherwise wait for trigger
 ops.use_photodiode = 0;
 ops.plot_phase = 1;
 
