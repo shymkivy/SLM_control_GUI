@@ -7,13 +7,22 @@
 
 % lut pipeline step 1/3
 
+%%
+try %#ok<*TRYNC>
+    f_SLM_close(ops);
+end
+if ops.use_TLDC
+    try 
+        TLDC_set_Cam_Close(cam_out.hdl_cam);            
+    end
+end
 %% Parameters
 ops.use_TLDC = 1;           % otherwise wait for trigger
 ops.use_photodiode = 0;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 64;        % (squares only [1,4,9,16...])
+ops.NumRegions = 1;        % (squares only [1,4,9,16...])
 %16R 940nm p120
 ops.PixelsPerStripe = 4;	
 ops.PixelValue = 0;
@@ -22,7 +31,7 @@ ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
-slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %% Which SLM????
 %ops.SLM_type = 0; % 0 = this is BNS 1920
@@ -84,9 +93,7 @@ else
 end
 
 %% Initialize SLM
-try %#ok<*TRYNC>
-    f_SLM_close(ops);
-end
+
 ops = f_SLM_initialize(ops);
 
 %%
@@ -238,6 +245,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     if ops.use_TLDC
         save([ops.save_path '\TDLC_' ops.save_file_name], 'region_gray', 'calib_im_series', 'ops', '-v7.3');
     end
+else
+    disp('Not running anything...')
 end
 
 %% close SLM

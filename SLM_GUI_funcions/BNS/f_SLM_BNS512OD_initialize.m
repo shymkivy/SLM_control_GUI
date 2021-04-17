@@ -33,13 +33,14 @@ end
 
 %% path to blank calibration image for BNS 512 OD
 if ~isfield(ops, 'cal_image_path')   % use linear if not specified
-    disp('Blank calibration image was not passed for BNS512OD');
+    %disp('Blank calibration image was not passed for BNS512OD, using zeros');
+    ops.cal_image = zeros(512, 512, 'uint8');
 else
     %% load blank calibration image
     if exist(ops.cal_image_path, 'file')
         ops.cal_image = imread(ops.cal_image_path);
     else
-        disp('Blank calibration image does not exist, using zeros');
+        %disp('Blank calibration image does not exist, using zeros');
         ops.cal_image = zeros(512, 512, 'uint8');
     end
 end
@@ -70,10 +71,10 @@ ops.use_GPU = 1;    % this is specific to ODP slms (512) (and imagegen)
 ops.max_transients = 10; % this is specific to ODP slms (512)
 ops.true_frames = 3;
 ops.slm_resolution = 512;
+ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
 
 % % not sure if needed
 % % from new slm code
-% ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
 % ops.external_Pulse = 0;
 % ops.timeout_ms = 5000;
 

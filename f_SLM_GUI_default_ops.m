@@ -7,8 +7,8 @@ else
 end
 
 %% Which SLM????
-ops.SLM_type = 0; % this is BNS 1920
-%ops.SLM_type = 1; % BNS 512 with OverDrive (OD)
+%ops.SLM_type = 0; % this is BNS 1920
+ops.SLM_type = 1; % BNS 512 with OverDrive (OD)
 
 %% directories
 % where to save outputs
@@ -30,9 +30,9 @@ ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 
 %% specific for BNS 512
 if ops.SLM_type == 1
-    ops.ops.SLM_SDK_dir
+    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
     %ops.cal_image_path = '';    % default will create blank
-    ops.init_reg_lut_fname = '';
+    ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';
 end
 
 %% default xyz
