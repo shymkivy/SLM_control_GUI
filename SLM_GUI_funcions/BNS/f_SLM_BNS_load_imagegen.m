@@ -11,12 +11,17 @@ if ~isfield(ops, 'imagegen_SDK_dir') % where is SDK
     ops.imagegen_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
 end
 
-addpath(ops.imagegen_SDK_dir);
-
+if exist(ops.imagegen_SDK_dir, 'dir')
+    addpath(ops.imagegen_SDK_dir);
+else
+    fprintf('Imagegen sdk dir does not exist: %s\n', ops.imagegen_SDK_dir)
+end
 %%
 % This loads the image generation functions
-if ~libisloaded('ImageGen')
-    loadlibrary('ImageGen.dll', 'ImageGen.h');
+if exist('ImageGen.dll', 'file')
+    if ~libisloaded('ImageGen')
+        loadlibrary('ImageGen.dll', 'ImageGen.h');
+    end
 end
 
 end

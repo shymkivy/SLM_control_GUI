@@ -24,7 +24,7 @@ end
 if isfield(ops, 'init_reg_lut_fname')   % use linear if not specified
     lut_path = [ops.lut_dir, '\', ops.init_reg_lut_fname];
     if ~exist(lut_path, 'file')
-        fprintf('lut file missing, using null: %s',lut_path);
+        fprintf('lut file missing, using null: %s\n',lut_path);
         lut_path = libpointer('int32Ptr', 0);
     end
 else
