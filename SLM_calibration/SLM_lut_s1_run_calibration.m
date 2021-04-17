@@ -11,10 +11,8 @@
 try %#ok<*TRYNC>
     f_SLM_close(ops);
 end
-if ops.use_TLDC
-    try 
-        TLDC_set_Cam_Close(cam_out.hdl_cam);            
-    end
+try 
+    TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
