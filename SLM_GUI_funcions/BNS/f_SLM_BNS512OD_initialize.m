@@ -13,7 +13,7 @@ if ~isfield(ops, 'SLM_SDK_dir') % where is SDK
 end
 
 if ~isfield(ops, 'lut_dir') % where are lut files
-    ops.lut_dir = 'lut_calibration\'; % regionalLUTfileName goes here
+    ops.lut_dir = 'lut_calibration'; % regionalLUTfileName goes here
 end
 
 %% Lut global
@@ -84,6 +84,7 @@ ops.sdk = calllib('Blink_SDK_C', 'Create_SDK', ops.bit_depth, ops.slm_resolution
                     ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, lut_path);
 
 if ops.constructed_okay.value == 0
+    ops.SDK_created = 0;
     disp('Blink SDK was not successfully constructed');
     disp(calllib('Blink_SDK_C', 'Get_last_error_message', ops.sdk));
     calllib('Blink_SDK_C', 'Delete_SDK', ops.sdk);
@@ -102,4 +103,8 @@ else
     
     % Turn the SLM power on
     calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
+    
+    %allocate arrays for our images
+    ops.height = 512;
+    ops.width = 512;
 end

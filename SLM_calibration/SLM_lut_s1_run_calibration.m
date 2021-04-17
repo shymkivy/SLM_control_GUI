@@ -8,7 +8,7 @@
 % lut pipeline step 1/3
 
 %% Parameters
-ops.use_TLDC = 0;           % otherwise wait for trigger
+ops.use_TLDC = 1;           % otherwise wait for trigger
 ops.use_photodiode = 0;
 ops.plot_phase = 1;
 
@@ -25,10 +25,12 @@ ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %
 slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %% Which SLM????
-ops.SLM_type = 0; % 0 = this is BNS 1920
-%ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
+%ops.SLM_type = 0; % 0 = this is BNS 1920
+ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
 
-
+if ops.SLM_type == 1
+    ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';
+end
 %%
 %save_pref = '940_slm5221_maitai';
 save_pref = '1064_slm5221_fianium';
