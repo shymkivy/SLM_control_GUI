@@ -21,14 +21,15 @@ end
 % to work, otherwise it will be disabled per Anna
 % for new BNS 1920 can send null, because it has no OD technically
 
-if ~isfield(ops, 'init_reg_lut_fname')   % use linear if not specified
-    error('Need to pass regional lut for initialization of BNS512OD saved in: %s', ops.lut_dir);
-end
-
-lut_path = [ops.lut_dir, '\', ops.init_reg_lut_fname];
-
-if ~exist(lut_path, 'file')
-    error('lut file missing: %s',lut_path);
+if isfield(ops, 'init_reg_lut_fname')   % use linear if not specified
+    lut_path = [ops.lut_dir, '\', ops.init_reg_lut_fname];
+    if ~exist(lut_path, 'file')
+        fprintf('lut file missing, using null: %s',lut_path);
+        lut_path = libpointer('int32Ptr', 0);
+    end
+else
+    disp('No regional provided for BNS512OD, using null');
+    lut_path = libpointer('int32Ptr', 0);
 end
 
 %% path to blank calibration image for BNS 512 OD
