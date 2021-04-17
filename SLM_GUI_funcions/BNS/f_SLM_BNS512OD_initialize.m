@@ -25,11 +25,11 @@ if isfield(ops, 'init_reg_lut_fname')   % use linear if not specified
     lut_path = [ops.lut_dir, '\', ops.init_reg_lut_fname];
     if ~exist(lut_path, 'file')
         fprintf('lut file missing, using null: %s\n',lut_path);
-        lut_path = libpointer('int32Ptr', 0);
+        lut_path = libpointer('string');
     end
 else
     disp('No regional provided for BNS512OD, using null');
-    lut_path = libpointer('int32Ptr', 0);
+    lut_path = libpointer('string');
 end
 
 %% path to blank calibration image for BNS 512 OD
