@@ -88,7 +88,8 @@ if ops.constructed_okay.value == 0
     disp(calllib('Blink_SDK_C', 'Get_last_error_message', ops.sdk));
     calllib('Blink_SDK_C', 'Delete_SDK', ops.sdk);
 else
-    %% 
+    %%
+    ops.SDK_created = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
     % Set the basic SLM parameters
@@ -97,7 +98,8 @@ else
     calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
     % A linear LUT must be loaded to the controller for OverDrive Plus
     calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
-        
+    ops.board_number = 1;
+    
     % Turn the SLM power on
     calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
 end
