@@ -13,7 +13,8 @@ end
 f_sg_lut_load_list(app);
 
 % update from default
-if numel(ops.lut_fname)
+
+if isfield(ops, 'lut_fname')
     if sum(strcmpi(ops.lut_fname, app.LUTDropDown.Items))
         app.LUTDropDown.Value = ops.lut_fname;
     end
