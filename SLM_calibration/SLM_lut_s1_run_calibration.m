@@ -36,9 +36,6 @@ slm_roi = 'full'; % 'full' 'left_half'(1064) 'right_half'(940)
 ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
 
 if ops.SLM_type == 1
-    % Prairie 1
-    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
-    % 901D
     %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
     %ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';
 end

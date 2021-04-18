@@ -30,12 +30,8 @@ ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 
 %% specific for BNS 512
 if ops.SLM_type == 1
-    % Prairie 1
-    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\OverDrive Plus\SDK';
-    % 901D
     %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-    %ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';
-    
+    %ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';    
     % dont need
     %ops.cal_image_path = '';    % default will create blank
 end
