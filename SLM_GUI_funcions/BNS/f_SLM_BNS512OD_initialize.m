@@ -106,4 +106,5 @@ else
     ops.width = 512;
     
     %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk)
+    %calllib('Blink_SDK_C', 'Get_version_info', ops.sdk)
 end
