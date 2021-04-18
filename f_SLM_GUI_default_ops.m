@@ -7,8 +7,9 @@ else
 end
 
 %% Which SLM????
-%ops.SLM_type = 0; % this is BNS 1920
-ops.SLM_type = 1; % BNS 512 with OverDrive (OD)
+% 0 = BNS 1920
+% 1 = BNS 512 with OverDrive (OD)
+ops.SLM_type = 0; 
 
 %% directories
 % where to save outputs
@@ -33,8 +34,8 @@ else
 end
 
 %%
-ops.height = 1152;      % automatically get from SLM
-ops.width = 1920;       % automatically get from SLM
+% ops.height = 1152;      % automatically get from SLM
+% ops.width = 1920;       % automatically get from SLM
 
 % 20X olympus specific params
 % ops.objective_mag = 20; %
@@ -45,13 +46,13 @@ ops.objective_mag = 25;
 ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
 
 % determines the size of all radial patterns (defocus and zernike)
-ops.beam_diameter = 1152;       % in pixels
+ops.beam_diameter = 1152;   % in pixels, unused 
 
-ops.objective_RI = 1.33;
-ops.wavelength = 940;           % in nm
+ops.objective_RI = 1.33;    % used in defocus functions
+ops.wavelength = 940;       % in nm    
 
-ops.X_offset = 0;      % amount to offset with X offset
-ops.Y_offset = 10;      % amount to offset with Y offset
+ops.X_offset = 0;           % amount to offset with X offset
+ops.Y_offset = 10;          % amount to offset with Y offset
 
 ops.ref_offset = 50;    % reference image offset for checking scan sequence 
 
