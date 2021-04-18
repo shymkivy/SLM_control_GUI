@@ -141,7 +141,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
 	
     if ops.plot_phase
         SLM_fig = figure;
-        SLM_im = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
+        SLM_im = imagesc(reshape(SLM_image.Value, ops.width, ops.height)'); axis equal tight;
         caxis([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
     end
@@ -149,7 +149,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     if ops.use_TLDC
         calib_im_series = zeros(size(cam_out.cam_frame,1), size(cam_out.cam_frame,2), ops.NumGray*numel(regions_run), 'uint8');
         cam_fig = figure;
-        cam_im = imagesc(cam_out.cam_frame');
+        cam_im = imagesc(cam_out.cam_frame'); axis equal tight;
         %caxis([1 256]);
         cam_fig.Children.Title.String = 'Camera';
     end
