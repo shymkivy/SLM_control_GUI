@@ -17,8 +17,10 @@ function f_SLM_BNS512OD_update(ops, image)
 
 %calllib('Blink_SDK_C', 'Write_overdrive_image', ops.sdk, 1, image, ops.wait_For_Trigger, 0);
 
-image2 = int8(f_sg_poiner_to_im(image, ops.height, ops.width)/2/pi*255);
-pImage = libpointer('uint8Ptr', image2);
-calllib('Blink_SDK_C', 'Write_image', ops.sdk, 1, pImage, ops.height, ops.wait_For_Trigger, 0);
+% image2 = int8(f_sg_poiner_to_im(image, ops.height, ops.width)/2/pi*255);
+% pImage = libpointer('uint8Ptr', image2);
+
+%same format is ok as new
+calllib('Blink_SDK_C', 'Write_image', ops.sdk, 1, image, ops.height, ops.wait_For_Trigger, 0);
 
 end
