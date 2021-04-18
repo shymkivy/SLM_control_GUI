@@ -9,9 +9,24 @@ if ~exist(ops.lut_dir, 'dir')
     mkdir(ops.lut_dir)
 end
 
+%% load luts dropdowns
 f_sg_lut_load_list(app);
+
+% update from default
+if numel(ops.lut_fname)
+    if sum(strcmpi(ops.lut_fname, app.LUTDropDown.Items))
+        app.LUTDropDown.Value = ops.lut_fname;
+    end
+else
+    if sum(strcmpi('linear.lut', app.LUTDropDown.Items))
+        ops.lut_fname = 'linear.lut';
+        app.LUTDropDown.Value = ops.lut_fname;
+    end
+end
+%%
 f_sg_lut_correctios_load_list(app);
 
+%%
 ops = app.SLM_ops;
 
 % xyz calibration
@@ -40,16 +55,8 @@ for n_fl = 1:numel(AO_fnames)
 end
 ops.AO_correction = [{'None'}, {[]};ops.AO_correction];
 
-%% update dropdowns
-app.LUTDropDown.Items = app.lut_list;
-if numel(ops.lut_fname)
-    if sum(strcmpi(ops.lut_fname, app.LUTDropDown.Items))
-        app.LUTDropDown.Value = ops.lut_fname;
-    end
-else
-    ops.lut_fname = app.LUTDropDown.Value;
-end
 
+%%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
 
