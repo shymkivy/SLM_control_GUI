@@ -31,12 +31,17 @@ if ops.SLM_type == 0
     ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 else
     ops.lut_fname = 'linear.lut';
-    ops.init_lut_fname =  'slm4317_test_regional.txt';
+    ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 end
 
 %%
-% ops.height = 1152;      % automatically get from SLM
-% ops.width = 1920;       % automatically get from SLM
+if ops.SLM_type == 0
+    ops.height = 1152;      % automatically get from SLM, only is used if slm fails to activate
+    ops.width = 1920;       % automatically get from SLM
+else
+    ops.height = 512;
+    ops.width = 512;
+end
 
 % 20X olympus specific params
 % ops.objective_mag = 20; %
