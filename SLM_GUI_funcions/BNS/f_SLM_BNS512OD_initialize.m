@@ -28,7 +28,7 @@ if isfield(ops, 'init_lut_fname')   % use linear if not specified
         init_lut_fpath = libpointer('string');
     end
 else
-    disp('No regional provided for BNS512OD, using null');
+    %disp('No regional provided for BNS512OD, using null');
     init_lut_fpath = libpointer('string');
 end
 

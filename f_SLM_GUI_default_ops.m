@@ -30,7 +30,7 @@ if ops.SLM_type == 0
     %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
     ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 else
-    ops.lut_fname =  '';
+    ops.init_lut_fname =  'slm4317_test_regional.txt';
 end
 
 %%
