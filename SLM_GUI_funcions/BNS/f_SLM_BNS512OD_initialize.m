@@ -104,4 +104,6 @@ else
     %allocate arrays for our images
     ops.height = 512;
     ops.width = 512;
+    
+    %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk)
 end
