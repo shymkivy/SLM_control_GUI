@@ -21,9 +21,11 @@ if isfield(ops, 'lut_fname')
 else
     if sum(strcmpi('linear.lut', app.LUTDropDown.Items))
         ops.lut_fname = 'linear.lut';
+        app.SLM_ops.lut_fname = 'linear.lut';
         app.LUTDropDown.Value = ops.lut_fname;
     end
 end
+
 %%
 f_sg_lut_correctios_load_list(app);
 
