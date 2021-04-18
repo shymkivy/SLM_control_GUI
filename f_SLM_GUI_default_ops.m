@@ -20,24 +20,15 @@ ops.xyz_calibration_dir = [ops.GUI_dir '\SLM_calibration\xyz_calibration'];
 ops.AO_correction_dir = [ops.GUI_dir '\SLM_calibration\AO_correction'];
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
-ops.AO_recording_dir = 'E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001';
+% directory from microscope computer where frames are saved during AO optimization
+ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
 
 %% default lut
-
-%ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-%ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
-
-%% specific for BNS 512
-if ops.SLM_type == 1
-    %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-    %ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';    
-    % dont need
-    %ops.cal_image_path = '';    % default will create blank
+if ops.SLM_type == 0
+    %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+    %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+    ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 end
-
-%% default xyz
-
 
 %%
 ops.height = 1152;      % automatically get from SLM
@@ -69,35 +60,62 @@ ops.NI_DAQ_AO_channel = 0;
 
 app.SLM_ops = ops;
 
-%% defauld roi list
-roi1.name_tag = {'Full SLM'};
-roi1.height_range = [0, 1];
-roi1.width_range = [0, 1];
-roi1.wavelength = 940;
-roi1.effective_NA = 0.48;
-roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'};
-app.region_list = [app.region_list; roi1];
+if ops.SLM_type == 0
+    %% defauld roi list
+    roi1.name_tag = {'Full SLM'};
+    roi1.height_range = [0, 1];
+    roi1.width_range = [0, 1];
+    roi1.wavelength = 940;
+    roi1.effective_NA = 0.48;
+    roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'};
+    app.region_list = [app.region_list; roi1];
 
-roi1.name_tag = {'Left half'};
-roi1.height_range = [0, 1];
-roi1.width_range = [0, 0.5];
-roi1.wavelength = 1064;
-roi1.effective_NA = 0.415;
-roi1.lateral_affine_transform = {'lateral_calib_fianium_z1_12_21_20.mat'};
-app.region_list = [app.region_list; roi1];
+    roi1.name_tag = {'Left half'};
+    roi1.height_range = [0, 1];
+    roi1.width_range = [0, 0.5];
+    roi1.wavelength = 1064;
+    roi1.effective_NA = 0.415;
+    roi1.lateral_affine_transform = {'lateral_calib_fianium_z1_12_21_20.mat'};
+    app.region_list = [app.region_list; roi1];
 
-roi1.name_tag = {'Right half'};
-roi1.height_range = [0, 1];
-roi1.width_range = [0.5, 1];
-roi1.wavelength = 940;
-roi1.effective_NA = 0.48;
-roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
-app.region_list = [app.region_list; roi1];
+    roi1.name_tag = {'Right half'};
+    roi1.height_range = [0, 1];
+    roi1.width_range = [0.5, 1];
+    roi1.wavelength = 940;
+    roi1.effective_NA = 0.48;
+    roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
+    app.region_list = [app.region_list; roi1];
 
-%% default xyz pattern
-pat1.name_tag = {'Multiplane'};
-pat1.xyz_pts = [];
-pat1.SLM_region = {'Right half'};
-app.xyz_patterns = [app.xyz_patterns; pat1];
+    %% default xyz pattern
+    pat1.name_tag = {'Multiplane'};
+    pat1.xyz_pts = [];
+    pat1.SLM_region = {'Right half'};
+    app.xyz_patterns = [app.xyz_patterns; pat1];
+
+end
+
+%% specific for BNS 512
+if ops.SLM_type == 1
+    %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+    %ops.init_reg_lut_fname = 'SLM_3329_20150303.txt';    
+    % dont need
+    %ops.cal_image_path = '';    % default will create blank
+    
+    %% defauld roi list
+    roi1.name_tag = {'Full SLM'};
+    roi1.height_range = [0, 1];
+    roi1.width_range = [0, 1];
+    roi1.wavelength = 940;
+    roi1.effective_NA = 0.48;
+    roi1.lateral_affine_transform = {}; %'lateral_calib_maitai_z6_12_21_20.mat'
+    app.region_list = [app.region_list; roi1];
+    
+    %% default xyz pattern
+    pat1.name_tag = {'Multiplane'};
+    pat1.xyz_pts = [];
+    pat1.SLM_region = {'Full SLM'};
+    app.xyz_patterns = [app.xyz_patterns; pat1];
+    
+end
 
 end
