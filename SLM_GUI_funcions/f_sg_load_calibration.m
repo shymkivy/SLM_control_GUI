@@ -46,6 +46,8 @@ if numel(ops.lut_fname)
     if sum(strcmpi(ops.lut_fname, app.LUTDropDown.Items))
         app.LUTDropDown.Value = ops.lut_fname;
     end
+else
+    ops.lut_fname = app.LUTDropDown.Value;
 end
 
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
