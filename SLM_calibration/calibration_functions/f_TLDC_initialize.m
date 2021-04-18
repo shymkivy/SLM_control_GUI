@@ -1,7 +1,7 @@
 function [cam_out, cam_params] = f_TLDC_initialize(ops)
 % Set up the camera
 
-cam_params.path_TLCAM_MEX = [ops.working_dir '\..\..\TLDC_MEX'];
+cam_params.path_TLCAM_MEX = [ops.working_dir '\..\..\libraries\TLDC_MEX'];
 addpath(cam_params.path_TLCAM_MEX);
 
 % Camera parameters
