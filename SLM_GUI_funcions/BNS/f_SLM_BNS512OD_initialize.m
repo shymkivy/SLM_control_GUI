@@ -90,6 +90,7 @@ else
     ops.SDK_created = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
+    disp(calllib('Blink_SDK_C', 'Get_last_error_message', ops.sdk));
     % Set the basic SLM parameters
     calllib('Blink_SDK_C', 'Set_true_frames', ops.sdk, ops.true_frames);
     % A blank calibration file must be loaded to the SLM controller
