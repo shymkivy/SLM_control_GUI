@@ -59,8 +59,6 @@ if ~libisloaded('Blink_SDK_C')  % this is for old 512 BNS with OverDrive
     loadlibrary('Blink_SDK_C.dll', 'Blink_SDK_C_matlab.h');
 end
 
-%% load imagegen library which is in new BNS 1920 slm sdk path
-f_SLM_BNS_load_imagegen();
 
 %% Basic parameters for calling Create_SDK for BNS 512 with OD
 ops.bit_depth = 8;
@@ -79,9 +77,7 @@ ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 f
 % ops.external_Pulse = 0;
 % ops.timeout_ms = 5000;
 
-
 %%
-
 ops.sdk = calllib('Blink_SDK_C', 'Create_SDK', ops.bit_depth, ops.slm_resolution, ops.num_boards_found, ops.constructed_okay,...
                     ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, lut_path);
 

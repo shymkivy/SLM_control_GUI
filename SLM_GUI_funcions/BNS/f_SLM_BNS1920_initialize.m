@@ -38,11 +38,6 @@ if ~libisloaded('Blink_C_wrapper')
     loadlibrary('Blink_C_wrapper.dll', 'Blink_C_wrapper.h');
 end
 
-% This loads the image generation functions
-if ~libisloaded('ImageGen')
-    loadlibrary('ImageGen.dll', 'ImageGen.h');
-end
-
 %% Basic parameters for calling Create_SDK
 ops.bit_depth = 12;
 ops.num_boards_found = libpointer('uint32Ptr', 0);
