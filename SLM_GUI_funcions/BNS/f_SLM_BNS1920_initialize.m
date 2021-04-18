@@ -51,11 +51,11 @@ ops.external_Pulse = 0;
 ops.timeout_ms = 5000;
 
 %% - create SDK
-regional_lut_fname = libpointer('string'); % null for new bns, only important for old
+init_lut_fpath = libpointer('string'); % null for new bns, only important for old
 
 calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found,...
     ops.constructed_okay, ops.is_nematic_type, ops.RAM_write_enable,...
-    ops.use_GPU, ops.max_transients, regional_lut_fname);
+    ops.use_GPU, ops.max_transients, init_lut_fpath);
 
 % Convention follows that of C function return values: 0 is success, nonzero integer is an error
 if ops.constructed_okay.value ~= 0  

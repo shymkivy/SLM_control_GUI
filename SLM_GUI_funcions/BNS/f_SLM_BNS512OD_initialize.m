@@ -21,15 +21,15 @@ end
 % to work, otherwise it will be disabled per Anna
 % for new BNS 1920 can send null, because it has no OD technically
 
-if isfield(ops, 'init_reg_lut_fname')   % use linear if not specified
-    lut_path = [ops.lut_dir, '\', ops.init_reg_lut_fname];
-    if ~exist(lut_path, 'file')
-        fprintf('lut file missing, using null: %s\n',lut_path);
-        lut_path = libpointer('string');
+if isfield(ops, 'init_lut_fname')   % use linear if not specified
+    init_lut_fpath = [ops.lut_dir, '\', ops.init_lut_fname];
+    if ~exist(init_lut_fpath, 'file')
+        fprintf('init lut file missing, using null: %s\n',init_lut_fpath);
+        init_lut_fpath = libpointer('string');
     end
 else
     disp('No regional provided for BNS512OD, using null');
-    lut_path = libpointer('string');
+    init_lut_fpath = libpointer('string');
 end
 
 %% path to blank calibration image for BNS 512 OD
@@ -59,7 +59,6 @@ if ~libisloaded('Blink_SDK_C')  % this is for old 512 BNS with OverDrive
     loadlibrary('Blink_SDK_C.dll', 'Blink_SDK_C_matlab.h');
 end
 
-
 %% Basic parameters for calling Create_SDK for BNS 512 with OD
 ops.bit_depth = 8;
 ops.num_boards_found = libpointer('uint32Ptr', 0);
@@ -79,7 +78,7 @@ ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 f
 
 %%
 ops.sdk = calllib('Blink_SDK_C', 'Create_SDK', ops.bit_depth, ops.slm_resolution, ops.num_boards_found, ops.constructed_okay,...
-                    ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, lut_path);
+                    ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, init_lut_fpath);
 
 if ops.constructed_okay.value == 0
     ops.SDK_created = 0;
