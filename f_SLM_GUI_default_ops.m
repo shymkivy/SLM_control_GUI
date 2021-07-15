@@ -9,7 +9,7 @@ end
 %% Which SLM????
 % 0 = BNS 1920
 % 1 = BNS 512 with OverDrive (OD)
-ops.SLM_type = 1; 
+ops.SLM_type = 0; 
 
 %% directories
 % where to save outputs
