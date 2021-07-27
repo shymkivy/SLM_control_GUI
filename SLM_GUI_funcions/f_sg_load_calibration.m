@@ -58,6 +58,12 @@ for n_fl = 1:numel(AO_fnames)
 end
 ops.AO_correction = [{'None'}, {[]};ops.AO_correction];
 
+%%
+for n_reg = 1:numel(app.region_list)
+    if ~sum(strcmpi(app.region_list(n_reg).lateral_affine_transform, ops.lateral_calibration(:,1)))
+        app.region_list(n_reg).lateral_affine_transform = {};
+    end
+end
 
 %%
 app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
