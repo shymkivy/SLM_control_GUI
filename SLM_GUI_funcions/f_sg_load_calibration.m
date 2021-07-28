@@ -46,7 +46,7 @@ for n_fl = 1:numel(lateral_calib_fnames)
 end
 ops.lateral_calibration = [{'None'}, {[]};ops.lateral_calibration];
 
-% load Zernike files
+%% load Zernike files
 if ~exist(ops.AO_correction_dir, 'dir')
     mkdir(ops.AO_correction_dir)
 end

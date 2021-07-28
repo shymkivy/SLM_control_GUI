@@ -62,7 +62,8 @@ app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
 
-app.ScanframesdirpathEditField.Value = app.SLM_ops.AO_recording_dir;
+app.FOVsizeumEditField.Value = ops.FOV_size;
+
 %%
 % blank
 app.BlankPixelValueEditField.Value = 0;
