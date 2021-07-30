@@ -21,6 +21,5 @@ close;
 
 app.data.zero_ord_coords = zero_ord_coords;
 app.data.first_ord_coords = first_ord_coords;
-app.data.displacement_mat = first_ord_coords-zero_ord_coords;
 
 end

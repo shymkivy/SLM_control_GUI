@@ -15,7 +15,6 @@ else
         file_names{n_file} = file_list(n_file).name;
     end
        
-    
     input_coords = zeros(num_files,2);      % (x,y)  coordinates for each file
     for n_file = 1:num_files
         dist = regexp(file_names{n_file},'\d*','Match');
@@ -35,7 +34,7 @@ else
         input_coords = -input_coords;
     end
     
-    input_coords = [input_coords, ones(size(input_coords,1),1)];
+    input_coords = [input_coords, zeros(size(input_coords,1),1)];
     
     lat_calib_all = struct();
     for n_file = 1:num_files

@@ -5,16 +5,25 @@ if app.ApplyXYZcalibrationButton.Value
             lateral_affine_SLM_inv_um = diag(ones(2,1));
         else
             idx_lat = strcmpi(reg1.lateral_affine_transform, app.SLM_ops.lateral_calibration(:,1));
-            lat_cal = app.SLM_ops.lateral_calibration{idx_lat,2};
+            lat_cal = app.SLM_ops.lateral_calibration{idx_lat,2}; % .xyz_affine_calib in future
             
-            % get transform % input * affine = slm actual
-            lateral_affine_SLM = lat_cal.input_coords\lat_cal.displacement_mat;
-            lateral_affine_SLM_inv = inv(lateral_affine_SLM);
-            
-            %lat_cal.input_coords * lateral_affine_SLM_inv * lateral_affine_SLM
+            if isfield(lat_cal, 'xyz_affine_calib')
+                lateral_affine_SLM_inv = lat_cal.xyz_affine_calib.xyz_affine_tf_mat(1:2,1:2);
+            else
+                % get transform % input * affine = slm actual
+                lateral_affine_SLM = lat_cal.input_coords\lat_cal.displacement_mat;
+                lateral_affine_SLM_inv = inv(lateral_affine_SLM);
 
+                %lat_cal.input_coords * lateral_affine_SLM_inv * lateral_affine_SLM
+            end
+
+            xy_pix_step = [app.FOVsizeumEditField.Value/app.ZoomxEditField.Value/app.xpixelsEditField.Value,...
+                           app.FOVsizeumEditField.Value/app.ZoomxEditField.Value/app.ypixelsEditField.Value];
+            
+                       
             % convert affine mat to um
-            lateral_affine_SLM_inv_um = diag(lat_cal.xy_pix_step)\lateral_affine_SLM_inv;
+            lateral_affine_SLM_inv_um = diag(xy_pix_step)\lateral_affine_SLM_inv;           
+            
         end
 
         xyz_affine_tf_mat = zeros(3,3);

@@ -1,12 +1,14 @@
 function f_sg_lc_load_calib(app)
 
-dir1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration\xyz_calibration\';
-load1 = load([dir1 'test_calib_7_28_21.mat']);
+fpath = app.calibfileEditField.Value;
+load1 = load(fpath);
 
-lateral_calibration = load1.lateral_calibration;
+xyz_affine_calib = load1.xyz_affine_calib;
 
-app.data.zero_ord_coords = lateral_calibration.zero_ord_coords;
-app.data.first_ord_coords = lateral_calibration.first_ord_coords;
-app.data.displacement_mat = lateral_calibration.first_ord_coords - app.data.zero_ord_coords;
+app.data.xyz_affine_calib = xyz_affine_calib;
+
+app.data.zero_ord_coords = xyz_affine_calib.zero_ord_coords;
+app.data.first_ord_coords = xyz_affine_calib.first_ord_coords;
+app.data.input_coords = xyz_affine_calib.input_coords;
 
 end
