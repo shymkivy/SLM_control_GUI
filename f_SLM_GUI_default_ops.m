@@ -50,10 +50,12 @@ end
 % 20X olympus specific params
 % ops.objective_mag = 20; %
 % ops.effective_NA = 0.48; % 0.48 for 20x; 
+% ops.FOV_size = 637.4; % in um
 
 % % 25X olympus specific params
 ops.objective_mag = 25;
 ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
+ops.FOV_size = 511; % in um
 
 % determines the size of all radial patterns (defocus and zernike)
 ops.beam_diameter = 1152;   % in pixels, unused 
@@ -66,12 +68,15 @@ ops.Y_offset = 10;          % amount to offset with Y offset
 
 ops.ref_offset = 50;    % reference image offset for checking scan sequence 
 
+
 ops.NI_DAQ_dvice = 'dev2';
 ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
 ops.NI_DAQ_AO_channel = 0;
 
+
 app.SLM_ops = ops;
+
 
 if ops.SLM_type == 0
     %% defauld roi list

@@ -30,13 +30,24 @@ if ~strcmpi(pattern, 'none')
         xyzp = [gr_subtable(:,4:5), gr_subtable(:,3)*1e-6];
         xyzp2 = xyzp*xyz_affine_tf_mat;
         
+        beam_width = app.BeamdiameterpixEditField.Value;
+        
         holo_complex = f_sg_PhaseHologram_YS(xyzp2,...
                                         SLMm, SLMn,...
                                         gr_subtable(:,7),...
-                                        gr_subtable(:,6),...
+                                        reg1.effective_NA,...
                                         app.ObjectiveRIEditField.Value,...
-                                        app.WavelengthnmEditField.Value*1e-9);
+                                        app.WavelengthnmEditField.Value*1e-9,...
+                                        beam_width);
         
+        if app.AOzerooutsideunitcircCheckBox.Value
+            xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+            xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+            [fX, fY] = meshgrid(xln, xlm);
+            [~, RHO] = cart2pol(fX, fY);
+            holo_complex(RHO>1) = 1;
+        end
+                                    
         AO_wf = f_sg_AO_get_correction(app, reg1.name_tag, gr_subtable(:,3));                         
                    
         if ~isempty(AO_wf)

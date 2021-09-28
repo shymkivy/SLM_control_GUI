@@ -6,7 +6,7 @@ if strcmp(from_where, 'custom')
                   app.ZOffsetumEditField.Value*1e-6];
 
     coord.weight = app.WeightEditField.Value;
-
+       
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;
     else
@@ -16,40 +16,35 @@ if strcmp(from_where, 'custom')
     
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
-        coord.xyzp = [app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),4).Variables,...
-                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),5).Variables,...
-                      app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),3).Variables*1e-6];
-
-        coord.weight = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),7).Variables;
-        coord.NA = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),6).Variables;
-        coord.idx = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),1).Variables;
+        
+        tab_var = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),:).Variables;
+        
+        coord.idx = tab_var(1);
+        coord.xyzp = [tab_var(3:4), tab_var(5)*1e-6];
+        coord.weight = tab_var(6);
+        
+        [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        coord.NA = reg1.effective_NA;
     else
         coord = [];
     end
 elseif strcmp(from_where, 'pattern')
     if ~isempty(app.UIImagePhaseTable.Data)
-        plan_idx = app.UIImagePhaseTable.Data(:,strcmpi(app.UIImagePhaseTable.ColumnName, 'pattern')).Variables == num;
+        
+        tab_var = app.UIImagePhaseTable.Data.Variables; 
+        plan_idx = tab_var(:,2) == num;
+        
         if sum(plan_idx)
-            plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
-            coord.xyzp = [plane_table(:,4:5), plane_table(:,3)*1e-6];
-            coord.weight = plane_table(:,7);
-            coord.NA = plane_table(:,6);
-            coord.idx = plane_table(:,1);
-        else
-            coord = [];
-        end
-    else
-        coord = [];
-    end
-elseif strcmp(from_where, 'z_plane')
-    if ~isempty(app.UIImagePhaseTable.Data)
-        plan_idx = app.UIImagePhaseTable.Data(:,strcmpi(app.UIImagePhaseTable.ColumnName, 'z')).Variables == num;
-        if sum(plan_idx)
-            plane_table = app.UIImagePhaseTable.Data(plan_idx,:).Variables;
-            coord.xyzp = [plane_table(:,4:5), plane_table(:,3)*1e-6];
-            coord.weight = plane_table(:,7);
-            coord.NA = plane_table(:,6);
-            coord.idx = plane_table(:,1);
+            
+            tab_var2 = tab_var(plan_idx,:);
+            
+            coord.idx = tab_var2(:,1);
+            coord.xyzp = [tab_var2(:,3:4), tab_var2(:,5)*1e-6];
+            coord.weight = tab_var2(:,6);
+            
+            [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+            coord.NA = reg1.effective_NA;
+            
         else
             coord = [];
         end

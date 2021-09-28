@@ -1,10 +1,5 @@
-%% XY affine calibration
-% collect all images in same folder and name each with disp value "X_20" or "Y_-50"
-clear
+function f_sg_lc_update_affine(app)
 
-%%
-% 20x full 637.4um
-% 25X full 511um
 full_fov_size = 637.4;
 zoom = 6;
 fov_pix_x = 256;
@@ -70,26 +65,5 @@ end
 close;
 
 displacement_mat = first_ord_coords-zero_ord_coords;
-% displacement_mat2 = displacement_mat*diag(xy_pix_step);
-% 
-% figure; plot(input_coords(:,1), displacement_mat2(:,1),  '-o');
-% xlabel('x input'); ylabel('x displacement');
-% 
-% figure; plot(input_coords(:,2), displacement_mat2(:,2),  '-o')
-% xlabel('y input'); ylabel('y displacement');
-% 
-% % transform_mat*input_coords = displacement_mat
-% 
-% lateral_affine_transform_mat = inv(input_coords\displacement_mat);
 
-% aff1 = input_coords\displacement_mat;
-% aff1_inv = inv(input_coords\displacement_mat);
-% input_coords*aff1*aff1_inv
-% displacement_mat*aff1_inv
-% input_coords*aff1
-
-%lateral_affine_transform_mat3 = diag(xy_calib)\lateral_affine_transform_mat;
-%lateral_affine_transform_mat2 = inv(input_coords\displacement_mat2);
-
-%save([files_dir '\' save_name '.mat'], 'lateral_affine_transform_mat', 'xy_pix_step')
-save([files_dir '\' save_name '.mat'], 'displacement_mat', 'input_coords', 'xy_pix_step');
+end

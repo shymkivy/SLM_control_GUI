@@ -1,6 +1,7 @@
 # SLM_microscope_GUI
 
-GUI to control holographic imaging/stimulation microscope
+GUI to control holographic imaging/stimulation microscope. 
+Especially useful if you want to control subregions of the SLM
 	
 Author: Yuriy Shymkiv, shymkivy@gmail.com
 
