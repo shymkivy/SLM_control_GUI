@@ -74,7 +74,7 @@ end
 
 %%
 if use_blaze_deflect_blank
-    lut_path = [ops.working_dir '\lut_calibration\linear_correction\' bkg_lut_correction];
+    lut_path = [ops.working_dir '\..\..\SLM_calibration\lut_calibration\linear_correction\' bkg_lut_correction];
     lut_load = load(lut_path);
     LUT_correction = lut_load.LUT_correction;
     LUT_correction = round(LUT_correction);
