@@ -6,7 +6,7 @@ function lut_array = f_SLM_read_lut(fname)
 fileID = fopen(fname);
 %[filename,permission,machinefmt,encoding] = fopen(fileID);
 tline = fgets(fileID);
-if sum(tline==9) 
+if sum(tline==9) % checks if there is space or tab in code
     break1 = 9; % tab (from linear lut) ASCII CODE
 elseif sum(tline==32)
     break1 = 32; % space (from custom lut) ASCII CODE
