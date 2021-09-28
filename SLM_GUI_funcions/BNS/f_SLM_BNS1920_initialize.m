@@ -12,7 +12,7 @@ if ~isfield(ops, 'SLM_SDK_dir')
 end
 
 if ~isfield(ops, 'lut_dir')
-    ops.lut_dir = 'lut_calibration\';
+    ops.lut_dir = '\..\SLM_calibration\lut_calibration\';
 end
 
 %% Lut global
@@ -20,7 +20,7 @@ if ~isfield(ops, 'lut_fname')
     ops.lut_fname = 'linear.lut';
 end
 
-lut_path = [ops.lut_dir '\' ops.lut_fname];
+lut_path = [ops.lut_dir ops.lut_fname];
 
 if ~exist(lut_path, 'file')
     error('lut file missing: %s',lut_path);
