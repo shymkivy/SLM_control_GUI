@@ -13,12 +13,13 @@ ops.SLM_type = 0;
 
 %% directories
 % where to save outputs
+ops.calibration_dir = [ops.GUI_dir '\..\SLM_calibration'];
 ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
 
 % GUI subdirectories
-ops.lut_dir = [ops.GUI_dir '\SLM_calibration\lut_calibration'];
-ops.xyz_calibration_dir = [ops.GUI_dir '\SLM_calibration\xyz_calibration'];
-ops.AO_correction_dir = [ops.GUI_dir '\SLM_calibration\AO_correction'];
+ops.lut_dir = [ops.calibration_dir '\lut_calibration'];
+ops.xyz_calibration_dir = [ops.calibration_dir '\xyz_calibration'];
+ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
 
 % directory from microscope computer where frames are saved during AO optimization
