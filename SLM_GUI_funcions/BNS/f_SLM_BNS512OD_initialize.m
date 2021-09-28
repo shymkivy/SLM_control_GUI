@@ -13,7 +13,7 @@ if ~isfield(ops, 'SLM_SDK_dir') % where is SDK
 end
 
 if ~isfield(ops, 'lut_dir') % where are lut files
-    ops.lut_dir = 'lut_calibration'; % regionalLUTfileName goes here
+    ops.lut_dir = '\..\SLM_calibration\lut_calibration\'; % regionalLUTfileName goes here
 end
 
 %% Lut global

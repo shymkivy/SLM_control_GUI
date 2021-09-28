@@ -60,7 +60,15 @@ blaze_reverse_dir = 1;
 bkg_lut_correction = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
 
 %% add paths and create save name
-ops.working_dir = fileparts(which('SLM_lut_s1_run_calibration.m'));
+origin_path = which('SLM_lut_s1_run_calibration.m');
+if ~numel(origin_path)
+    error('Error: Move to the script folder');
+else
+    ops.working_dir = fileparts(which('SLM_lut_s1_run_calibration.m'));
+end
+
+ops.lut_dir = [ops.working_dir '\..\..\SLM_calibration\lut_calibration'];
+
 addpath([ops.working_dir '\..\']);
 addpath([ops.working_dir '\..\SLM_GUI_funcions']);
 addpath([ops.working_dir '\..\SLM_GUI_funcions\BNS']);
