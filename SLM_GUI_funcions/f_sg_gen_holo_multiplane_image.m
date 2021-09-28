@@ -22,8 +22,17 @@ function holo_image = f_sg_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
     
     objectiveRI = app.ObjectiveRIEditField.Value;
     illuminationWavelength = app.WavelengthnmEditField.Value*1e-9;
+    beam_width = app.BeamdiameterpixEditField.Value;
     
-    holo_image = f_sg_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength);
+    holo_image = f_sg_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength, beam_width);
+    
+    if app.AOzerooutsideunitcircCheckBox.Value
+        xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+        xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+        [fX, fY] = meshgrid(xln, xlm);
+        [~, RHO] = cart2pol(fX, fY);
+        holo_image(RHO>1) = 1;
+    end
     
 %    SLM_phase = zeros(SLMm, SLMn, num_points);
 %     for n_point = 1:num_points

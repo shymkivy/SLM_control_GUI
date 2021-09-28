@@ -1,9 +1,17 @@
-function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength)
+function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 %   Detailed explanation goes here
     
-    max_dim = max(SLMn,SLMm);
-    [ u, v ] = meshgrid(linspace(-SLMn/max_dim,SLMn/max_dim,SLMn), linspace(-SLMm/max_dim,SLMm/max_dim,SLMm));
+    if ~exist('beam_width', 'var')
+        beam_width = max(SLMn,SLMm);
+    end
+    
+    xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+    xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+    [u, v] = meshgrid(xln, xlm);
+    
+    % max_dim = max(SLMn,SLMm);
+    % [ u, v ] = meshgrid(linspace(-SLMn/max_dim,SLMn/max_dim,SLMn), linspace(-SLMm/max_dim,SLMm/max_dim,SLMm));
 
     SLMplane=0;
     defocus=zeros(SLMm, SLMn, size(xyzp,1));
@@ -12,7 +20,7 @@ function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA
     end
     if nargin>4
         for idx=1:size(xyzp,1)            
-            defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA(idx), objectiveRI, illuminationWavelength );
+            defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA(idx), objectiveRI, illuminationWavelength, beam_width);
         end
     end
     for idx=1:size(xyzp,1)
@@ -23,12 +31,21 @@ function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA
     phase=SLMplane;
 end
 
-function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength )
-    max_dim = max(SLMn,SLMm);
-    xlm = linspace(-SLMm/max_dim, SLMm/max_dim, SLMm);
-    xln = linspace(-SLMn/max_dim, SLMn/max_dim, SLMn);
-    [fX fY] = meshgrid(xln, xlm);
-    [THETA RHO] = cart2pol( fX, fY );
+function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
+    if ~exist('beam_width', 'var')
+        beam_width = max(SLMn,SLMm);
+    end
+    
+    xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+    xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+    [fX, fY] = meshgrid(xln, xlm);
+
+%     max_dim = max(SLMn,SLMm);
+%     xlm = linspace(-SLMm/max_dim, SLMm/max_dim, SLMm);
+%     xln = linspace(-SLMn/max_dim, SLMn/max_dim, SLMn);
+%     [fX, fY] = meshgrid(xln, xlm);
+    
+    [~, RHO] = cart2pol( fX, fY );
     
     alpha = asin( (objectiveNA./objectiveRI) );
     k = 2*pi/illuminationWavelength;
