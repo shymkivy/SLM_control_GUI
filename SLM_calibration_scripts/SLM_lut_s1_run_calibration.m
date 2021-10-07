@@ -20,12 +20,14 @@ ops.use_photodiode = 1;
 ops.plot_phase = 1;
 
 ops.NumGray = 256;          % bit depth
-ops.NumRegions = 1;        % (squares only [1,4,9,16...])
+ops.NumRegions = 64;        % (squares only [1,4,9,16...])
 %16R 940nm p120
-ops.PixelsPerStripe = 4;	
+ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
-ops.lut_fname = 'linear_cut_940_1064.lut';
+ops.DAQ_num_sessions = 50;
+
+ops.lut_fname = 'linear.lut'; %'linear_cut_940_1064.lut';
 %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
@@ -125,22 +127,23 @@ end
 
 if ops.use_photodiode
     % Setup counter
-    session = daq.createSession('ni');
+    session = daq('ni');
 %     session.addCounterInputChannel('dev2', 'ctr0', 'EdgeCount');
 %     resetCounters(session);
     
-    session.addAnalogInputChannel('dev2','ai1','Voltage');
+    % last time differential setting worked well, with diff switch on on
+    % the daq as well. single ended on both stopped working for some reason
+    session.addinput('dev2','ai1','Voltage');
     % make the data acquisition 'SingleEnded, to separate the '
-    for nchan = 1:length(session.Channels)
-        if strcmpi(session.Channels(nchan).ID(1:2), 'ai')
-            session.Channels(nchan).TerminalConfig = 'SingleEnded';
-            session.Channels(nchan).Range = [-10 10];
-        end
-    end
+%     for nchan = 1:length(session.Channels)
+%         if strcmpi(session.Channels(nchan).ID(1:2), 'ai')
+%             session.Channels(nchan).TerminalConfig = 'SingleEnded';
+%             session.Channels(nchan).Range = [-10 10];
+%         end
+%     end
     ops.DAQ_rate = 1000;
     session.Rate = ops.DAQ_rate;
-    ops.DAQ_num_sessions = 200;
-    session.NumberOfScans = ops.DAQ_num_sessions;
+    %session.NumberOfScans = ops.DAQ_num_sessions;
 end
 
 
@@ -217,7 +220,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 f_SLM_update(ops, SLM_image);
                 pause(0.01); %let the SLM settle for 10 ms
                 % scan intensity
-                data = startForeground(session);
+                %data = startForeground(session);
+                data = read(session,ops.DAQ_num_sessions,"OutputFormat","Matrix");
                 AI_intensity(n_idx) = mean(data);
                 phd_plot.XData = region_gray(1:n_idx,2);
                 phd_plot.YData = AI_intensity(1:n_idx);
