@@ -1,22 +1,22 @@
 clear;
 close all;
 
-addpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration\calibration_functions');
+addpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration_scripts\calibration_functions\');
 
 %% load stuff for testing
 
-fname = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration\lut_calibration\linear2.lut';
+fname = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_calibration\lut_calibration\linear2.lut';
 lut_array = f_SLM_read_lut(fname);
 
 %% generate smaller linear lut version for higher sampling of voltage values
 % bns linear lut is 11 bit not 12? (0-2047)
 
-fname_save = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration\lut_calibration\linear_cut_940_1054.lut';
+fname_save = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_calibration\lut_calibration\linear_cut_940_1064.lut';
 
 n_vals = 256;
 
 lut_min = 500; % 940 min
-lut_max = 1600; % 1064 max
+lut_max = 1650; % 1064 max
 
 lut_array = zeros(n_vals,2);
 
