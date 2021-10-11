@@ -14,6 +14,8 @@ end
 try 
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end
+
+clear;
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
 ops.use_photodiode = 1;
@@ -25,14 +27,14 @@ ops.NumRegions = 64;        % (squares only [1,4,9,16...])
 ops.PixelsPerStripe = 8;	
 ops.PixelValue = 0;
 
-ops.DAQ_num_sessions = 50;
+ops.DAQ_num_sessions = 100;
 
-ops.lut_fname = 'linear.lut'; %'linear_cut_940_1064.lut';
+ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
 %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
-slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %% Which SLM????
 ops.SLM_type = 0; % 0 = this is BNS 1920
@@ -51,8 +53,8 @@ else
     %ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 end
 %%
-save_pref = '940_slm5221_maitai';
-%save_pref = '1064_slm5221_fianium';
+%save_pref = '940_slm5221_maitai';
+save_pref = '1064_slm5221_fianium';
 %% tried to deflect zero order with regional calibration for camera but signal too weak, use photodiode instead and ignore
 use_blaze_deflect_blank = 0;    % use feature or not
 blaze_period = 20;
