@@ -38,7 +38,7 @@ n = zernike_data(mode_index,2);
 m = zernike_data(mode_index,3);
 
 [Z_nm, ~, ~] = f_sg_zernike_pol(rho, theta, n, m);
-if app.AOzerooutsideunitcircCheckBox.Value
+if app.ZerooutsideunitcircCheckBox.Value
     Z_nm(rho>1) = 0;
 end
 

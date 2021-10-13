@@ -2,7 +2,7 @@ function [wf_out, params] = f_sg_AO_compute_wf(app, reg1)
 params = struct;
 params.beam_width = app.BeamdiameterpixEditField.Value;
 params.AO_iteration = 1;
-params.zero_around_unit_circ = app.AOzerooutsideunitcircCheckBox.Value;
+params.zero_around_unit_circ = app.ZerooutsideunitcircCheckBox.Value;
 params.AO_correction = [];
 
 if isempty(reg1.AO_correction)
@@ -42,7 +42,7 @@ else
         all_modes(:,:,n_mode_idx) = Z_nm*AO_correction(n_mode_idx,2);
     end
     all_modes_sum = sum(all_modes,3);
-    if app.AOzerooutsideunitcircCheckBox.Value
+    if app.ZerooutsideunitcircCheckBox.Value
         all_modes_sum(rho>1) = 0;
     end
     

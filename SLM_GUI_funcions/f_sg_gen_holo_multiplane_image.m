@@ -26,7 +26,7 @@ function holo_image = f_sg_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
     
     holo_image = f_sg_PhaseHologram_YS(xyzp, SLMm,SLMn,weight,objectiveNA,objectiveRI,illuminationWavelength, beam_width);
     
-    if app.AOzerooutsideunitcircCheckBox.Value
+    if app.ZerooutsideunitcircCheckBox.Value
         xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
         xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
         [fX, fY] = meshgrid(xln, xlm);
