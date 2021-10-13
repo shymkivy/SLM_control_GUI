@@ -129,6 +129,10 @@ if ~exist(ops.save_AO_dir, 'dir')
     mkdir(ops.save_AO_dir);
 end
 
+if ~exist(ops.save_patterns, 'dir')
+    mkdir(ops.save_patterns);
+end
+
 % initialize DAQ
 f_sg_initialize_DAQ(app);
 %

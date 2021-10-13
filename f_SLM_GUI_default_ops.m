@@ -21,6 +21,7 @@ ops.lut_dir = [ops.calibration_dir '\lut_calibration'];
 ops.xyz_calibration_dir = [ops.calibration_dir '\xyz_calibration'];
 ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
 ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
+ops.save_patterns = [ops.save_dir '\SLM_save_patterns'];
 
 % directory from microscope computer where frames are saved during AO optimization
 ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
