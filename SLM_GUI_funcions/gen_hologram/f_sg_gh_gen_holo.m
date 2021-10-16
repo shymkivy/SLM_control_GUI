@@ -16,6 +16,4 @@ holo_image(m_idx,n_idx) = exp(1i*(f_sg_poiner_to_im(pointer, SLMm, SLMn)-pi));
 app.SLM_Image_plot.CData = angle(holo_image)+pi;
 app.SLM_Image_gh_preview = holo_image;
 
-
-
 end

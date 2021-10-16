@@ -77,14 +77,14 @@ app.FresCylindricalCheckBox.Value = 1;
 app.FresHorizontalCheckBox.Value = 0;
 
 % Blazed grating
-app.BlazPeriodEditField.Value = 128;
+app.BlazPeriodEditField.Value = 127;
 app.BlazIncreasingCheckBox.Value = 1;
 app.BlazHorizontalCheckBox.Value = 0;
 
 % Stripes
 app.StripePixelPerStripeEditField.Value = 8;
 app.StripePixelValueEditField.Value = 0;
-app.StripeGrayEditField.Value = 255;
+app.StripeGrayEditField.Value = 127;
 
 % zernike
 app.CenterXEditField.Value = floor(app.SLM_ops.width/2);
@@ -122,6 +122,12 @@ axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);
 
+clim_x = linspace(app.UIAxesGenerateHologram.CLim(1), app.UIAxesGenerateHologram.CLim(2), size(app.UIAxesGenerateHologram.Colormap,1))/pi;
+clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerateHologram.Colormap,1) 3]);
+
+app.SLM_Image_gh_climits = imagesc(app.UIAxesColorLimits, clim_x, [], clim_im);
+axis(app.UIAxesColorLimits, 'tight');
+
 app.current_SLM_coord = f_sg_mpl_get_coords(app, 'zero');
 app.current_SLM_AO_Image = [];
 
@@ -129,8 +135,18 @@ if ~exist(ops.save_AO_dir, 'dir')
     mkdir(ops.save_AO_dir);
 end
 
-if ~exist(ops.save_patterns, 'dir')
-    mkdir(ops.save_patterns);
+if ~exist(ops.save_patterns_dir, 'dir')
+    mkdir(ops.save_patterns_dir);
+end
+
+if ~exist(ops.custom_phase_dir, 'dir')
+    mkdir(ops.custom_phase_dir);
+end
+
+app.ImagepathEditField.Value = [ops.custom_phase_dir '\'];
+
+if ~exist(ops.patter_editor_dir, 'dir')
+    mkdir(ops.patter_editor_dir);
 end
 
 % initialize DAQ

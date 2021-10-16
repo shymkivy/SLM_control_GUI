@@ -6,15 +6,17 @@ if event.Button == 3
         coords = round(coords);
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
-        tab_var = tab_data.Variables;
+        if ~isempty(tab_data)
+            tab_var = tab_data.Variables;
 
-        dist1 = sqrt(sum((tab_var(:,3:4) - coords).^2,2));
-        z_idx = tab_var(:,5) == app.ZdepthSpinner.Value;
+            dist1 = sqrt(sum((tab_var(:,3:4) - coords).^2,2));
+            z_idx = tab_var(:,5) == app.ZdepthSpinner.Value;
 
-        tab_data(logical(dist1 < 15 .* z_idx),:) = [];
+            tab_data(logical(dist1 < 15 .* z_idx),:) = [];
 
-        app.app_main.UIImagePhaseTable.Data = tab_data;
-        f_sg_pp_update_pat_plot(app);
+            app.app_main.UIImagePhaseTable.Data = tab_data;
+            f_sg_pp_update_pat_plot(app);
+        end
     end
 end
 
