@@ -16,7 +16,7 @@ defocus = f_sg_DefocusPhase_YS(SLMm, SLMn,...
                 app.SLM_ops.objective_RI,...
                 wavelength, beam_width)*defocus_weight; % was wavelength*10 idk why
 
-if app.AOzerooutsideunitcircCheckBox.Value
+if app.ZerooutsideunitcircCheckBox.Value
     xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
     xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
     [fX, fY] = meshgrid(xln, xlm);

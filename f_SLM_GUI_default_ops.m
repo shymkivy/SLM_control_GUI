@@ -11,20 +11,6 @@ end
 % 1 = BNS 512 with OverDrive (OD)
 ops.SLM_type = 0; 
 
-%% directories
-% where to save outputs
-ops.calibration_dir = [ops.GUI_dir '\..\SLM_calibration'];
-ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
-
-% GUI subdirectories
-ops.lut_dir = [ops.calibration_dir '\lut_calibration'];
-ops.xyz_calibration_dir = [ops.calibration_dir '\xyz_calibration'];
-ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
-ops.save_AO_dir = [ops.save_dir '\SLM_AO_outputs'];
-
-% directory from microscope computer where frames are saved during AO optimization
-ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
-
 %% default lut
 if ops.SLM_type == 0
     %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -75,12 +61,29 @@ ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
 ops.NI_DAQ_AO_channel = 0;
 
+%% default directories
+% where to save outputs
+ops.calibration_dir = [ops.GUI_dir '\..\SLM_calibration'];
+ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
 
+% GUI subdirectories
+ops.lut_dir = [ops.calibration_dir '\lut_calibration'];
+ops.xyz_calibration_dir = [ops.calibration_dir '\xyz_calibration'];
+ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
+ops.custom_phase_dir = [ops.calibration_dir '\custom_phase'];
+ops.patter_editor_dir = [ops.calibration_dir '\pattern_editor'];
+
+ops.save_AO_dir = [ops.save_dir '\AO_outputs'];
+ops.save_patterns_dir = [ops.save_dir '\saved_patterns'];
+
+% directory from microscope computer where frames are saved during AO optimization
+ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
+
+%%
 app.SLM_ops = ops;
-
-
+%%
 if ops.SLM_type == 0
-    %% defauld roi list
+    % defauld roi list
     roi1.name_tag = {'Full SLM'};
     roi1.height_range = [0, 1];
     roi1.width_range = [0, 1];
@@ -105,7 +108,7 @@ if ops.SLM_type == 0
     roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
     app.region_list = [app.region_list; roi1];
 
-    %% default xyz pattern
+    % default xyz pattern
     pat1.name_tag = {'Multiplane'};
     pat1.xyz_pts = [];
     pat1.SLM_region = {'Right half'};

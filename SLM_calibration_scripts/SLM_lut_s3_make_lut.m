@@ -7,8 +7,8 @@ clear;
 close all
 
 %%
-path1 = 'E:\data\SLM\lut_calibration\';
-fname = 'lut_940_slm5221_maitai_1r_11_05_20_15h_19m';
+path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
+fname = 'photodiode_lut_940_slm5221_maitai_64r_10_10_21_22h_40m';
 
 load_path_fo = [path1 fname '\first_ord'];
 load_path_zo = [path1 fname '\zero_ord'];

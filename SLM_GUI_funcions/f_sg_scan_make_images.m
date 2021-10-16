@@ -40,7 +40,7 @@ if ~strcmpi(pattern, 'none')
                                         app.WavelengthnmEditField.Value*1e-9,...
                                         beam_width);
         
-        if app.AOzerooutsideunitcircCheckBox.Value
+        if app.ZerooutsideunitcircCheckBox.Value
             xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
             xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
             [fX, fY] = meshgrid(xln, xlm);
