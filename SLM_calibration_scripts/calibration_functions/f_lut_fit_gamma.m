@@ -90,6 +90,13 @@ if params.manual_peak_selection
     close(f1)
 else
     [max_val, max_ind] = max(data_fo_rns2);
+    
+    %[min_val, min_ind] = min(data_fo_rns2);
+    
+    %figure; plot(diff(data_fo_rns2(min([min_ind max_ind]): max([min_ind max_ind]))))
+    
+    %figure; plot(diff(data_fo_rns2))
+    
     [min_val2, min_ind2] = min(data_fo_rns2(max_ind:end));
     min_ind2 = min_ind2 + max_ind - 1;
     [min_val1, min_ind1] = min(data_fo_rns2(1:max_ind));
