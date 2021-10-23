@@ -1,5 +1,7 @@
-function [px_all, phi_all_n] = f_lut_fit_gamma(data, order, params, min_max_min_ind)
+function [px_all, phi_all_n] = f_lut_fit_gamma2(data, order, params, min_max_min_ind)
 % data [pixels, intensity]
+% with no smooth
+
 
 %%
 if ~exist('params', 'var')
@@ -30,45 +32,39 @@ px = data(:,1);
 data_fo_r = data(:,2);
 
 %% I ~ cos^2(phi/2); Fl = I^2 (two photon)
-data_fo_r2 = (data_fo_r).^(1/2);
+data_fo_rn = (data_fo_r).^(1/2);
 if params.two_photon
-    data_fo_r2 = data_fo_r2.^(1/2);
+    data_fo_rn = data_fo_rn.^(1/2);
 end
 
-if params.smooth_win
-    data_fo_rs = smoothdata(data_fo_r2, 'gaussian', params.smooth_win);
-else
-    data_fo_rs = data_fo_r2;
-end
+data_fo_rn = data_fo_rn - min(data_fo_rn);
+data_fo_rn = data_fo_rn/max(data_fo_rn);
 
-data_min = min(data_fo_rs);
-data_max = max(data_fo_rs - min(data_fo_rs));
-
-data_fo_rsn = (data_fo_rs - data_min)./data_max;
-data_fo_rn = (data_fo_r2 - data_min)./data_max;
-
-residual_I = data_fo_rn - data_fo_rsn;
+data_fo_rns = smoothdata(data_fo_rn, 'gaussian', params.smooth_win);
+residual_I = data_fo_rn - data_fo_rns;
 
 if order
-    data_fo_rsn2 = data_fo_rsn;
+    data_fo_rns2 = data_fo_rns;
 else
-    data_fo_rsn2 = max(data_fo_rsn) - data_fo_rsn;
+    data_fo_rns2 = max(data_fo_rns) - data_fo_rns;
 end
-% 
-% data_fo_rsns = smoothdata(data_fo_rsn, 'gaussian', 20);
-% 
-% figure; hold on
-% plot(px, data_fo_rn);
-% plot(px, data_fo_rsn);
-% plot(px, data_fo_rsns);
-% 
-% 
-% figure;
-% plot(diff(data_fo_rsn));
-% 
-% figure;
-% plot(diff(diff(data_fo_rsn)));
-% 
+
+data_fo_rnss = smoothdata(data_fo_rns, 'gaussian', 20);
+
+
+
+figure; hold on
+plot(px, data_fo_rn);
+plot(px, data_fo_rns);
+plot(px, data_fo_rnss);
+
+
+figure;
+plot(diff(data_fo_rns));
+
+figure;
+plot(diff(diff(data_fo_rns)));
+
 
 
 %% first find 2 pi window
@@ -81,15 +77,15 @@ min_max_min_ind2 = min_max_min_ind;
 peak_buff = 10;
 
 x = min_max_min_ind(1);
-[min_val1, min_ind1] = min(data_fo_rsn2((x-peak_buff):(x+peak_buff)));
+[min_val1, min_ind1] = min(data_fo_rns2((x-peak_buff):(x+peak_buff)));
 min_max_min_ind2(1) = min_ind1 + x - peak_buff - 1;
 
 x = min_max_min_ind(2);
-[max_val, max_ind] = max(data_fo_rsn2((x-peak_buff):(x+peak_buff)));
+[max_val, max_ind] = max(data_fo_rns2((x-peak_buff):(x+peak_buff)));
 min_max_min_ind2(2) = max_ind + x - peak_buff - 1;
 
 x = min_max_min_ind(3);
-[min_val2, min_ind2] = min(data_fo_rsn2((x-peak_buff):(x+peak_buff)));
+[min_val2, min_ind2] = min(data_fo_rns2((x-peak_buff):(x+peak_buff)));
 min_max_min_ind2(3) = min_ind2 + x - peak_buff - 1;
 
 %%
@@ -112,12 +108,12 @@ end
 % plot(px_cut, data_fo_rn_cut_s);
 
 s1 = min_max_min_ind2(1):min_max_min_ind2(2);
-fo_rns1 = data_fo_rsn2(s1) - min(data_fo_rsn2(s1));
+fo_rns1 = data_fo_rns2(s1) - min(data_fo_rns2(s1));
 fo_rns1 = fo_rns1 / max(fo_rns1) * 2 - 1;
 phi_s1 = asin(fo_rns1);
 
 s2 = min_max_min_ind2(2):min_max_min_ind2(3);
-fo_rns2 = data_fo_rsn2(s2) - min(data_fo_rsn2(s2));
+fo_rns2 = data_fo_rns2(s2) - min(data_fo_rns2(s2));
 fo_rns2 = fo_rns2 / max(fo_rns2) * 2 - 1;
 phi_s2 = asin(fo_rns2);
 
@@ -131,7 +127,7 @@ px_all = px(s_all);
 if params.plot_stuff
     figure; hold on; axis tight;
     plot(px, data_fo_rn);
-    plot(px, data_fo_rsn);
+    plot(px, data_fo_rns);
     plot(px_all, phi_all_n+residual_I(s_all)); % '*' means that this is not real raw, close approximation because no asin transform
     plot(px_all, phi_all_n, 'k', 'LineWidth', 2);
     plot(px(min_max_min_ind2(1)), min_val1, 'ro'); text(px(min_max_min_ind2(1))-2,min_val1+txt_offset(1),'0 pi');

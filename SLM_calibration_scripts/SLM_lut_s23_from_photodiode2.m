@@ -1,8 +1,3 @@
-% load traces, smooth
-% compute aproximate peaks from full regions
-% fit lut per region
-% smooth the fits
-
 clear;
 close all
 
@@ -19,7 +14,7 @@ addpath([pwd '\calibration_functions']);
 
 %%
 params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
-params.smooth_win = 20;
+params.smooth_win = 10;
 params.order_use = 1;
 
 params.manual_peak_selection = 0;
@@ -65,7 +60,7 @@ for n_file = 1:num_files
     regions_idx(regions_run{n_file}+1) = n_file;
 end
 
-%% extract data and estimate approximate peak locations
+%% extract data
 
 lut_all = zeros(num_regions, num_pix);
 for n_reg = 1:num_regions
@@ -85,21 +80,6 @@ for n_file = 1:num_files
     min_max_min_ave{n_file} = f_lut_peak_selection(mean(temp_lut), params.manual_peak_selection, params.order_use, params.plot_stuff);
     title(sprintf('Region %d, order=%d , manual=%d', n_file, params.order_use, params.manual_peak_selection))
 end
-
-%%
-% can do global calibration here per region
-
-%%
-lut_fits = zeros(num_regions, num_pix);
-%params.plot_stuff = 0;
-%params.smooth_win = 0;
-for n_reg = 1:num_regions
-    reg1 = regions(n_reg);
-    
-    [px_fo, phi_fo] = f_lut_fit_gamma([gray1', lut_all(n_reg,:)'], 1, params, min_max_min_ave{regions_idx(n_reg)});
-
-end
-
 
 %%
 
