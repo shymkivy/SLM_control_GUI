@@ -8,14 +8,16 @@ close all
 
 
 %%
-path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
+%path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
+path1 = '/Users/yuriyshymkiv/Desktop/matlab/SLM_GUI/SLM_outputs/lut_calibration/';
 
 fname_list = {'photodiode_lut_940_slm5221_maitai_64r_10_10_21_22h_40m.mat';...
               'photodiode_lut_1064_slm5221_fianium_64r_10_10_21_20h_36m.mat'};
 
 regions_run_list = {'left_half', 'right_half'};
           
-addpath([pwd '\calibration_functions']);
+%addpath([pwd '\calibration_functions']);
+addpath([pwd '/calibration_functions']);
 
 %%
 params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
