@@ -27,6 +27,8 @@ params.order_use = 1;
 params.manual_peak_selection = 0;
 params.plot_stuff = 1;
 
+sm_spline_global = 0.5;
+sm_spline_reg = 0.005;
 %%
 num_files = numel(fname_list);
 
@@ -75,6 +77,7 @@ for n_reg = 1:num_regions
     reg_idx = region_gray_all1(:,1) == reg1;
     lut_all(n_reg,:) = intens_all1(reg_idx);
 end
+
 %% first convert from intensity to amplitude sin(phi)
 % I ~ cos^2(phi/2); Fl = I^2 (two photon)
 if params.two_photon
@@ -96,29 +99,11 @@ for n_file = 1:num_files
     temp_lut_mean = mean(temp_lut);
     
     % smooth a bit
-    [~,~,out] = fit(gray1',temp_lut_mean','smoothingspline','SmoothingParam',0.5);
+    [~,~,out] = fit(gray1',temp_lut_mean','smoothingspline','SmoothingParam', sm_spline_global);
     temp_lut_mean_s = temp_lut_mean - out.residuals';
     
     min_max_min_ave{n_file} = f_lut_peak_selection(temp_lut_mean_s, ps_params);
     title(sprintf('Region %d, order=%d , manual=%d, smooth=%d', n_file, ps_params.order_use, ps_params.manual_peak_selection, ps_params.smooth_win))
-end
-
-%% temporal smooth
-% can do global calibration here per region
-
-lut_in = lut_all2;
-
-lut_all_s = zeros(size(lut_in));
-for n_reg = 1:num_regions
-    reg1 = regions(n_reg);
-    temp_lut = lut_in(n_reg,:);
-
-    [~,~,out] = fit(gray1',temp_lut','smoothingspline','SmoothingParam',0.005);
-    lut_all_s(n_reg,:) = temp_lut - out.residuals';
-    
-%     figure; hold on;
-%     plot(temp_lut)
-%     plot(temp_lut_s)
 end
 
 %% spatial smooth
@@ -149,23 +134,21 @@ for n_file = 1:num_files
     end
 end
 
+lut_all_s = reshape(permute(lut_s_3d, [2 1 3]), [], num_pix);
 
-%%
-figure; imagesc(lut_s_3d(:,:,1))
-figure; imagesc(lut_in(:,:,1))
+%% temporal smooth
+% can do global calibration here per region
 
+lut_in = lut_all_s;
 
-figure; hold on;
-plot(squeeze(lut_in(1,1,:)))
-plot(squeeze(lut_s_3d(1,1,:)))
+lut_all_ss = zeros(size(lut_in));
+for n_reg = 1:num_regions
+    reg1 = regions(n_reg);
+    temp_lut = lut_in(n_reg,:);
 
-
-%% plots 
-n_reg = 2;
-figure; hold on;
-plot(lut_all2(n_reg,:))
-plot(lut_all2_s(n_reg,:))
-
+    [~,~,out] = fit(gray1',temp_lut','smoothingspline','SmoothingParam', sm_spline_reg);
+    lut_all_ss(n_reg,:) = temp_lut - out.residuals';
+end
 
 %%
 lut_fits = zeros(num_regions, num_pix);
@@ -174,20 +157,30 @@ lut_fits = zeros(num_regions, num_pix);
 for n_reg = 1:num_regions
     reg1 = regions(n_reg);
     temp_lut = lut_all2(n_reg,:);
-    
-    
-    
-    [~,~,out] = fit(gray1',temp_lut','smoothingspline','SmoothingParam',0.005);
-    temp_lut_s = temp_lut - out.residuals';
-    
-    figure; hold on;
-    plot(temp_lut)
-    plot(temp_lut_s)
-    
-    %[px_fo, phi_fo] = f_lut_fit_gamma([gray1', lut_all2(n_reg,:)'], 1, params, min_max_min_ave{regions_idx(n_reg)});
+
+    [px_fo, phi_fo] = f_lut_fit_gamma2(lut_all_ss(n_reg,:), 1, params, min_max_min_ave{regions_idx(n_reg)});
 
 end
 
+
+%% plots 
+
+figure; imagesc(lut_s_3d(:,:,1))
+figure; imagesc(lut_in(:,:,1))
+
+n_reg = 2;
+figure; hold on;
+plot(lut_all2(n_reg,:))
+plot(lut_all_s(n_reg,:))
+plot(lut_all_ss(n_reg,:))
+
+n_reg = 2;
+figure; hold on;
+plot(lut_all2(n_reg,:))
+plot(lut_all2_s(n_reg,:))
+
+figure; hold on;
+plot(diff(lut_all_ss(n_reg,:)))
 
 %%
 

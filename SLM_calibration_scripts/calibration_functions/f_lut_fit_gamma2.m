@@ -2,7 +2,6 @@ function [px_all, phi_all_n] = f_lut_fit_gamma2(data, order, params, min_max_min
 % data [pixels, intensity]
 % with no smooth
 
-
 %%
 if ~exist('params', 'var')
     params = struct;
@@ -28,48 +27,30 @@ if ~isfield(params, 'plot_stuff')
     params.plot_stuff = 0; 
 end
 %%
-px = data(:,1);
-data_fo_r = data(:,2);
+px = 1:numel(data);
+data_fo_r = data;
 
-%% I ~ cos^2(phi/2); Fl = I^2 (two photon)
-data_fo_rn = (data_fo_r).^(1/2);
-if params.two_photon
-    data_fo_rn = data_fo_rn.^(1/2);
-end
+%% normalize
 
-data_fo_rn = data_fo_rn - min(data_fo_rn);
+data_fo_rn = data_fo_r - min(data_fo_r);
 data_fo_rn = data_fo_rn/max(data_fo_rn);
 
-data_fo_rns = smoothdata(data_fo_rn, 'gaussian', params.smooth_win);
-residual_I = data_fo_rn - data_fo_rns;
-
 if order
-    data_fo_rns2 = data_fo_rns;
+    data_fo_rn2 = data_fo_rn;
 else
-    data_fo_rns2 = max(data_fo_rns) - data_fo_rns;
+    data_fo_rn2 = max(data_fo_rn) - data_fo_rn;
 end
 
-data_fo_rnss = smoothdata(data_fo_rns, 'gaussian', 20);
-
-
-
 figure; hold on
-plot(px, data_fo_rn);
-plot(px, data_fo_rns);
-plot(px, data_fo_rnss);
-
+plot(px, data_fo_r);
+plot(px, data_fo_rn2);
 
 figure;
-plot(diff(data_fo_rns));
-
-figure;
-plot(diff(diff(data_fo_rns)));
-
-
+plot(diff(data_fo_rn2));
 
 %% first find 2 pi window
 if ~exist('min_max_min_ind', 'var')
-    min_max_min_ind = f_lut_peak_selection(lut_trace, params.manual_peak_selection, order, params.plot_stuff);
+    min_max_min_ind = f_lut_peak_selection(data_fo_rn2, params);
 end
 
 min_max_min_ind2 = min_max_min_ind;
