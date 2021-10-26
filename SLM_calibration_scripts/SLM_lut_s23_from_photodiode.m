@@ -1,6 +1,9 @@
 % load traces, smooth
 % compute aproximate peaks from full regions
-% fit lut per region
+% spatial filter raw lut (decide to normalize per region or no before)
+% temporal filter lut
+% fit phase per region
+% maybe spatial interpolate here
 % smooth the fits
 
 clear;
@@ -15,20 +18,22 @@ fname_list = {'photodiode_lut_940_slm5221_maitai_64r_10_10_21_22h_40m.mat';...
               'photodiode_lut_1064_slm5221_fianium_64r_10_10_21_20h_36m.mat'};
 
 regions_run_list = {'left_half', 'right_half'};
+
+save_tag = 'photodiode_lut_940_1064_slm5221_10_10_21';
           
 addpath([pwd '\calibration_functions']);
 %addpath([pwd '/calibration_functions']);
 
 %%
 params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
-params.smooth_win = 20;
+%params.smooth_win = 20;
 params.order_use = 1;
 
 params.manual_peak_selection = 0;
-params.plot_stuff = 1;
+params.plot_stuff = 0;
 
-sm_spline_global = 0.5;
-sm_spline_reg = 0.005;
+sm_spline_global = 0.5; % modify for different level of smoothing
+sm_spline_reg = 0.005; % modify for different level of smoothing
 %%
 num_files = numel(fname_list);
 
@@ -61,7 +66,7 @@ regions = unique(region_gray_all1(:,1));
 
 num_regions = max(num_regions_all);
 num_pix = max(pix_depth_all);
-gray1 = (1:num_pix)-1;
+gray1 = ((1:num_pix)-1)';
 
 regions_idx = zeros(num_regions,1);
 
@@ -86,27 +91,46 @@ end
 lut_all2 = (lut_all).^(1/2);
 
 %% average across regions and approximate peak locations
-min_max_min_ave = cell(num_files,1);
-ps_params = params;
-ps_params.plot_stuff = 1;
-ps_params.smooth_win = 0;
+full_region_mmm_idx = zeros(num_files,3);
+full_region_px = zeros(num_files,num_pix);
 for n_file = 1:num_files
     temp_lut = lut_all2(regions_idx==n_file,:);
     
-    temp_lut = temp_lut - min(temp_lut,[],2);
-    temp_lut = temp_lut./max(temp_lut,[],2);
+    temp_lut_all = sum(temp_lut)';
     
-    temp_lut_mean = mean(temp_lut);
+    temp_lut_n = temp_lut_all - min(temp_lut_all);
+    temp_lut_n = temp_lut_n./max(temp_lut_n);
     
     % smooth a bit
-    [~,~,out] = fit(gray1',temp_lut_mean','smoothingspline','SmoothingParam', sm_spline_global);
-    temp_lut_mean_s = temp_lut_mean - out.residuals';
+    [~,~,out] = fit(gray1,temp_lut_n,'smoothingspline','SmoothingParam', sm_spline_global);
+    temp_lut_ns = temp_lut_n - out.residuals;
     
-    min_max_min_ave{n_file} = f_lut_peak_selection(temp_lut_mean_s, ps_params);
-    title(sprintf('Region %d, order=%d , manual=%d, smooth=%d', n_file, ps_params.order_use, ps_params.manual_peak_selection, ps_params.smooth_win))
+    [px_fo, phi_fo, mmm_ind] = f_lut_fit_gamma2(temp_lut_ns);
+    
+    phi_fo_int = phi_fo*255;
+    phi_fo_int2 = (0:255)';
+    px_fo2 = interp1(phi_fo_int, px_fo, phi_fo_int2);
+    
+    txt_offset = [.05 -.05 .05];
+    figure; hold on; axis tight;
+    plot(gray1, temp_lut_n);
+    plot(gray1, temp_lut_ns);
+    plot(px_fo, phi_fo, 'k', 'LineWidth', 2);
+    plot(gray1(mmm_ind(1)), temp_lut_n(mmm_ind(1)), 'ro'); text(gray1(mmm_ind(1))-2,temp_lut_n(mmm_ind(1))+txt_offset(1),'0 pi');
+    plot(gray1(mmm_ind(2)), temp_lut_n(mmm_ind(2)), 'ro'); text(gray1(mmm_ind(2))-2,temp_lut_n(mmm_ind(2))+txt_offset(2),'1 pi');
+    plot(gray1(mmm_ind(3)), temp_lut_n(mmm_ind(3)), 'ro'); text(gray1(mmm_ind(3))-2,temp_lut_n(mmm_ind(3))+txt_offset(3),'2 pi');
+    xlabel('pixel val SLM');
+    ylabel('image intensity');
+    legend('Average E', 'Smooth E', 'phase', 'Location', 'northwest');
+    title(sprintf('Full region %d gamma cal, 2p corr=%d', n_file, params.two_photon));
+    
+    full_region_px(n_file,:) = px_fo2;
+    full_region_mmm_idx(n_file,:) = mmm_ind;
 end
 
+
 %% spatial smooth
+% decide whether to normalize each region before spatial filt
 
 lut_in = permute(reshape(lut_all2, [8 8 256]), [2 1 3]);
 regions_idx_3d = reshape(regions_idx, [8 8])';
@@ -144,166 +168,153 @@ lut_in = lut_all_s;
 lut_all_ss = zeros(size(lut_in));
 for n_reg = 1:num_regions
     reg1 = regions(n_reg);
-    temp_lut = lut_in(n_reg,:);
+    temp_lut = lut_in(n_reg,:)';
 
-    [~,~,out] = fit(gray1',temp_lut','smoothingspline','SmoothingParam', sm_spline_reg);
-    lut_all_ss(n_reg,:) = temp_lut - out.residuals';
+    [~,~,out] = fit(gray1,temp_lut,'smoothingspline','SmoothingParam', sm_spline_reg);
+    lut_all_ss(n_reg,:) = temp_lut - out.residuals;
 end
 
 %%
-lut_fits = zeros(num_regions, num_pix);
+subreg_px = zeros(num_regions, num_pix);
+subreg_mmm_idx = zeros(num_regions,3);
 %params.plot_stuff = 0;
 %params.smooth_win = 0;
 for n_reg = 1:num_regions
     reg1 = regions(n_reg);
-    temp_lut = lut_all2(n_reg,:);
-
-    [px_fo, phi_fo] = f_lut_fit_gamma2(lut_all_ss(n_reg,:), 1, params, min_max_min_ave{regions_idx(n_reg)});
-
+    temp_lut = lut_all2(n_reg,:)';
+    temp_lut_ss = lut_all_ss(n_reg,:)';
+    
+    temp_lut_n = temp_lut - min(temp_lut);
+    temp_lut_n = temp_lut_n./max(temp_lut_n);
+    
+    temp_lut_ssn = temp_lut_ss - min(temp_lut_ss);
+    temp_lut_ssn = temp_lut_ssn./max(temp_lut_ssn);
+    
+    [px_fo, phi_fo, mmm_idx] = f_lut_fit_gamma2(temp_lut_ssn);
+    
+    phi_fo_int = phi_fo*255;
+    phi_fo_int2 = (0:255)';
+    px_fo2 = interp1(phi_fo_int, px_fo, phi_fo_int2);
+    
+%     figure; hold on;
+%     plot(gray1, temp_lut_n)
+%     plot(gray1, temp_lut_ssn)
+%     plot(px_fo, phi_fo, 'k')
+%     title(sprintf('reg %d', n_reg))
+%     
+%     figure; hold on;
+%     plot(px_fo, phi_fo_int)
+%     plot(px_fo2, phi_fo_int2)
+%     xlim([0 255])
+%     ylim([0 255])
+    
+    subreg_px(n_reg,:) = px_fo2;
+    subreg_mmm_idx(n_reg,:) = mmm_idx;
 end
 
+subreg_mmm_idx_3d = permute(reshape(subreg_mmm_idx, [8 8, 3]), [2 1 3]);
+subreg_px_3d = permute(reshape(subreg_px, [8 8, num_pix]), [2 1 3]);
+%% spatial interp?
+
+interp_fac = 2;
+
+
+subreg_px_3d_ip = cell(num_files,1);
+subreg_mmm_idx_3d_ip = cell(num_files,1);
+for n_file = 1:num_files
+    reg_idx = regions_idx_3d == n_file;
+    
+    SLMrm = max(sum(reg_idx,1));
+    SLMrn = max(sum(reg_idx,2));
+    
+    [X_pre, Y_pre] = meshgrid(linspace(0,1,SLMrn), linspace(0,1,SLMrm));
+    [X_post, Y_post] = meshgrid(linspace(0,1,SLMrn*interp_fac-1), linspace(0,1,SLMrm*interp_fac-1));
+    
+    temp_cell = cell(num_pix,1);
+    
+    for n_px = 1:num_pix
+        
+        reg_idx2 = find(reg_idx);
+        
+        temp_frame = subreg_px_3d(:,:,n_px);
+        temp_frame2 = reshape(temp_frame(reg_idx),[SLMrm, SLMrn]);
+        
+        
+        temp_cell{n_px} = interp2(X_pre,Y_pre,temp_frame2,X_post,Y_post,'spline');
+        
+    end
+    
+    subreg_px_3d_ip{n_file} = cat(3,temp_cell{:});
+    subreg_mmm_idx_3d_ip{n_file} = ones(size(subreg_px_3d_ip{n_file},1), size(subreg_px_3d_ip{n_file},2))*n_file;
+end
+
+subreg_px_3d_ip2 = cat(2,subreg_px_3d_ip{:});
+subreg_mmm_idx_3d_ip2 = cat(2,subreg_mmm_idx_3d_ip{:});
 
 %% plots 
+if params.plot_stuff
 
-figure; imagesc(lut_s_3d(:,:,1))
-figure; imagesc(lut_in(:,:,1))
+    figure;
+    subplot(3,1,1); imagesc(subreg_mmm_idx_3d(:,:,1)); title('0 pi'); colorbar();
+    subplot(3,1,2); imagesc(subreg_mmm_idx_3d(:,:,2)); title('1 pi'); colorbar();
+    subplot(3,1,3); imagesc(subreg_mmm_idx_3d(:,:,3)); title('2 pi'); colorbar();
 
-n_reg = 2;
-figure; hold on;
-plot(lut_all2(n_reg,:))
-plot(lut_all_s(n_reg,:))
-plot(lut_all_ss(n_reg,:))
+    n_reg = 2;
+    figure; hold on;
+    plot(lut_all2(n_reg,:))
+    plot(lut_all_s(n_reg,:))
+    plot(lut_all_ss(n_reg,:))
 
-n_reg = 2;
-figure; hold on;
-plot(lut_all2(n_reg,:))
-plot(lut_all2_s(n_reg,:))
+    n_reg = 2;
+    figure; hold on;
+    plot(lut_all2(n_reg,:))
+    plot(lut_all2_s(n_reg,:))
 
-figure; hold on;
-plot(diff(lut_all_ss(n_reg,:)))
+    figure; hold on;
+    plot(diff(lut_all_ss(n_reg,:)))
 
-%%
-
-data_fo_rn = (data_fo_r).^(1/2);
-if params.two_photon
-    data_fo_rn = data_fo_rn.^(1/2);
-end
-
-
-
-%% some smoothing in 3d, any normalization should be done after any sqrt
-lut_all_s = smoothdata(lut_all, 2, 'gaussian', params.smooth_win);
-lut_min = min(lut_all_s,[],2);
-lut_max = max(lut_all_s-lut_min,[],2);
-
-lut_all_n = (lut_all - lut_min)./lut_max;
-lut_all_sn = (lut_all_s - lut_min)./lut_max;
-
-SLMm = round(sqrt(num_regions));
-SLMn = round(sqrt(num_regions));
-
-lut_all_3d = permute(reshape(lut_all,[SLMn SLMm 256]), [2 1 3]);
-regions_idx_3d = reshape(regions_idx,[SLMn SLMm])';
-
-lut_all_3ds = smoothdata(lut_all_3d, 3, 'gaussian', params.smooth_win);
-
-lut_min = min(lut_all_3ds,[],3);
-lut_max = max(lut_all_3ds-lut_min,[],3);
-
-lut_all_3dn = (lut_all_3d - lut_min)./lut_max;
-lut_all_3dsn = (lut_all_3ds - lut_min)./lut_max;
-
-
-gauss_filt = fspecial('gaussian',3,1);
-
-lut_all_3dsns = zeros(size(lut_all_3dsn));
-
-for n_file = 1:num_files
-    for n_pix = 1:num_pix
-        temp_lut = lut_all_3dsn(:,:,n_pix);
-        temp_lut(regions_idx_3d ~= n_file) = 0;      
-        temp_lut_f = conv2(temp_lut, gauss_filt, 'same');
-        temp_lut_f(regions_idx_3d ~= n_file) = 0;
-        
-        temp_frame = lut_all_3dsns(:,:,n_pix);
-        temp_frame(regions_idx_3d == n_file) = temp_lut_f(regions_idx_3d == n_file);
-        
-        lut_all_3dsns(:,:,n_pix) = temp_frame;
-    end
-end
-
-% renormalize edges after zero padded conv
-lut_all_3dsnsn = lut_all_3dsns - min(lut_all_3dsns,[],3);
-lut_all_3dsnsn = lut_all_3dsnsn./max(lut_all_3dsnsn,[],3);
-
-lut_all_snsn = reshape(permute(lut_all_3dsnsn, [2 1 3]), [], 256);
-
-% for m = 1:8
-%     for n = 1:8
-%         figure; hold on;
-%         plot(squeeze(lut_all_3dsn(m,n,:)))
-%         plot(squeeze(lut_all_3dn(m,n,:)))
-%         plot(squeeze(lut_all_3dsnsn(m,n,:)))
-%         title([num2str(m), num2str(n)])
-%     end
-% end
-
-% 
-% interp_fac = 2;
-% [X,Y] = meshgrid(linspace(0,1,SLMm),linspace(0,1,SLMn));
-% [X2,Y2] = meshgrid(linspace(0,1,SLMm*interp_fac),linspace(0,1,SLMn*interp_fac));
-
-
-%% for each region select 0 pi 2pi
-
-lut_fits = zeros(num_regions, num_pix);
-%params.plot_stuff = 0;
-params.smooth_win = 0;
-for n_reg = 1:num_regions
-    reg1 = regions(n_reg);
-    
-    [px_fo, phi_fo] = f_lut_fit_gamma([gray1', lut_all_snsn(n_reg,:)'], 1, params, min_max_min_ave{regions_idx(n_reg)});
+    f_save_tif_stack2_YS(subreg_px_3d - mean(mean(subreg_px_3d,1),2), [path1, save_tag, 'lut_view.tif'])
+    f_save_tif_stack2_YS(subreg_px_3d_ip2 - mean(mean(subreg_px_3d_ip2,1),2), [path1, save_tag, 'lut_view_interp.tif'])
 
 end
 
-m = sqrt(num_regions);
-n = sqrt(num_regions);
+%% save full region corrections
+lut_corr = struct();
+lut_corr.lut_corr = reshape(full_region_px, [1 2 num_pix]);
+lut_corr.SLMrm = 1;
+lut_corr.SLMrn = 2;
+lut_corr.gray = gray1;
+lut_corr.mmm_idx = reshape(full_region_mmm_idx, [1 2 3]);
+lut_corr.fname_list = fname_list;
+lut_corr.regions_run_list = regions_run_list;
 
-lut_data = zeros(m, n, num_pix);
+fname_save = [path1 save_tag 'full_region_corr.mat'];
+save(fname_save, 'lut_corr');
 
-for n_m = 1:m
-    for n_n = 1:n
-        idx1 = (n_m-1)*n + n_n;
-        reg1 = regions(idx1);
-        reg_idx = region_gray_all1(:,1) == reg1;
-        gray1 = region_gray_all1(reg_idx,2);
-        ai_intens = intens_all1(reg_idx);
+%% save subregions corr
+lut_corr = struct();
+lut_corr.lut_corr = subreg_px_3d;
+lut_corr.SLMrm = 8;
+lut_corr.SLMrn = 8;
+lut_corr.gray = gray1;
+lut_corr.mmm_idx = subreg_mmm_idx_3d;
+lut_corr.fname_list = fname_list;
+lut_corr.regions_run_list = regions_run_list;
 
-        [px_fo, phi_fo] = f_lut_fit_gamma([gray1, ai_intens], 1, params);
+fname_save = [path1 save_tag 'sub_region_corr.mat'];
+save(fname_save, 'lut_corr');
 
-        x = phi_fo*255;
-        v = px_fo;
-        xq = (0:255)';
-        vq = interp1(x, v, xq);
+%% save interp subregions corr
+lut_corr = struct();
+lut_corr.lut_corr = subreg_px_3d_ip2;
+lut_corr.SLMrm = size(subreg_px_3d_ip2,1);
+lut_corr.SLMrn = size(subreg_px_3d_ip2,2);
+lut_corr.gray = gray1;
+lut_corr.mmm_idx = subreg_mmm_idx_3d_ip2;
+lut_corr.fname_list = fname_list;
+lut_corr.regions_run_list = regions_run_list;
 
-        lut_data(n_m,n_n,:) = vq;
-        sgtitle(reg1)
-    end
-end
-
-figure; imagesc(lut_data(:,:,20))
-
-figure; plot(px_fo, phi_fo)
-
-figure; plot(xq, vq)
-
-figure; plot(gray1,ai_intens)
-
-%%
-
-
-f_save_tif_stack2_YS(lut_all_3dn, [path1, 'test.tif'])
-
-
+fname_save = [path1 save_tag 'sub_region_interp_corr.mat'];
+save(fname_save, 'lut_corr');
 
 

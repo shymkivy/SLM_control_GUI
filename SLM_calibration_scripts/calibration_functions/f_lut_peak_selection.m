@@ -13,7 +13,7 @@ end
 if isfield(params, 'smooth_win')
     smooth_win = params.smooth_win;
 else
-    smooth_win = 15;
+    smooth_win = 0;
 end
 
 if isfield(params, 'plot_stuff')
@@ -34,6 +34,8 @@ if smooth_win
 else
     lut_trace_s = lut_trace;
 end
+
+%%
 px = 1:numel(lut_trace);
 
 if extend_mins
@@ -80,11 +82,7 @@ if manual_selection
     min_max_min_ind(3) = min_ind2 + x - peak_buff - 1;
     
     close(f1)
-else 
-    %[min_val, min_ind] = min(data_fo_rns2);
-    
-    %figure; plot(diff(data_fo_rns2(min([min_ind max_ind]): max([min_ind max_ind]))))
-    
+else  
     num_pts = numel(lut_trace_s);
     diffrns = diff(lut_trace_s);
     
@@ -94,7 +92,6 @@ else
     end
     
     points2 = [1; find(min_max); num_pts];
-    
     
     sets = zeros(numel(points2)-2,3);
     for n_pt = 1:(numel(points2)-2)
@@ -106,7 +103,11 @@ else
     
     set_vals = lut_trace_s(points2(sets));
     
-    [~, best_set_idx] = max(sum(abs(diff(set_vals,[],2)) .* diff(points2(sets), [],2),2));
+    if size(set_vals,1)>1
+        [~, best_set_idx] = max(sum(abs(diff(set_vals,[],2)) .* diff(points2(sets), [],2),2));
+    else
+        [~, best_set_idx] = max(sum(abs(diff(set_vals,[],2)) .* diff(points2(sets)', [],2),2));
+    end
     
     best_set = sets(best_set_idx,:);
     
@@ -170,9 +171,15 @@ else
 %     [min_val1, min_ind1] = min(data_fo_rns2(1:max_ind));
 end
 
+%%
 if plot_stuff
     figure; hold on;
     plot(px, lut_trace);
     plot(px, lut_trace_s);
     plot(min_max_min_ind, lut_trace_s(min_max_min_ind), 'ro', 'LineWidth', 2);
+    if order
+        title('First order, 0, pi, 2pi');
+    else
+        title('Zero order, , 0, pi, 2pi');
+    end
 end
