@@ -1,19 +1,45 @@
-function min_max_min_ind = f_lut_peak_selection(lut_trace, manual_selection, order, plot_stuff)
+function min_max_min_ind = f_lut_peak_selection(lut_trace, params)
 
-if ~exist('order', 'var')
-    order = 1;
+if ~exist('params', 'var')
+    params = struct;
 end
 
-if ~exist('plot_stuff', 'var')
+if isfield(params, 'order')
+    order = params.order;
+else
+    order = 1; % default is first order, zero order flips graph
+end
+
+if isfield(params, 'smooth_win')
+    smooth_win = params.smooth_win;
+else
+    smooth_win = 15;
+end
+
+if isfield(params, 'plot_stuff')
+    plot_stuff = params.plot_stuff;
+else
     plot_stuff = 0;
 end
 
-lut_trace_s = smoothdata(lut_trace, 2, 'gaussian', 6);
+if isfield(params, 'manual_selection')
+    manual_selection = params.manual_selection;
+else
+    manual_selection = 0;
+end
+
+extend_mins = 0;
+if smooth_win
+    lut_trace_s = smoothdata(lut_trace, 2, 'gaussian', smooth_win);
+else
+    lut_trace_s = lut_trace;
+end
 px = 1:numel(lut_trace);
 
-max_rise_thresh = .1;
-min_fall_rise_thresh = 10;
-
+if extend_mins
+    max_rise_thresh = .1;
+    min_fall_rise_thresh = 10;
+end
 
 min_max_min_ind = zeros(3,1);
 
@@ -84,38 +110,39 @@ else
     
     best_set = sets(best_set_idx,:);
     
-    % extend left side 
-    done = 0;
-    while ~done
-        if (best_set(1) - 2) > 0
-            int_rise = lut_trace_s(points2(best_set(1)-1))-lut_trace_s(points2(best_set(1)));
-            int_fall = lut_trace_s(points2(best_set(1)-1)) - lut_trace_s(points2(best_set(1)-2));
-            if and((int_fall/int_rise)>min_fall_rise_thresh,int_rise<max_rise_thresh)
-                best_set(1) = best_set(1) - 2;
+    if extend_mins
+        % extend left side 
+        done = 0;
+        while ~done
+            if (best_set(1) - 2) > 0
+                int_rise = lut_trace_s(points2(best_set(1)-1))-lut_trace_s(points2(best_set(1)));
+                int_fall = lut_trace_s(points2(best_set(1)-1)) - lut_trace_s(points2(best_set(1)-2));
+                if and((int_fall/int_rise)>min_fall_rise_thresh,int_rise<max_rise_thresh)
+                    best_set(1) = best_set(1) - 2;
+                else
+                    done = 1;
+                end
             else
                 done = 1;
             end
-        else
-            done = 1;
         end
-    end
-    
-    % extend right side
-    done = 0;
-    while ~done
-        if (best_set(3) + 2) <= max(sets(:))
-            int_rise = lut_trace_s(points2(best_set(3) + 1))-lut_trace_s(points2(best_set(3)));
-            int_fall = lut_trace_s(points2(best_set(3) + 1)) - lut_trace_s(points2(best_set(3) + 2));
-            if and((int_fall/int_rise)>min_fall_rise_thresh,int_rise<max_rise_thresh)
-                best_set(3) = best_set(3) + 2;
+
+        % extend right side
+        done = 0;
+        while ~done
+            if (best_set(3) + 2) <= max(sets(:))
+                int_rise = lut_trace_s(points2(best_set(3) + 1))-lut_trace_s(points2(best_set(3)));
+                int_fall = lut_trace_s(points2(best_set(3) + 1)) - lut_trace_s(points2(best_set(3) + 2));
+                if and((int_fall/int_rise)>min_fall_rise_thresh,int_rise<max_rise_thresh)
+                    best_set(3) = best_set(3) + 2;
+                else
+                    done = 1;
+                end
             else
                 done = 1;
             end
-        else
-            done = 1;
         end
     end
-    
     min_max_min_ind = points2(best_set);
 %     
 %     best_trio = zeros(3,1);

@@ -8,16 +8,16 @@ close all
 
 
 %%
-%path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
-path1 = '/Users/yuriyshymkiv/Desktop/matlab/SLM_GUI/SLM_outputs/lut_calibration/';
+path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
+%path1 = '/Users/yuriyshymkiv/Desktop/matlab/SLM_GUI/SLM_outputs/lut_calibration/';
 
 fname_list = {'photodiode_lut_940_slm5221_maitai_64r_10_10_21_22h_40m.mat';...
               'photodiode_lut_1064_slm5221_fianium_64r_10_10_21_20h_36m.mat'};
 
 regions_run_list = {'left_half', 'right_half'};
           
-%addpath([pwd '\calibration_functions']);
-addpath([pwd '/calibration_functions']);
+addpath([pwd '\calibration_functions']);
+%addpath([pwd '/calibration_functions']);
 
 %%
 params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
@@ -68,7 +68,6 @@ for n_file = 1:num_files
 end
 
 %% extract data and estimate approximate peak locations
-
 lut_all = zeros(num_regions, num_pix);
 for n_reg = 1:num_regions
     reg1 = regions(n_reg);
@@ -76,16 +75,34 @@ for n_reg = 1:num_regions
     reg_idx = region_gray_all1(:,1) == reg1;
     lut_all(n_reg,:) = intens_all1(reg_idx);
 end
+%% first convert from intensity to amplitude sin(phi)
+% I ~ cos^2(phi/2); Fl = I^2 (two photon)
+if params.two_photon
+    lut_all = lut_all.^(1/2);
+end
+lut_all2 = (lut_all).^(1/2);
 
+
+%%
+temp_lut = mean(lut_all2(regions_idx==1,:));
+
+curv_range = [2 8];
+data_out = f_curv_dep_smooth(temp_lut, curv_range);
+
+
+%% average across regions and approximate peak locations
 min_max_min_ave = cell(num_files,1);
+ps_params = params;
+ps_params.plot_stuff = 1;
+ps_params.smooth_win = 10;
 for n_file = 1:num_files
-    temp_lut = lut_all(regions_idx==n_file,:);
+    temp_lut = lut_all2(regions_idx==n_file,:);
 
     temp_lut = temp_lut - min(temp_lut,[],2);
     temp_lut = temp_lut./max(temp_lut,[],2);
     
-    min_max_min_ave{n_file} = f_lut_peak_selection(mean(temp_lut), params.manual_peak_selection, params.order_use, params.plot_stuff);
-    title(sprintf('Region %d, order=%d , manual=%d', n_file, params.order_use, params.manual_peak_selection))
+    min_max_min_ave{n_file} = f_lut_peak_selection(mean(temp_lut), ps_params);
+    title(sprintf('Region %d, order=%d , manual=%d, smooth=%d', n_file, ps_params.order_use, ps_params.manual_peak_selection, ps_params.smooth_win))
 end
 
 %%
