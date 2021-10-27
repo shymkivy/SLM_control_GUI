@@ -11,7 +11,7 @@ app.lut_corrections_list(:,1) = lut_corr;
 if size(lut_corr,1) > 1
     for n_lut = 2:size(lut_corr,1)
         corr_data = load([corrections_dir '\' lut_corr{n_lut}]);
-        app.lut_corrections_list{n_lut,2} = corr_data.LUT_correction;
+        app.lut_corrections_list{n_lut,2} = corr_data.lut_corr;
     end
 end
 

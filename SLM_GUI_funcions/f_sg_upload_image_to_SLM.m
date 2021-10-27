@@ -13,8 +13,10 @@ else
     SLM_image = app.SLM_Image;
 end
 
+lut_correction_data = f_sg_get_corr_data(app);
+
 holo_phase = angle(SLM_image)+pi;
-app.SLM_Image_pointer.Value = f_sg_im_to_pointer(holo_phase);
+app.SLM_Image_pointer.Value = f_sg_im_to_pointer(holo_phase,lut_correction_data);
 f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
 
 end
