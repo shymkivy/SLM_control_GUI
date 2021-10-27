@@ -15,7 +15,8 @@ ops.SLM_type = 0;
 if ops.SLM_type == 0
     %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
     %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-    ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
+    %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
+    ops.lut_fname =  'linear_cut_940_1064.lut';
 else
     % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';

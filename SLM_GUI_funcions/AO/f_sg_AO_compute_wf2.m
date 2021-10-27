@@ -57,8 +57,11 @@ else
                 all_modes_sum(rho>1) = 0;
             end
 
-            wf_out(n_corr).wf_out = zeros(app.SLM_ops.height, app.SLM_ops.width);
-            wf_out(n_corr).wf_out(m_idx, n_idx) = all_modes_sum;
+%             wf_out(n_corr).wf_out = zeros(app.SLM_ops.height, app.SLM_ops.width);
+%             wf_out(n_corr).wf_out(m_idx, n_idx) = all_modes_sum;
+%             
+            wf_out(n_corr).wf_out = all_modes_sum;
+            
         end
     else
         params.beam_width = data.ao_params.beam_width;
@@ -98,9 +101,10 @@ else
             all_modes_sum(rho>1) = 0;
         end
 
-        wf_out = zeros(app.SLM_ops.height, app.SLM_ops.width);
-        wf_out(m_idx, n_idx) = all_modes_sum;
+        %wf_out = zeros(app.SLM_ops.height, app.SLM_ops.width);
+        %wf_out(m_idx, n_idx) = all_modes_sum;
         %figure; imagesc(wf_out)
+        wf_out = all_modes_sum;
 
         params.AO_correction = full_correction;
         params.AO_iteration = size(full_correction,1)+1;
