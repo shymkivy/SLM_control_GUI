@@ -13,20 +13,20 @@ if sum(indx1)
     
     % update dropdown
     lut_fname = {app.LUTDropDown.Value};
-    lut_corr = {'None'};
+    lut_corr_fname = {'None'};
     
     % load saved correction value
-    if isfield(reg1, 'lut_correction')
-        if ~isempty(reg1.lut_correction)
-            save_idx = strcmpi(lut_fname, reg1.lut_correction(:,1));
+    if isfield(reg1, 'lut_correction_fname')
+        if ~isempty(reg1.lut_correction_fname)
+            save_idx = strcmpi(lut_fname, reg1.lut_correction_fname(:,1));
             if sum(save_idx)
-                lut_corr = reg1.lut_correction(save_idx,2);
+                lut_corr_fname = reg1.lut_correction_fname(save_idx,2);
             end
         end
     end
     
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
-    app.LUTcorrectionDropDown.Value = lut_corr;
+    app.LUTcorrectionDropDown.Value = lut_corr_fname;
     
     if isempty(reg1.lateral_affine_transform)
         app.LateralaffinetransformDropDown.Value = {'None'};

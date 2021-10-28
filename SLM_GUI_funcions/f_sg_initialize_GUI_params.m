@@ -14,10 +14,13 @@ app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
 
 %% update lut corrections
-if ~isfield(app.region_list, 'lut_correction')
-    app.region_list(1).lut_correction = [];
+if ~isfield(app.region_list, 'lut_correction_fname')
+    app.region_list(1).lut_correction_fname = [];
 end
-if ~isfield(app.region_list, 'lut_correction')
+if ~isfield(app.region_list, 'lut_correction_data')
+    app.region_list(1).lut_correction_data = [];
+end
+if ~isfield(app.region_list, 'xyz_affine_tf_mat')
     for n_reg = 1:numel(app.region_list)
         app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
@@ -33,7 +36,7 @@ f_sg_reg_update(app);
 
 for n_reg = 1:numel(app.region_list)
     app.region_list(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_list(n_reg));
-    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_list(n_reg));
+    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf2(app, app.region_list(n_reg));
 end
 
 %% xyz table

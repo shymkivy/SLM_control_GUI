@@ -13,10 +13,11 @@ else
     SLM_image = app.SLM_Image;
 end
 
-lut_correction_data = f_sg_get_corr_data(app);
+% add lut correction to pointer
+[m_idx, n_idx, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 holo_phase = angle(SLM_image)+pi;
-app.SLM_Image_pointer.Value = f_sg_im_to_pointer(holo_phase,lut_correction_data);
+app.SLM_Image_pointer.Value = f_sg_im_to_pointer_lut_corr(holo_phase, reg1.lut_correction_data, m_idx, n_idx);
 f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
 
 end

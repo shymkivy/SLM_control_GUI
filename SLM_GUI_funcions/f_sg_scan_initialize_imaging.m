@@ -24,11 +24,14 @@ if app.InitializeimagingButton.Value
             num_stim = 0;
         end
         
+        idx_pat = strcmpi(app.PatternDropDownCtr.Value, [app.xyz_patterns.name_tag]);
+        [m_idx, n_idx, ~,  reg1] = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
+        
         if ~num_stim % of only imaging
             holo_pointers = cell(num_planes,1);
             for n_gr = 1:num_planes
                 holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
-                holo_pointers{n_gr,1}.Value = f_sg_im_to_pointer(holo_phase_core(:,:,n_gr));
+                holo_pointers{n_gr,1}.Value = f_sg_im_to_pointer_lut_corr(holo_phase_core(:,:,n_gr), reg1.lut_correction_data, m_idx, n_idx);
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);

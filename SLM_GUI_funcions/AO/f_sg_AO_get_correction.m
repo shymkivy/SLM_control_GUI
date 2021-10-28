@@ -22,9 +22,11 @@ else
     AO_wf = reg1.AO_wf;
 end
 
-AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
-AO_wf_full(m_idx, n_idx) = AO_wf;
-
-%figure; imagesc(AO_wf)
+if isempty(AO_wf)
+    AO_wf_full = AO_wf;
+else
+    AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
+    AO_wf_full(m_idx, n_idx) = AO_wf;
+end
 
 end

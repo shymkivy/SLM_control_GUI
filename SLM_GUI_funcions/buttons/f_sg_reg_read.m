@@ -6,10 +6,12 @@ region1.width_range = [app.regionwidthminEditField.Value, app.regionwidthmaxEdit
 region1.wavelength = app.regionWavelengthnmEditField.Value;
 region1.effective_NA = app.regionEffectiveNAEditField.Value;
 if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
-    region1.lut_correction = [];
+    region1.lut_correction_fname = [];
 else
-    region1.lut_correction = [{app.LUTDropDown.Value}, {app.LUTcorrectionDropDown.Value}];
+    region1.lut_correction_fname = [{app.LUTDropDown.Value}, {app.LUTcorrectionDropDown.Value}];
 end
+
+region1.lut_correction_data = f_sg_get_corr_data(app, region1.lut_correction_fname);
 
 if strcmpi(app.LateralaffinetransformDropDown.Value, 'none')
     region1.lateral_affine_transform = [];

@@ -74,7 +74,7 @@ for n_plane = 1:num_scans
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
     holo_phase = angle(holo_im) + pi;
     holo_pointers{n_plane} = f_sg_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_sg_im_to_pointer(holo_phase);
+    holo_pointers{n_plane}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, reg1.lut_correction_data, m_idx, n_idx);
 end
 
 end
