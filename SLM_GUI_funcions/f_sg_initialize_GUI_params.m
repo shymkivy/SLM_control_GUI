@@ -55,14 +55,10 @@ app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
 app.SLMheightEditField.Value = ops.height;
 app.SLMwidthEditField.Value = ops.width;
 
-app.ObjectiveMagXEditField.Value = ops.objective_mag;
-app.EffectiveNAEditField.Value = ops.effective_NA;
-app.ManualNAEditField.Value = ops.effective_NA;
 app.ObjectiveRIEditField.Value = ops.objective_RI;
-app.WavelengthnmEditField.Value = ops.wavelength;
-app.BeamdiameterpixEditField.Value = ops.beam_diameter;
 app.SLMpresetoffsetXEditField.Value = ops.X_offset;
 app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
+
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;

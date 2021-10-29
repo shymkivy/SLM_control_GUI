@@ -12,6 +12,9 @@ end
 
 %%
 f_SLM_GUI_default_ops(app);
+
+f_sg_load_default_ops(app);
+
 f_sg_load_calibration(app);
 
 app.SLM_ops = f_SLM_initialize(app.SLM_ops);

@@ -37,20 +37,21 @@ ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
 slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 %% Which SLM????
-ops.SLM_type = 0; % 0 = this is BNS 1920
-%ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
+ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
 
-if ops.SLM_type == 0
-    %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+if strcmpi(ops.SLM_type, 'BNS1920')
+    ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
     %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
     %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
-else
+elseif strcmpi(ops.SLM_type, 'BNS512')
     % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
     
+    
+elseif strcmpi(ops.SLM_type, 'BNS512OD')
     % 901D, with overdrive, requires initial regional lut (init_lut_fname)
-    %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-    %ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
+    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+    ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 end
 %%
 save_pref = '940_slm5221_maitai';

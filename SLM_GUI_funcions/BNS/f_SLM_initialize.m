@@ -7,14 +7,17 @@ end
 
 %% set default SLM if not specified
 if ~isfield(ops, 'SLM_type')
-    ops.SLM_type = 0; % BNS1920 is standard
+    warning('Undefined SLM, using BNS1920 as default')
+    ops.SLM_type = 'BNS1920'; % BNS1920 is standard
 end
 
 %%
-if ops.SLM_type == 0
+if strcmpi(ops.SLM_type, 'BNS1920')
     ops = f_SLM_BNS1920_initialize(ops);
-elseif ops.SLM_type == 1
+elseif strcmpi(ops.SLM_type, 'BNS512OD')
     ops = f_SLM_BNS512OD_initialize(ops);
+else
+    error('Undefined SLM in f_SLM_initialize');
 end
 
 %% load imagegen library which is in new BNS 1920 slm sdk path

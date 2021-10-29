@@ -1,9 +1,11 @@
 function ops = f_SLM_close(ops)
 
-if ops.SLM_type == 0
+if strcmpi(ops.SLM_type, 'BNS1920')
     f_SLM_BNS1920_close(ops);
-elseif ops.SLM_type == 1
+elseif strcmpi(ops.SLM_type, 'BNS512OD')
     f_SLM_BNS512OD_close(ops);
+else
+    error('Undefined SLM in f_SLM_close');
 end
     
 end
