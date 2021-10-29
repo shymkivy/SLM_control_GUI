@@ -10,7 +10,7 @@ app.SelectRegionDropDown.Items = [app.region_list.name_tag];
 app.CurrentregionDropDown.Items = [app.region_list.name_tag];
 
 %%
-app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
+app.XYZaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
 
 %% update lut corrections
@@ -19,6 +19,9 @@ if ~isfield(app.region_list, 'lut_correction_fname')
 end
 if ~isfield(app.region_list, 'lut_correction_data')
     app.region_list(1).lut_correction_data = [];
+end
+if ~isfield(app.region_list, 'xyz_affine_tf_fname')
+    app.region_list(1).xyz_affine_tf_fname = [];
 end
 if ~isfield(app.region_list, 'xyz_affine_tf_mat')
     for n_reg = 1:numel(app.region_list)

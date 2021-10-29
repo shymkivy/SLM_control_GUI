@@ -28,10 +28,10 @@ if sum(indx1)
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
     app.LUTcorrectionDropDown.Value = lut_corr_fname;
     
-    if isempty(reg1.lateral_affine_transform)
-        app.LateralaffinetransformDropDown.Value = {'None'};
+    if isempty(reg1.xyz_affine_tf_fname)
+        app.XYZaffinetransformDropDown.Value = {'None'};
     else
-        app.LateralaffinetransformDropDown.Value = reg1.lateral_affine_transform;
+        app.XYZaffinetransformDropDown.Value = reg1.xyz_affine_tf_fname;
     end
 
     if isempty(reg1.AO_correction)

@@ -1,10 +1,10 @@
 function xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, reg1)
 
 if app.ApplyXYZcalibrationButton.Value
-        if isempty(reg1.lateral_affine_transform)
+        if isempty(reg1.xyz_affine_tf_fname)
             lateral_affine_SLM_inv_um = diag(ones(2,1));
         else
-            idx_lat = strcmpi(reg1.lateral_affine_transform, app.SLM_ops.lateral_calibration(:,1));
+            idx_lat = strcmpi(reg1.xyz_affine_tf_fname, app.SLM_ops.lateral_calibration(:,1));
             lat_cal = app.SLM_ops.lateral_calibration{idx_lat,2}; % .xyz_affine_calib in future
             
             if isfield(lat_cal, 'xyz_affine_calib')

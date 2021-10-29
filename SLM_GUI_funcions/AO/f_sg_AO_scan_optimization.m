@@ -32,6 +32,14 @@ ao_params.beam_width = beam_width;
 ao_params.m_idx = m_idx;
 ao_params.n_idx = n_idx;
 
+lut_data = [];
+if ~isempty(reg1.lut_correction_data)
+    lut_data2(1).lut_corr = reg1.lut_correction_data;
+    lut_data2(1).m_idx = m_idx;
+    lut_data2(1).n_idx = n_idx;
+    lut_data = [lut_data; lut_data2];
+end
+
 %%
 init_image = app.SLM_Image;
 AO_wf = f_sg_AO_get_correction(app);
@@ -49,7 +57,7 @@ if app.InsertrefimageinscansCheckBox.Value
 end
 %% first upload
 SLM_phase = angle(init_image) + pi;
-app.SLM_Image_pointer.Value = f_sg_im_to_pointer_lut_corr(SLM_phase, reg1.lut_correction_data, m_idx, n_idx);
+app.SLM_Image_pointer.Value = f_sg_im_to_pointer_lut_corr(SLM_phase, lut_data);
 f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
 
 %%
@@ -172,7 +180,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
             holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end
         holo_phase = angle(holo_im) + pi;
-        holo_im_pointer.Value = f_sg_im_to_pointer_lut_corr(holo_phase, reg1.lut_correction_data, m_idx, n_idx);
+        holo_im_pointer.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
         
         %%
         f_SLM_update(app.SLM_ops, holo_im_pointer)
@@ -222,7 +230,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         holo_im = init_image;
         holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(all_corr(:,:,scan_seq2(n_scan))));
         holo_phase = angle(holo_im) + pi;
-        holo_im_pointer.Value = f_sg_im_to_pointer_lut_corr(holo_phase, reg1.lut_correction_data, m_idx, n_idx);
+        holo_im_pointer.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
         
         %%
         f_SLM_update(app.SLM_ops, holo_im_pointer)

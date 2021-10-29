@@ -57,6 +57,14 @@ if app.InsertrefimageinscansCheckBox.Value
     ref_im = f_sg_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
 end
 
+lut_data = [];
+if ~isempty(reg1.lut_correction_data)
+    lut_data2(1).lut_corr = reg1.lut_correction_data;
+    lut_data2(1).m_idx = m_idx;
+    lut_data2(1).n_idx = n_idx;
+    lut_data = [lut_data; lut_data2];
+end
+
 % generate pointers
 holo_pointers = cell(num_scans,1);
 for n_plane = 1:num_scans
@@ -70,11 +78,11 @@ for n_plane = 1:num_scans
     end
     
     holo_im = f_sg_AO_add_correction(app, holo_im, AO_wf);
-
+    
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
     holo_phase = angle(holo_im) + pi;
     holo_pointers{n_plane} = f_sg_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, reg1.lut_correction_data, m_idx, n_idx);
+    holo_pointers{n_plane}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
 end
 
 end

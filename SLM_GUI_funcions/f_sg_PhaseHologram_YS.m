@@ -2,33 +2,33 @@ function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 %   Detailed explanation goes here
     
-    if ~exist('beam_width', 'var')
-        beam_width = max(SLMn,SLMm);
-    end
-    
-    xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-    xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
-    [u, v] = meshgrid(xln, xlm);
-    
-    % max_dim = max(SLMn,SLMm);
-    % [ u, v ] = meshgrid(linspace(-SLMn/max_dim,SLMn/max_dim,SLMn), linspace(-SLMm/max_dim,SLMm/max_dim,SLMm));
+if ~exist('beam_width', 'var')
+    beam_width = max(SLMn,SLMm);
+end
 
-    SLMplane=0;
-    defocus=zeros(SLMm, SLMn, size(xyzp,1));
-    if nargin<4
-        weight=zeros(1,size(xyzp,1))+1;
-    end
-    if nargin>4
-        for idx=1:size(xyzp,1)            
-            defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA(idx), objectiveRI, illuminationWavelength, beam_width);
-        end
-    end
+xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
+xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+[u, v] = meshgrid(xln, xlm);
+
+% max_dim = max(SLMn,SLMm);
+% [ u, v ] = meshgrid(linspace(-SLMn/max_dim,SLMn/max_dim,SLMn), linspace(-SLMm/max_dim,SLMm/max_dim,SLMm));
+
+SLMplane=0;
+defocus=zeros(SLMm, SLMn, size(xyzp,1));
+if nargin<4
+    weight=zeros(1,size(xyzp,1))+1;
+end
+if nargin>4
     for idx=1:size(xyzp,1)
-        SLMplane=SLMplane+exp(1i.*(2*pi.*xyzp(idx,1).*u ...
-                              + 2*pi.*xyzp(idx,2).*v ...
-                              + xyzp(idx,3).*defocus(:,:,idx)) )*weight(idx);
+        defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width);
     end
-    phase=SLMplane;
+end
+for idx=1:size(xyzp,1)
+    SLMplane=SLMplane+exp(1i.*(2*pi.*xyzp(idx,1).*u ...
+                          + 2*pi.*xyzp(idx,2).*v ...
+                          + xyzp(idx,3).*defocus(:,:,idx)) )*weight(idx);
+end
+phase=SLMplane;
 end
 
 function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
@@ -67,4 +67,5 @@ function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, obje
 %    defocus = -objectiveRI*k*sqrt(1-RHO.^2.*(sin(alpha)^2));
     
     % this is now formated for exp(i*defocus*z)
+    
 end

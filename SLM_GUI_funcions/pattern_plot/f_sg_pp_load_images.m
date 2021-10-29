@@ -5,7 +5,7 @@ path1 = app.imagedirEditField.Value;
 files1 = dir(path1);
 files1(strcmpi({files1.name}, '.'),:) = [];
 files1(strcmpi({files1.name}, '..'),:) = [];
-files1(files1.isdir) = [];
+files1([files1.isdir],:) = [];
 
 num_files = numel(files1);
 

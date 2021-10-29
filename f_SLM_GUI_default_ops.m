@@ -90,7 +90,7 @@ if ops.SLM_type == 0
     roi1.width_range = [0, 1];
     roi1.wavelength = 940;
     roi1.effective_NA = 0.48;
-    roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'};
+    roi1.xyz_affine_tf_fname = {'lateral_calib_maitai_z6_12_21_20.mat'};
     app.region_list = [app.region_list; roi1];
 
     roi1.name_tag = {'Left half'};
@@ -98,7 +98,7 @@ if ops.SLM_type == 0
     roi1.width_range = [0, 0.5];
     roi1.wavelength = 1064;
     roi1.effective_NA = 0.415;
-    roi1.lateral_affine_transform = {'lateral_calib_fianium_z1_12_21_20.mat'};
+    roi1.xyz_affine_tf_fname = {'lateral_calib_fianium_z1_12_21_20.mat'};
     app.region_list = [app.region_list; roi1];
 
     roi1.name_tag = {'Right half'};
@@ -106,7 +106,7 @@ if ops.SLM_type == 0
     roi1.width_range = [0.5, 1];
     roi1.wavelength = 940;
     roi1.effective_NA = 0.48;
-    roi1.lateral_affine_transform = {'lateral_calib_maitai_z6_12_21_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
+    roi1.xyz_affine_tf_fname = {'lateral_calib_maitai_z6_12_21_20.mat'}; % lateral_affine_transform_mat_z2_um_25x_11_25_20.mat
     app.region_list = [app.region_list; roi1];
 
     % default xyz pattern
@@ -130,7 +130,7 @@ if ops.SLM_type == 1
     roi1.width_range = [0, 1];
     roi1.wavelength = 940;
     roi1.effective_NA = 0.48;
-    roi1.lateral_affine_transform = {}; %'lateral_calib_maitai_z6_12_21_20.mat'
+    roi1.xyz_affine_tf_fname = {}; %'lateral_calib_maitai_z6_12_21_20.mat'
     app.region_list = [app.region_list; roi1];
     
     %% default xyz pattern

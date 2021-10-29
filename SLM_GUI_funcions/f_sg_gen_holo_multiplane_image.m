@@ -15,9 +15,6 @@ function holo_image = f_sg_gen_holo_multiplane_image(app, coord, SLMm, SLMn)
         if numel(weight) == 1
             weight = ones(num_points,1)*weight;
         end
-        if numel(objectiveNA) == 1
-            objectiveNA = ones(num_points,1)*objectiveNA;
-        end
     end
     
     objectiveRI = app.ObjectiveRIEditField.Value;

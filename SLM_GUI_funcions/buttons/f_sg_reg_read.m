@@ -13,10 +13,10 @@ end
 
 region1.lut_correction_data = f_sg_get_corr_data(app, region1.lut_correction_fname);
 
-if strcmpi(app.LateralaffinetransformDropDown.Value, 'none')
-    region1.lateral_affine_transform = [];
+if strcmpi(app.XYZaffinetransformDropDown.Value, 'none')
+    region1.xyz_affine_tf_fname = [];
 else
-    region1.lateral_affine_transform = app.LateralaffinetransformDropDown.Value;
+    region1.xyz_affine_tf_fname = app.XYZaffinetransformDropDown.Value;
 end
 
 if strcmpi(app.AOcorrectionDropDown.Value, 'none')
