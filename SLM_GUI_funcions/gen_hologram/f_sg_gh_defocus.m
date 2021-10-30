@@ -6,7 +6,7 @@ SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 beam_width = app.BeamdiameterpixEditField.Value;
 
-idx_reg = strcmpi(app.CurrentregionDropDown.Value, [app.region_list.name_tag]);
+idx_reg = strcmpi(app.CurrentregionDropDown.Value, [app.region_list.reg_name]);
 wavelength = app.region_list(idx_reg).wavelength*1e-9;
 
 defocus_weight = app.DeficusWeightEditField.Value*1e-6;

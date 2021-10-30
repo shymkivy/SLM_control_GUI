@@ -3,7 +3,7 @@ function lut_correction = f_sg_get_corr_data(app, lut_corr_fname)
 % get reg
 if ~exist('lut_corr_fname', 'var')
     [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-    idx_reg = strcmpi(reg1.name_tag, [app.region_list.name_tag]);
+    idx_reg = strcmpi(reg1.reg_name, [app.region_list.reg_name]);
     lut_corr_fname = app.region_list(idx_reg).lut_correction_fname;
 end
 

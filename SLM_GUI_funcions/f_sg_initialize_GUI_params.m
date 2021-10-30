@@ -1,17 +1,14 @@
 function f_sg_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
-%%
-app.LUTDropDown.Items = app.lut_list;
-app.LUTDropDown.Value = ops.lut_fname;
-
 %% initialize region list
-app.SelectRegionDropDown.Items = [app.region_list.name_tag];
-app.CurrentregionDropDown.Items = [app.region_list.name_tag];
+app.SelectRegionDropDown.Items = [app.region_list.reg_name];
+app.CurrentregionDropDown.Items = [app.region_list.reg_name];
 
 %%
-app.XYZaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
-app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
+app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
+app.XYZaffinetransformDropDown.Items = ops.lateral_calibration_list(:,1);
+app.AOcorrectionDropDown.Items = ops.AO_correction_list(:,1);
 
 %% update lut corrections
 if ~isfield(app.region_list, 'lut_correction_fname')
@@ -28,8 +25,8 @@ if ~isfield(app.region_list, 'xyz_affine_tf_mat')
         app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
 end
-if ~isfield(app.region_list, 'AO_correction')
-    app.region_list(1).AO_correction = [];
+if ~isfield(app.region_list, 'AO_correction_fname')
+    app.region_list(1).AO_correction_fname = [];
 end
 if ~isfield(app.region_list, 'AO_wf')
     app.region_list(1).AO_wf = [];
@@ -48,8 +45,8 @@ end
 % app.GUI_ops.xyz_blank = xyz_blank;
 
 f_sg_pat_update(app, 1);
-app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
-app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
+app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];
+app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.pat_name];
 
 %%
 app.SLMheightEditField.Value = ops.height;
@@ -63,8 +60,6 @@ app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
-
-app.FOVsizeumEditField.Value = ops.FOV_size;
 
 %%
 % blank

@@ -1,9 +1,9 @@
 function f_sg_reg_update(app)
 
-indx1 = strcmpi([app.region_list.name_tag],app.SelectRegionDropDown.Value);
+indx1 = strcmpi([app.region_list.reg_name],app.SelectRegionDropDown.Value);
 if sum(indx1)
     reg1 = app.region_list(indx1);
-    app.RegionnameEditField.Value = reg1.name_tag{1};
+    app.RegionnameEditField.Value = reg1.reg_name{1};
     app.regionheightminEditField.Value = reg1.height_range(1);
     app.regionheightmaxEditField.Value = reg1.height_range(2);
     app.regionwidthminEditField.Value = reg1.width_range(1);
@@ -34,10 +34,10 @@ if sum(indx1)
         app.XYZaffinetransformDropDown.Value = reg1.xyz_affine_tf_fname;
     end
 
-    if isempty(reg1.AO_correction)
+    if isempty(reg1.AO_correction_fname)
         app.AOcorrectionDropDown.Value = {'None'};
     else
-        app.AOcorrectionDropDown.Value = reg1.AO_correction;
+        app.AOcorrectionDropDown.Value = reg1.AO_correction_fname;
     end
     
 else

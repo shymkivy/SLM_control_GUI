@@ -1,19 +1,19 @@
 function [wf_out, params] = f_sg_AO_compute_wf2(app, reg1)
 params = struct;
-params.beam_width = app.BeamdiameterpixEditField.Value;
+params.beam_width = reg1.beam_diameter;
 params.AO_iteration = 1;
 params.zero_around_unit_circ = app.ZerooutsideunitcircCheckBox.Value;
 params.AO_correction = [];
 
-if isempty(reg1.AO_correction)
+if isempty(reg1.AO_correction_fname)
     wf_out = [];
-elseif strcmpi(reg1.AO_correction, 'none')
+elseif strcmpi(reg1.AO_correction_fname, 'none')
     wf_out = [];
 else
-    %idx_AO = strcmpi(reg1.AO_correction, app.SLM_ops.AO_correction(:,1));
-    %AO_correction = app.SLM_ops.AO_correction{idx_AO,2}.AO_correction;
+    %idx_AO = strcmpi(reg1.AO_correction_fname, app.SLM_ops.AO_correction(:,1));
+    %AO_correction = app.SLM_ops.AO_correction_list{idx_AO,2}.AO_correction;
     
-    data = load([app.SLM_ops.AO_correction_dir '\' reg1.AO_correction]);
+    data = load([app.SLM_ops.AO_correction_dir '\' reg1.AO_correction_fname]);
     
     if isstruct(data.AO_correction)
         wf_out = struct;
@@ -23,7 +23,7 @@ else
             params.beam_width = data.AO_correction(n_corr).ao_params.beam_width;
             full_correction = cat(1,data.AO_correction(n_corr).AO_correction{:,1});
             
-            [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.name_tag); 
+            [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.reg_name); 
             SLMm = sum(m_idx);
             SLMn = sum(n_idx);
             beam_width = params.beam_width;
@@ -67,7 +67,7 @@ else
         params.beam_width = data.ao_params.beam_width;
         full_correction = cat(1,data.AO_correction{:,1});
 
-        [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.name_tag); 
+        [m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.reg_name); 
         SLMm = sum(m_idx);
         SLMn = sum(n_idx);
         beam_width = params.beam_width;

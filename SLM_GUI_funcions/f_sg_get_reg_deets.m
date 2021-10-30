@@ -1,7 +1,7 @@
 function [m_idx, n_idx, xyz_affine_tf_mat, reg1] = f_sg_get_reg_deets(app, name_tag)
 
 % get slm region
-idx_reg = strcmpi(name_tag, [app.region_list.name_tag]);
+idx_reg = strcmpi(name_tag, [app.region_list.reg_name]);
 reg1 = app.region_list(idx_reg);
 m = reg1.height_range;
 n = reg1.width_range;

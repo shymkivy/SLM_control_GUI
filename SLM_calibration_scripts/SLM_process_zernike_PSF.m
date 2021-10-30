@@ -278,9 +278,9 @@ best_mode = [zernike_computed_weights(best_mode_ind(1:params.n_corrections_to_us
 best_mode_w = [zernike_computed_weights(best_mode_ind(1:params.n_corrections_to_use)).best_sm_peak_x_intens_weight];
 
 if isfield(AO_params, 'AO_correction')
-    AO_correction = [AO_params.AO_correction; best_mode', best_mode_w']
+    AO_correction = [AO_params.AO_correction; best_mode', best_mode_w'];
 else
-    AO_correction = [best_mode', best_mode_w']
+    AO_correction = [best_mode', best_mode_w'];
 end
 %%
 figure; hold on; axis tight

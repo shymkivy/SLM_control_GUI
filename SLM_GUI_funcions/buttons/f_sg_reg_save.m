@@ -2,7 +2,7 @@ function f_sg_reg_save(app)
 
 reg1 = f_sg_reg_read(app);
 
-idx1 = strcmpi(app.SelectRegionDropDown.Value, [app.region_list.name_tag]);
+idx1 = strcmpi(app.SelectRegionDropDown.Value, [app.region_list.reg_name]);
 if sum(idx1)
     old_reg = app.region_list(idx1);
 
@@ -28,9 +28,9 @@ if sum(idx1)
     end
     
     app.region_list(idx1) = reg1;
-    app.SelectRegionDropDown.Items = [app.region_list.name_tag];
-    app.SelectRegionDropDown.Value = reg1.name_tag;
-    app.CurrentregionDropDown.Items = [app.region_list.name_tag];
+    app.SelectRegionDropDown.Items = [app.region_list.reg_name];
+    app.SelectRegionDropDown.Value = reg1.reg_name;
+    app.CurrentregionDropDown.Items = [app.region_list.reg_name];
 else
    disp('save did not work');
 end

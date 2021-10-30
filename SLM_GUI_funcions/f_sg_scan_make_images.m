@@ -5,7 +5,7 @@ if ~exist('add_blank', 'var')
 end
 
 if ~strcmpi(pattern, 'none')
-    idx_pat = strcmpi(pattern, [app.xyz_patterns.name_tag]);
+    idx_pat = strcmpi(pattern, [app.xyz_patterns.pat_name]);
 
     [m_idx, n_idx, ~, reg1] = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
     
@@ -42,7 +42,7 @@ if ~strcmpi(pattern, 'none')
                                 app.ObjectiveRIEditField.Value,...
                                 app.WavelengthnmEditField.Value*1e-9,...
                                 beam_width);
-            AO_wf = f_sg_AO_get_correction(app, reg1.name_tag, gr_subtable(n_pt,5));  
+            AO_wf = f_sg_AO_get_correction(app, reg1.reg_name, gr_subtable(n_pt,5));  
             if ~isempty(AO_wf)
                 holo_complex = holo_complex.*exp(1i*(AO_wf(m_idx, n_idx)));
             end
@@ -64,7 +64,7 @@ if ~strcmpi(pattern, 'none')
     if add_blank
         holo_zero = zeros(SLMm, SLMn);
 
-        AO_wf = f_sg_AO_get_correction(app, reg1.name_tag, 0); 
+        AO_wf = f_sg_AO_get_correction(app, reg1.reg_name, 0); 
 
         if ~isempty(AO_wf)
             holo_zero = holo_zero.*exp(1i*(AO_wf));
