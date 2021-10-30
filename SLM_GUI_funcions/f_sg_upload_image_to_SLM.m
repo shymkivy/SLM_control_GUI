@@ -14,7 +14,7 @@ else
 end
 
 % add lut correction to pointer
-[m_idx, n_idx, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 lut_data = [];
 if ~isempty(reg1.lut_correction_data)

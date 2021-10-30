@@ -3,7 +3,7 @@ function AO_wf_full = f_sg_AO_get_correction(app, reg_name, Z)
 if ~exist('reg_name', 'var')
     reg_name = app.CurrentregionDropDown.Value;
 end
-[m_idx, n_idx,~,reg1] = f_sg_get_reg_deets(app,reg_name);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app,reg_name);
 
 if ~exist('Z', 'var')
     Z = app.current_SLM_coord.xyzp(:,3)*1e6;

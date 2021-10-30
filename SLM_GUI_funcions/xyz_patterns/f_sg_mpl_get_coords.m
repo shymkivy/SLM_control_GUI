@@ -10,7 +10,7 @@ if strcmp(from_where, 'custom')
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;
     else
-        [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord.NA = reg1.effective_NA;
     end
     
@@ -23,7 +23,7 @@ elseif strcmp(from_where, 'table_selection')
         coord.xyzp = [tab_var(3:4), tab_var(5)*1e-6];
         coord.weight = tab_var(6);
         
-        [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord.NA = reg1.effective_NA;
     else
         coord = [];
@@ -42,7 +42,7 @@ elseif strcmp(from_where, 'pattern')
             coord.xyzp = [tab_var2(:,3:4), tab_var2(:,5)*1e-6];
             coord.weight = tab_var2(:,6);
             
-            [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+            [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
             coord.NA = reg1.effective_NA;
             
         else
@@ -54,7 +54,7 @@ elseif strcmp(from_where, 'pattern')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
-    [~, ~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+    [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     coord.NA = reg1.effective_NA;
 end
 

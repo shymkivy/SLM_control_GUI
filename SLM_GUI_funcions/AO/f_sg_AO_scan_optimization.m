@@ -19,7 +19,7 @@ conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
 conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_sg_get_reg_deets(app, ao_params.region);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, ao_params.region);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 beam_width = app.BeamdiameterpixEditField.Value;

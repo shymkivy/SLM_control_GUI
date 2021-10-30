@@ -19,7 +19,7 @@ if app.InitializeimagingButton.Value
         end
         
         im_pattern = app.xyz_patterns(strcmpi(app.PatternDropDownCtr.Value, [app.xyz_patterns.pat_name]));
-        [m_idx_im, n_idx_im, ~,  reg1_im] = f_sg_get_reg_deets(app, im_pattern.SLM_region);
+        [m_idx_im, n_idx_im, reg1_im] = f_sg_get_reg_deets(app, im_pattern.SLM_region);
         
         lut_data = [];
         if ~isempty(reg1_im.lut_correction_data)
@@ -43,7 +43,7 @@ if app.InitializeimagingButton.Value
             
         else
             stim_pattern = app.xyz_patterns(strcmpi(app.PatternDropDownAI.Value, [app.xyz_patterns.pat_name]));
-            [m_idx_stim, n_idx_stim, ~,  reg1_stim] = f_sg_get_reg_deets(app, stim_pattern.SLM_region);
+            [m_idx_stim, n_idx_stim, reg1_stim] = f_sg_get_reg_deets(app, stim_pattern.SLM_region);
             
             if ~isempty(reg1_stim.lut_correction_data)
                 lut_data2(1).lut_corr = reg1_stim.lut_correction_data;

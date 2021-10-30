@@ -1,6 +1,6 @@
 function f_sg_view_hologram_fft(app, holo_image, defocus_dist)
 
-[m_idx, n_idx, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 dims = size(holo_image);
 siz = max(dims);
@@ -25,9 +25,9 @@ pupil_amp = pupil_amp.*pupil_mask;
 
 defocus = f_sg_DefocusPhase_YS(siz,...
                         siz,...
-                        reg1.NA,...
+                        reg1.effective_NA,...
                         app.ObjectiveRIEditField.Value,...
-                        app.WavelengthnmEditField.Value*1e-9);
+                        reg1.wavelength*1e-9);
 
 defocus = defocus .* pupil_mask;
 

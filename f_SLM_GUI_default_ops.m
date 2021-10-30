@@ -72,8 +72,8 @@ obj_params(1).effective_NA = 0.605;
 obj_params(1).beam_diameter = 1152;
 obj_params(1).FOV_size = 511;
 obj_params(1).lut_correction_fname = [];
-obj_params(1).xyz_affine_tf_fname = {'lateral_calib_maitai_z6_12_21_20.mat'};
-obj_params(1).AO_correction_fname = [];
+obj_params(1).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
+obj_params(1).AO_correction_fname = 'all_zernike_data_12_12_20.mat';
 
 obj_params(2).obj_name = '25X_fat';
 obj_params(2).SLM_name = 'BNS1920';
@@ -83,7 +83,7 @@ obj_params(2).effective_NA = 0.51; % still to calibrate
 obj_params(2).beam_diameter = 1152;
 obj_params(2).FOV_size = 511;
 obj_params(2).lut_correction_fname = [];
-obj_params(2).xyz_affine_tf_fname = {'lateral_calib_fianium_z1_12_21_20.mat'};
+obj_params(2).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
 obj_params(2).AO_correction_fname = [];
 
 %% 20x with BNS1920
@@ -95,7 +95,7 @@ obj_params(3).effective_NA = 0.48;
 obj_params(3).beam_diameter = 1152;
 obj_params(3).FOV_size = 637.4;
 obj_params(3).lut_correction_fname = [];
-obj_params(3).xyz_affine_tf_fname = {'lateral_calib_maitai_z6_12_21_20.mat'};
+obj_params(3).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
 obj_params(3).AO_correction_fname = [];
 
 obj_params(4).obj_name = '20X_fat';
@@ -106,7 +106,7 @@ obj_params(4).effective_NA = 0.415;
 obj_params(4).beam_diameter = 1152;
 obj_params(4).FOV_size = 637.4;
 obj_params(4).lut_correction_fname = [];
-obj_params(4).xyz_affine_tf_fname = {'lateral_calib_fianium_z1_12_21_20.mat'};
+obj_params(4).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
 obj_params(4).AO_correction_fname = [];
 
 %% default directories

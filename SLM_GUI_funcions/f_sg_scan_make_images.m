@@ -7,7 +7,7 @@ end
 if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, [app.xyz_patterns.pat_name]);
 
-    [m_idx, n_idx, ~, reg1] = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
+    [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
     
     SLMm = sum(m_idx);
     SLMn = sum(n_idx);

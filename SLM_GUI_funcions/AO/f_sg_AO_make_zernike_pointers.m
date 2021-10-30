@@ -1,7 +1,7 @@
 function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_wf)
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);

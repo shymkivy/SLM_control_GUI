@@ -12,7 +12,7 @@ elseif strcmpi(reg1.AO_correction_fname, 'none')
 else
     %idx_AO = strcmpi(reg1.AO_correction_fname, app.SLM_ops.AO_correction(:,1));
     %AO_correction = app.SLM_ops.AO_correction_list{idx_AO,2}.AO_correction;
-    
+    cat(2,[app.SLM_ops.AO_correction_dir '\' reg1.AO_correction_fname])
     data = load([app.SLM_ops.AO_correction_dir '\' reg1.AO_correction_fname]);
     
     if isstruct(data.AO_correction)
