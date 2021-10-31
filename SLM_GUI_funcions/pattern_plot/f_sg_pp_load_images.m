@@ -5,6 +5,7 @@ path1 = app.imagedirEditField.Value;
 files1 = dir(path1);
 files1(strcmpi({files1.name}, '.'),:) = [];
 files1(strcmpi({files1.name}, '..'),:) = [];
+files1([files1.isdir],:) = [];
 
 num_files = numel(files1);
 
@@ -25,9 +26,16 @@ for n_file = 1:numel(files1)
         
         still_numeric = 1;
         n_char = 1;
+        if tag1(n_char) == 45
+            n_char = n_char + 1;
+            sign1 = -1;
+        else
+            sign1 = 1;
+        end
+        
         while still_numeric
             if n_char <= tag_len
-                if tag1(n_char) > 47 && tag1(n_char) < 58
+                if tag1(n_char) > 47 && tag1(n_char) < 58 % 45
                     tag_bool(n_char) = true;
                 else
                     still_numeric = 0;
@@ -39,7 +47,7 @@ for n_file = 1:numel(files1)
         end
 
         tag2 = tag1(tag_bool);
-        z_all(n_file) = str2double(tag2);
+        z_all(n_file) = str2double(tag2)*sign1;
     else
         z_all(n_file) = 0;
     end

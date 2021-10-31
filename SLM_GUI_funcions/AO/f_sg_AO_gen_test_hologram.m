@@ -22,10 +22,10 @@ function [holo_out, n, m] = f_sg_AO_gen_test_hologram(app)
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
-beam_width = max([SLMm SLMn]);
+beam_diameter = max([SLMm SLMn]);
 
-xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );

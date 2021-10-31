@@ -16,6 +16,7 @@ try
 end
 
 clear;
+
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
 ops.use_photodiode = 1;
@@ -36,32 +37,24 @@ ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
 
 slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
-%% Which SLM????
-ops.SLM_type = 0; % 0 = this is BNS 1920
-%ops.SLM_type = 1; % 1 = BNS 512 with OverDrive (OD)
 
-if ops.SLM_type == 0
-    %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-    %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-    %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
-else
-    % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
-    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
-    
-    % 901D, with overdrive, requires initial regional lut (init_lut_fname)
-    %ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-    %ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
-end
-%%
 save_pref = '940_slm5221_maitai';
 %save_pref = '1064_slm5221_fianium';
-%% tried to deflect zero order with regional calibration for camera but signal too weak, use photodiode instead and ignore
-use_blaze_deflect_blank = 0;    % use feature or not
-blaze_period = 20;
-blaze_increaseing = 1;
-blaze_horizontal = 0;
-blaze_reverse_dir = 1;
-bkg_lut_correction = 'computed_lut_940_slm5221_maitai_1r_11_05_20_15h_19m_fo.mat';
+%% Which SLM????
+ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
+
+if strcmpi(ops.SLM_type, 'BNS1920')
+    ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+    %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+    %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
+elseif strcmpi(ops.SLM_type, 'BNS512')
+    % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
+    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
+elseif strcmpi(ops.SLM_type, 'BNS512OD')
+    % 901D, with overdrive, requires initial regional lut (init_lut_fname)
+    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+    ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
+end
 
 %% add paths and create save name
 origin_path = which('SLM_lut_s1_run_calibration.m');
@@ -86,19 +79,10 @@ if ~exist(ops.save_path, 'dir')
 end
 
 %%
-if use_blaze_deflect_blank
-    lut_path = [ops.working_dir '\..\..\SLM_calibration\lut_calibration\linear_correction\' bkg_lut_correction];
-    lut_load = load(lut_path);
-    LUT_correction = lut_load.LUT_correction;
-    LUT_correction = round(LUT_correction);
-end
-
-%%
 regions_run = f_lut_get_regions_run(slm_roi, ops.NumRegions);
 ops.regions_run = regions_run;
 
 %% Initialize SLM
-
 ops = f_SLM_initialize(ops);
 
 %%
@@ -169,21 +153,6 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         phd_fig.Children.Title.String = 'Photodiode';
     end
     
-    if use_blaze_deflect_blank
-        pointer_bkg = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
-        calllib('ImageGen', 'Generate_Grating',...
-                pointer_bkg,...
-                ops.width, ops.height,...
-                blaze_period,...
-                blaze_increaseing,...
-                blaze_horizontal);
-        
-        pointer_bkg.Value = LUT_correction(pointer_bkg.Value+1,2);
-        if blaze_reverse_dir
-            pointer_bkg.Value = max(pointer_bkg.Value) - pointer_bkg.Value;
-        end
-    end
-    
     n_idx = 1;
     %loop through each region
     for Region = regions_run
@@ -198,10 +167,6 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             % update mask
             calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
             calllib('ImageGen', 'Mask_Image', SLM_mask, ops.width, ops.height, Region, ops.NumRegions); % 
-            
-            if use_blaze_deflect_blank
-                SLM_image.Value(~logical(SLM_mask.Value)) = pointer_bkg.Value(~logical(SLM_mask.Value));
-            end
             
             if ops.use_photodiode
                 f_SLM_update(ops, SLM_image);

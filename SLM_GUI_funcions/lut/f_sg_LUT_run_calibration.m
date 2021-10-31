@@ -6,9 +6,11 @@ if app.RunLUTcalibrationButton.Value
         % generate coordinates
         SLMn = app.SLM_ops.width;
         SLMm = app.SLM_ops.height;
-        beam_width = app.BeamdiameterpixEditField.Value;
-        xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-        xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        beam_diameter = reg1.beam_diameter;
+        
+        xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+        xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
         [fX, fY] = meshgrid(xln, xlm);
         [theta, rho] = cart2pol( fX, fY );
 

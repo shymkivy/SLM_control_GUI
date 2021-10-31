@@ -14,7 +14,13 @@ req: image processing toolbox
 
 Download code and run "SLM_control_GUI" from its directory
 
-# Parameter setting
+# Calibrations to do:
+1. Align the laser polarization to SLM
+2. LUT calibration
+3. XYZ affine transform calibration
+4. Adaptove Optics corrections
+
+# Parameters
 
 Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
 1. SLM needs to be installed (BNS 1152x1920). SDK path needs to be correct inside "f_SLM_initialize.m" file
@@ -22,13 +28,6 @@ Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
 3. "ops.effective_NA" effects the defocus distance and needs to be adjusted for specific objective (calibrate with beads)
 4. "ops.NI_DAQ_dvice" channel name and appropriate AO, AI, and counter channels need to be specified and connected to 2p microscope. "End of Frame" trigger from microscope goes into counter and used for fast updating of SLM patterns following the end of frames. AO from DAQ controlled by GUI goes into microscope trigger in (for scanning with triggering of every frame). AI channel will be used to read what stimulation pattern is supposed to be uploaded at the time of scan.
 5. There is a "default roi list" wich refers to regions of the SLM that will be used independantly. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
-
-
-# Generate Hologram
-This is designed to upload any of the provided holograms to any region of SLM. 
-1. select the pattern and parameters
-2. Press "Generate ____"
-3. Press "Upload Hologram"
 
 # XYZ patterns
 There are 3 levels of organization
@@ -38,6 +37,12 @@ There are 3 levels of organization
 
 # Scan
 Here one can select a saved pattern group for volumetric and/or multiplexed imaging
+
+# Generate Hologram
+This is designed to upload any of the provided holograms to any region of SLM. 
+1. select the pattern and parameters
+2. Press "Generate ____"
+3. Press "Upload Hologram"
 
 # Adaptive Optics:
 AO auto optimization scan explained:

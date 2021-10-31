@@ -1,7 +1,6 @@
-function pointer = f_sg_gh_gen_image(app, pattern, SLMm, SLMn)
+function holo_image = f_sg_gh_gen_image(app, pattern, SLMm, SLMn)
 
 pointer = libpointer('uint8Ptr', zeros(SLMn*SLMm,1));
-
 if strcmpi(pattern, 'piston')
     calllib('ImageGen', 'Generate_Solid',...
             pointer,...
@@ -71,7 +70,10 @@ elseif strcmpi(pattern, 'zernike')
             SecondaryComaX, SecondaryComaY, SecondarySpherical,...
             TetrafoilX, TetrafoilY, TertiarySpherical,...
             QuaternarySpherical);
-elseif strcmpi(pattern, 'cross')
+end
+holo_image = f_sg_poiner_to_im(pointer, SLMm, SLMn);
+
+if strcmpi(pattern, 'cross')
     max_dim = max(SLMn,SLMm);
     xlm = linspace(-SLMm/max_dim, SLMm/max_dim, SLMm);
     xln = linspace(-SLMn/max_dim, SLMn/max_dim, SLMn);
@@ -103,7 +105,7 @@ elseif strcmpi(pattern, 'cross')
     cross_im(cross_im_ind == 0) = app.CrossPixelValueEditField.Value;
     cross_im(cross_im_ind == 1) = app.CrossGrayEditField.Value;
     
-    pointer.Value = reshape(uint8((rot90(cross_im, 3))), [],1);
+    holo_image = cross_im;
 end
 
 end

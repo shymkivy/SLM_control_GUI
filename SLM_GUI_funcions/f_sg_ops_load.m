@@ -25,7 +25,7 @@ if exist(fname, 'file')
     f_sg_load_calibration(app)
     
     app.SelectRegionDropDown.Value = load_data.dd.SelectRegionDropDown;
-    app.PatterngroupDropDown.Items = [app.xyz_patterns.name_tag];
+    app.PatterngroupDropDown.Items = [app.xyz_patterns.pat_name];
     app.PatterngroupDropDown.Value = load_data.dd.PatterngroupDropDown;
     app.CurrentregionDropDown.Value = load_data.dd.CurrentregionDropDown;
     

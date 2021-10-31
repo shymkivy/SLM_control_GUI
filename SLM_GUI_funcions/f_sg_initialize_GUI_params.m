@@ -1,29 +1,32 @@
 function f_sg_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
-%%
-app.LUTDropDown.Items = app.lut_list;
-app.LUTDropDown.Value = ops.lut_fname;
-
 %% initialize region list
-app.SelectRegionDropDown.Items = [app.region_list.name_tag];
-app.CurrentregionDropDown.Items = [app.region_list.name_tag];
+app.SelectRegionDropDown.Items = [app.region_list.reg_name];
+app.CurrentregionDropDown.Items = [app.region_list.reg_name];
 
 %%
-app.LateralaffinetransformDropDown.Items = ops.lateral_calibration(:,1);
-app.AOcorrectionDropDown.Items = ops.AO_correction(:,1);
+app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
+app.XYZaffinetransformDropDown.Items = ops.lateral_calibration_list(:,1);
+app.AOcorrectionDropDown.Items = ops.AO_correction_list(:,1);
 
 %% update lut corrections
-if ~isfield(app.region_list, 'lut_correction')
-    app.region_list(1).lut_correction = [];
+if ~isfield(app.region_list, 'lut_correction_fname')
+    app.region_list(1).lut_correction_fname = [];
 end
-if ~isfield(app.region_list, 'lut_correction')
+if ~isfield(app.region_list, 'lut_correction_data')
+    app.region_list(1).lut_correction_data = [];
+end
+if ~isfield(app.region_list, 'xyz_affine_tf_fname')
+    app.region_list(1).xyz_affine_tf_fname = [];
+end
+if ~isfield(app.region_list, 'xyz_affine_tf_mat')
     for n_reg = 1:numel(app.region_list)
         app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
 end
-if ~isfield(app.region_list, 'AO_correction')
-    app.region_list(1).AO_correction = [];
+if ~isfield(app.region_list, 'AO_correction_fname')
+    app.region_list(1).AO_correction_fname = [];
 end
 if ~isfield(app.region_list, 'AO_wf')
     app.region_list(1).AO_wf = [];
@@ -42,27 +45,21 @@ end
 % app.GUI_ops.xyz_blank = xyz_blank;
 
 f_sg_pat_update(app, 1);
-app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.name_tag];
-app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.name_tag];
+app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];
+app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.pat_name];
 
 %%
 app.SLMheightEditField.Value = ops.height;
 app.SLMwidthEditField.Value = ops.width;
 
-app.ObjectiveMagXEditField.Value = ops.objective_mag;
-app.EffectiveNAEditField.Value = ops.effective_NA;
-app.ManualNAEditField.Value = ops.effective_NA;
 app.ObjectiveRIEditField.Value = ops.objective_RI;
-app.WavelengthnmEditField.Value = ops.wavelength;
-app.BeamdiameterpixEditField.Value = ops.beam_diameter;
 app.SLMpresetoffsetXEditField.Value = ops.X_offset;
 app.SLMpresetoffsetYEditField.Value = ops.Y_offset;
+
 app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
-
-app.FOVsizeumEditField.Value = ops.FOV_size;
 
 %%
 % blank
@@ -93,8 +90,9 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
 % Multiplane imaging
+app.GUI_ops.table_var_names = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
 tab_data = array2table([1, 1, 0, 0, 0, 1]);
-tab_data.Properties.VariableNames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
+tab_data.Properties.VariableNames = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.Data = tab_data;
 f_sg_pat_save(app);
 
@@ -152,5 +150,6 @@ end
 % initialize DAQ
 f_sg_initialize_DAQ(app);
 %
+
 
 end

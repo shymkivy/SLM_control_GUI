@@ -1,9 +1,10 @@
 function f_sg_reg_update(app)
+% set region values in app window
 
-indx1 = strcmpi([app.region_list.name_tag],app.SelectRegionDropDown.Value);
+indx1 = strcmpi([app.region_list.reg_name],app.SelectRegionDropDown.Value);
 if sum(indx1)
     reg1 = app.region_list(indx1);
-    app.RegionnameEditField.Value = reg1.name_tag{1};
+    app.RegionnameEditField.Value = reg1.reg_name{1};
     app.regionheightminEditField.Value = reg1.height_range(1);
     app.regionheightmaxEditField.Value = reg1.height_range(2);
     app.regionwidthminEditField.Value = reg1.width_range(1);
@@ -13,31 +14,31 @@ if sum(indx1)
     
     % update dropdown
     lut_fname = {app.LUTDropDown.Value};
-    lut_corr = {'None'};
+    lut_corr_fname = {'None'};
     
     % load saved correction value
-    if isfield(reg1, 'lut_correction')
-        if ~isempty(reg1.lut_correction)
-            save_idx = strcmpi(lut_fname, reg1.lut_correction(:,1));
+    if isfield(reg1, 'lut_correction_fname')
+        if ~isempty(reg1.lut_correction_fname)
+            save_idx = strcmpi(lut_fname, reg1.lut_correction_fname(:,1));
             if sum(save_idx)
-                lut_corr = reg1.lut_correction(save_idx,2);
+                lut_corr_fname = reg1.lut_correction_fname(save_idx,2);
             end
         end
     end
     
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
-    app.LUTcorrectionDropDown.Value = lut_corr;
+    app.LUTcorrectionDropDown.Value = lut_corr_fname;
     
-    if isempty(reg1.lateral_affine_transform)
-        app.LateralaffinetransformDropDown.Value = {'None'};
+    if isempty(reg1.xyz_affine_tf_fname)
+        app.XYZaffinetransformDropDown.Value = {'None'};
     else
-        app.LateralaffinetransformDropDown.Value = reg1.lateral_affine_transform;
+        app.XYZaffinetransformDropDown.Value = reg1.xyz_affine_tf_fname;
     end
 
-    if isempty(reg1.AO_correction)
+    if isempty(reg1.AO_correction_fname)
         app.AOcorrectionDropDown.Value = {'None'};
     else
-        app.AOcorrectionDropDown.Value = reg1.AO_correction;
+        app.AOcorrectionDropDown.Value = reg1.AO_correction_fname;
     end
     
 else

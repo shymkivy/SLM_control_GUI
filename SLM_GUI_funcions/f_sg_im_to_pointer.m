@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 function holo_pointer_value = f_sg_im_to_pointer(holo_image, lut_correction)
 % if ~exist('lut_correction', 'var')    
 %     temp_holo = uint8((rot90(holo_image, 3)/(2*pi))*255);
@@ -16,6 +17,10 @@ function holo_pointer_value = f_sg_im_to_pointer(holo_image, lut_correction)
 %     end
 %     temp_holo = rot90(temp_holo_corr, 3);
 % end
+=======
+function holo_pointer_value = f_sg_im_to_pointer(holo_image)
+
+>>>>>>> 0c766d54049ad43178390693dce295d8fa43d2db
 temp_holo = uint8((rot90(holo_image, 3)/(2*pi))*255);
 holo_pointer_value = reshape(temp_holo, [],1);
 

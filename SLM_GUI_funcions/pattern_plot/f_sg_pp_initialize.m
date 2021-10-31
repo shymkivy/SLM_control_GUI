@@ -1,8 +1,5 @@
 function f_sg_pp_initialize(app)
 
-FOV_size = app.app_main.FOVsizeumEditField.Value;
-zoom = app.app_main.ZoomxEditField.Value;
-
 tab_data = app.app_main.UIImagePhaseTable.Data;
 tab_data.Properties.VariableNames = {'Idx', 'Pattern', 'Z', 'X', 'Y', 'Weight'};
 pattern_data = table2struct(tab_data);
@@ -22,10 +19,7 @@ app.data.plot_im = imagesc(app.UIAxes, []);
 hold(app.UIAxes, 'on');
 axis(app.UIAxes, 'tight');
 axis(app.UIAxes, 'equal');
-app.UIAxes.XLim = [-FOV_size/zoom/2 FOV_size/zoom/2];
-app.UIAxes.YLim = [-FOV_size/zoom/2 FOV_size/zoom/2];
-app.data.plot_im.XData = app.UIAxes.XLim;
-app.data.plot_im.YData = app.UIAxes.YLim;
+f_sg_pp_update_zoom(app);
 
 app.data.plot_points = plot(app.UIAxes, 0, 0, '.r');
 app.data.plot_points.MarkerSize = 15;

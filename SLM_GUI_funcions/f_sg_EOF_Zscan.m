@@ -5,7 +5,8 @@ if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
     scans_per_frame = 1;
 end
 
-resetCounters(app.DAQ_session);
+session = app.DAQ_session;
+resetCounters(session);
 pause(0.05);
 
 imaging = true;
@@ -20,7 +21,7 @@ frame_start_times(1) = toc;
 
 disp('Ready to start imaging');
 while imaging
-    scan1 = inputSingleScan(app.DAQ_session);
+    scan1 = inputSingleScan(session);
     scan_frame = scan1(1)+1;
     if scan_frame > SLM_frame*scans_per_frame
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1});
@@ -41,8 +42,9 @@ while imaging
 end
 
 pause(1);
-resetCounters(app.DAQ_session);
+resetCounters(session);
 scan_data.frame_start_times = frame_start_times;
+scan_data.holo_pointers = holo_pointers;
 
 disp('Done');
 end

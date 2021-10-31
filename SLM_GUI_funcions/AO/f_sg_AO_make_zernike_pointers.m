@@ -1,15 +1,15 @@
 function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_wf)
 
 %%
-[m_idx, n_idx, ~,  reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
-beam_width = app.BeamdiameterpixEditField.Value;
-xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+beam_diameter = reg1.beam_diameter;
+xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
-[theta, rho] = cart2pol( fX, fY );
+[theta, rho] = cart2pol(fX, fY);
 
 %% create pointers
 zernike_table = app.ZernikeListTable.Data;
@@ -54,7 +54,15 @@ if app.InsertrefimageinscansCheckBox.Value
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_sg_xyz_gen_holo(app, coord, app.CurrentregionDropDown.Value);
+    ref_im = f_sg_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
+end
+
+lut_data = [];
+if ~isempty(reg1.lut_correction_data)
+    lut_data2(1).lut_corr = reg1.lut_correction_data;
+    lut_data2(1).m_idx = m_idx;
+    lut_data2(1).n_idx = n_idx;
+    lut_data = [lut_data; lut_data2];
 end
 
 % generate pointers
@@ -64,17 +72,17 @@ for n_plane = 1:num_scans
     n_weight = zernike_scan_sequence(n_plane,2);
     holo_im = init_image;
     if n_mode == 999
-        holo_im(m_idx,n_idx) = ref_im;
+        holo_im(m_idx,n_idx) = ref_im(m_idx,n_idx);
     else
         holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
     end
     
     holo_im = f_sg_AO_add_correction(app, holo_im, AO_wf);
-
+    
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
     holo_phase = angle(holo_im) + pi;
     holo_pointers{n_plane} = f_sg_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_sg_im_to_pointer(holo_phase);
+    holo_pointers{n_plane}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
 end
 
 end
