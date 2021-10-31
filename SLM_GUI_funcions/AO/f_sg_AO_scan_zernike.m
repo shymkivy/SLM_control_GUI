@@ -9,6 +9,8 @@ if app.ScanZernikeButton.Value
         %% create AO file
         if app.ApplyAOcorrectionButton.Value
             AO_wf = f_sg_AO_get_correction(app);
+        else
+            AO_wf = [];
         end
         
         [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_wf);

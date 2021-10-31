@@ -22,13 +22,12 @@ conv_kernel = conv_kernel/sum(conv_kernel(:));
 [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, ao_params.region);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
-beam_diameter = reg1.beam_diameter;
 xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
 xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
-[theta, rho] = cart2pol( fX, fY );
+[theta, rho] = cart2pol(fX, fY);
 
-ao_params.beam_diameter = beam_diameter;
+ao_params.beam_diameter = reg1.beam_diameter;
 ao_params.m_idx = m_idx;
 ao_params.n_idx = n_idx;
 
