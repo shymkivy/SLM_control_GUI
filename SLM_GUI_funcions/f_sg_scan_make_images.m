@@ -30,7 +30,7 @@ if ~strcmpi(pattern, 'none')
         xyzp = [gr_subtable(:,3:4), gr_subtable(:,5)*1e-6];
         xyzp2 = xyzp*reg1.xyz_affine_tf_mat;
         
-        beam_width = app.BeamdiameterpixEditField.Value;
+        beam_diameter = reg1.beam_diameter;
         
         % generate 3d pattern, where each depth will get its own correction
         holo_complex_all = zeros(SLMm, SLMn);
@@ -40,21 +40,17 @@ if ~strcmpi(pattern, 'none')
                                 gr_subtable(n_pt,6),...
                                 reg1.effective_NA,...
                                 app.ObjectiveRIEditField.Value,...
-                                app.WavelengthnmEditField.Value*1e-9,...
-                                beam_width);
+                                reg1.wavelength*1e-9,...
+                                beam_diameter);
             AO_wf = f_sg_AO_get_correction(app, reg1.reg_name, gr_subtable(n_pt,5));  
             if ~isempty(AO_wf)
                 holo_complex = holo_complex.*exp(1i*(AO_wf(m_idx, n_idx)));
             end
             holo_complex_all = holo_complex_all + holo_complex;
         end
-                         
+        
         if app.ZerooutsideunitcircCheckBox.Value
-            xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-            xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
-            [fX, fY] = meshgrid(xln, xlm);
-            [~, RHO] = cart2pol(fX, fY);
-            holo_complex_all(RHO>1) = 1;
+            holo_complex_all(reg1.holo_mask) = 1;
         end
                                     
         holo_phase_all(:,:,n_gr) = angle(holo_complex_all)+pi;

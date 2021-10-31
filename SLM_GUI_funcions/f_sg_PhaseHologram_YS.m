@@ -1,13 +1,13 @@
-function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
+function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 %   Detailed explanation goes here
     
-if ~exist('beam_width', 'var')
-    beam_width = max(SLMn,SLMm);
+if ~exist('beam_diameter', 'var')
+    beam_diameter = max(SLMn,SLMm);
 end
 
-xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 [u, v] = meshgrid(xln, xlm);
 
 % max_dim = max(SLMn,SLMm);
@@ -20,7 +20,7 @@ if nargin<4
 end
 if nargin>4
     for idx=1:size(xyzp,1)
-        defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width);
+        defocus(:,:,idx) = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter);
     end
 end
 for idx=1:size(xyzp,1)
@@ -31,13 +31,13 @@ end
 phase=SLMplane;
 end
 
-function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
-    if ~exist('beam_width', 'var')
-        beam_width = max(SLMn,SLMm);
+function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+    if ~exist('beam_diameter', 'var')
+        beam_diameter = max(SLMn,SLMm);
     end
     
-    xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-    xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+    xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+    xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
     [fX, fY] = meshgrid(xln, xlm);
 
 %     max_dim = max(SLMn,SLMm);

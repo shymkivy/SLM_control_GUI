@@ -5,9 +5,9 @@ function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(
 
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
-beam_width = app.BeamdiameterpixEditField.Value;
-xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+beam_diameter = reg1.beam_diameter;
+xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
 

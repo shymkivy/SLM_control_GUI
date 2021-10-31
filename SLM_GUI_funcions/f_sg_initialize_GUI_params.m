@@ -36,7 +36,7 @@ f_sg_reg_update(app);
 
 for n_reg = 1:numel(app.region_list)
     app.region_list(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_list(n_reg));
-    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf2(app, app.region_list(n_reg));
+    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_list(n_reg));
 end
 
 %% xyz table
@@ -90,8 +90,9 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
 % Multiplane imaging
+app.GUI_ops.table_var_names = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
 tab_data = array2table([1, 1, 0, 0, 0, 1]);
-tab_data.Properties.VariableNames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
+tab_data.Properties.VariableNames = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.Data = tab_data;
 f_sg_pat_save(app);
 
@@ -149,5 +150,6 @@ end
 % initialize DAQ
 f_sg_initialize_DAQ(app);
 %
+
 
 end

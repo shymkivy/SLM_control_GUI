@@ -1,12 +1,12 @@
-function [ defocus ] = f_sg_DefocusPhase_YS( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_width)
+function [ defocus ] = f_sg_DefocusPhase_YS( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
 
-if ~exist('beam_width', 'var')
-    beam_width = max(SLMn,SLMm);
+if ~exist('beam_diameter', 'var')
+    beam_diameter = max(SLMn,SLMm);
 end
 %max_dim = max(SLMn,SLMm);
 
-xlm = linspace(-SLMm/beam_width, SLMm/beam_width, SLMm);
-xln = linspace(-SLMn/beam_width, SLMn/beam_width, SLMn);
+xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
+xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [~, RHO] = cart2pol( fX, fY );
 

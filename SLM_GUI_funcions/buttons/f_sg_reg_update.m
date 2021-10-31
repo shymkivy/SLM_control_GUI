@@ -1,4 +1,5 @@
 function f_sg_reg_update(app)
+% set region values in app window
 
 indx1 = strcmpi([app.region_list.reg_name],app.SelectRegionDropDown.Value);
 if sum(indx1)
