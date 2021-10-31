@@ -42,7 +42,7 @@ end
 % % 25X olympus specific params
 ops.objective_mag = 25;
 ops.effective_NA = 0.605; % %1.05; 0.6050 for 25X 1152beam
-ops.FOV_size = 511; % in um
+ops.FOV_size = 511; % in um FOR LEFT SIDE .52NA
 
 % determines the size of all radial patterns (defocus and zernike)
 ops.beam_diameter = 1152;   % in pixels, unused 
@@ -96,7 +96,7 @@ if ops.SLM_type == 0
     roi1.height_range = [0, 1];
     roi1.width_range = [0, 0.5];
     roi1.wavelength = 1064;
-    roi1.effective_NA = 0.415;
+    roi1.effective_NA = 0.415; % .52 FOR 25X
     roi1.lateral_affine_transform = {'lateral_calib_fianium_z1_12_21_20.mat'};
     app.region_list = [app.region_list; roi1];
 
