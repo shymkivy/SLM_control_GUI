@@ -105,7 +105,7 @@ if strcmpi(pattern, 'cross')
     cross_im(cross_im_ind == 0) = app.CrossPixelValueEditField.Value;
     cross_im(cross_im_ind == 1) = app.CrossGrayEditField.Value;
     
-    holo_image = cross_im;
+    holo_image = (cross_im)/255*2*pi;
 end
 
 end
