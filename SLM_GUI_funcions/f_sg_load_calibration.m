@@ -2,22 +2,6 @@ function f_sg_load_calibration(app)
 
 ops = app.SLM_ops;
 
-%% load calibratio files
-
-% load LUT files
-if ~exist(ops.lut_dir, 'dir')
-    mkdir(ops.lut_dir)
-end
-
-% xyz calibration
-if ~exist(ops.xyz_calibration_dir, 'dir')
-    mkdir(ops.xyz_calibration_dir)
-end
-
-if ~exist(ops.AO_correction_dir, 'dir')
-    mkdir(ops.AO_correction_dir)
-end
-
 %% load luts dropdowns
 f_sg_lut_load_list(app);
 

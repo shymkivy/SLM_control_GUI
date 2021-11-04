@@ -1,16 +1,30 @@
 function f_sg_reg_update(app)
 % set region values in app window
 
-indx1 = strcmpi([app.region_list.reg_name],app.SelectRegionDropDown.Value);
-if sum(indx1)
-    reg1 = app.region_list(indx1);
-    app.RegionnameEditField.Value = reg1.reg_name{1};
+% select region
+reg_idx = strcmpi({app.region_list.reg_name},app.SelectRegionDropDown.Value);
+
+% select region_objective params
+reg_obj_params = app.region_obj_params(strcmpi({app.region_obj_params.reg_name},app.SelectRegionDropDown.Value));
+if ~isempty(reg_obj_params)
+    reg_obj_params = reg_obj_params(strcmpi({reg_obj_params.obj_name},app.ObjectiveDropDown.Value));
+end
+if isempty(reg_obj_params)
+    reg_obj_params = app.SLM_ops.default_region_params;
+end
+
+if sum(reg_idx)
+    reg1 = app.region_list(reg_idx);
+    app.RegionnameEditField.Value = reg1.reg_name;
     app.regionheightminEditField.Value = reg1.height_range(1);
     app.regionheightmaxEditField.Value = reg1.height_range(2);
     app.regionwidthminEditField.Value = reg1.width_range(1);
     app.regionwidthmaxEditField.Value = reg1.width_range(2);
-    app.regionWavelengthnmEditField.Value = reg1.wavelength;
-    app.regionEffectiveNAEditField.Value = reg1.effective_NA;
+    
+    % load region obj params
+    app.regionWavelengthnmEditField.Value = reg_obj_params.wavelength;
+    app.regionBeamDiameterEditField.Value = reg_obj_params.beam_diameter;
+    app.regionEffectiveNAEditField.Value = reg_obj_params.effective_NA;
     
     % update dropdown
     lut_fname = {app.LUTDropDown.Value};

@@ -56,53 +56,59 @@ ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
 ops.NI_DAQ_AO_channel = 0;
 
-%% specific objective region params
+%% objective list
+
+objectives(1).obj_name = '25X_fat';
+objectives(1).FOV_size = 511;
+
+objectives(2).obj_name = '20X_fat';
+objectives(2).FOV_size = 637.4;
+
+%% specific SLM-region-objective combos params
 
 %% 25x with BNS1920
-obj_params(1).obj_name = '25X_fat';
-obj_params(1).SLM_name = 'BNS1920';
-obj_params(1).region = 'Right half';
-obj_params(1).wavelength = 940;
-obj_params(1).effective_NA = 0.605;
-obj_params(1).beam_diameter = 1152;
-obj_params(1).FOV_size = 511;
-obj_params(1).lut_correction_fname = [];
-obj_params(1).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
-obj_params(1).AO_correction_fname = 'all_zernike_data_12_12_20.mat';
+region_params(1).obj_name = '25X_fat';
+region_params(1).SLM_name = 'BNS1920';
+region_params(1).reg_name = 'Right half';
+region_params(1).wavelength = 940;
+region_params(1).beam_diameter = 1152;
+region_params(1).effective_NA = 0.605;
+region_params(1).lut_correction_fname = [];
+region_params(1).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
+region_params(1).AO_correction_fname = 'all_zernike_data_12_12_20.mat';
 
-obj_params(2).obj_name = '25X_fat';
-obj_params(2).SLM_name = 'BNS1920';
-obj_params(2).region = 'Left half';
-obj_params(2).wavelength = 1064;
-obj_params(2).effective_NA = 0.51; % still to calibrate
-obj_params(2).beam_diameter = 1152;
-obj_params(2).FOV_size = 511;
-obj_params(2).lut_correction_fname = [];
-obj_params(2).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
-obj_params(2).AO_correction_fname = [];
+
+region_params(2).obj_name = '25X_fat';
+region_params(2).SLM_name = 'BNS1920';
+region_params(2).reg_name = 'Left half';
+region_params(2).wavelength = 1064;
+region_params(2).beam_diameter = 1152;
+region_params(2).effective_NA = 0.51; % still to calibrate
+region_params(2).lut_correction_fname = [];
+region_params(2).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
+region_params(2).AO_correction_fname = [];
 
 %% 20x with BNS1920
-obj_params(3).obj_name = '20X_fat';
-obj_params(3).SLM_name = 'BNS1920';
-obj_params(3).region = 'Right half'; % imaging
-obj_params(3).wavelength = 940;
-obj_params(3).effective_NA = 0.48;
-obj_params(3).beam_diameter = 1152;
-obj_params(3).FOV_size = 637.4;
-obj_params(3).lut_correction_fname = [];
-obj_params(3).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
-obj_params(3).AO_correction_fname = [];
+region_params(3).obj_name = '20X_fat';
+region_params(3).SLM_name = 'BNS1920';
+region_params(3).reg_name = 'Right half'; % imaging
+region_params(3).wavelength = 940;
+region_params(3).beam_diameter = 1152;
+region_params(3).effective_NA = 0.48;
+region_params(3).lut_correction_fname = [];
+region_params(3).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
+region_params(3).AO_correction_fname = [];
 
-obj_params(4).obj_name = '20X_fat';
-obj_params(4).SLM_name = 'BNS1920';
-obj_params(4).region = 'Left half'; % stimulation
-obj_params(4).wavelength = 1064;
-obj_params(4).effective_NA = 0.415;
-obj_params(4).beam_diameter = 1152;
-obj_params(4).FOV_size = 637.4;
-obj_params(4).lut_correction_fname = [];
-obj_params(4).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
-obj_params(4).AO_correction_fname = [];
+
+region_params(4).obj_name = '20X_fat';
+region_params(4).SLM_name = 'BNS1920';
+region_params(4).reg_name = 'Left half'; % stimulation
+region_params(4).wavelength = 1064;
+region_params(4).beam_diameter = 1152;
+region_params(4).effective_NA = 0.415;
+region_params(4).lut_correction_fname = [];
+region_params(4).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
+region_params(4).AO_correction_fname = [];
 
 %% default directories
 
@@ -124,30 +130,33 @@ ops.save_patterns_dir = [ops.save_dir '\saved_patterns'];
 ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
 
 %% defauld regions list
-region_list(1).reg_name = {'Full SLM'};
-region_list(1).height_range = [0, 1];
-region_list(1).width_range = [0, 1];
 
-region_list(2).reg_name = {'Left half'};
+region_list(1).reg_name = 'Right half';
+region_list(1).height_range = [0, 1];
+region_list(1).width_range = [0.5, 1];
+
+region_list(2).reg_name = 'Left half';
 region_list(2).height_range = [0, 1];
 region_list(2).width_range = [0, 0.5];
 
-region_list(3).reg_name = {'Right half'};
+region_list(3).reg_name = 'Full SLM';
 region_list(3).height_range = [0, 1];
-region_list(3).width_range = [0.5, 1];
+region_list(3).width_range = [0, 1];
 
-%% default xyz pattern
-xyz_patterns(1).pat_name = {'Multiplane'};
+
+%% default xyz pattern - regions
+xyz_patterns(1).pat_name = 'Multiplane';
 xyz_patterns(1).xyz_pts = [];
-xyz_patterns(1).SLM_region = {'Right half'};
+xyz_patterns(1).SLM_region = 'Right half';
 
-xyz_patterns(2).pat_name = {'Stim'};
+xyz_patterns(2).pat_name = 'Stim';
 xyz_patterns(2).xyz_pts = [];
-xyz_patterns(2).SLM_region = {'Left half'};
+xyz_patterns(2).SLM_region = 'Left half';
 
 %% save stuff
+ops.objectives = objectives;
 ops.SLM_params = SLM_params;
-ops.obj_params = obj_params;
+ops.region_params = region_params;
 ops.region_list = region_list;
 ops.xyz_patterns = xyz_patterns;
 app.SLM_ops = ops;

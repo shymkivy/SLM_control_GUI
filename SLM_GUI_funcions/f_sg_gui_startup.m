@@ -13,6 +13,27 @@ end
 %%
 f_SLM_GUI_default_ops(app);
 
+%% create calibration dirs
+ops = app.SLM_ops;
+
+% LUT dir
+if ~exist(ops.lut_dir, 'dir')
+    mkdir(ops.lut_dir)
+end
+
+% xyz calibration
+if ~exist(ops.xyz_calibration_dir, 'dir')
+    mkdir(ops.xyz_calibration_dir)
+end
+
+if ~exist(ops.AO_correction_dir, 'dir')
+    mkdir(ops.AO_correction_dir)
+end
+
+%% load lut lists
+f_sg_lut_load_list(app);
+
+%%
 f_sg_load_default_ops(app);
 
 f_sg_load_calibration(app);

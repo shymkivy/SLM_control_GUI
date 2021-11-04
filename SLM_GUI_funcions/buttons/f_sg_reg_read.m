@@ -5,6 +5,7 @@ region1.height_range = [app.regionheightminEditField.Value, app.regionheightmaxE
 region1.width_range = [app.regionwidthminEditField.Value, app.regionwidthmaxEditField.Value];
 region1.wavelength = app.regionWavelengthnmEditField.Value;
 region1.effective_NA = app.regionEffectiveNAEditField.Value;
+region1.beam_diameter = app.regionBeamDiameterEditField.Value;
 if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
     region1.lut_correction_fname = [];
 else
