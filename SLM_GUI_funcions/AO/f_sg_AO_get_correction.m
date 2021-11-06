@@ -22,13 +22,12 @@ else
     AO_wf = reg1.AO_wf;
 end
 
-if app.ZerooutsideunitcircCheckBox.Value
-    AO_wf(~reg1.holo_mask) = 0;
-end
-
 if isempty(AO_wf)
     AO_wf_full = AO_wf;
 else
+    if app.ZerooutsideunitcircCheckBox.Value
+        AO_wf(~reg1.holo_mask) = 0;
+    end
     AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
     AO_wf_full(m_idx, n_idx) = AO_wf;
 end
