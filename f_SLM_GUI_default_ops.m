@@ -17,6 +17,7 @@ SLM_params(1).SLM_name = 'BNS1920';
 SLM_params(1).height = 1152;
 SLM_params(1).width = 1920;
 SLM_params(1).lut_fname = 'linear_cut_940_1064.lut';
+SLM_params(1).SLM_SDK_dir = [];
 SLM_params(1).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 %lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
