@@ -7,6 +7,22 @@ app.SLM_ops = f_copy_fields(app.SLM_ops, SLM_params);
 app.SLMtypeDropDown.Items = {app.SLM_ops.SLM_params.SLM_name};
 app.SLMtypeDropDown.Value = app.SLM_ops.SLM_type;
 
+%%
+f_sg_lut_load_list(app);
+
+% update from default
+if isfield(SLM_params, 'lut_fname')
+    if sum(strcmpi(SLM_params.lut_fname, app.LUTDropDown.Items))
+        app.LUTDropDown.Value = SLM_params.lut_fname;
+    end
+else
+    if sum(strcmpi('linear.lut', app.LUTDropDown.Items))
+        SLM_params.lut_fname = 'linear.lut';
+        app.SLM_ops.lut_fname = 'linear.lut';
+        app.LUTDropDown.Value = SLM_params.lut_fname;
+    end
+end
+
 %% some default params if nto defined
 default_objectives(1).obj_name = 'default';
 default_objectives(1).FOV_size = 500;
@@ -69,53 +85,69 @@ app.CurrentregionDropDown.Items = {region_list.reg_name};
 
 app.region_obj_params = app.SLM_ops.region_params;
 
-%%
-f_sg_reg_update(app);
+%% copy patterns
+xyz_patterns(1).pat_name = 'Multiplane';
+xyz_patterns(1).xyz_pts = [];
+xyz_patterns(1).SLM_region = app.CurrentregionDropDown.Value;
 
-%%
-current_reg = region_list(strcmpi(app.SelectRegionDropDown.Value, {region_list.reg_name}));
-
-
-app.RegionnameEditField.Value
-app.regionheightminEditField.Value
-app.regionheightmaxEditField.Value
-region_list(1).reg_name
-
-%% region-objective params
-
-region_params = default_region_params;
-
-current_reg = region_list(strcmpi(default_region_params.reg_name, {region_list.reg_name}));
-current_reg_params = app.SLM_ops.region_params(strcmpi(app.ObjectiveDropDown.Value, {app.SLM_ops.region_params.obj_name}));
-
-region_params.obj_name = current_obj.obj_name;
-region_params.reg_name = current_reg.reg_name;
-region_params.height_range = current_reg.height_range;
-region_params.width_range = current_reg.width_range;
-
-obj_params = app.SLM_ops.obj_params(strcmpi({app.SLM_ops.obj_params.SLM_name},app.SLMtypeDropDown.Value));
-obj_params = app.SLM_ops.obj_params(strcmpi({obj_params.obj_name},app.ObjectiveDropDown.Value));
-
-%% copy regions data
-
-region_list = cell(numel(SLM_params.regions_use),1);
-for n_reg = 1:numel(SLM_params.regions_use)
-    reg0 = default_region_params;
-    reg_source1 = app.SLM_ops.region_list(strcmpi(SLM_params.regions_use(n_reg), [app.SLM_ops.region_list.reg_name]));
-    reg1 = f_copy_fields(reg0, reg_source1);
-    reg_source2 = obj_params(strcmpi(reg_source1.reg_name, {obj_params.region}));
-    if ~isempty(reg_source2)
-        region_list{n_reg} = f_copy_fields(reg1, reg_source2);
+if isfield(app.SLM_ops, 'xyz_patterns')
+    temp_pat = app.SLM_ops.xyz_patterns;
+    if ~isempty(temp_pat)
+        reg_exists = false(numel(temp_pat),1);
+        for n_pat = 1:numel(temp_pat)
+            reg_exists(n_pat) = sum(strcmpi(temp_pat(n_pat).SLM_region, {app.region_list.reg_name}));
+        end
+        temp_pat(~reg_exists) = [];
+        if ~isempty(temp_pat)
+            xyz_patterns = temp_pat;
+        end
     end
 end
-region_list = cat(1,region_list{:});
+app.xyz_patterns = xyz_patterns;
 
-if isempty(region_list)
-    region_list = default_region_params;
-end
-
-
-%% copy patterns
-app.xyz_patterns = app.SLM_ops.xyz_patterns;
+%%
+% %%
+% current_reg = region_list(strcmpi(app.SelectRegionDropDown.Value, {region_list.reg_name}));
+% 
+% 
+% app.RegionnameEditField.Value
+% app.regionheightminEditField.Value
+% app.regionheightmaxEditField.Value
+% region_list(1).reg_name
+% 
+% %% region-objective params
+% 
+% region_params = default_region_params;
+% 
+% current_reg = region_list(strcmpi(default_region_params.reg_name, {region_list.reg_name}));
+% current_reg_params = app.SLM_ops.region_params(strcmpi(app.ObjectiveDropDown.Value, {app.SLM_ops.region_params.obj_name}));
+% 
+% region_params.obj_name = current_obj.obj_name;
+% region_params.reg_name = current_reg.reg_name;
+% region_params.height_range = current_reg.height_range;
+% region_params.width_range = current_reg.width_range;
+% 
+% obj_params = app.SLM_ops.obj_params(strcmpi({app.SLM_ops.obj_params.SLM_name},app.SLMtypeDropDown.Value));
+% obj_params = app.SLM_ops.obj_params(strcmpi({obj_params.obj_name},app.ObjectiveDropDown.Value));
+% 
+% %% copy regions data
+% 
+% region_list = cell(numel(SLM_params.regions_use),1);
+% for n_reg = 1:numel(SLM_params.regions_use)
+%     reg0 = default_region_params;
+%     reg_source1 = app.SLM_ops.region_list(strcmpi(SLM_params.regions_use(n_reg), [app.SLM_ops.region_list.reg_name]));
+%     reg1 = f_copy_fields(reg0, reg_source1);
+%     reg_source2 = obj_params(strcmpi(reg_source1.reg_name, {obj_params.region}));
+%     if ~isempty(reg_source2)
+%         region_list{n_reg} = f_copy_fields(reg1, reg_source2);
+%     end
+% end
+% region_list = cat(1,region_list{:});
+% 
+% if isempty(region_list)
+%     region_list = default_region_params;
+% end
+% 
+% 
 
 end

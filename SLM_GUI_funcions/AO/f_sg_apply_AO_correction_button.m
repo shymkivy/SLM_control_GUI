@@ -1,7 +1,7 @@
 function f_sg_apply_AO_correction_button(app)
 
 for n_reg = 1:numel(app.region_list) 
-    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_list(n_reg));
+    app.region_obj_params(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_obj_params(n_reg));
 end
 
 f_sg_upload_image_to_SLM(app);

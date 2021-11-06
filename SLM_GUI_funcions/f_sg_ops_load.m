@@ -18,14 +18,14 @@ if exist(fname, 'file')
         end
     end
 
-    
     app.region_list = load_data.region_list;
+    app.region_obj_params = load_data.region_obj_params;
     app.xyz_patterns = temp_xyz;
     
     f_sg_load_calibration(app)
     
     app.SelectRegionDropDown.Value = load_data.dd.SelectRegionDropDown;
-    app.PatterngroupDropDown.Items = [app.xyz_patterns.pat_name];
+    app.PatterngroupDropDown.Items = {app.xyz_patterns.pat_name};
     app.PatterngroupDropDown.Value = load_data.dd.PatterngroupDropDown;
     app.CurrentregionDropDown.Value = load_data.dd.CurrentregionDropDown;
     

@@ -31,12 +31,9 @@ if ~exist(ops.AO_correction_dir, 'dir')
 end
 
 %% load lut lists
-f_sg_lut_load_list(app);
-
-%%
 f_sg_load_default_ops(app);
-
 f_sg_load_calibration(app);
+f_sg_reg_update(app);
 
 app.SLM_ops = f_SLM_initialize(app.SLM_ops);
 app.ActivateSLMButton.Value = 1;

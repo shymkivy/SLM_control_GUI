@@ -1,19 +1,19 @@
-function [wf_out, params] = f_sg_AO_compute_wf(app, reg1)
-[m_idx, n_idx] = f_sg_get_reg_deets(app, reg1.reg_name); 
+function [wf_out, params] = f_sg_AO_compute_wf(app, reg_params)
+[m_idx, n_idx] = f_sg_get_reg_deets(app, reg_params.reg_name); 
 
 params = struct;
-params.beam_diameter = reg1.beam_diameter;
+params.beam_diameter = reg_params.beam_diameter;
 params.AO_iteration = 1;
 params.AO_correction = [];
 params.SLMm = sum(m_idx);
 params.SLMn = sum(n_idx);
 
-if isempty(reg1.AO_correction_fname)
+if isempty(reg_params.AO_correction_fname)
     wf_out = [];
-elseif strcmpi(reg1.AO_correction_fname, 'none')
+elseif strcmpi(reg_params.AO_correction_fname, 'none')
     wf_out = [];
 else
-    data = load([app.SLM_ops.AO_correction_dir '\' reg1.AO_correction_fname]);
+    data = load([app.SLM_ops.AO_correction_dir '\' reg_params.AO_correction_fname]);
     if isstruct(data.AO_correction)
         wf_out = struct;
         for n_corr = 1:numel([data.AO_correction.Z])

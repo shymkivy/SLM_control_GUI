@@ -1,10 +1,21 @@
-function [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, name_tag)
+function [m_idx, n_idx, region_obj_params] = f_sg_get_reg_deets(app, name_tag)
+
+if ~exist('name_tag', 'var')
+    name_tag = app.CurrentregionDropDown.Value;
+end
+if isempty(name_tag)
+    name_tag = app.CurrentregionDropDown.Value;
+end
+
+current_reg = app.region_list(strcmpi(name_tag, {app.region_list.reg_name}));
+
+%app.SLMtypeDropDown.Value
+reg_params_idx = f_sg_get_reg_params_idx(app, name_tag);
+region_obj_params = app.region_obj_params(reg_params_idx);
 
 % get slm region
-idx_reg = strcmpi(name_tag, [app.region_list.reg_name]);
-reg1 = app.region_list(idx_reg);
-m = reg1.height_range;
-n = reg1.width_range;
+m = current_reg.height_range;
+n = current_reg.width_range;
 
 m_px = (1:app.SLM_ops.height)'/app.SLM_ops.height;
 n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
@@ -12,14 +23,13 @@ n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
 m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
 n_idx = logical((n_px>n(1)).*(n_px<=n(2)));
 
-reg1 = app.region_list(idx_reg);
-reg1.m_idx = m_idx;
-reg1.n_idx = n_idx;
+region_obj_params.m_idx = m_idx;
+region_obj_params.n_idx = n_idx;
 
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
-xlm = linspace(-SLMm/reg1.beam_diameter, SLMm/reg1.beam_diameter, SLMm);
-xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
+xlm = linspace(-SLMm/region_obj_params.beam_diameter, SLMm/region_obj_params.beam_diameter, SLMm);
+xln = linspace(-SLMn/region_obj_params.beam_diameter, SLMn/region_obj_params.beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [~, RHO] = cart2pol(fX, fY);
 holo_mask = true(SLMm, SLMn);
@@ -28,6 +38,6 @@ if app.ZerooutsideunitcircCheckBox.Value
     holo_mask(RHO>1) = 0;
 end
 
-reg1.holo_mask = holo_mask;
+region_obj_params.holo_mask = holo_mask;
 
 end

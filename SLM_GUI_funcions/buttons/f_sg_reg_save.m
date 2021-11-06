@@ -1,38 +1,31 @@
 function f_sg_reg_save(app)
 
-reg1 = f_sg_reg_read(app);
+[reg_list, reg_params] = f_sg_reg_read(app);
 
-idx1 = strcmpi(app.SelectRegionDropDown.Value, [app.region_list.reg_name]);
-if sum(idx1)
-    old_reg = app.region_list(idx1);
+current_reg_name = app.SelectRegionDropDown.Value;
+current_reg_idx = strcmpi(current_reg_name, {app.region_list.reg_name});
 
-    save_exists = 0;
-    save_lut = reg1.lut_correction_fname;
-    if ~isempty(old_reg.lut_correction_fname)
-        save_ind = strcmpi(app.LUTDropDown.Value, old_reg.lut_correction_fname{:,1});
-        if sum(save_ind)
-            save_exists = 1;
-        end
-    end
-
-    if save_exists
-        if size(old_reg.lut_correction_fname,1)>1
-            if isempty(reg1.lut_correction_fname)
-                reg1.lut_correction_fname = old_reg.lut_correction_fname(~save_ind,:);
-            else
-                reg1.lut_correction_fname = [reg1.lut_correction_fname; old_reg.lut_correction_fname(~save_ind,:)];
-            end
-        end
-    else
-        reg1.lut_correction_fname = [save_lut; old_reg.lut_correction_fname];
-    end
-    
-    app.region_list(idx1) = reg1;
-    app.SelectRegionDropDown.Items = [app.region_list.reg_name];
-    app.SelectRegionDropDown.Value = reg1.reg_name;
-    app.CurrentregionDropDown.Items = [app.region_list.reg_name];
+if sum(current_reg_idx)
+    app.region_list(current_reg_idx) = reg_list;
+    app.SelectRegionDropDown.Items = {app.region_list.reg_name};
+    app.SelectRegionDropDown.Value = reg_list.reg_name;
+    app.CurrentregionDropDown.Items = {app.region_list.reg_name};
 else
-   disp('save did not work');
+    disp('save region did not work');
 end
+
+reg_params_idx = f_sg_get_reg_params_idx(app, current_reg_name);
+
+if sum(reg_params_idx)
+    app.region_obj_params(reg_params_idx) = reg_params;
+else
+    disp('Adding new reg params');
+    app.region_obj_params = [app.region_obj_params, reg_params];
+    f_sg_reg_update(app);
+end
+
+% to load new lut xyz and ao
+reg_params_idx = f_sg_get_reg_params_idx(app, current_reg_name);
+f_sg_reg_load_corrections(app, reg_params_idx);
 
 end

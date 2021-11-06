@@ -1,6 +1,9 @@
 function f_sg_upload_image_to_SLM(app, add_ao)
 % add AO correction if on
 
+% add lut correction to pointer
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+
 if ~exist('add_ao', 'var')
     add_ao = 1;
 end
@@ -12,9 +15,6 @@ if add_ao
 else
     SLM_image = app.SLM_Image;
 end
-
-% add lut correction to pointer
-[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 lut_data = [];
 if ~isempty(reg1.lut_correction_data)

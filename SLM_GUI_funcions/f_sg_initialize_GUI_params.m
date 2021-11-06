@@ -1,42 +1,33 @@
 function f_sg_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
-%% initialize region list
-app.SelectRegionDropDown.Items = [app.region_list.reg_name];
-app.CurrentregionDropDown.Items = [app.region_list.reg_name];
-
-%%
-app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
-app.XYZaffinetransformDropDown.Items = ops.lateral_calibration_list(:,1);
-app.AOcorrectionDropDown.Items = ops.AO_correction_list(:,1);
-
 %% update lut corrections
-if ~isfield(app.region_list, 'lut_correction_fname')
-    app.region_list(1).lut_correction_fname = [];
+if ~isfield(app.region_obj_params, 'lut_correction_fname')
+    app.region_obj_params(1).lut_correction_fname = [];
 end
-if ~isfield(app.region_list, 'lut_correction_data')
-    app.region_list(1).lut_correction_data = [];
+if ~isfield(app.region_obj_params, 'lut_correction_data')
+    app.region_obj_params(1).lut_correction_data = [];
 end
-if ~isfield(app.region_list, 'xyz_affine_tf_fname')
-    app.region_list(1).xyz_affine_tf_fname = [];
+
+if ~isfield(app.region_obj_params, 'xyz_affine_tf_fname')
+    app.region_obj_params(1).xyz_affine_tf_fname = [];
 end
-if ~isfield(app.region_list, 'xyz_affine_tf_mat')
-    for n_reg = 1:numel(app.region_list)
-        app.region_list(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
+if ~isfield(app.region_obj_params, 'xyz_affine_tf_mat')
+    for n_reg = 1:numel(app.region_obj_params)
+        app.region_obj_params(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
 end
-if ~isfield(app.region_list, 'AO_correction_fname')
-    app.region_list(1).AO_correction_fname = [];
+
+if ~isfield(app.region_obj_params, 'AO_correction_fname')
+    app.region_obj_params(1).AO_correction_fname = [];
 end
-if ~isfield(app.region_list, 'AO_wf')
-    app.region_list(1).AO_wf = [];
+if ~isfield(app.region_obj_params, 'AO_wf')
+    app.region_obj_params(1).AO_wf = [];
 end
 
-f_sg_reg_update(app);
-
-for n_reg = 1:numel(app.region_list)
-    app.region_list(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_list(n_reg));
-    app.region_list(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_list(n_reg));
+for n_reg = 1:numel(app.region_obj_params)
+    app.region_obj_params(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_obj_params(n_reg).xyz_affine_tf_fname);
+    app.region_obj_params(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_obj_params(n_reg));
 end
 
 %% xyz table
@@ -150,6 +141,5 @@ end
 % initialize DAQ
 f_sg_initialize_DAQ(app);
 %
-
 
 end

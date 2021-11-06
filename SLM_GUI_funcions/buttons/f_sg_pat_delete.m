@@ -1,6 +1,6 @@
 function f_sg_pat_delete(app)
 
-idx1 = strcmpi(app.PatterngroupDropDown.Value, [app.xyz_patterns.pat_name]);
+idx1 = strcmpi(app.PatterngroupDropDown.Value, {app.xyz_patterns.pat_name});
 
 if sum(idx1)
     if numel(idx1)>1
