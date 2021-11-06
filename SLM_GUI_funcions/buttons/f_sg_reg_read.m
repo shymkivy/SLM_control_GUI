@@ -14,7 +14,7 @@ reg_params(1).effective_NA = app.regionEffectiveNAEditField.Value;
 if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
     reg_params(1).lut_correction_fname = [];
 else
-    reg_params(1).lut_correction_fname = [{app.LUTDropDown.Value}, {app.LUTcorrectionDropDown.Value}];
+    reg_params(1).lut_correction_fname = app.LUTcorrectionDropDown.Value;
 end
 
 if strcmpi(app.XYZaffinetransformDropDown.Value, 'none')

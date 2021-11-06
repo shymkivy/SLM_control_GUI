@@ -31,20 +31,22 @@ if ~isempty(reg_params)
     app.regionEffectiveNAEditField.Value = reg_params.effective_NA;
     
     % update dropdown
-    lut_fname = {app.LUTDropDown.Value};
+    lut_fname = app.LUTDropDown.Value;
     lut_corr_fname = {'None'};
     
     % load saved correction value
-    if isfield(reg_params, 'lut_correction_fname')
-        if ~isempty(reg_params.lut_correction_fname)
-            save_idx = strcmpi(lut_fname, reg_params.lut_correction_fname(:,1));
-            lut_corr_fname = reg_params.lut_correction_fname(save_idx,2);
+    if ~isempty(reg_params.lut_correction_fname)
+        lut_sublist = app.lut_corrections_list(strcmpi(app.lut_corrections_list(:,1), lut_fname),2);
+        if ~isempty(lut_sublist)
+            if sum(strcmpi(reg_params.lut_correction_fname, lut_sublist))
+                lut_corr_fname = reg_params.lut_correction_fname;
+            end
         end
     end
-    
+
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
     app.LUTcorrectionDropDown.Value = lut_corr_fname;
-    
+
     XYZ_corr_fname = {'None'};
     if ~isempty(reg_params.xyz_affine_tf_fname)
         if sum(strcmpi(app.SLM_ops.xyz_corrections_list(:,1),reg_params.xyz_affine_tf_fname))
