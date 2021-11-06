@@ -25,6 +25,34 @@ if ~isfield(app.region_obj_params, 'AO_wf')
     app.region_obj_params(1).AO_wf = [];
 end
 
+% first check if files exist
+for n_reg = 1:numel(app.region_obj_params)
+    temp_fname = app.region_obj_params(n_reg).lut_correction_fname;
+    temp_list = app.lut_corrections_list(:,1);
+    if ~isempty(temp_fname)
+        if ~sum(strcmpi(temp_fname, temp_list))
+            disp(['File ' temp_fname ' not found']);
+            app.region_obj_params(n_reg).lut_correction_fname = [];
+        end
+    end
+    temp_fname = app.region_obj_params(n_reg).xyz_affine_tf_fname;
+    temp_list = app.SLM_ops.xyz_corrections_list(:,1);
+    if ~isempty(temp_fname)
+        if ~sum(strcmpi(temp_fname, temp_list))
+            disp(['File ' temp_fname ' not found']);
+            app.region_obj_params(n_reg).xyz_affine_tf_fname = [];
+        end
+    end
+    temp_fname = app.region_obj_params(n_reg).AO_correction_fname;
+    temp_list = app.SLM_ops.AO_corrections_list(:,1);
+    if ~isempty(temp_fname)
+        if ~sum(strcmpi(temp_fname, temp_list))
+            disp(['File ' temp_fname ' not found']);
+            app.region_obj_params(n_reg).AO_correction_fname = [];
+        end
+    end
+end
+
 for n_reg = 1:numel(app.region_obj_params)
     app.region_obj_params(n_reg).lut_correction_data = f_sg_get_corr_data(app, app.region_obj_params(n_reg).lut_correction_fname);
     app.region_obj_params(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_obj_params(n_reg).xyz_affine_tf_fname);
