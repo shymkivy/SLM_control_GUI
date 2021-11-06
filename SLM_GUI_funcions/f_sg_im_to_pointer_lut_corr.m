@@ -31,7 +31,7 @@ else
                 n_fac = SLMn/SLMrn;
                 for n_m = 1:SLMm
                     for n_n = 1:SLMn
-                        temp_holo_corr(n_m, n_n) = lut_corr(ceil(n_m/m_fac), ceil(n_n/n_fac),temp_holo1(n_m, n_n)+1);
+                        temp_holo_corr(n_m, n_n) = lut_corr(ceil(n_m/m_fac), ceil(n_n/n_fac),temp_holo2(n_m, n_n)+1);
                     end
                 end
             end
