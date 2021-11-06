@@ -41,6 +41,6 @@ app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
 
 f_sg_initialize_GUI_params(app);
 
-f_sg_ops_load(app);
+%f_sg_ops_load(app);
 
 end

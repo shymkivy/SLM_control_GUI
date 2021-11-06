@@ -22,7 +22,7 @@ app.data.plot_fo.LineWidth = 1;
 
 %% load current tform
 
-reg_idx = strcmpi(app.app_main.CurrentregionDropDown.Value, [app.app_main.region_list.reg_name]);
+reg_idx = strcmpi(app.app_main.CurrentregionDropDown.Value, {app.app_main.region_list.reg_name});
 app.data.current_calib = app.app_main.region_list(reg_idx).xyz_affine_tf_mat;
 
 end

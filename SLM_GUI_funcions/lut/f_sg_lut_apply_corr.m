@@ -1,7 +1,7 @@
 function pointer_out = f_sg_lut_apply_corr(app, pointer, region)
 % obsolete
 
-idx_reg = strcmpi(region, [app.region_list.reg_name]);
+idx_reg = strcmpi(region, {app.region_list.reg_name});
 if ~isempty(app.region_list(idx_reg).lut_correction)
     idx_lut_corr = strcmpi(app.region_list(idx_reg).lut_correction(:,1), app.SLM_ops.lut_fname);
     lut_corr_idx = strcmpi(app.lut_corrections_list(:,1), app.region_list(idx_reg).lut_correction{idx_lut_corr,2});
