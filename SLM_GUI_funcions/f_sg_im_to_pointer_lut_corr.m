@@ -6,7 +6,7 @@ if ~exist('lut_corr_data', 'var')
 end
 
 if isempty(lut_corr_data)
-    temp_holo = uint8((rot90(holo_image, 3)/(2*pi))*255);
+    temp_holo = uint8((holo_image/(2*pi))*255);
 else
     temp_holo1 = uint8((holo_image/(2*pi))*255);
     
@@ -38,8 +38,8 @@ else
             temp_holo1(m_idx,n_idx) = temp_holo_corr;
         end
     end
-    temp_holo = rot90(temp_holo1, 3);
+    temp_holo = temp_holo1;
 end
-holo_pointer_value = reshape(temp_holo, [],1);
+holo_pointer_value = reshape(temp_holo', [],1);
 
 end
