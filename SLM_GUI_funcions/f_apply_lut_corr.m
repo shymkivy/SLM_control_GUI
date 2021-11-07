@@ -10,8 +10,8 @@ if ~isempty(lut_corr_data)
     for n_corr = 1:size(lut_corr_data,1)
         if ~isempty(lut_corr_data(n_corr).lut_corr)
             lut_corr = round(lut_corr_data(n_corr).lut_corr);
-            m_idx = lut_corr_data(n_corr).m_idx;
-            n_idx = lut_corr_data(n_corr).n_idx;
+            m_idx = logical(lut_corr_data(n_corr).m_idx);
+            n_idx = logical(lut_corr_data(n_corr).n_idx);
 
             temp_holo2 = temp_holo1;
             temp_holo2(~m_idx,:) = [];
@@ -28,7 +28,7 @@ if ~isempty(lut_corr_data)
                 n_fac = SLMn/SLMrn;
                 for n_m = 1:SLMm
                     for n_n = 1:SLMn
-                        temp_holo_corr(n_m, n_n) = lut_corr(ceil(n_m/m_fac), ceil(n_n/n_fac),temp_holo1(n_m, n_n)+1);
+                        temp_holo_corr(n_m, n_n) = lut_corr(ceil(n_m/m_fac), ceil(n_n/n_fac),temp_holo2(n_m, n_n)+1);
                     end
                 end
             end

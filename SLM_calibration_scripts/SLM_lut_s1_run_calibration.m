@@ -25,14 +25,14 @@ ops.plot_phase = 1;
 ops.NumGray = 256;          % bit depth
 
 % to use meadolwark analysis need 8x8, to use their mask need equal m and n
-ops.num_regions_m = 8;
-ops.num_regions_n = 16;
+ops.num_regions_m = 4;
+ops.num_regions_n = 8;
 
 %16R 940nm p120
-ops.PixelsPerStripe = 8;	
+ops.PixelsPerStripe = 16;	
 ops.PixelValue = 0;
 
-ops.DAQ_num_sessions = 100;
+ops.DAQ_num_sessions = 2;
 
 ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
 %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
@@ -90,6 +90,7 @@ end
 
 %%
 regions_run = f_lut_get_regions_run2(slm_roi, ops.num_regions_m, ops.num_regions_n);
+regions_run = sort(regions_run(:));
 
 %regions_run = f_lut_get_regions_run(slm_roi, ops.NumRegions);
 ops.regions_run = regions_run;
@@ -200,11 +201,13 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     for n_reg = 1:numel(regions_run)
         for Gray = 0:(ops.NumGray-1)
             Region = regions_run(n_reg);
+            idx1 = (n_reg-1)*ops.NumGray+Gray + 1;
             
-            region_gray(n_reg,:) = [Region, Gray];
+            region_gray(idx1,:) = [Region, Gray];
             
             region_mask = zeros(ops.height, ops.width);
-            region_mask(region_idx == 0) = 1;
+            region_mask(region_idx == Region) = 1;
+            region_mask = flipud(region_mask);
             holo_image = stripes.*region_mask*Gray;
 
             holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
@@ -224,9 +227,9 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 % scan intensity
                 %data = startForeground(session);
                 data = read(session,ops.DAQ_num_sessions,"OutputFormat","Matrix");
-                AI_intensity(n_reg) = mean(data);
-                phd_plot.XData = region_gray(1:n_reg,2);
-                phd_plot.YData = AI_intensity(1:n_reg);
+                AI_intensity(idx1) = mean(data);
+                phd_plot.XData = region_gray(1:idx1,2);
+                phd_plot.YData = AI_intensity(1:idx1);
                 phd_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
             end
             
@@ -235,7 +238,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 pause(0.01); %let the SLM settle for 10 ms
                 TLDC_get_Cam_Im(cam_out.hdl_cam);
                 cam_im.CData = cam_out.cam_frame';
-                calib_im_series(:,:,n_reg) = (cam_out.cam_frame);
+                calib_im_series(:,:,idx1) = (cam_out.cam_frame);
                 cam_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 pause(.02);
             end
@@ -255,7 +258,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         new_dir1 = [ops.save_path '\photodiode_' ops.save_file_name(1:end-4)];
         % dump the AI measurements to a csv file
         mkdir(new_dir1);
-        for Region = regions_run
+        for n_reg = 1:numel(regions_run)
+            Region = regions_run(n_reg);
             r_idx = region_gray(:,1) == Region;
             filename = ['Raw' num2str(Region) '.csv'];
             csvwrite([new_dir1 '\' filename], [region_gray(r_idx,2), AI_intensity(r_idx)]);  
