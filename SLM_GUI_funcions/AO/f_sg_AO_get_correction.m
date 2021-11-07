@@ -14,7 +14,7 @@ Z2 = mean(Z);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
-AO_wf = zeros(SLMm, SLMn);
+AO_wf = [];
 if isfield(reg1, 'AO_wf')
     if isstruct(reg1.AO_wf)
         [dist1, idx] = min(abs(Z2 - [reg1.AO_wf.Z]));
@@ -26,11 +26,13 @@ if isfield(reg1, 'AO_wf')
     end
 end
 
-if app.ZerooutsideunitcircCheckBox.Value
-    AO_wf(~reg1.holo_mask) = 0;
+if ~isempty(AO_wf)
+    if app.ZerooutsideunitcircCheckBox.Value
+        AO_wf(~reg1.holo_mask) = 0;
+    end
+    AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
+    AO_wf_full(m_idx, n_idx) = AO_wf;
+else
+    AO_wf_full = [];
 end
-AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
-AO_wf_full(m_idx, n_idx) = AO_wf;
-
-
 end
