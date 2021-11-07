@@ -40,6 +40,9 @@ default_region_params(1).effective_NA = .5;
 default_region_params(1).lut_correction_fname = [];
 default_region_params(1).xyz_affine_tf_fname = [];
 default_region_params(1).AO_correction_fname = [];
+default_region_params(1).lut_correction_data = [];
+default_region_params(1).xyz_affine_tf_mat = [];
+default_region_params(1).AO_wf = [];
 
 app.SLM_ops.default_objectives = default_objectives;
 app.SLM_ops.default_region_list = default_region_list;

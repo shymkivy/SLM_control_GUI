@@ -11,25 +11,26 @@ end
 z_tol = app.AOcorrZtoleranceEditField.Value;
 Z2 = mean(Z);
 
-if isstruct(reg1.AO_wf)
-    [dist1, idx] = min(abs(Z2 - [reg1.AO_wf.Z]));
-    if dist1 <= z_tol
-        AO_wf = reg1.AO_wf(idx).wf_out;
+SLMm = sum(m_idx);
+SLMn = sum(n_idx);
+
+AO_wf = zeros(SLMm, SLMn);
+if isfield(reg1, 'AO_wf')
+    if isstruct(reg1.AO_wf)
+        [dist1, idx] = min(abs(Z2 - [reg1.AO_wf.Z]));
+        if dist1 <= z_tol
+            AO_wf = reg1.AO_wf(idx).wf_out;
+        end
     else
-        AO_wf = zeros(size(reg1.AO_wf(idx).wf_out));
+        AO_wf = reg1.AO_wf;
     end
-else
-    AO_wf = reg1.AO_wf;
 end
 
-if isempty(AO_wf)
-    AO_wf_full = AO_wf;
-else
-    if app.ZerooutsideunitcircCheckBox.Value
-        AO_wf(~reg1.holo_mask) = 0;
-    end
-    AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
-    AO_wf_full(m_idx, n_idx) = AO_wf;
+if app.ZerooutsideunitcircCheckBox.Value
+    AO_wf(~reg1.holo_mask) = 0;
 end
+AO_wf_full = zeros(app.SLM_ops.height, app.SLM_ops.width);
+AO_wf_full(m_idx, n_idx) = AO_wf;
+
 
 end
