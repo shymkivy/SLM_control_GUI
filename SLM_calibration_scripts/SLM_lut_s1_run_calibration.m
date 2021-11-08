@@ -192,7 +192,9 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     if ops.use_photodiode
         AI_intensity = zeros(ops.NumGray*numel(regions_run), 1);
         phd_fig = figure;
-        phd_plot = plot(1,1); axis tight;
+        x1 = ones(ops.NumGray, numel(regions_run))*255;
+        y1 = zeros(ops.NumGray, numel(regions_run));
+        phd_plot = plot(x1,y1); axis tight;
         %caxis([1 256]);
         phd_fig.Children.Title.String = 'Photodiode';
     end
@@ -228,8 +230,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 %data = startForeground(session);
                 data = read(session,ops.DAQ_num_sessions,"OutputFormat","Matrix");
                 AI_intensity(idx1) = mean(data);
-                phd_plot.XData = region_gray(1:idx1,2);
-                phd_plot.YData = AI_intensity(1:idx1);
+                phd_plot(n_reg).XData(Gray+1) = region_gray(idx1,2); 
+                phd_plot(n_reg).YData(Gray+1) = AI_intensity(idx1);
                 phd_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
             end
             
