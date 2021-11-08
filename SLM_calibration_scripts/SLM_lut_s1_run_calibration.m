@@ -25,26 +25,27 @@ ops.plot_phase = 1;
 ops.NumGray = 256;          % bit depth
 
 % to use meadolwark analysis need 8x8, to use their mask need equal m and n
-ops.num_regions_m = 4;
-ops.num_regions_n = 8;
+ops.num_regions_m = 4;% 8;
+ops.num_regions_n = 8;% 16;
 
 %16R 940nm p120
 ops.PixelsPerStripe = 16;	
 ops.PixelValue = 0;
 
-ops.DAQ_num_sessions = 2;
+ops.DAQ_num_sessions = 200;
 
 ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
 %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
 %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
 %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
 
-ops.lut_correction_fname = 'photodiode_lut_940_slm5221_10_10_21_right_half_sub_region_corr.mat';
+% ops.lut_correction_fname = 'photodiode_lut_940_slm5221_10_10_21_right_half_sub_region_corr.mat';
+ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_10_10_21_left_half_sub_region_corr.mat';
 
 slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 
-save_pref = '940_slm5221_maitai';
+save_pref = '940_slm5221_maitai_corr2';
 %save_pref = '1064_slm5221_fianium';
 
 
