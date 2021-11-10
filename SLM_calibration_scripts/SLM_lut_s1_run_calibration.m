@@ -93,9 +93,6 @@ end
 regions_run = f_lut_get_regions_run2(slm_roi, ops.num_regions_m, ops.num_regions_n);
 regions_run = sort(regions_run(:));
 
-%regions_run = f_lut_get_regions_run(slm_roi, ops.NumRegions);
-ops.regions_run = regions_run;
-
 %% Initialize SLM
 ops = f_SLM_initialize(ops);
 
@@ -123,6 +120,8 @@ if ~isempty(ops.lut_correction_fname)
 end
 
 ops.lut_data = lut_data;
+ops.slm_roi = slm_roi;
+ops.regions_run = regions_run;
 
 
 %%
@@ -173,7 +172,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     is_horizontal = 0;
     stripes = f_gen_stripes(ops.height, ops.width, ops.PixelsPerStripe, is_horizontal);
     region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
-    
+    %ops.region_idx = region_idx;
     %%
     if ops.plot_phase
         SLM_fig = figure;

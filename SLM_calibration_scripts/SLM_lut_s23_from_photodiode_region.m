@@ -14,9 +14,9 @@ close all
 path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
 %path1 = '/Users/yuriyshymkiv/Desktop/matlab/SLM_GUI/SLM_outputs/lut_calibration/';
 
-fname_lut = 'photodiode_lut_1064_slm5221_fianium_64r_10_10_21_20h_36m.mat';
+fname_lut = 'photodiode_lut_940_slm5221_maitai_corr2_128r_11_07_21_19h_37m.mat';
 
-save_tag = 'photodiode_lut_1064_slm5221_10_10_21_left_half';
+save_tag = 'photodiode_lut_940_slm5221_11_9_21_right_half_corr2';
           
 addpath([pwd '\calibration_functions']);
 %addpath([pwd '/calibration_functions']);
@@ -30,50 +30,127 @@ params.manual_peak_selection = 0;
 params.plot_stuff = 0;
 
 sm_spline_global = 0.5; % modify for different level of smoothing
-sm_spline_reg = 0.005; % modify for different level of smoothing
+sm_spline_reg = 0.0001; % modify for different level of smoothing  0.005 for 8*4
 %%
-num_files = 1;
-
 data_load = load([path1 '/' fname_lut]);
+
 region_gray_all = data_load.region_gray;
 intens_all = data_load.AI_intensity;
-num_regions = data_load.ops.NumRegions;
-num_pix = data_load.ops.NumGray;
-lut_source_all = data_load.ops.lut_fname;
+
+ops_lut = data_load.ops;
+
+SLMm = ops_lut.height;
+SLMn = ops_lut.width;
+num_regions_SLM = ops_lut.NumRegions;
+num_gray = ops_lut.NumGray;
+
 regions_run = unique(region_gray_all(:,1));
 num_regions_run = numel(regions_run);
 
-gray1 = ((1:num_pix)-1)';
+gray1 = ((1:num_gray)-1)';
 
-regions_idx = zeros(num_regions,1);
+regions_idx = zeros(num_regions_SLM,1);
 regions_idx(regions_run+1) = 1;
 
-regions_all = (1:num_regions)-1;
-regions_all_3d = reshape(regions_all, [sqrt(num_regions), sqrt(num_regions)])';
+if isfield(data_load.ops, 'num_regions_m')
+    regions_m = data_load.ops.num_regions_m;
+else
+    regions_m = sqrt(num_regions_SLM);
+end
+
+if isfield(data_load.ops, 'num_regions_m')
+    regions_n = data_load.ops.num_regions_n;
+else
+    regions_n = sqrt(num_regions_SLM);
+end
+
+regions_all = (1:num_regions_SLM)-1;
+regions_all_3d = reshape(regions_all, [regions_n, regions_m])';
 
 regions_idx_3d = zeros(size(regions_all_3d));
 for n_reg = 1:num_regions_run
     regions_idx_3d(regions_all_3d==regions_run(n_reg)) = 1;
 end
-SLMrm = max(sum(regions_idx_3d,1));
-SLMrn = max(sum(regions_idx_3d,2));
+
+regions_run_m = max(sum(regions_idx_3d,1));
+regions_run_n = max(sum(regions_idx_3d,2));
+
+%% 
+
+lut_corr_data = [];
+
+if isfield(data_load.ops, 'lut_correction_fname')
+    lut_corr_load = load([path1 '/'  data_load.ops.lut_correction_fname]);
+    lut_corr_load = lut_corr_load.lut_corr;
+    lut_corr_data2.lut_corr = lut_corr_load.lut_corr;
+    SLMm = lut_corr_load.ops.height;
+    SLMn = lut_corr_load.ops.width;
+    
+    if isfield(lut_corr_load.ops, 'slm_roi')
+        slm_roi = lut_corr_load.ops.slm_roi;
+    else
+        if contains(data_load.ops.lut_correction_fname, 'right_half', 'IgnoreCase',true)
+            slm_roi = 'right_half';
+        elseif contains(data_load.ops.lut_correction_fname, 'left_half', 'IgnoreCase',true)
+            slm_roi = 'left_half';
+        elseif contains(data_load.ops.lut_correction_fname, 'full_slm', 'IgnoreCase',true)
+            slm_roi = 'full_SLM';
+        end
+    end
+    
+    if isfield(lut_corr_load.ops, 'SLMrn')
+        SLMrn = lut_corr_load.ops.SLMrn;
+        SLMrm = lut_corr_load.ops.SLMrm;
+    else
+        if contains(data_load.ops.lut_correction_fname, 'right_half', 'IgnoreCase',true)
+            SLMrn = sqrt(lut_corr_load.ops.NumRegions)/2;
+            SLMrm = sqrt(lut_corr_load.ops.NumRegions);
+        elseif contains(data_load.ops.lut_correction_fname, 'left_half', 'IgnoreCase',true)
+            SLMrn = sqrt(lut_corr_load.ops.NumRegions)/2;
+            SLMrm = sqrt(lut_corr_load.ops.NumRegions);
+        elseif contains(data_load.ops.lut_correction_fname, 'full_slm', 'IgnoreCase',true)
+            SLMrn = sqrt(lut_corr_load.ops.NumRegions);
+            SLMrm = sqrt(lut_corr_load.ops.NumRegions);
+        end
+    end
+    
+    region_idx = f_gen_region_index_mask(SLMm, SLMn, regions_m, regions_n);
+    
+    n_idx = ones(SLMn, 1);
+    n_px = ceil((1:SLMn)'/SLMn*regions_n);
+    if strcmpi(slm_roi, 'right_half')
+        n_idx(n_px <= floor(regions_n/2)) = 0;
+        
+    elseif strcmpi(slm_roi, 'left_half')
+        n_idx(n_px > floor(regions_n/2)) = 0;
+    end
+    lut_corr_data2(1).m_idx = ones(SLMm, 1);
+    lut_corr_data2(1).n_idx = n_idx;
+    lut_corr_data2(1).SLMcorrm = lut_corr_load.SLMrm;
+    lut_corr_data2(1).SLMcorrn = lut_corr_load.SLMrn;
+    lut_corr_data2(1).SLMrm = SLMrm;
+    lut_corr_data2(1).SLMrn = SLMrn;
+    lut_corr_data = [lut_corr_data; lut_corr_data2];
+end
 
 %% extract data and estimate approximate peak locations
-lut_all = zeros(num_regions_run, num_pix);
+lut_all = zeros(num_regions_run, num_gray);
 for n_reg = 1:num_regions_run
     reg1 = regions_run(n_reg);
     
     reg_idx = region_gray_all(:,1) == reg1;
     lut_all(n_reg,:) = intens_all(reg_idx);
-
 end
+
 
 %% first convert from intensity to amplitude sin(phi)
 % I ~ cos^2(phi/2); Fl = I^2 (two photon)
 if params.two_photon
-    lut_all = lut_all.^(1/2);
+    lut_all_p = lut_all.^(1/2);
+else
+    lut_all_p = lut_all;
 end
-lut_all2 = (lut_all).^(1/2);
+lut_all2 = (lut_all_p).^(1/2);
 
 %% average across regions and approximate peak locations
 
@@ -109,22 +186,31 @@ full_region_mmm_idx = mmm_ind;
 
 
 
+if isfield(data_load.ops, 'lut_correction_fname')
+    full_corr = squeeze(mean(mean(lut_corr_data.lut_corr,1),2));
+    full_region_px_corr = zeros(size(full_region_px));
+    for n_gray = 1:num_gray
+        full_region_px_corr(n_gray) = full_corr(round(full_region_px(n_gray)));
+    end
+else
+    full_region_px_corr = full_region_px;
+end
 %% spatial smooth
 % decide whether to normalize each region before spatial filt
 
-lut_in = permute(reshape(lut_all2, [SLMrn SLMrm num_pix]), [2 1 3]);
-regions_run_3d = reshape(regions_run, [SLMrn SLMrm])';
+lut_in = permute(reshape(lut_all2, [regions_run_n, regions_run_m, num_gray]), [2 1 3]);
+regions_run_3d = reshape(regions_run, [regions_run_n, regions_run_m])';
 
-filt_std = .5;
+filt_std = 1; % .5; for 8 * 4
 kern_2d = fspecial('gaussian', 3, filt_std);
 
 lut_s_3d = zeros(size(lut_in));
 ones1 = ones(size(regions_run_3d));
-for n_px = 1:num_pix
+for n_px = 1:num_gray
     lut_s_3d(:,:,n_px) = conv2(lut_in(:,:,n_px), kern_2d, 'same')./conv2(ones1, kern_2d, 'same');   
 end
 
-lut_all_s = reshape(permute(lut_s_3d, [2 1 3]), [], num_pix);
+lut_all_s = reshape(permute(lut_s_3d, [2 1 3]), [], num_gray);
 
 %% temporal smooth
 % can do global calibration here per region
@@ -139,7 +225,7 @@ for n_reg = 1:num_regions_run
 end
 
 %% for each region find lut now
-subreg_px = zeros(num_regions_run, num_pix);
+subreg_px = zeros(num_regions_run, num_gray);
 subreg_mmm_idx = zeros(num_regions_run,3);
 %params.plot_stuff = 0;
 %params.smooth_win = 0;
@@ -159,12 +245,12 @@ for n_reg = 1:num_regions_run
     phi_fo_int2 = (0:255)';
     px_fo2 = interp1(phi_fo_int, px_fo, phi_fo_int2);
     
-%     figure; hold on;
-%     plot(gray1, temp_lut_n)
-%     plot(gray1, temp_lut_ssn)
-%     plot(px_fo, phi_fo, 'k')
-%     title(sprintf('reg %d', n_reg))
-%     
+    figure; hold on;
+    plot(gray1, temp_lut_n)
+    plot(gray1, temp_lut_ssn)
+    plot(px_fo, phi_fo, 'k')
+    title(sprintf('reg %d', n_reg))
+    
 %     figure; hold on;
 %     plot(px_fo, phi_fo_int)
 %     plot(px_fo2, phi_fo_int2)
@@ -175,18 +261,65 @@ for n_reg = 1:num_regions_run
     subreg_mmm_idx(n_reg,:) = mmm_idx;
 end
 
-subreg_mmm_idx_3d = permute(reshape(subreg_mmm_idx, [SLMrn, SLMrm, 3]), [2 1 3]);
-subreg_px_3d = permute(reshape(subreg_px, [SLMrn, SLMrm, num_pix]), [2 1 3]);
+subreg_mmm_idx_3d = permute(reshape(subreg_mmm_idx, [regions_run_n, regions_run_m, 3]), [2 1 3]);
+subreg_px_3d = permute(reshape(subreg_px, [regions_run_n, regions_run_m, num_gray]), [2 1 3]);
+
+%% here put in the previous corrections and interpolate after
+
+if isfield(data_load.ops, 'lut_correction_fname')
+    [sizm_corr, sizn_corr, ~] = size(lut_corr_data.lut_corr);
+    SLMcorrm = lut_corr_data.SLMcorrm;
+    SLMcorrn = lut_corr_data.SLMcorrn;
+    
+    SLMrm = lut_corr_data.SLMrm;
+    SLMrn = lut_corr_data.SLMrn;
+    
+    % transfer data from old lut shape to new lut shape
+    region_idx_corr_pre = f_gen_region_index_mask(SLMm, SLMn, SLMcorrm, SLMcorrn);
+    region_idx_corr_new = f_gen_region_index_mask(SLMm, SLMn, regions_m, regions_n);
+
+    lut_idx_pre = reshape(lut_corr_load.regions_run_list, [lut_corr_data.SLMrn, lut_corr_data.SLMrm])';
+    lut_idx_new = reshape(regions_run, regions_run_n, regions_run_m)';
+
+    lut_corr = reshape(lut_corr_load.lut_corr, [], num_gray);
+    lut_corr_new = zeros(regions_run_m*regions_run_n, num_gray);
+    for n_gray = 1:num_gray
+        temp_holo1 = zeros(SLMm, SLMn);
+        for n_reg = 1:numel(lut_corr_load.regions_run_list)
+            current_reg = lut_idx_pre(n_reg);
+            current_lut = lut_corr(n_reg, n_gray);
+            temp_holo1(region_idx_corr_pre==current_reg) = current_lut;
+        end
+        for n_reg = 1:num_regions_run
+            current_reg = lut_idx_new(n_reg);
+            lut_corr_new(n_reg,n_gray) = mean(temp_holo1(region_idx_corr_new==current_reg));
+        end
+    end
+    lut_corr_new_3d = reshape(lut_corr_new, regions_run_m, regions_run_n, num_gray);
+
+    % apply old corrections
+    subreg_px_3d_corr = zeros(size(subreg_px_3d));
+    for n_m = 1:regions_run_m
+        for n_n = 1:regions_run_n
+            for n_gray = 1:num_gray
+                gray_idx = round(subreg_px_3d(n_m, n_n, n_gray)) + 1;
+                subreg_px_3d_corr(n_m, n_n, n_gray) = lut_corr_new_3d(n_m, n_n, gray_idx);
+            end
+        end
+    end
+else
+    subreg_px_3d_corr = subreg_px_3d;
+end
 %% spatial interp?
 
 interp_fac = 2;
 
-[X_pre, Y_pre] = meshgrid(linspace(0,1,SLMrn), linspace(0,1,SLMrm));
-[X_post, Y_post] = meshgrid(linspace(0,1,SLMrn*interp_fac-1), linspace(0,1,SLMrm*interp_fac-1));
+[X_pre, Y_pre] = meshgrid(linspace(0,1,regions_run_n), linspace(0,1,regions_run_m));
+[X_post, Y_post] = meshgrid(linspace(0,1,regions_run_n*interp_fac-1), linspace(0,1,regions_run_m*interp_fac-1));
 
-temp_cell = cell(num_pix,1);
-for n_px = 1:num_pix
-    temp_cell{n_px} = interp2(X_pre,Y_pre,subreg_px_3d(:,:,n_px),X_post,Y_post,'spline');
+temp_cell = cell(num_gray,1);
+for n_px = 1:num_gray
+    temp_cell{n_px} = interp2(X_pre,Y_pre,subreg_px_3d_corr(:,:,n_px),X_post,Y_post,'spline');
 end
 subreg_px_3d_ip = cat(3,temp_cell{:});
 
@@ -210,21 +343,16 @@ if params.plot_stuff
     plot(lut_all_s(n_reg,:))
     plot(lut_all_ss(n_reg,:))
 
-    n_reg = 2;
-    figure; hold on;
-    plot(lut_all2(n_reg,:))
-    plot(lut_all2_s(n_reg,:))
-
     figure; hold on;
     plot(diff(lut_all_ss(n_reg,:)))
 
-    f_save_tif_stack2_YS(subreg_px_3d - mean(mean(subreg_px_3d,1),2), [path1, save_tag, 'lut_view.tif'])
+    f_save_tif_stack2_YS(subreg_px_3d_corr - mean(mean(subreg_px_3d_corr,1),2), [path1, save_tag, 'lut_view.tif'])
     f_save_tif_stack2_YS(subreg_px_3d_ip - mean(mean(subreg_px_3d_ip,1),2), [path1, save_tag, 'lut_view_interp.tif'])
 end
 
 %% save full region corrections
 lut_corr = struct();
-lut_corr.lut_corr = full_region_px;
+lut_corr.lut_corr = full_region_px_corr;
 lut_corr.SLMrm = 1;
 lut_corr.SLMrn = 1;
 lut_corr.gray = gray1;
