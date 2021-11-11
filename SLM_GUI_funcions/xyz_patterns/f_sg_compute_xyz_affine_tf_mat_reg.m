@@ -11,6 +11,8 @@ if app.ApplyXYZcalibrationButton.Value
             lateral_affine_SLM_inv = lat_cal.xyz_affine_calib.xyz_affine_tf_mat(1:2,1:2);
         else
             % get transform % input * affine = slm actual
+            
+            lat_cal.input_coords(:,2) = lat_cal.input_coords(:,2)*-1;
             lateral_affine_SLM = lat_cal.input_coords\lat_cal.displacement_mat;
             lateral_affine_SLM_inv = inv(lateral_affine_SLM);
 
