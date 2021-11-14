@@ -34,6 +34,32 @@ else
         
     end
     
+    %% sorting
+    [~, z_sort] = sort(input_coords(isaxial,3));
+    temp_data = input_coords(isaxial,:);
+    input_coords_ax = temp_data(z_sort,:);
+    temp_data = file_names(isaxial);
+    file_names_ax = temp_data(z_sort);
+    
+    isy = logical(input_coords(:,2));
+    isx = ~logical(isaxial+isy);
+    
+    [~, x_sort] = sort(input_coords(isx,1));
+    temp_data = input_coords(isx,:);
+    input_coords_x = temp_data(x_sort,:);
+    temp_data = file_names(isx);
+    file_names_x = temp_data(x_sort);
+    
+    [~, y_sort] = sort(input_coords(isy,2));
+    temp_data = input_coords(isy,:);
+    input_coords_y = temp_data(y_sort,:);
+    temp_data = file_names(isy);
+    file_names_y = temp_data(y_sort);
+    
+    input_coords = [input_coords_ax; input_coords_x; input_coords_y];
+    file_names = [file_names_ax; file_names_x; file_names_y];
+    
+    %%
     lat_calib_all = struct();
     for n_file = 1:num_files
         im1 = imread([files_dir '\' file_names{n_file}], 'tif');
