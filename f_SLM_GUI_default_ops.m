@@ -75,7 +75,7 @@ region_params(1).wavelength = 940;
 region_params(1).beam_diameter = 1152;
 region_params(1).effective_NA = 0.62; % 11/11/21 0.62  before 11/11/21 0.605;
 region_params(1).lut_correction_fname = [];
-region_params(1).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
+region_params(1).xyz_affine_tf_fname = 'xyz_calib_25x_maitai_right_11_11_21.mat';
 region_params(1).AO_correction_fname = 'all_zernike_data_12_12_20.mat';
 
 
@@ -86,7 +86,7 @@ region_params(2).wavelength = 1064;
 region_params(2).beam_diameter = 1152;
 region_params(2).effective_NA = 0.565; % 0.565 from 11/11/21% 0.51 before
 region_params(2).lut_correction_fname = [];
-region_params(2).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
+region_params(2).xyz_affine_tf_fname = 'xyz_calib_25x_fianium_11_12_21_16h_53m.mat';
 region_params(2).AO_correction_fname = [];
 
 %% 20x with BNS1920
@@ -97,7 +97,7 @@ region_params(3).wavelength = 940;
 region_params(3).beam_diameter = 1152;
 region_params(3).effective_NA = 0.48;
 region_params(3).lut_correction_fname = [];
-region_params(3).xyz_affine_tf_fname = 'lateral_calib_maitai_z6_12_21_20.mat';
+region_params(3).xyz_affine_tf_fname = 'xyz_calib_20x_maitai_z6_12_21_20.mat';
 region_params(3).AO_correction_fname = [];
 
 
@@ -108,7 +108,7 @@ region_params(4).wavelength = 1064;
 region_params(4).beam_diameter = 1152;
 region_params(4).effective_NA = 0.415;
 region_params(4).lut_correction_fname = [];
-region_params(4).xyz_affine_tf_fname = 'lateral_calib_fianium_z1_12_21_20.mat';
+region_params(4).xyz_affine_tf_fname = 'xyz_calib_20x_fianium_z1_12_21_20.mat';
 region_params(4).AO_correction_fname = [];
 
 %% default directories

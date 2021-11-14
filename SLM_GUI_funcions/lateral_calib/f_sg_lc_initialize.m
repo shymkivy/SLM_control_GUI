@@ -2,7 +2,16 @@ function f_sg_lc_initialize(app)
 
 % temp orary settings
 app.imagedirEditField.Value = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\XYZcalibration\XYZcalibration\11_25_20\zoom2\all_im';
-app.calibfileEditField.Value = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_control_GUI\SLM_calibration\xyz_calibration\test_calib_7_28_21.mat';
+
+time_stamp = clock;
+name_tag = sprintf('%d_%d_%d_%dh_%dm',...
+            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
+            time_stamp(5));
+
+app.calibfilenameEditField.Value = ['xyz_calib_' name_tag '.mat'];
+
+app.FOVszieumEditField.Value = app.app_main.FOVsizeumEditField.Value;
+app.ZoomEditField.Value = app.app_main.ZoomEditField.Value;
 
 %% initialize 
 app.data.plot_im = imagesc(app.UIAxes, []);
