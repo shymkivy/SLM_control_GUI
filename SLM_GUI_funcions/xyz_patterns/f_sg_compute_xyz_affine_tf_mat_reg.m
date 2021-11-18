@@ -8,7 +8,7 @@ if app.ApplyXYZcalibrationButton.Value
         lat_cal = app.SLM_ops.xyz_corrections_list{idx_lat,2}; % .xyz_affine_calib in future
 
         if isfield(lat_cal, 'xyz_affine_calib')
-            xyz_affine_tf_mat = lat_cal.xyz_affine_calib.xyz_affine_tf_mat(1:2,1:2);
+            xyz_affine_tf_mat = lat_cal.xyz_affine_calib.xyz_affine_tf_mat;
         else
             % get transform % input * affine = slm actual
             
