@@ -11,6 +11,7 @@ ao_params.plot_stuff_extra = app.PlotextradeetsCheckBox.Value;
 ao_params.sigma_pixels = 1;
 ao_params.coord = app.current_SLM_coord;
 ao_params.region_name = app.CurrentregionDropDown.Value;
+ao_params.file_dir = app.ScanframesdirpathEditField.Value;
 
 %%
 kernel_half_size = ceil(sqrt(-log(0.1)*2*ao_params.sigma_pixels^2));
@@ -28,9 +29,6 @@ xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
 [theta, rho] = cart2pol(fX, fY);
 
 ao_params.region = reg1;
-ao_params.beam_diameter = reg1.beam_diameter;
-ao_params.m_idx = m_idx;
-ao_params.n_idx = n_idx;
 
 lut_data = [];
 if ~isempty(reg1.lut_correction_data)
@@ -46,7 +44,8 @@ AO_wf = f_sg_AO_get_correction(app);
 if ~isempty(AO_wf)
     init_image = init_image.*exp(1i*AO_wf);
 end
-
+ao_params.initial_AO_wf = AO_wf;
+ao_params.init_image = init_image;
 if app.InsertrefimageinscansCheckBox.Value
     ref_coords = f_sg_mpl_get_coords(app, 'zero');
     ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
@@ -93,6 +92,8 @@ zernike_scan_sequence = cat(1,all_patterns{:});
 zernike_scan_sequence = repmat(zernike_scan_sequence,app.ScanspermodeEditField.Value,1);
 num_scans = size(zernike_scan_sequence,1);
 
+ao_params.zernike_scan_sequence = zernike_scan_sequence;
+
 %%
 resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
@@ -134,6 +135,7 @@ deets_pre = f_get_PFS_deets_fast(im_cut, conv_kernel);
 
 %ao_params.intensity_win = ceil((deets_pre.X_fwhm + deets_pre.Y_fwhm)/4);
 ao_params.intensity_win = 3;
+ao_params.deets_pre = deets_pre;
 %%
 if app.PlotprogressCheckBox.Value
     sp1 = subplot(1,2,1); hold on; axis tight equal;
@@ -148,6 +150,8 @@ end
 AO_correction = [];
 holo_im_pointer = f_sg_initialize_pointer(app);
 
+mode_data_all = cell(app.NumiterationsSpinner.Value,1);
+deeps_post = cell(app.NumiterationsSpinner.Value,1);
 for n_it = 1:app.NumiterationsSpinner.Value
     ao_params.iteration = n_it;
     
@@ -202,7 +206,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     frames = f_AO_op_get_all_frames(path1);
     frames2 = frames(im_m_idx, im_n_idx,(end-num_scans+1):end);
     
-    [AO_correction_new] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
+    [AO_correction_new, mode_data_all{n_it}] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
     
     AO_correction = [AO_correction; {AO_correction_new}];
 
@@ -268,6 +272,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
         cent_mn = mean([deets_corr.cent_mn],2);
     end
     
+    deeps_post{n_it} = deets_corr;
+    
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(f1);
@@ -281,6 +287,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
     
     bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
 end
+ao_params.mode_data_all = mode_data_all;
+ao_params.deeps_post = deeps_post;
 
 name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
             app.SLM_ops.save_AO_dir,...

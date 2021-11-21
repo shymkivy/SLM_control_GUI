@@ -17,9 +17,24 @@ SLMn = sum(n_idx);
 AO_wf = [];
 if isfield(reg1, 'AO_wf')
     if isstruct(reg1.AO_wf)
-        [dist1, idx] = min(abs(Z2 - [reg1.AO_wf.Z]));
-        if dist1 <= z_tol
-            AO_wf = reg1.AO_wf(idx).wf_out;
+        if isfield(reg1.AO_wf, 'wf_out_fit')
+            AO_wf1 = reg1.AO_wf.wf_out_fit*Z;
+            if isempty(AO_wf)
+                AO_wf = AO_wf1;
+            else
+                AO_wf = AO_wf + AO_wf1;
+            end
+        end
+        if isfield(reg1.AO_wf, 'Z_corr')
+            [dist1, idx] = min(abs(Z2 - [reg1.AO_wf.Z_corr.Z]));
+            if dist1 <= z_tol
+                AO_wf2 = reg1.AO_wf.Z_corr(idx).wf_out;
+            end
+            if isempty(AO_wf)
+                AO_wf = AO_wf2;
+            else
+                AO_wf = AO_wf + AO_wf2;
+            end
         end
     else
         AO_wf = reg1.AO_wf;

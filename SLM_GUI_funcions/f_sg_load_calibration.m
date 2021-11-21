@@ -16,7 +16,7 @@ end
 ops.xyz_corrections_list = [{'None'}, {[]}; ops.xyz_corrections_list];
 
 %% load Zernike files
-AO_fnames = f_sg_get_file_names(ops.AO_correction_dir, '*zernike*.mat', false);
+AO_fnames = f_sg_get_file_names(ops.AO_correction_dir, '*AO_corr*.mat', false);
 ops.AO_corrections_list = cell(numel(AO_fnames),2);
 for n_fl = 1:numel(AO_fnames)
     ops.AO_corrections_list{n_fl, 1} = AO_fnames{n_fl};

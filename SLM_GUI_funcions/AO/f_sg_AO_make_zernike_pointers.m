@@ -77,7 +77,7 @@ for n_plane = 1:num_scans
         holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
     end
     
-    holo_im = f_sg_AO_add_correction(app, holo_im, AO_wf);
+    holo_im = f_sg_AO_add_correction(holo_im, AO_wf);
     
     %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
     holo_phase = angle(holo_im) + pi;

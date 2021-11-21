@@ -76,7 +76,7 @@ region_params(1).beam_diameter = 1152;
 region_params(1).effective_NA = 0.61; % 11/11/21 0.62  before 11/11/21 0.605;
 region_params(1).lut_correction_fname = [];
 region_params(1).xyz_affine_tf_fname = 'xyz_calib_25x_maitai_11_11_21.mat';
-region_params(1).AO_correction_fname = 'all_zernike_data_25x_12_12_20.mat';
+region_params(1).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat';
 
 
 region_params(2).obj_name = '25X_fat';

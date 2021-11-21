@@ -31,6 +31,8 @@ if exist(fname, 'file')
     
     f_sg_reg_update(app);
     f_sg_pat_update(app);
+    
+    f_sg_update_all_corrections(app);
 end
 
 end
