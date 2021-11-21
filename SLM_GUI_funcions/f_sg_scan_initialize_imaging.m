@@ -39,7 +39,12 @@ if app.InitializeimagingButton.Value
                 %figure; imagesc(holo_phase)
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            
+            if app.ScanwithtriggersCheckBox.Value
+                scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            else
+                scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            end
             
         else
             stim_pattern = app.xyz_patterns(strcmpi(app.PatternDropDownAI.Value, {app.xyz_patterns.pat_name}));
@@ -68,6 +73,7 @@ if app.InitializeimagingButton.Value
             end
             
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
+            
             scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             
