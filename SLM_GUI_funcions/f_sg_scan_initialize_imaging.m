@@ -40,7 +40,7 @@ if app.InitializeimagingButton.Value
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             
-            if app.ScanwithtriggersCheckBox.Value
+            if app.ScanwithSLMtriggersCheckBox.Value
                 scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             else
                 scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
