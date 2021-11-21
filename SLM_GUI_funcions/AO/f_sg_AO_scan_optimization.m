@@ -10,7 +10,7 @@ ao_params.plot_stuff = app.PlotprogressCheckBox.Value;
 ao_params.plot_stuff_extra = app.PlotextradeetsCheckBox.Value;
 ao_params.sigma_pixels = 1;
 ao_params.coord = app.current_SLM_coord;
-ao_params.region = app.CurrentregionDropDown.Value;
+ao_params.region_name = app.CurrentregionDropDown.Value;
 
 %%
 kernel_half_size = ceil(sqrt(-log(0.1)*2*ao_params.sigma_pixels^2));
@@ -19,14 +19,15 @@ conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
 conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %%
-[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, ao_params.region);
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, ao_params.region_name);
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+xlm = linspace(-SLMm/reg1.beam_diameter, SLMm/reg1.beam_diameter, SLMm);
+xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
+ao_params.region = reg1;
 ao_params.beam_diameter = reg1.beam_diameter;
 ao_params.m_idx = m_idx;
 ao_params.n_idx = n_idx;
