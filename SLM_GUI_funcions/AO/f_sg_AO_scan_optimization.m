@@ -296,7 +296,7 @@ name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
             time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
             time_stamp(5));
 
-save([name_tag '.mat'], 'AO_correction', 'ao_params');
+save([name_tag '.mat'], 'AO_correction', 'ao_params', '-v7.3');
 saveas(f1,[name_tag '.fig']);
 %% save stuff
 disp('Done');

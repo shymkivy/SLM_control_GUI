@@ -1,11 +1,48 @@
-z_depths = [100; 50; -50; -100];
+clear;
+close all;
 
-fnames = {'zernike_scan_data_11_19_21_18h_43m.mat';...
-          'zernike_scan_data_11_19_21_19h_52m.mat';...
-          'zernike_scan_data_11_19_21_19h_34m.mat';...
-          'zernike_scan_data_11_19_21_19h_5m.mat'};
+%%
+fnames = {'zernike_scan_data_11_21_21_14h_59m.mat';...
+          'zernike_scan_data_11_21_21_15h_40m.mat';...
+          'zernike_scan_data_11_21_21_17h_12m.mat';...
+          'zernike_scan_data_11_21_21_18h_7m.mat';...
+          'zernike_scan_data_11_21_21_19h_10m.mat'};
       
-fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_19_21\';
+fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_21_21\';
+
+
+z_depths = [-100; 100; 0; 50; -50];
+all_corr = cell(numel(fnames),1);
+for n_fil = 1:numel(fnames)
+    data = load([fpath fnames{n_fil}]);
+    all_corr{n_fil} = cat(1,data.AO_correction{:});
+end
+
+
+all_all_corr = cat(1,all_corr{:});
+unique_modes = unique(all_all_corr(:,1));
+
+
+all_w = nan(numel(unique_modes),numel(fnames));
+for n_mod = 1:numel(unique_modes)
+    for n_fil = 1:numel(fnames)
+        idx1 = all_corr{n_fil}(:,1) == unique_modes(n_mod);
+        if sum(idx1)
+            all_w(n_mod, n_fil) = sum(all_corr{n_fil}(idx1,2));
+        end
+    end
+end
+
+[z_depths_sort, sort_idx] = sort(z_depths);
+all_w_sort = all_w(:,sort_idx);
+
+col1 = jet(6);
+figure; hold on;
+legend_all = cell(numel(unique_modes),1);
+for n_mod = 1:numel(unique_modes)
+    plot(z_depths_sort, all_w_sort(n_mod,:), 'o-', 'color', col1(n_mod,:));
+    legend_all{n_mod} = ['mode ' num2str(unique_modes(n_mod))];
+end
 
 mode = 6;
 
