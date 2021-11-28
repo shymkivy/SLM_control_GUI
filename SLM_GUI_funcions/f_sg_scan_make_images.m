@@ -50,7 +50,7 @@ if ~strcmpi(pattern, 'none')
         end
         
         if app.ZerooutsideunitcircCheckBox.Value
-            holo_complex_all(reg1.holo_mask) = 1;
+            holo_complex_all(~reg1.holo_mask) = 1;
         end
                                     
         holo_phase_all(:,:,n_gr) = angle(holo_complex_all)+pi;
