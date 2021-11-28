@@ -30,7 +30,8 @@ if ~isempty(reg_params)
     app.regionBeamDiameterEditField.Value = reg_params.beam_diameter;
     app.regionEffectiveNAEditField.Value = reg_params.effective_NA;
     
-    % update dropdown
+    % update dropdowns
+    
     %lut_fname = app.LUTDropDown.Value;
     lut_corr_fname = {'None'};
     
@@ -60,6 +61,12 @@ if ~isempty(reg_params)
     end
     app.AOcorrectionDropDown.Value = AO_corr_fname;
     
+    app.XoffsetEditField.Value = reg_params.xyz_offset(1);
+    app.YoffsetEditField.Value = reg_params.xyz_offset(2);
+    app.ZoffsetEditField.Value = reg_params.xyz_offset(3);
+    
+    app.XZcorrEditField.Value = reg_params.xy_over_z_offset(1);
+    app.YZcorrEditField.Value = reg_params.xy_over_z_offset(2);
 else
     disp('Region update failed')
 end

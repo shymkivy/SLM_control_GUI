@@ -5,7 +5,26 @@ fname = 'SLM_GUI_local_ops.mat';
 if exist(fname, 'file')
     load_data = load(fname, 'saved_data');
     load_data = load_data.saved_data;
+
+    %%
+    temp_region_list = repmat(app.SLM_ops.default_region_list, [1, numel(load_data.region_list)]);
+    for n_reg = 1:numel(load_data.region_list)
+        temp_region_list(n_reg) = f_copy_fields(app.SLM_ops.default_region_list, load_data.region_list(n_reg));
+    end
+    app.region_list = temp_region_list;
     
+    %%
+    def_region_params.obj_name = app.SLM_ops.default_objectives.obj_name;
+    def_region_params.SLM_name = app.SLM_ops.SLM_name;
+    def_region_params.reg_name = 'Full SLM';
+    def_region_params = f_copy_fields(def_region_params, app.SLM_ops.default_region_params);
+    temp_region_obj_params = repmat(def_region_params, [1, numel(load_data.region_obj_params)]);
+    for n_reg = 1:numel(load_data.region_obj_params)
+        temp_region_obj_params(n_reg) = f_copy_fields(app.SLM_ops.default_region_params, load_data.region_obj_params(n_reg));
+    end
+    app.region_obj_params = temp_region_obj_params;
+    
+    %%
     temp_xyz = load_data.xyz_patterns;
     for n_pat = 1:numel(temp_xyz)
         if size(temp_xyz(n_pat).xyz_pts,2)>6
@@ -17,11 +36,9 @@ if exist(fname, 'file')
             temp_xyz(n_pat).xyz_pts = temp_pts;
         end
     end
-
-    app.region_list = load_data.region_list;
-    app.region_obj_params = load_data.region_obj_params;
     app.xyz_patterns = temp_xyz;
     
+    %%
     f_sg_load_calibration(app)
     
     app.SelectRegionDropDown.Value = load_data.dd.SelectRegionDropDown;

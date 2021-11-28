@@ -1,4 +1,4 @@
-function [ defocus ] = f_sg_DefocusPhase_YS( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+function [ defocus ] = f_sg_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
 
 if ~exist('beam_diameter', 'var')
     beam_diameter = max(SLMn,SLMm);

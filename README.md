@@ -9,16 +9,15 @@ under construction, but sections below work, more or less
 
 # Installation 
 MATLAB 2019 (MATLAB 2020 has issues with updating graphics)
-
 req: image processing toolbox
 
 Download code and run "SLM_control_GUI" from its directory
 
 # Calibrations to do:
 1. Align the laser polarization to SLM
-2. LUT calibration
-3. XYZ affine transform calibration
-4. Adaptove Optics corrections
+2. LUT calibration, global plus global/regional correction if using different wavelengths simultaneously
+3. XYZ affine transform calibration for coordinate rotaion, beam xyz offset for alignmen of two beams, and axial x/z and y/z offsets
+4. Adaptove Optics corrections (with large image of SLM at pupil plane can have significant z dependent abberations)
 
 # Parameters
 

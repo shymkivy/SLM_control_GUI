@@ -1,5 +1,6 @@
-function [ phase ] = f_sg_PhaseHologram_YS(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+function [ phase ] = f_sg_PhaseHologram(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
+% xyz are in um
 %   Detailed explanation goes here
     
 if ~exist('beam_diameter', 'var')
@@ -26,7 +27,7 @@ end
 for idx=1:size(xyzp,1)
     SLMplane=SLMplane+exp(1i.*(2*pi.*xyzp(idx,1).*u ...
                           + 2*pi.*xyzp(idx,2).*v ...
-                          + xyzp(idx,3).*defocus(:,:,idx)) )*weight(idx);
+                          + xyzp(idx,3)*1e-6.*defocus(:,:,idx)))*weight(idx);
 end
 phase=SLMplane;
 end

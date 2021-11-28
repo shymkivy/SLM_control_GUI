@@ -12,8 +12,7 @@ end
 coord = f_sg_mpl_get_coords(app, 'custom');
 
 new_row = array2table([idx, app.PatternnumberEditField.Value,...
-                    coord.xyzp(1), coord.xyzp(2),...
-                    coord.xyzp(3)/1e-6, coord.weight]);
+                    coord.xyzp, coord.weight]);
                 
 new_row.Properties.VariableNames = app.GUI_ops.table_var_names;
                 

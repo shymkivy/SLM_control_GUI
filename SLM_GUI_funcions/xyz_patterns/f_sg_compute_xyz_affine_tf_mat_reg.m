@@ -1,5 +1,6 @@
-function xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, xyz_affine_tf_fname)
+function xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, reg_params)
 
+xyz_affine_tf_fname = reg_params.xyz_affine_tf_fname;
 if app.ApplyXYZcalibrationButton.Value  
     if isempty(xyz_affine_tf_fname)
         xyz_affine_tf_mat = diag(ones(2,1));
@@ -33,7 +34,11 @@ if app.ApplyXYZcalibrationButton.Value
             xyz_affine_tf_mat(3,3) = 1;
             
         end
-    end   
+    end
+    if isfield(reg_params, 'xy_over_z_offset')
+        xyz_affine_tf_mat(3,1) = reg_params.xy_over_z_offset(1);
+        xyz_affine_tf_mat(3,2) = reg_params.xy_over_z_offset(2);
+    end
 else
     xyz_affine_tf_mat = diag(ones(3,1));
 end

@@ -2,15 +2,15 @@ clear;
 close all;
 
 %%
-fnames = {'zernike_scan_data_11_22_21_15h_4m.mat';...
-          'zernike_scan_data_11_22_21_15h_36m.mat';...
-          'zernike_scan_data_11_22_21_16h_7m.mat';...
-          'zernike_scan_data_11_22_21_16h_32m.mat';...
-          'zernike_scan_data_11_22_21_16h_56m.mat';...
-          'zernike_scan_data_11_22_21_17h_22m.mat';...
-          'zernike_scan_data_11_22_21_17h_46m.mat'};
+fnames = {'zernike_scan_data_fianium_11_25_21_18h_53m';...
+          'zernike_scan_data_fianium_11_25_21_19h_31m.mat';...
+          'zernike_scan_data_fianium_11_25_21_20h_47m.mat';...
+          'zernike_scan_data_fianium_11_25_21_23h_40m.mat';...
+          %'zernike_scan_data_fianium_11_25_21_15h_6m.mat';...
+          %'zernike_scan_data_11_22_21_17h_22m.mat';...
+          'zernike_scan_data_fianium_11_25_21_22h_15m.mat'};
       
-fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_22_21\';
+fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_25_21\';
 
 
 %z_depths = [-100; 100; 0; 50; -50];
@@ -20,7 +20,7 @@ mode_data = cell(numel(fnames),1);
 all_corr = cell(numel(fnames),1);
 for n_fil = 1:numel(fnames)
     data = load([fpath fnames{n_fil}]);
-    z_depths(n_fil) = data.ao_params.coord.xyzp(3)*1e6;
+    z_depths(n_fil) = data.ao_params.coord.xyzp(3);
     mode_data{n_fil} = data.ao_params.mode_data_all;
     all_corr{n_fil} = cat(1,data.AO_correction{:});
 end
@@ -103,7 +103,7 @@ plot(uq_2,mean(intens_raw,2), 'r')
 
 
 
-
+%%
 all_all_corr = cat(1,all_corr{:});
 unique_modes = unique(all_all_corr(:,1));
 
@@ -129,16 +129,14 @@ for n_mod = 1:numel(unique_modes)
     legend_all{n_mod} = ['mode ' num2str(unique_modes(n_mod))];
 end
 
-mode = 6;
+%%
 
+mode = 5;
 w_all = zeros(numel(fnames),1);
-AO_params_fit = [];
 for n_fil = 1:numel(fnames)
-    data = load([fpath fnames{n_fil}]);
-    corr_all2 = cat(1,data.AO_correction{:});
+    corr_all2 = all_corr{n_fil};
     
-    w_all(n_fil) = sum(corr_all2(corr_all2(:,1) == 6,2));
-    AO_params_fit = [AO_params_fit; data.ao_params];
+    w_all(n_fil) = sum(corr_all2(corr_all2(:,1) == mode,2));
 end
 
 
@@ -152,6 +150,7 @@ plot(z_depths, w_all,'o')
 plot(z1, y1)
 xlabel('z')
 ylabel('weight')
+title(['Mode ' num2str(mode)])
 
 AO_correction = struct();
 AO_correction.fit_weights = [mode, w_fit];

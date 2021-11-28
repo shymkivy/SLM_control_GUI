@@ -3,7 +3,7 @@ function coord = f_sg_mpl_get_coords(app, from_where, num)
 if strcmp(from_where, 'custom')
     coord.xyzp = [app.XdisplacementEditField.Value,...
                   app.YdisplacementEditField.Value,...
-                  app.ZOffsetumEditField.Value*1e-6];
+                  app.ZOffsetumEditField.Value];
 
     coord.weight = app.WeightEditField.Value;
        
@@ -20,7 +20,7 @@ elseif strcmp(from_where, 'table_selection')
         tab_var = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),:).Variables;
         
         coord.idx = tab_var(1);
-        coord.xyzp = [tab_var(3:4), tab_var(5)*1e-6];
+        coord.xyzp = [tab_var(3:4), tab_var(5)];
         coord.weight = tab_var(6);
         
         [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
@@ -39,7 +39,7 @@ elseif strcmp(from_where, 'pattern')
             tab_var2 = tab_var(plan_idx,:);
             
             coord.idx = tab_var2(:,1);
-            coord.xyzp = [tab_var2(:,3:4), tab_var2(:,5)*1e-6];
+            coord.xyzp = [tab_var2(:,3:4), tab_var2(:,5)];
             coord.weight = tab_var2(:,6);
             
             [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);

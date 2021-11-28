@@ -10,6 +10,9 @@ end
 if ~isfield(ops, 'SLM_SDK_dir')
     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
 end
+if isempty(ops.SLM_SDK_dir)
+    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+end
 
 if ~isfield(ops, 'lut_dir')
     ops.lut_dir = 'lut_calibration\';

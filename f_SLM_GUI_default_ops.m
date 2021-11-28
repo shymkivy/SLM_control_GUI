@@ -77,7 +77,8 @@ region_params(1).effective_NA = 0.61; % 11/11/21 0.62  before 11/11/21 0.605;
 region_params(1).lut_correction_fname = [];
 region_params(1).xyz_affine_tf_fname = 'xyz_calib_25x_maitai_11_11_21.mat';
 region_params(1).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat';
-
+region_params(1).xyz_offset = [0 0 0]; % baseline beam offset
+region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
 
 region_params(2).obj_name = '25X_fat';
 region_params(2).SLM_name = 'BNS1920';
@@ -88,6 +89,8 @@ region_params(2).effective_NA = 0.565; % 0.565 from 11/11/21% 0.51 before
 region_params(2).lut_correction_fname = [];
 region_params(2).xyz_affine_tf_fname = 'xyz_calib_25x_fianium_11_11_21.mat';
 region_params(2).AO_correction_fname = [];
+region_params(2).xyz_offset = [0 0 -6];  % baseline beam offset
+region_params(2).xy_over_z_offset = [0 0]; % axial beam offset by z
 
 %% 20x with BNS1920
 region_params(3).obj_name = '20X_fat';
@@ -99,7 +102,8 @@ region_params(3).effective_NA = 0.48;
 region_params(3).lut_correction_fname = [];
 region_params(3).xyz_affine_tf_fname = 'xyz_calib_20x_maitai_z6_12_21_20.mat';
 region_params(3).AO_correction_fname = [];
-
+region_params(3).xyz_offset = [0 0 0];
+region_params(3).xy_over_z_offset = [0 0]; % axial beam offset by z
 
 region_params(4).obj_name = '20X_fat';
 region_params(4).SLM_name = 'BNS1920';
@@ -110,6 +114,8 @@ region_params(4).effective_NA = 0.415;
 region_params(4).lut_correction_fname = [];
 region_params(4).xyz_affine_tf_fname = 'xyz_calib_20x_fianium_z1_12_21_20.mat';
 region_params(4).AO_correction_fname = [];
+region_params(4).xyz_offset = [0 0 -6];
+region_params(4).xy_over_z_offset = [0 0]; % axial beam offset by z
 
 %% default directories
 

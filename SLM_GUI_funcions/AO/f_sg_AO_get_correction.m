@@ -6,7 +6,7 @@ end
 [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app,reg_name);
 
 if ~exist('Z', 'var')
-    Z = app.current_SLM_coord.xyzp(:,3)*1e6;
+    Z = app.current_SLM_coord.xyzp(:,3);
 end
 z_tol = app.AOcorrZtoleranceEditField.Value;
 Z2 = mean(Z);

@@ -5,8 +5,7 @@
 
 %% Initialize SLM
 
-ops = f_SLM_initialize_ops_YS();
-ops = f_SLM_initialize_YS(ops);
+ops = f_SLM_initialize(ops);
 
 
 %% create image
@@ -52,9 +51,9 @@ if ops.SDK_created == 1
 		%image buffer is ready to receive the next image. Breaking this into two functions is 
 		%useful for external triggers. It is safe to apply a trigger when Write_image is complete
 		%and it is safe to write a new image when ImageWriteComplete returns
-        f_SLM_update_YS(ops, ImageOne);
+        f_SLM_update(ops, ImageOne);
         pause(1.0) % This is in seconds
-        f_SLM_update_YS(ops, ImageTwo);
+        f_SLM_update(ops, ImageTwo);
         pause(1.0) % This is in seconds
     end
     
@@ -62,7 +61,7 @@ if ops.SDK_created == 1
 end
 
 %% close SLM
-ops = f_SLM_close_YS(ops);
+ops = f_SLM_close(ops);
 
 
 

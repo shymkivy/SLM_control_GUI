@@ -4,8 +4,7 @@
 
 %% Initialize SLM
 
-ops = f_SLM_initialize_ops_YS();
-ops = f_SLM_initialize_YS(ops);
+ops = f_SLM_initialize(ops);
 
  %%   
 if ops.SDK_created == 1    
@@ -23,7 +22,7 @@ if ops.SDK_created == 1
     PixelValue = 0;
     calllib('ImageGen', 'Generate_Solid', Image, ops.width, ops.height, PixelValue);
     
-    f_SLM_update_YS(ops, Image);
+    f_SLM_update(ops, Image);
 	
     PixelsPerStripe = 8;
     %loop through each region
@@ -37,7 +36,7 @@ if ops.SDK_created == 1
             calllib('ImageGen', 'Mask_Image', Image, ops.width, ops.height, Region, NumRegions);
             
             %write the image
-            f_SLM_update_YS(ops, Image);
+            f_SLM_update(ops, Image);
             
             %let the SLM settle for 10 ms
             pause(0.01);
@@ -58,4 +57,4 @@ if ops.SDK_created == 1
 end
      
 %% close SLM
-ops = f_SLM_close_YS(ops);
+ops = f_SLM_close(ops);

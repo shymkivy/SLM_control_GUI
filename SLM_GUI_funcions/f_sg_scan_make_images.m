@@ -22,20 +22,28 @@ if ~strcmpi(pattern, 'none')
     %% precompute hologram patterns
     num_groups = numel(groups);
     
+    if app.ApplyXYZcalibrationButton.Value  
+        xyz_offset = reg1.xyz_offset;
+    else
+        xyz_offset = [0 0 0];
+    end
+    
     holo_phase_all = zeros(SLMm, SLMn, num_groups);
     for n_gr = 1:num_groups
         curr_gr = groups(n_gr);
         gr_subtable = group_table(group_table(:,2) == curr_gr,:);
         
-        xyzp = [gr_subtable(:,3:4), gr_subtable(:,5)*1e-6];
-        xyzp2 = xyzp*reg1.xyz_affine_tf_mat;
+        
+        
+        xyzp = gr_subtable(:,3:5);
+        xyzp2 = (xyzp+xyz_offset)*reg1.xyz_affine_tf_mat;
         
         beam_diameter = reg1.beam_diameter;
         
         % generate 3d pattern, where each depth will get its own correction
         holo_complex_all = zeros(SLMm, SLMn);
         for n_pt = 1:size(xyzp2,1)
-            holo_complex = f_sg_PhaseHologram_YS(xyzp2(n_pt,:),...
+            holo_complex = f_sg_PhaseHologram(xyzp2(n_pt,:),...
                                 SLMm, SLMn,...
                                 gr_subtable(n_pt,6),...
                                 reg1.effective_NA,...

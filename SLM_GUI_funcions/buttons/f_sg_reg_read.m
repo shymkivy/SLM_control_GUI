@@ -33,4 +33,12 @@ reg_params(1).lut_correction_data = [];
 reg_params(1).xyz_affine_tf_mat = [];
 reg_params(1).AO_wf = [];
 
+reg_params(1).xyz_offset = [app.XoffsetEditField.Value,...
+                            app.YoffsetEditField.Value,...
+                            app.ZoffsetEditField.Value];
+                        
+reg_params(1).xy_over_z_offset = [app.XZcorrEditField.Value,...
+                                  app.YZcorrEditField.Value];
+
+
 end

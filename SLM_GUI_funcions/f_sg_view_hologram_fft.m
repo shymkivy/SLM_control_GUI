@@ -23,7 +23,7 @@ pupil_mask((1 + (siz - dims(1))/2):(siz - (siz - dims(1))/2),(1 + (siz - dims(2)
 
 pupil_amp = pupil_amp.*pupil_mask;
 
-defocus = f_sg_DefocusPhase_YS(siz,...
+defocus = f_sg_DefocusPhase(siz,...
                         siz,...
                         reg1.effective_NA,...
                         app.ObjectiveRIEditField.Value,...
@@ -34,7 +34,7 @@ defocus = defocus .* pupil_mask;
 holo_image1 = phase_sq;
 holo_image1((1 + (siz - dims(1))/2):(siz - (siz - dims(1))/2),(1 + (siz - dims(2))/2):(siz - (siz - dims(2))/2)) = holo_image;
 
-SLM_complex_wave=pupil_amp.*(holo_image1./exp(1i.*(defocus_dist.*defocus)));
+SLM_complex_wave=pupil_amp.*(holo_image1./exp(1i.*(defocus_dist.*defocus*1e-6)));
 
 %             phase=angle(SLM_complex_wave)+pi;
 %             amp = abs(SLM_complex_wave);

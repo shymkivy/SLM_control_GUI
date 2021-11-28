@@ -7,7 +7,7 @@ f_sg_lut_correctios_load_list(app);
 ops = app.SLM_ops;
 
 % load lateral
-lateral_calib_fnames = f_sg_get_file_names(ops.xyz_calibration_dir, '*xyz_*.mat', false);
+lateral_calib_fnames = f_sg_get_file_names(ops.xyz_calibration_dir, '*xyz*.mat', false);
 ops.xyz_corrections_list = cell(numel(lateral_calib_fnames),2);
 for n_fl = 1:numel(lateral_calib_fnames)
     ops.xyz_corrections_list(n_fl,1) = lateral_calib_fnames(n_fl);
