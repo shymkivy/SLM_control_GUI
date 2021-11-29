@@ -1,8 +1,11 @@
 function f_sg_view_current_holo(app)
 
-holo_image = app.SLM_image;
-holo_image = f_sg_AO_add_correction(holo_image, app.current_SLM_AO_Image);
-f_sg_view_hologram_phase(app, holo_image);
-title('Current uploaded phase');
+text1 = {'on', 'off'};
+
+holo_phase = app.SLM_phase;
+% corrections already added
+%holo_phase = f_sg_AO_add_correction(holo_phase, app.current_SLM_AO_Image);
+f_sg_view_hologram_phase(app, holo_phase);
+title(sprintf('Current uploaded phase, AO %s', text1{2-app.ApplyAOcorrectionButton.Value}));
 
 end

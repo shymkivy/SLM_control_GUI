@@ -1,6 +1,7 @@
 function f_sg_scan_initialize_imaging(app)
 
 if app.InitializeimagingButton.Value
+    init_image_lut = app.SLM_phase_lut_corr;
     try
         disp('Initializing multiplane imaging...');
         time_stamp = clock;
@@ -29,16 +30,14 @@ if app.InitializeimagingButton.Value
             lut_data = [lut_data; lut_data2];
         end
         
-        init_image = app.SLM_image;
-        
         if ~num_stim % of only imaging
             holo_pointers = cell(num_planes,1);
             for n_gr = 1:num_planes
-                holo_phase = init_image;
-                holo_phase(m_idx_im, n_idx_im, n_gr) = holo_patterns_im(:,:, n_gr);
+                holo_phase = init_image_lut;
+                holo_phase(m_idx_im, n_idx_im) = holo_patterns_im(:,:, n_gr);
                 holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
-                holo_pointers{n_gr,1}.Value = f_sg_im_to_pointer_lut_corr(holo_phase(:,:,n_gr), lut_data);
-                %figure; imagesc(holo_phase)
+                holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
+                %figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             
@@ -104,14 +103,14 @@ if app.InitializeimagingButton.Value
         save([name_tag '.mat'], 'scan_data');
    
         disp('Done');
-        
         %figure; imagesc(f_sg_poiner_to_im(holo_pointers{1}, 1152, 1920));
     catch
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
         disp('Imaging run failed')
-        f_SLM_update(app.SLM_ops, app.SLM_blank_pointer);
     end
+    app.SLM_phase_corr_lut = init_image_lut;
+    f_sg_upload_image_to_SLM(app);
 else
     app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
 end

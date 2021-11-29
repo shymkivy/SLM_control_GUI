@@ -5,24 +5,12 @@ for n_reg = 1:numel(app.region_list)
     app.region_obj_params(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_obj_params(n_reg));
 end
 
-%% upload current correction
+%% reupload upload current coord with correction update
+coord = app.GUI_buffer.current_SLM_coord;
 
-% reset the phase
-app.SLM_phase_corr = app.SLM_phase;
+f_sg_xyz_upload_coord(app, coord);
 
-if app.ApplyAOcorrectionButton.Value
-    % refresh local (maybe not needed)
-    [m_idx, n_idx] = f_sg_get_reg_deets(app,reg_name);
-    AO_phase = f_sg_AO_get_correction(app, app.CurrentregionDropDown.Value);
-    app.SLM_ao_phase(m_idx, n_idx) = AO_phase;
-    
-    % apply ao to full
-    app.SLM_phase_corr = angle(app.SLM_complex.*exp(1i*(app.SLM_ao_phase)));
-end
-
-%% upload slm image
-f_sg_upload_image_to_SLM(app);
-
+%%
 if app.ApplyAOcorrectionButton.Value
     app.InitializeAOLamp.Color = [0.00,1.00,0.00];
 else

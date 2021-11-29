@@ -1,4 +1,4 @@
-function holo_complex = f_sg_xyz_gen_holo(app, coord, reg1)
+function holo_phase = f_sg_xyz_gen_holo(app, coord, reg1)
 
 %% xyz calibration
 if app.ApplyXYZcalibrationButton.Value  
@@ -20,14 +20,19 @@ coord.xyzp = (coord.xyzp+xyz_offset)*reg1.xyz_affine_tf_mat;
 % end
 
 %% generate holo (need to apply AO separately for each)
-holo_complex = f_sg_PhaseHologram(xyzp,...
+holo_phase = f_sg_PhaseHologram2(coord.xyzp,...
                     sum(reg1.m_idx), sum(reg1.n_idx),...
                     coord.weight,...
                     coord.NA,...
                     app.ObjectiveRIEditField.Value,...
                     reg1.wavelength*1e-9,...
                     reg1.beam_diameter);
-               
-holo_complex(~reg1.holo_mask) = 1;
+
+%% apply mask
+for n_holo = 1:size(coord.xyzp,1)
+    temp_holo = holo_phase(:,:,n_holo);
+    temp_holo(~reg1.holo_mask) = 0;
+    holo_phase(:,:,n_holo) = temp_holo;
+end
 
 end

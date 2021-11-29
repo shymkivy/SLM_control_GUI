@@ -14,7 +14,7 @@ if ~strcmpi(pattern, 'none')
     
     pointer_idx = false(app.SLM_ops.height,app.SLM_ops.width);
     pointer_idx(m_idx,n_idx) = 1;
-    pointer_idx = reshape(rot90(pointer_idx, 3), [],1);
+    pointer_idx = reshape(pointer_idx', [],1);
     
     group_table = app.xyz_patterns(idx_pat).xyz_pts.Variables;
     groups = unique(group_table(:,2));
@@ -22,59 +22,32 @@ if ~strcmpi(pattern, 'none')
     %% precompute hologram patterns
     num_groups = numel(groups);
     
-    if app.ApplyXYZcalibrationButton.Value  
-        xyz_offset = reg1.xyz_offset;
-    else
-        xyz_offset = [0 0 0];
-    end
-    
-    holo_phase_all = zeros(SLMm, SLMn, num_groups);
+    holo_phase_all = zeros(SLMm, SLMn, num_groups, 'uint8');
     for n_gr = 1:num_groups
         curr_gr = groups(n_gr);
         gr_subtable = group_table(group_table(:,2) == curr_gr,:);
         
+        coord.idx = gr_subtable(:,1);
+        coord.xyzp = gr_subtable(:,3:5);
+        coord.weight = gr_subtable(:,6);
+        coord.NA = reg1.effective_NA;
         
+        holo_phase = f_sg_xyz_gen_holo(app, coord, reg1);
         
-        xyzp = gr_subtable(:,3:5);
-        xyzp2 = (xyzp+xyz_offset)*reg1.xyz_affine_tf_mat;
+        AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
         
-        beam_diameter = reg1.beam_diameter;
+        holo_phase_corr = holo_phase+AO_phase;
         
-        % generate 3d pattern, where each depth will get its own correction
-        holo_complex_all = zeros(SLMm, SLMn);
-        for n_pt = 1:size(xyzp2,1)
-            holo_complex = f_sg_PhaseHologram(xyzp2(n_pt,:),...
-                                SLMm, SLMn,...
-                                gr_subtable(n_pt,6),...
-                                reg1.effective_NA,...
-                                app.ObjectiveRIEditField.Value,...
-                                reg1.wavelength*1e-9,...
-                                beam_diameter);
-            AO_wf = f_sg_AO_get_correction(app, reg1.reg_name, gr_subtable(n_pt,5));  
-            if ~isempty(AO_wf)
-                holo_complex = holo_complex.*exp(1i*(AO_wf(m_idx, n_idx)));
-            end
-            holo_complex_all = holo_complex_all + holo_complex;
-        end
+        SLM_phase = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
         
-        if app.ZerooutsideunitcircCheckBox.Value
-            holo_complex_all(~reg1.holo_mask) = 1;
-        end
-                                    
-        holo_phase_all(:,:,n_gr) = angle(holo_complex_all)+pi;
+        SLM_phase_lut_corr = f_sg_lut_apply_reg_corr(SLM_phase, reg1);
+        
+        holo_phase_all(:,:,n_gr) = SLM_phase_lut_corr;
         %holo_phase_all(:,:,n_gr) = f_sg_im_to_pointer(holo_phase);                
     end
     
     if add_blank
-        holo_zero = zeros(SLMm, SLMn);
-
-        AO_wf = f_sg_AO_get_correction(app, reg1.reg_name, 0); 
-
-        if ~isempty(AO_wf)
-            holo_zero = holo_zero.*exp(1i*(AO_wf));
-        end
-        holo_zero = angle(holo_zero)+pi;
-
+        holo_zero = zeros(SLMm, SLMn, 'uint8');
         holo_phase_all = cat(3,holo_zero,holo_phase_all);
     end
 else

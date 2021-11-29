@@ -1,4 +1,4 @@
-function [holo_out, n, m] = f_sg_AO_gen_test_hologram(app)
+function [holo_phase_out, n, m] = f_sg_AO_gen_test_hologram(app)
 
 % Z0_0    = 1;
 % Z1_n1   = 2*rho.*sin(theta);
@@ -46,8 +46,8 @@ phase = Z_nm*weight;
 
 phase = angle(exp(1i*(phase))) + pi;
 
-holo_out = app.SLM_blank_im;
-holo_out(m_idx, n_idx) = phase;
+holo_phase_out = app.SLM_blank_phase;
+holo_phase_out(m_idx, n_idx) = phase;
 % convert to 8bit
 %phase8bit = round(phase/2/pi*255);
 end

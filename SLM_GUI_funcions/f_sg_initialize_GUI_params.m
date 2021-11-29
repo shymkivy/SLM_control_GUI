@@ -126,22 +126,31 @@ app.ApplyXYZcalibrationButton.Value = 1;
 f_sg_apply_xyz_calibration(app);
 
 % initialize blank image
-app.SLM_blank_im = exp(1i*(zeros(app.SLM_ops.height,app.SLM_ops.width)));
+app.SLM_blank_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
 app.SLM_blank_pointer = f_sg_initialize_pointer(app);
-app.SLM_image_pointer.Value = f_sg_im_to_pointer(angle(app.SLM_blank_im));
+app.SLM_blank_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
 
 % initialize other pointers
-app.SLM_image = app.SLM_blank_im;
+app.SLM_image = app.SLM_blank_phase; % making obsolete
+
+app.SLM_phase = app.SLM_blank_phase;
+app.SLM_phase_corr = app.SLM_blank_phase;
+app.SLM_phase_lut_corr = zeros(app.SLM_ops.height,app.SLM_ops.width, 'uint8');
+
 app.SLM_image_pointer = f_sg_initialize_pointer(app);
+app.SLM_image_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
 
-app.SLM_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
-app.SLM_phase_corr = app.SLM_phase;
-app.SLM_ao_phase = app.SLM_phase;
-app.SLM_complex = app.SLM_blank_im;
-app.SLM_ao_complex = app.SLM_blank_im;
-
-app.SLM_gh_phase_preview = app.SLM_phase;
-app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_phase_corr+pi);
+% current regional buffer
+app.GUI_buffer.current_SLM_coord = [];
+app.GUI_buffer.current_region = [];
+app.GUI_buffer.current_holo_phase = [];
+app.GUI_buffer.current_AO_phase = [];
+app.GUI_buffer.current_holo_phase_corr = [];
+app.GUI_buffer.current_SLM_phase = [];
+    
+% gh stuff
+app.SLM_gh_phase_preview = app.SLM_blank_phase;
+app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_blank_phase+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);

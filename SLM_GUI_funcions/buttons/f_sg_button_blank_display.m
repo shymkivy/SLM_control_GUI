@@ -1,7 +1,8 @@
 function f_sg_button_blank_display(app)
 
-app.SLM_complex = app.SLM_blank_im;
-app.SLM_phase_corr = angle(app.SLM_blank_im);
+app.SLM_phase = app.SLM_blank_phase;
+app.SLM_phase_corr = app.SLM_blank_phase;
+app.SLM_phase_corr_lut = uint8(app.SLM_blank_phase);
 app.current_SLM_coord = f_sg_mpl_get_coords(app, 'zero');
 
 app.SLM_phase_plot.CData = app.SLM_phase_corr+pi;
