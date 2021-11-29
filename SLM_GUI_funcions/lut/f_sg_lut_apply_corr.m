@@ -1,19 +1,53 @@
-function pointer_out = f_sg_lut_apply_corr(app, pointer, region)
-% obsolete
+function f_sg_lut_apply_corr(app)
 
-idx_reg = strcmpi(region, {app.region_list.reg_name});
-if ~isempty(app.region_list(idx_reg).lut_correction)
-    idx_lut_corr = strcmpi(app.region_list(idx_reg).lut_correction(:,1), app.SLM_ops.lut_fname);
-    lut_corr_idx = strcmpi(app.lut_corrections_list(:,1), app.region_list(idx_reg).lut_correction{idx_lut_corr,2});
-    lut_correction_data = app.lut_corrections_list{lut_corr_idx,2};
-else
-    lut_correction_data = [];
+[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+
+% get current lut corr data
+lut_data = [];
+if ~isempty(reg1.lut_correction_data)
+    lut_data2(1).lut_corr = reg1.lut_correction_data;
+    lut_data2(1).m_idx = m_idx;
+    lut_data2(1).n_idx = n_idx;
+    lut_data = [lut_data; lut_data2];
 end
 
-if ~isempty(lut_correction_data)
-    pointer_out.Value = round(lut_correction_data(pointer.Value+1,2));
-else
-    pointer_out = pointer;
+% convert full phase to 256int
+temp_holo = uint8(((app.SLM_phase_corr+pi)/(2*pi))*255);
+
+if ~isempty(lut_data)
+    temp_holo1 = temp_holo;
+    
+    for n_corr = 1:size(lut_data,1)
+        if ~isempty(lut_data(n_corr).lut_corr)
+            lut_corr = round(lut_data(n_corr).lut_corr);
+            m_idx = lut_data(n_corr).m_idx;
+            n_idx = lut_data(n_corr).n_idx;
+
+            temp_holo2 = temp_holo1;
+            temp_holo2(~m_idx,:) = [];
+            temp_holo2(:,~n_idx) = [];
+
+            if numel(lut_corr) == 256
+                temp_holo_corr = lut_corr(temp_holo2+1);
+            else
+                [SLMrm, SLMrn,~] = size(lut_corr);
+                [SLMm, SLMn] = size(temp_holo2);
+                temp_holo_corr = zeros(SLMm, SLMn, 'uint8');
+
+                m_fac = SLMm/SLMrm;
+                n_fac = SLMn/SLMrn;
+                for n_m = 1:SLMm
+                    for n_n = 1:SLMn
+                        temp_holo_corr(n_m, n_n) = lut_corr(ceil(n_m/m_fac), ceil(n_n/n_fac),temp_holo2(n_m, n_n)+1);
+                    end
+                end
+            end
+            temp_holo1(m_idx,n_idx) = temp_holo_corr;
+        end
+    end
+    temp_holo = temp_holo1;
 end
+
+app.SLM_phase_corr_lut(m_idx, n_idx) = temp_holo(m_idx, n_idx);
 
 end

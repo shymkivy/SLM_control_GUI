@@ -46,7 +46,7 @@ if app.ShufflemodesCheckBox.Value
     zernike_scan_sequence = zernike_scan_sequence(randsample(num_scans,num_scans),:);
 end
 
-init_image = app.SLM_Image;
+init_image = app.SLM_image;
 
 if app.InsertrefimageinscansCheckBox.Value
     ref_coords = f_sg_mpl_get_coords(app, 'zero');
@@ -54,7 +54,7 @@ if app.InsertrefimageinscansCheckBox.Value
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_sg_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
+    ref_im = f_sg_xyz_gen_holo(app, ref_coords, reg1);
 end
 
 lut_data = [];
@@ -72,7 +72,7 @@ for n_plane = 1:num_scans
     n_weight = zernike_scan_sequence(n_plane,2);
     holo_im = init_image;
     if n_mode == 999
-        holo_im(m_idx,n_idx) = ref_im(m_idx,n_idx);
+        holo_im(m_idx,n_idx) = ref_im;
     else
         holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
     end

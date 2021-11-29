@@ -1,8 +1,5 @@
 function holo_image = f_sg_gen_holo_multiplane_image(app, coord, reg1)
-
-SLMm = sum(reg1.m_idx);
-SLMn = sum(reg1.n_idx);
-
+% obsolete 
 xyzp = coord.xyzp;
 num_points = size(xyzp,1);
 
@@ -14,6 +11,10 @@ if num_points>1
         weight = ones(num_points,1)*weight;
     end
 end
+
+
+SLMm = sum(reg1.m_idx);
+SLMn = sum(reg1.n_idx);
 
 holo_image = f_sg_PhaseHologram(xyzp, SLMm,SLMn,weight,...
                     coord.NA,...

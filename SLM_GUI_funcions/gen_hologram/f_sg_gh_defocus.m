@@ -9,21 +9,18 @@ wavelength = reg1.wavelength*1e-9;
 
 defocus_weight = app.DeficusWeightEditField.Value*1e-6; % convert to um
 
-defocus = f_sg_DefocusPhase(SLMm, SLMn,...
+defocus_phase = f_sg_DefocusPhase(SLMm, SLMn,...
                 app.SLM_ops.effective_NA,...
                 app.SLM_ops.objective_RI,...
                 wavelength, beam_diameter)*defocus_weight; % was wavelength*10 idk why
 
 if app.ZerooutsideunitcircCheckBox.Value
-    defocus(reg1.holo_mask) = 0;
+    defocus_phase(reg1.holo_mask) = 0;
 end
             
-defocus2=angle(sum(exp(1i*(defocus)),3))+pi;
+defocus_phase2=angle(sum(exp(1i*(defocus_phase)),3));
 
-holo_image = app.SLM_Image_gh_preview;
-holo_image(m_idx,n_idx) = defocus2;
-
-app.SLM_Image_plot.CData = holo_image;
-app.SLM_Image_gh_preview = holo_image;
+app.SLM_gh_phase_preview(m_idx,n_idx) = defocus_phase2;
+app.SLM_phase_plot.CData = app.SLM_gh_phase_preview+pi;
 
 end

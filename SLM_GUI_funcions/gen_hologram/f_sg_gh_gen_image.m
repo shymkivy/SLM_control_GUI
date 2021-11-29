@@ -1,4 +1,4 @@
-function holo_image = f_sg_gh_gen_image(app, pattern, SLMm, SLMn)
+function holo_phase = f_sg_gh_gen_image(app, pattern, SLMm, SLMn)
 
 pointer = libpointer('uint8Ptr', zeros(SLMn*SLMm,1));
 if strcmpi(pattern, 'piston')
@@ -71,7 +71,7 @@ elseif strcmpi(pattern, 'zernike')
             TetrafoilX, TetrafoilY, TertiarySpherical,...
             QuaternarySpherical);
 end
-holo_image = f_sg_poiner_to_im(pointer, SLMm, SLMn);
+holo_phase = f_sg_poiner_to_im(pointer, SLMm, SLMn);
 
 if strcmpi(pattern, 'cross')
     max_dim = max(SLMn,SLMm);
@@ -105,7 +105,7 @@ if strcmpi(pattern, 'cross')
     cross_im(cross_im_ind == 0) = app.CrossPixelValueEditField.Value;
     cross_im(cross_im_ind == 1) = app.CrossGrayEditField.Value;
     
-    holo_image = (cross_im)/255*2*pi;
+    holo_phase = (cross_im)/255*2*pi;
 end
 
 end

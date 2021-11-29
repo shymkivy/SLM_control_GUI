@@ -39,7 +39,7 @@ if ~isempty(reg1.lut_correction_data)
 end
 
 %%
-init_image = app.SLM_Image;
+init_image = app.SLM_image;
 AO_wf = f_sg_AO_get_correction(app);
 if ~isempty(AO_wf)
     init_image = init_image.*exp(1i*AO_wf);
@@ -52,12 +52,12 @@ if app.InsertrefimageinscansCheckBox.Value
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_sg_xyz_gen_holo(app, ref_coords, app.CurrentregionDropDown.Value);
+    ref_im = f_sg_xyz_gen_holo(app, ref_coords, reg1);
 end
 %% first upload
 SLM_phase = angle(init_image) + pi;
-app.SLM_Image_pointer.Value = f_sg_im_to_pointer_lut_corr(SLM_phase, lut_data);
-f_SLM_update(app.SLM_ops, app.SLM_Image_pointer);
+app.SLM_image_pointer.Value = f_sg_im_to_pointer_lut_corr(SLM_phase, lut_data);
+f_SLM_update(app.SLM_ops, app.SLM_image_pointer);
 
 %%
 % create patterns
@@ -179,7 +179,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         
         holo_im = init_image;
         if n_mode == 999
-            holo_im(m_idx,n_idx) = ref_im(m_idx,n_idx);
+            holo_im(m_idx,n_idx) = ref_im;
         else
             holo_im(m_idx,n_idx) = holo_im(m_idx,n_idx).*exp(1i*(current_AO_phase + all_modes(:,:,n_mode)*n_weight));
         end

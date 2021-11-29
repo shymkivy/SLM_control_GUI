@@ -29,10 +29,12 @@ if app.InitializeimagingButton.Value
             lut_data = [lut_data; lut_data2];
         end
         
+        init_image = app.SLM_image;
+        
         if ~num_stim % of only imaging
             holo_pointers = cell(num_planes,1);
             for n_gr = 1:num_planes
-                holo_phase = ones(app.SLM_ops.height, app.SLM_ops.width)+pi;
+                holo_phase = init_image;
                 holo_phase(m_idx_im, n_idx_im, n_gr) = holo_patterns_im(:,:, n_gr);
                 holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
                 holo_pointers{n_gr,1}.Value = f_sg_im_to_pointer_lut_corr(holo_phase(:,:,n_gr), lut_data);

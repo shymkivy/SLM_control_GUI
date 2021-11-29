@@ -128,14 +128,20 @@ f_sg_apply_xyz_calibration(app);
 % initialize blank image
 app.SLM_blank_im = exp(1i*(zeros(app.SLM_ops.height,app.SLM_ops.width)));
 app.SLM_blank_pointer = f_sg_initialize_pointer(app);
-app.SLM_Image_pointer.Value = f_sg_im_to_pointer(angle(app.SLM_blank_im));
+app.SLM_image_pointer.Value = f_sg_im_to_pointer(angle(app.SLM_blank_im));
 
 % initialize other pointers
-app.SLM_Image = app.SLM_blank_im;
-app.SLM_Image_pointer = f_sg_initialize_pointer(app);
+app.SLM_image = app.SLM_blank_im;
+app.SLM_image_pointer = f_sg_initialize_pointer(app);
 
-app.SLM_Image_gh_preview = app.SLM_blank_im;
-app.SLM_Image_plot = imagesc(app.UIAxesGenerateHologram, angle(app.SLM_blank_im)+pi);
+app.SLM_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
+app.SLM_phase_corr = app.SLM_phase;
+app.SLM_ao_phase = app.SLM_phase;
+app.SLM_complex = app.SLM_blank_im;
+app.SLM_ao_complex = app.SLM_blank_im;
+
+app.SLM_gh_phase_preview = app.SLM_phase;
+app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_phase_corr+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
 caxis(app.UIAxesGenerateHologram, [0 2*pi]);
@@ -143,7 +149,7 @@ caxis(app.UIAxesGenerateHologram, [0 2*pi]);
 clim_x = linspace(app.UIAxesGenerateHologram.CLim(1), app.UIAxesGenerateHologram.CLim(2), size(app.UIAxesGenerateHologram.Colormap,1))/pi;
 clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerateHologram.Colormap,1) 3]);
 
-app.SLM_Image_gh_climits = imagesc(app.UIAxesColorLimits, clim_x, [], clim_im);
+app.SLM_image_gh_climits = imagesc(app.UIAxesColorLimits, clim_x, [], clim_im);
 axis(app.UIAxesColorLimits, 'tight');
 
 app.current_SLM_coord = f_sg_mpl_get_coords(app, 'zero');

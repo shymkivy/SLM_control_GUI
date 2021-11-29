@@ -46,7 +46,7 @@ if ops.SDK_created == 1
     f_SLM_update(ops, SLM_image);
 	
     figure;
-    SLM_image_plot = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
+    SLM_phase_plot = imagesc(reshape(SLM_image.Value, ops.width, ops.height)');
     caxis([1 256]);
     title('SLM phase');
     
@@ -66,7 +66,7 @@ if ops.SDK_created == 1
             
             %write the image
             f_SLM_update(ops, SLM_image);
-            SLM_image_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
+            SLM_phase_plot.CData = reshape(SLM_image.Value, ops.width, ops.height)';
             
             %let the SLM settle for 10 ms
             pause(0.01);

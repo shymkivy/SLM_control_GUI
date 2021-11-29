@@ -31,8 +31,8 @@ if ~sum(size(holo_image) == [app.SLM_ops.height app.SLM_ops.width])==2
 end
 
 if ~isempty(holo_image)
-    app.SLM_Image_plot.CData = angle(holo_image)+pi; % in 0-2pi format
-    app.SLM_Image_gh_preview = holo_image; % complex format
+    app.SLM_phase_plot.CData = angle(holo_image)+pi; % in 0-2pi format
+    app.SLM_gh_phase_preview = angle(holo_image); % complex format
 end
 
 end
