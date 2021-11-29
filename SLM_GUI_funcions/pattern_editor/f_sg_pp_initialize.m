@@ -19,7 +19,7 @@ app.data.plot_im = imagesc(app.UIAxes, []);
 hold(app.UIAxes, 'on');
 axis(app.UIAxes, 'tight');
 axis(app.UIAxes, 'equal');
-f_sg_pp_update_zoom(app);
+f_sg_pp_update_axes(app);
 
 app.data.plot_points = plot(app.UIAxes, 0, 0, '.r');
 app.data.plot_points.MarkerSize = 15;

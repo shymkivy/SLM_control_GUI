@@ -3,7 +3,7 @@ function f_sg_pp_button_down(app, event)
 if event.Button == 3
     if app.rightclickremoveButton.Value
         coords = event.IntersectionPoint(1:2);
-        coords = round(coords);
+        coords = round(coords*100)/100;
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
         if ~isempty(tab_data)
@@ -22,7 +22,7 @@ elseif event.Button == 1
     if app.leftclickaddButton.Value
 
         coords = event.IntersectionPoint(1:2);
-        coords = round(coords);
+        coords = round(coords*100)/100;
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
         

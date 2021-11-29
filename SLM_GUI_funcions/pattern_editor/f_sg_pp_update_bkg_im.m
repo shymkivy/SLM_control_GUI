@@ -1,11 +1,10 @@
 function f_sg_pp_update_bkg_im(app)
 
 current_z = app.ZdepthSpinner.Value;
-
 z_all = [];
 if isstruct(app.app_main.pattern_editor_data)
-    if isfield(app.app_main.pattern_editor_data, 'z_all')
-        z_all = app.app_main.pattern_editor_data.z_all;
+    if isfield(app.app_main.pattern_editor_data, 'xyz_all')
+        z_all = app.app_main.pattern_editor_data.xyz_all(:,3);
     end
 end
 current_z_idx = (round(current_z) == z_all);
@@ -21,5 +20,7 @@ if ~app.BkgimageonButton.Value
 end
 
 app.data.plot_im.CData = im1;
+
+f_sg_pp_update_axes(app);
 
 end
