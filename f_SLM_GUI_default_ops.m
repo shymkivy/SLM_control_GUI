@@ -78,7 +78,7 @@ region_params(1).lut_correction_fname = [];
 region_params(1).xyz_affine_tf_fname = 'xyz_calib_25x_maitai_11_11_21.mat';
 region_params(1).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat';
 region_params(1).xyz_offset = [0 0 0]; % baseline beam offset
-region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(1).xy_over_z_offset = [0.027 -0.012]; % axial beam offset by z
 
 region_params(2).obj_name = '25X_fat';
 region_params(2).SLM_name = 'BNS1920';
