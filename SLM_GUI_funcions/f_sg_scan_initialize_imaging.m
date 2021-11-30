@@ -6,35 +6,24 @@ if app.InitializeimagingButton.Value
         disp('Initializing multiplane imaging...');
         time_stamp = clock;
         
-        holo_patterns_im = f_sg_scan_make_images(app, app.PatternDropDownCtr.Value);
+        [holo_patterns_im, im_params] = f_sg_scan_make_images(app, app.PatternDropDownCtr.Value);
         
         num_planes = size(holo_patterns_im,3);
         volumes = app.NumVolumesEditField.Value;
         num_scans_all = num_planes*volumes;
 
         if ~strcmpi(app.PatternDropDownAI.Value, 'none')
-            holo_patterns_stim = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 0);
+            [holo_patterns_stim, stim_params] = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 0);
             num_stim = size(holo_patterns_stim,3);
         else
             num_stim = 0;
-        end
-        
-        im_pattern = app.xyz_patterns(strcmpi(app.PatternDropDownCtr.Value, {app.xyz_patterns.pat_name}));
-        [m_idx_im, n_idx_im, reg1_im] = f_sg_get_reg_deets(app, im_pattern.SLM_region);
-        
-        lut_data = [];
-        if ~isempty(reg1_im.lut_correction_data)
-            lut_data2(1).lut_corr = reg1_im.lut_correction_data;
-            lut_data2(1).m_idx = m_idx_im;
-            lut_data2(1).n_idx = n_idx_im;
-            lut_data = [lut_data; lut_data2];
         end
         
         if ~num_stim % of only imaging
             holo_pointers = cell(num_planes,1);
             for n_gr = 1:num_planes
                 holo_phase = init_image_lut;
-                holo_phase(m_idx_im, n_idx_im) = holo_patterns_im(:,:, n_gr);
+                holo_phase(im_params.m_idx, im_params.n_idx) = holo_patterns_im(:,:, n_gr);
                 holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
                 holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
                 %figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
@@ -48,28 +37,18 @@ if app.InitializeimagingButton.Value
             end
             
         else
-            stim_pattern = app.xyz_patterns(strcmpi(app.PatternDropDownAI.Value, {app.xyz_patterns.pat_name}));
-            [m_idx_stim, n_idx_stim, reg1_stim] = f_sg_get_reg_deets(app, stim_pattern.SLM_region);
-            
-            if ~isempty(reg1_stim.lut_correction_data)
-                lut_data2(1).lut_corr = reg1_stim.lut_correction_data;
-                lut_data2(1).m_idx = m_idx_stim;
-                lut_data2(1).n_idx = n_idx_stim;
-                lut_data = [lut_data; lut_data2];
-            end
-            
             holo_pointers = cell(num_planes,num_stim+1);
             for n_gr = 1:num_planes
-                holo_phase = ones(app.SLM_ops.height, app.SLM_ops.width)*pi;
-                holo_phase(m_idx_im, n_idx_im) = holo_patterns_im(:,:, n_gr);
+                holo_phase = zeros(size(init_image_lut), 'uint8');
+                holo_phase(im_params.m_idx, im_params.n_idx) = holo_patterns_im(:,:, n_gr);
                 holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
-                holo_pointers{n_gr,1}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
-                %figure; imagesc(holo_phase)
+                holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
+                % figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
                 for n_st = 1:num_stim
-                    holo_phase(m_idx_stim, n_idx_stim) = holo_patterns_stim(:,:, n_st);
+                    holo_phase(stim_params.m_idx, stim_params.n_idx) = holo_patterns_stim(:,:, n_st);
                     holo_pointers{n_gr,n_st+1} = f_sg_initialize_pointer(app);
-                    holo_pointers{n_gr,n_st+1}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
-                    %figure; imagesc(holo_phase)
+                    holo_pointers{n_gr,n_st+1}.Value = reshape(holo_phase', [],1);
+                    % figure; imagesc(reshape(holo_pointers{n_gr,n_st+1}.Value, [1920 1152])')
                 end
             end
             
@@ -78,7 +57,7 @@ if app.InitializeimagingButton.Value
             scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             
-            scan_data.stim_pattern = stim_pattern;
+            scan_data.stim_pattern = app.PatternDropDownAI.Value;
         end
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
@@ -91,7 +70,7 @@ if app.InitializeimagingButton.Value
                 title('SLM update rate');
             end
         end
-        scan_data.im_pattern = im_pattern;
+        scan_data.im_pattern = app.PatternDropDownCtr.Value;
         scan_data.volumes = volumes;
         
         name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...

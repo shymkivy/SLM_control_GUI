@@ -19,11 +19,11 @@ app.SLM_gh_phase_preview = app.SLM_phase_corr;
 app.SLM_phase_plot.CData = app.SLM_phase_corr+pi;
 
 %% apply lut correction
-f_sg_lut_apply_corr(app);
+app.SLM_phase_lut_corr(m_idx, n_idx) = f_sg_lut_apply_reg_corr(app.SLM_phase_corr, reg1);
 
 %% upload
 f_sg_upload_image_to_SLM(app);    
-fprintf('SLM ref image, %d  offset uploaded\n', app.SLM_ops.ref_offset);
+fprintf('SLM ref image, %d  xy offsets uploaded\n', app.SLM_ops.ref_offset);
 
 
 end

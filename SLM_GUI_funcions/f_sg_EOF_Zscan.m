@@ -1,5 +1,5 @@
 function scan_data  = f_sg_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
-% end of frame scan
+% end of frame scan, triggers sent to gui
 
 if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
     scans_per_frame = 1;
