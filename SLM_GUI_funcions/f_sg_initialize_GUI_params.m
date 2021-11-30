@@ -130,12 +130,9 @@ app.SLM_blank_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
 app.SLM_blank_pointer = f_sg_initialize_pointer(app);
 app.SLM_blank_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
 
-% initialize other pointers
-app.SLM_image = app.SLM_blank_phase; % making obsolete
-
 app.SLM_phase = app.SLM_blank_phase;
 app.SLM_phase_corr = app.SLM_blank_phase;
-app.SLM_phase_lut_corr = zeros(app.SLM_ops.height,app.SLM_ops.width, 'uint8');
+app.SLM_phase_corr_lut = zeros(app.SLM_ops.height,app.SLM_ops.width, 'uint8');
 
 app.SLM_image_pointer = f_sg_initialize_pointer(app);
 app.SLM_image_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
@@ -147,6 +144,8 @@ app.GUI_buffer.current_holo_phase = [];
 app.GUI_buffer.current_AO_phase = [];
 app.GUI_buffer.current_holo_phase_corr = [];
 app.GUI_buffer.current_SLM_phase = [];
+app.GUI_buffer.current_SLM_phase_corr = [];
+app.GUI_buffer.current_SLM_phase_corr_lut = [];
     
 % gh stuff
 app.SLM_gh_phase_preview = app.SLM_blank_phase;

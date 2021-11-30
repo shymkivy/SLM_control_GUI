@@ -19,7 +19,7 @@ app.SLM_gh_phase_preview = app.SLM_phase_corr;
 app.SLM_phase_plot.CData = app.SLM_phase_corr+pi;
 
 %% apply lut correction
-app.SLM_phase_lut_corr(m_idx, n_idx) = f_sg_lut_apply_reg_corr(app.SLM_phase_corr, reg1);
+app.SLM_phase_corr_lut(m_idx, n_idx) = f_sg_lut_apply_reg_corr(app.SLM_phase_corr, reg1);
 
 %% upload
 f_sg_upload_image_to_SLM(app);    

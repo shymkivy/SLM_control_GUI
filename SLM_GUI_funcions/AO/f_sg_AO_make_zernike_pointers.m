@@ -1,13 +1,10 @@
-function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_wf)
+function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(app, AO_phase, reg1)
 
 %%
-[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-
-SLMm = sum(m_idx);
-SLMn = sum(n_idx);
-beam_diameter = reg1.beam_diameter;
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+SLMm = sum(reg1.m_idx);
+SLMn = sum(reg1.n_idx);
+xlm = linspace(-SLMm/reg1.beam_diameter, SLMm/reg1.beam_diameter, SLMm);
+xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
@@ -46,43 +43,36 @@ if app.ShufflemodesCheckBox.Value
     zernike_scan_sequence = zernike_scan_sequence(randsample(num_scans,num_scans),:);
 end
 
-init_image = app.SLM_image;
-
 if app.InsertrefimageinscansCheckBox.Value
     ref_coords = f_sg_mpl_get_coords(app, 'zero');
     ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_im = f_sg_xyz_gen_holo(app, ref_coords, reg1);
+    ref_phase = f_sg_xyz_gen_holo(app, ref_coords, reg1);
+    ref_phase2 = angle(sum(exp(1i*ref_phase),3));
 end
 
-lut_data = [];
-if ~isempty(reg1.lut_correction_data)
-    lut_data2(1).lut_corr = reg1.lut_correction_data;
-    lut_data2(1).m_idx = m_idx;
-    lut_data2(1).n_idx = n_idx;
-    lut_data = [lut_data; lut_data2];
-end
+%% generate pointers
+init_phase_corr_lut = app.SLM_phase_corr_lut;
+init_phase_full = app.SLM_phase_corr; % ao already applied here
+init_phase = init_phase_full(reg1.m_idx, reg1.n_idx);
 
-% generate pointers
 holo_pointers = cell(num_scans,1);
 for n_plane = 1:num_scans
     n_mode = zernike_scan_sequence(n_plane,1);
     n_weight = zernike_scan_sequence(n_plane,2);
-    holo_im = init_image;
+    
+    holo_phase_corr_lut = init_phase_corr_lut;
     if n_mode == 999
-        holo_im(m_idx,n_idx) = ref_im;
+        holo_phase_corr = ref_phase2;
     else
-        holo_im(m_idx,n_idx) = init_image(m_idx,n_idx).*exp(1i*(all_modes(:,:,n_mode)*n_weight));
+        holo_phase_corr = angle(exp(1i*(init_phase + AO_phase + all_modes(:,:,n_mode)*n_weight)));
     end
     
-    holo_im = f_sg_AO_add_correction(holo_im, AO_wf);
-    
-    %figure; imagesc(holo_im); title(['mode=' num2str(n_mode) ' weight=' num2str(n_weight)]);
-    holo_phase = angle(holo_im) + pi;
+    holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
     holo_pointers{n_plane} = f_sg_initialize_pointer(app);
-    holo_pointers{n_plane}.Value = f_sg_im_to_pointer_lut_corr(holo_phase, lut_data);
+    holo_pointers{n_plane}.Value = reshape(holo_phase_corr_lut', [],1);
 end
 
 end

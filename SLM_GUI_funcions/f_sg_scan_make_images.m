@@ -38,11 +38,11 @@ if ~strcmpi(pattern, 'none')
         
         holo_phase_corr = holo_phase+AO_phase;
         
-        SLM_phase = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
+        SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
         
-        SLM_phase_lut_corr = f_sg_lut_apply_reg_corr(SLM_phase, reg1);
+        SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
         
-        holo_phase_all(:,:,n_gr) = SLM_phase_lut_corr;
+        holo_phase_all(:,:,n_gr) = SLM_phase_corr_lut;
         %holo_phase_all(:,:,n_gr) = f_sg_im_to_pointer(holo_phase);                
     end
     

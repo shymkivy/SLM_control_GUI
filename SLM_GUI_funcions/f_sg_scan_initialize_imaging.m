@@ -1,7 +1,7 @@
 function f_sg_scan_initialize_imaging(app)
 
 if app.InitializeimagingButton.Value
-    init_image_lut = app.SLM_phase_lut_corr;
+    init_image_lut = app.SLM_phase_corr_lut;
     try
         disp('Initializing multiplane imaging...');
         time_stamp = clock;
