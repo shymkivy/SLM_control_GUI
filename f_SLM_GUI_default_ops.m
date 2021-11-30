@@ -90,7 +90,7 @@ region_params(2).lut_correction_fname = [];
 region_params(2).xyz_affine_tf_fname = 'xyz_calib_25x_fianium_11_11_21.mat';
 region_params(2).AO_correction_fname = [];
 region_params(2).xyz_offset = [0 0 -6];  % baseline beam offset
-region_params(2).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(2).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
 
 %% 20x with BNS1920
 region_params(3).obj_name = '20X_fat';
