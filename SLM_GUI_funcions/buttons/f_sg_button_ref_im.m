@@ -6,20 +6,19 @@ coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
                 0, app.SLM_ops.ref_offset, 0;...
                 0,-app.SLM_ops.ref_offset, 0];
 
-[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
             
 holo_phase = f_sg_xyz_gen_holo(app, coords, reg1);
+holo_phase2 = angle(sum(exp(1i*(holo_phase)),3));
 
-SLM_phase = angle(sum(exp(1i*(holo_phase)),3));
-
-app.SLM_phase_corr(m_idx, n_idx) = SLM_phase;            
+app.SLM_phase_corr(reg1.m_idx, reg1.n_idx) = holo_phase2;            
 app.current_SLM_coord = coords;
 
-app.SLM_gh_phase_preview = app.SLM_phase_corr;
 app.SLM_phase_plot.CData = app.SLM_phase_corr+pi;
+app.SLM_gh_phase_preview = app.SLM_phase_corr;
 
 %% apply lut correction
-app.SLM_phase_corr_lut(m_idx, n_idx) = f_sg_lut_apply_reg_corr(app.SLM_phase_corr, reg1);
+app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase2, reg1);
 
 %% upload
 f_sg_upload_image_to_SLM(app);    

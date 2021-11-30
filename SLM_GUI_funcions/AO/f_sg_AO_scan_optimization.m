@@ -30,12 +30,11 @@ xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
 
 %%
 init_phase_corr_lut = app.SLM_phase_corr_lut;
-init_phase_full = app.SLM_phase_corr; % ao already applied here
-init_phase = init_phase_full(reg1.m_idx, reg1.n_idx);
+init_phase_corr = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
 
 ao_params.region = reg1;
 ao_params.coord = app.current_SLM_coord;
-ao_params.init_phase = init_phase;
+ao_params.init_phase_corr = init_phase_corr;
 
 if app.InsertrefimageinscansCheckBox.Value
     ref_coords = f_sg_mpl_get_coords(app, 'zero');
@@ -48,7 +47,7 @@ if app.InsertrefimageinscansCheckBox.Value
 end
 %% first upload (maybe not needed. already there)
 app.SLM_phase_corr_lut = init_phase_corr_lut;
-app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(init_phase, reg1);
+app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(init_phase_corr, reg1);
 f_sg_upload_image_to_SLM(app);
 
 %%
@@ -173,7 +172,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         if n_mode == 999
             holo_phase_corr = ref_phase2;
         else
-            holo_phase_corr = angle(exp(1i*(init_phase + current_AO_phase + all_modes(:,:,n_mode)*n_weight)));
+            holo_phase_corr = angle(exp(1i*(init_phase_corr + current_AO_phase + all_modes(:,:,n_mode)*n_weight)));
         end
         holo_phase_corr_lut(m_idx,n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
@@ -224,7 +223,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         %% add zernike pol on top of image
 
         holo_phase_corr_lut = init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(init_phase + all_corr(:,:,scan_seq2(n_scan)))));
+        holo_phase_corr = angle(exp(1i*(init_phase_corr + all_corr(:,:,scan_seq2(n_scan)))));
         holo_phase_corr_lut(m_idx,n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         

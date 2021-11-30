@@ -55,8 +55,7 @@ end
 
 %% generate pointers
 init_phase_corr_lut = app.SLM_phase_corr_lut;
-init_phase_full = app.SLM_phase_corr; % ao already applied here
-init_phase = init_phase_full(reg1.m_idx, reg1.n_idx);
+init_phase_corr = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
 
 holo_pointers = cell(num_scans,1);
 for n_plane = 1:num_scans
@@ -67,7 +66,7 @@ for n_plane = 1:num_scans
     if n_mode == 999
         holo_phase_corr = ref_phase2;
     else
-        holo_phase_corr = angle(exp(1i*(init_phase + AO_phase + all_modes(:,:,n_mode)*n_weight)));
+        holo_phase_corr = angle(exp(1i*(init_phase_corr + AO_phase + all_modes(:,:,n_mode)*n_weight)));
     end
     
     holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);

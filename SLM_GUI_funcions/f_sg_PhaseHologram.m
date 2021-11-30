@@ -1,4 +1,4 @@
-function holo_complex = f_sg_PhaseHologram(xyzp, SLMm, SLMn, weight, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+function holo_phase = f_sg_PhaseHologram(xyzp, SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 % xyz are in um
 %   Detailed explanation goes here
@@ -16,14 +16,14 @@ xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
 
 num_points = size(xyzp,1);
 
-holo_complex = zeros(SLMm, SLMn, num_points);
+holo_phase = zeros(SLMm, SLMn, num_points);
 
 defocus_phase = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter);
 
 for idx=1:size(xyzp,1)
-    holo_complex(:,:,idx)=exp(1i.*(2*pi.*xyzp(idx,1).*u ...
-                                 + 2*pi.*xyzp(idx,2).*v ...
-                                 + xyzp(idx,3)*1e-6.*defocus_phase))*weight(idx);
+    holo_phase(:,:,idx)=2*pi.*xyzp(idx,1).*u ...
+                      + 2*pi.*xyzp(idx,2).*v ...
+                      + xyzp(idx,3)*1e-6.*defocus_phase;
 end
 
 end
