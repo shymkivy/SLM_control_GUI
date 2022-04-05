@@ -18,10 +18,16 @@ num_pts = numel(X);
 
 tab_data = app.app_main.UIImagePhaseTable.Data;
 
+if isempty(tab_data.Pattern)
+    pat_shift = 0;
+else
+    pat_shift = max(tab_data.Pattern);
+end
+
 if app.SamepatternCheckBox.Value
     curr_pat = ones(num_pts,1)*app.PatternSpinner.Value;
 else
-    curr_pat = (1:num_pts)';
+    curr_pat = (1:num_pts)' + pat_shift;
 end
 
 
