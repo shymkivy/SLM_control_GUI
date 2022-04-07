@@ -14,11 +14,11 @@ stim_times_types = zeros(num_planes_all,2); % should not be more than num scans
 SLM_frame = 1;
 SLM_stim_type = 0;
 n_SLM_stim = 1;
-[num_planes, num_stim] = size(holo_pointers);
+[num_planes, ~] = size(holo_pointers);
 tic;
 
 scan1 = inputSingleScan(session);
-stim_type = round(scan1(2)/5*(num_stim-1));
+stim_type = round(scan1(2)+1);
 f_SLM_update(app.SLM_ops, holo_pointers{1,stim_type}); 
 pause(0.01)
 frame_start_times(1) = toc;
