@@ -152,12 +152,13 @@ region_list(3).width_range = [0, 1];
 
 
 %% default xyz pattern - regions
+% xyz_pts formats: [x y z]; [x y z weight]; [pat x y z weight]
 xyz_patterns(1).pat_name = 'Multiplane';
-xyz_patterns(1).xyz_pts = [];
+xyz_patterns(1).xyz_pts = [8 0 -50; 0 8 -25; 8 0 0; 0 8 25; 8 0 50;];
 xyz_patterns(1).SLM_region = 'Right half';
 
 xyz_patterns(2).pat_name = 'Stim';
-xyz_patterns(2).xyz_pts = [];
+xyz_patterns(2).xyz_pts = [0 0 0];
 xyz_patterns(2).SLM_region = 'Left half';
 
 %% save stuff
