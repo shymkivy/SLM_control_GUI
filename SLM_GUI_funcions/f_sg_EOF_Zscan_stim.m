@@ -33,7 +33,6 @@ while imaging
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1,stim_type});
         frame_start_times(scan_frame) = toc;
         if stim_type~=SLM_stim_type % or change of stim
-            session.outputSingleScan(logical(stim_type)*5);
             SLM_stim_type = stim_type;
             stim_times_types(n_SLM_stim,1) = frame_start_times(scan_frame);
             stim_times_types(n_SLM_stim,2) = stim_type;
