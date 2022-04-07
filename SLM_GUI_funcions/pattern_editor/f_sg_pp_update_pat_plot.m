@@ -5,10 +5,13 @@ function f_sg_pp_update_pat_plot(app)
 
 tab_data = app.app_main.UIImagePhaseTable.Data.Variables;
 
-curr_pat = app.PatternSpinner.Value;
-
 if ~isempty(tab_data)
-    tab_data2 = tab_data(tab_data(:,2) == curr_pat,:);
+    if app.PlotallpatternsCheckBox.Value
+        tab_data2 = tab_data;
+    else
+        curr_pat = app.PatternSpinner.Value;
+        tab_data2 = tab_data(tab_data(:,2) == curr_pat,:);
+    end
     tab_data3 = tab_data2(tab_data2(:,5) == app.ZdepthSpinner.Value,:);
     app.data.plot_points.XData = tab_data3(:,3);
     app.data.plot_points.YData = tab_data3(:,4);

@@ -110,10 +110,10 @@ app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
 % Multiplane imaging
-app.GUI_ops.table_var_names = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
-tab_data = array2table([1, 1, 0, 0, 0, 1]);
-tab_data.Properties.VariableNames = app.GUI_ops.table_var_names;
-app.UIImagePhaseTable.Data = tab_data;
+%app.GUI_ops.table_var_names = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
+%tab_data = array2table([1, 1, 0, 0, 0, 1]);
+%tab_data.Properties.VariableNames = app.GUI_ops.table_var_names;
+%app.UIImagePhaseTable.Data = tab_data;
 f_sg_pat_save(app);
 
 % AO zernike table

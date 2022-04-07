@@ -54,7 +54,12 @@ if app.InitializeimagingButton.Value
             
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             
-            scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            if strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'AI input')
+                scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            elseif strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'Custom stim')
+                custom_stim = f_sg_gen_custom_stim_times(app, app.PatternDropDownAI.Value);
+                scan_data = f_sg_EOF_Zscan_stim_custom(app, holo_pointers, custom_stim ,num_scans_all, app.InitializeimagingButton);
+            end
             %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             
             scan_data.stim_pattern = app.PatternDropDownAI.Value;
