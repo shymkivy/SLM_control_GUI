@@ -73,8 +73,8 @@ stim_times_types(~sum(stim_times_types,2),:) = [];
 scan_data.frame_start_times = frame_start_times;
 scan_data.stim_times_types = stim_times_types;
 scan_data.holo_pointers = holo_pointers;
-scam_data.custom_stim_data = custom_stim_data;
-scam_data.custom_stim_start = frame_start_times(2);
+scan_data.custom_stim_data = custom_stim_data;
+scan_data.custom_stim_start = frame_start_times(2);
 
 disp('Done');
 end
