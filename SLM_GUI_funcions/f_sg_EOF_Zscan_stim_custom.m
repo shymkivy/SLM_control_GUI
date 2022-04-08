@@ -6,6 +6,8 @@ function scan_data = f_sg_EOF_Zscan_stim_custom(app, holo_pointers, custom_stim_
 
 session = app.DAQ_session;
 resetCounters(session);
+session.outputSingleScan(0);
+session.outputSingleScan(0);
 pause(0.05);
 
 imaging = true;
@@ -15,7 +17,7 @@ stim_trace = custom_stim_data.stim_trace;
 SLM_frame = 1;
 SLM_stim_type = 0;
 n_SLM_stim = 1;
-[num_planes, num_stim] = size(holo_pointers);
+[num_planes, ~] = size(holo_pointers);
 tic;
 
 %scan1 = inputSingleScan(session);
@@ -39,7 +41,8 @@ while imaging
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1,stim_type});
         frame_start_times(scan_frame) = toc;
         if stim_type~=SLM_stim_type % or change of stim
-            session.outputSingleScan(logical(stim_type)*5);
+            session.outputSingleScan((stim_type>1)*5);
+            session.outputSingleScan((stim_type>1)*5);
             SLM_stim_type = stim_type;
             stim_times_types(n_SLM_stim,1) = frame_start_times(scan_frame);
             stim_times_types(n_SLM_stim,2) = stim_type;
@@ -51,7 +54,8 @@ while imaging
         end
     elseif stim_type~=SLM_stim_type % or change of stim
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1,stim_type});
-        session.outputSingleScan(logical(stim_type)*5);
+        session.outputSingleScan((stim_type>1)*5);
+        session.outputSingleScan((stim_type>1)*5);
         SLM_stim_type = stim_type;
         stim_times_types(n_SLM_stim,1) = toc;
         stim_times_types(n_SLM_stim,2) = stim_type;
@@ -69,6 +73,7 @@ end
 
 pause(1);
 resetCounters(session);
+session.outputSingleScan(0);
 stim_times_types(~sum(stim_times_types,2),:) = [];
 scan_data.frame_start_times = frame_start_times;
 scan_data.stim_times_types = stim_times_types;
