@@ -6,14 +6,14 @@ if app.InitializeimagingButton.Value
         disp('Initializing multiplane imaging...');
         time_stamp = clock;
         
-        [holo_patterns_im, im_params] = f_sg_scan_make_images(app, app.PatternDropDownCtr.Value);
+        [holo_patterns_im, im_params, group_table_im] = f_sg_scan_make_images(app, app.PatternDropDownCtr.Value);
         
         num_planes = size(holo_patterns_im,3);
         volumes = app.NumVolumesEditField.Value;
         num_scans_all = num_planes*volumes;
 
         if ~strcmpi(app.PatternDropDownAI.Value, 'none')
-            [holo_patterns_stim, stim_params] = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 0);
+            [holo_patterns_stim, stim_params, group_table_stim] = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 0);
             num_stim = size(holo_patterns_stim,3);
         else
             num_stim = 0;
@@ -63,6 +63,7 @@ if app.InitializeimagingButton.Value
             %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             
             scan_data.stim_pattern = app.PatternDropDownAI.Value;
+            scan_data.group_table_stim = group_table_stim;
         end
         app.InitializeimagingButton.Value = 0;
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
@@ -75,6 +76,7 @@ if app.InitializeimagingButton.Value
                 title('SLM update rate');
             end
         end
+        scan_data.group_table_im = group_table_im;
         scan_data.im_pattern = app.PatternDropDownCtr.Value;
         scan_data.volumes = volumes;
         

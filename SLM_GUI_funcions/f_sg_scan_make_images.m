@@ -1,4 +1,4 @@
-function [holo_phase_all, out_params] = f_sg_scan_make_images(app, pattern, add_blank)
+function [holo_phase_all, out_params, group_table] = f_sg_scan_make_images(app, pattern, add_blank)
 
 if ~exist('add_blank', 'var')
     add_blank = false;
