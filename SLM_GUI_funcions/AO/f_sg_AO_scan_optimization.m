@@ -93,7 +93,7 @@ app.DAQ_session.outputSingleScan(0);
 num_frames = 0;
 %path1 = '\\PRAIRIE2000\p2f\Yuriy\AO\12_6_20\test-006';
 path1 = app.ScanframesdirpathEditField.Value;
-exist(path1, 'dir');
+%exist(path1, 'dir');
 
 f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
 num_scans_done = 1;
