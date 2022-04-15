@@ -34,7 +34,6 @@ if ~isempty(reg_params)
     
     %lut_fname = app.LUTDropDown.Value;
     lut_corr_fname = {'None'};
-    
     % load saved correction value
     if ~isempty(reg_params.lut_correction_fname)
         if sum(strcmpi(reg_params.lut_correction_fname, app.lut_corrections_list(:,1)))
@@ -44,7 +43,8 @@ if ~isempty(reg_params)
 
     app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
     app.LUTcorrectionDropDown.Value = lut_corr_fname;
-
+    
+    % 
     XYZ_corr_fname = {'None'};
     if ~isempty(reg_params.xyz_affine_tf_fname)
         if sum(strcmpi(app.SLM_ops.xyz_corrections_list(:,1),reg_params.xyz_affine_tf_fname))
@@ -60,6 +60,14 @@ if ~isempty(reg_params)
         end
     end
     app.AOcorrectionDropDown.Value = AO_corr_fname;
+    
+    pw_corr_fname = {'None'};
+    if ~isempty(reg_params.point_weight_correction_fname)
+        if sum(strcmpi(app.SLM_ops.pw_corrections_list(:,1), reg_params.point_weight_correction_fname))
+            pw_corr_fname = reg_params.point_weight_correction_fname;
+        end
+    end
+    app.PointweightcorrectionDropDown.Value = pw_corr_fname;
     
     app.XoffsetEditField.Value = reg_params.xyz_offset(1);
     app.YoffsetEditField.Value = reg_params.xyz_offset(2);

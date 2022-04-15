@@ -24,6 +24,15 @@ for n_fl = 1:numel(AO_fnames)
 end
 ops.AO_corrections_list = [{'None'}, {[]}; ops.AO_corrections_list];
 
+%% load point weight files
+pw_fnames = f_sg_get_file_names(ops.point_weight_correction_dir, '*pw_corr*.mat', false);
+ops.pw_corrections_list = cell(numel(pw_fnames),2);
+for n_fl = 1:numel(pw_fnames)
+    ops.pw_corrections_list{n_fl, 1} = pw_fnames{n_fl};
+    ops.pw_corrections_list{n_fl, 2} = load([ops.point_weight_correction_dir '\' pw_fnames{n_fl}]);
+end
+ops.pw_corrections_list = [{'None'}, {[]}; ops.pw_corrections_list];
+
 %% check if specified files exist, and erase if not
 
 % for n_reg = 1:numel(app.region_list)
@@ -43,6 +52,7 @@ ops.AO_corrections_list = [{'None'}, {[]}; ops.AO_corrections_list];
 app.LUTcorrectionDropDown.Items = app.lut_corrections_list(:,1);
 app.XYZaffinetransformDropDown.Items = ops.xyz_corrections_list(:,1);
 app.AOcorrectionDropDown.Items = ops.AO_corrections_list(:,1);
+app.PointweightcorrectionDropDown.Items = ops.pw_corrections_list(:,1);
 
 %%
 app.SLM_ops = ops;

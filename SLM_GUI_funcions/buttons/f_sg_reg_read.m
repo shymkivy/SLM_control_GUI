@@ -29,9 +29,16 @@ else
     reg_params(1).AO_correction_fname = app.AOcorrectionDropDown.Value;
 end
 
+if strcmpi(app.PointweightcorrectionDropDown.Value, 'none')
+    reg_params(1).point_weight_correction_fname = [];
+else
+    reg_params(1).point_weight_correction_fname = app.PointweightcorrectionDropDown.Value;
+end
+
 reg_params(1).lut_correction_data = [];
 reg_params(1).xyz_affine_tf_mat = [];
 reg_params(1).AO_wf = [];
+reg_params(1).pw_corr_data = [];
 
 reg_params(1).xyz_offset = [app.XoffsetEditField.Value,...
                             app.YoffsetEditField.Value,...

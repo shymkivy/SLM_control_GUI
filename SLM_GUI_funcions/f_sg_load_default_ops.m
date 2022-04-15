@@ -23,7 +23,7 @@ else
     end
 end
 
-%% some default params if nto defined
+%% some default params if not defined
 default_objectives(1).obj_name = 'default';
 default_objectives(1).FOV_size = 500;
 
@@ -40,9 +40,11 @@ default_region_params(1).effective_NA = .5;
 default_region_params(1).lut_correction_fname = [];
 default_region_params(1).xyz_affine_tf_fname = [];
 default_region_params(1).AO_correction_fname = [];
+default_region_params(1).point_weight_correction_fname = [];
 default_region_params(1).lut_correction_data = [];
 default_region_params(1).xyz_affine_tf_mat = [];
 default_region_params(1).AO_wf = [];
+default_region_params(1).pw_data = [];
 default_region_params(1).xyz_offset = [0 0 0];
 default_region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
 

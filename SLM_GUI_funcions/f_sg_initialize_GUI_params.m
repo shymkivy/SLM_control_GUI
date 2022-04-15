@@ -2,30 +2,27 @@ function f_sg_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
 %% update lut corrections
-if ~isfield(app.region_obj_params, 'lut_correction_fname')
-    app.region_obj_params(1).lut_correction_fname = [];
-end
-if ~isfield(app.region_obj_params, 'lut_correction_data')
-    app.region_obj_params(1).lut_correction_data = [];
+parmals_to_init = {'lut_correction_fname', 'xyz_affine_tf_fname',...
+                   'AO_correction_fname', 'point_weight_correction_fname',...
+                   'lut_correction_data', 'AO_wf', 'pw_corr_data'};
+                               
+for n_par = 1:numel(parmals_to_init)
+    if ~isfield(app.region_obj_params, parmals_to_init{n_par})
+        app.region_obj_params(1).(parmals_to_init{n_par}) = [];
+    end
 end
 
-if ~isfield(app.region_obj_params, 'xyz_affine_tf_fname')
-    app.region_obj_params(1).xyz_affine_tf_fname = [];
-end
 if ~isfield(app.region_obj_params, 'xyz_affine_tf_mat')
     for n_reg = 1:numel(app.region_obj_params)
         app.region_obj_params(n_reg).xyz_affine_tf_mat = diag(ones(3,1));
     end
 end
 
-if ~isfield(app.region_obj_params, 'AO_correction_fname')
-    app.region_obj_params(1).AO_correction_fname = [];
-end
-if ~isfield(app.region_obj_params, 'AO_wf')
-    app.region_obj_params(1).AO_wf = [];
-end
-
 % first check if files exist
+files_to_check = {'xyz_affine_tf_fname', 'xyz_corrections_list';...
+                  'AO_correction_fname', 'AO_corrections_list';...
+                  'point_weight_correction_fname', 'pw_corrections_list'};
+
 for n_reg = 1:numel(app.region_obj_params)
     temp_fname = app.region_obj_params(n_reg).lut_correction_fname;
     temp_list = app.lut_corrections_list(:,1);
@@ -35,28 +32,25 @@ for n_reg = 1:numel(app.region_obj_params)
             app.region_obj_params(n_reg).lut_correction_fname = [];
         end
     end
-    temp_fname = app.region_obj_params(n_reg).xyz_affine_tf_fname;
-    temp_list = app.SLM_ops.xyz_corrections_list(:,1);
-    if ~isempty(temp_fname)
-        if ~sum(strcmpi(temp_fname, temp_list))
-            disp(['File ' temp_fname ' not found']);
-            app.region_obj_params(n_reg).xyz_affine_tf_fname = [];
-        end
-    end
-    temp_fname = app.region_obj_params(n_reg).AO_correction_fname;
-    temp_list = app.SLM_ops.AO_corrections_list(:,1);
-    if ~isempty(temp_fname)
-        if ~sum(strcmpi(temp_fname, temp_list))
-            disp(['File ' temp_fname ' not found']);
-            app.region_obj_params(n_reg).AO_correction_fname = [];
+    
+    for n_fil = 1:size(files_to_check,1)
+        temp_fname = app.region_obj_params(n_reg).(files_to_check{n_fil,1});
+        temp_list = app.SLM_ops.(files_to_check{n_fil,2})(:,1);
+        if ~isempty(temp_fname)
+            if ~sum(strcmpi(temp_fname, temp_list))
+                disp(['File ' temp_fname ' not found']);
+                app.region_obj_params(n_reg).(files_to_check{n_fil,1}) = [];
+            end
         end
     end
 end
+
 
 for n_reg = 1:numel(app.region_obj_params)
     app.region_obj_params(n_reg).lut_correction_data = f_sg_get_corr_data(app, app.region_obj_params(n_reg).lut_correction_fname);
     app.region_obj_params(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_obj_params(n_reg));
     app.region_obj_params(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_obj_params(n_reg));
+    app.region_obj_params(n_reg).pw_corr_data = f_sg_compute_pw_corr(app, app.region_obj_params(n_reg));
 end
 
 %% xyz table
@@ -109,6 +103,16 @@ app.CenterYEditField.Value = floor(app.SLM_ops.height/2);
 app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
 
 %%
+% current regional buffer
+app.GUI_buffer.current_SLM_coord = [];
+app.GUI_buffer.current_region = [];
+app.GUI_buffer.current_holo_phase = [];
+app.GUI_buffer.current_AO_phase = [];
+app.GUI_buffer.current_holo_phase_corr = [];
+app.GUI_buffer.current_SLM_phase = [];
+app.GUI_buffer.current_SLM_phase_corr = [];
+app.GUI_buffer.current_SLM_phase_corr_lut = [];
+
 % Multiplane imaging
 %app.GUI_ops.table_var_names = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
 %tab_data = array2table([1, 1, 0, 0, 0, 1]);
@@ -125,6 +129,12 @@ f_sg_LUT_update_total_frames(app);
 app.ApplyXYZcalibrationButton.Value = 1;
 f_sg_apply_xyz_calibration(app);
 
+app.ApplyAOcorrectionButton.Value = 1;
+f_sg_apply_AO_correction_button(app);
+
+app.ApplyPWcorrectionButton.Value = 1;
+f_sg_apply_PW_correction_button(app)
+
 % initialize blank image
 app.SLM_blank_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
 app.SLM_blank_pointer = f_sg_initialize_pointer(app);
@@ -137,15 +147,7 @@ app.SLM_phase_corr_lut = zeros(app.SLM_ops.height,app.SLM_ops.width, 'uint8');
 app.SLM_image_pointer = f_sg_initialize_pointer(app);
 app.SLM_image_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
 
-% current regional buffer
-app.GUI_buffer.current_SLM_coord = [];
-app.GUI_buffer.current_region = [];
-app.GUI_buffer.current_holo_phase = [];
-app.GUI_buffer.current_AO_phase = [];
-app.GUI_buffer.current_holo_phase_corr = [];
-app.GUI_buffer.current_SLM_phase = [];
-app.GUI_buffer.current_SLM_phase_corr = [];
-app.GUI_buffer.current_SLM_phase_corr_lut = [];
+
     
 % gh stuff
 app.SLM_gh_phase_preview = app.SLM_blank_phase;
@@ -174,7 +176,6 @@ end
 if ~exist(ops.custom_phase_dir, 'dir')
     mkdir(ops.custom_phase_dir);
 end
-
 app.ImagepathEditField.Value = [ops.custom_phase_dir '\'];
 
 if ~exist(ops.patter_editor_dir, 'dir')

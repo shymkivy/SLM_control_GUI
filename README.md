@@ -19,6 +19,12 @@ Download code and run "SLM_control_GUI" from its directory
 3. XYZ affine transform calibration for coordinate rotaion, beam xyz offset for alignmen of two beams, and axial x/z and y/z offsets
 4. Adaptove Optics corrections (with large image of SLM at pupil plane can have significant z dependent abberations)
 
+# LUT calibration and correction
+SLM will require a LUT calibration file, either global(.lut) or regional(.txt) that will be specific to a wavelength. Lut scripts in the SLM_calibration_scripts folder can be used to generate global/regional lut. Note, with regional (.txt) lut SLM upload speed will be slowed down by 1-2ms if not using triggering.
+LUT calibration file should be placed in 'SLM_calibration/lut_calibration/' dir. In 'f_SLM_GIU_default_ops.m' it can be specified under 'SLM_params(1).lut_fname' parameter.
+LUT correction files can be used to load corrections to hologram ahead of application of LUT calibration file. This allows the use of single global lut and multibple wavelenghts in different regions of SLM by applying local correction for each wavelength. Also using lut correction with global lut can speed up upload time by avoiding regional(.txt) lut.
+LUT corretions files for each LUT calibration file should be placed in a subdirectory with the name of LUT calibration file 'SLM_calibration/lut_calibration/linear/'
+
 # Parameters
 
 Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
