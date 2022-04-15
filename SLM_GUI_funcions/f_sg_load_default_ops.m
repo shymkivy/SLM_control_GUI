@@ -143,6 +143,11 @@ end
 app.xyz_patterns = xyz_patterns;
 
 %%
+app.PWsmoothstdEditField.Value = app.SLM_ops.pw_calibration.smooth_std;
+app.PWmincorrthreshEditField.Value = app.SLM_ops.pw_calibration.min_thresh;
+app.PWsqrt2pCheckBox.Value = app.SLM_ops.pw_calibration.pw_sqrt;
+
+%%
 % %%
 % current_reg = region_list(strcmpi(app.SelectRegionDropDown.Value, {region_list.reg_name}));
 % 

@@ -173,12 +173,18 @@ xyz_patterns(2).pat_name = 'Stim';
 xyz_patterns(2).xyz_pts = [0 0 0];
 xyz_patterns(2).SLM_region = 'Left half';
 
+%% 
+pw_calibration.smooth_std = 1;
+pw_calibration.min_thresh = 0.3;
+pw_calibration.pw_sqrt = 1;
+
 %% save stuff
 ops.objectives = objectives;
 ops.SLM_params = SLM_params;
 ops.region_params = region_params;
 ops.region_list = region_list;
 ops.xyz_patterns = xyz_patterns;
+ops.pw_calibration = pw_calibration;
 app.SLM_ops = ops;
 
 end

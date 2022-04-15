@@ -16,10 +16,15 @@ if app.ApplyPWcorrectionButton.Value
         if isstruct(data.weight_cal)
             pw_params.min_w_thesh = app.PWmincorrthreshEditField.Value;
             pw_params.smooth_std = ones(1,2)*app.PWsmoothstdEditField.Value;
+            pw_params.do_sqrt = app.PWsqrt2pCheckBox.Value;
             
             coords_x = data.weight_cal.coords_x;
             coords_y = data.weight_cal.coords_y;
             pw_data = data.weight_cal.weight_means_2d;
+            
+            if pw_params.do_sqrt
+                pw_data = sqrt(pw_data);
+            end
             
 %             [X,Y] = meshgrid(coords_x,coords_y);
 %             [sf,gof,output] = fit([X(:), Y(:)],pw_data(:),'poly22')
