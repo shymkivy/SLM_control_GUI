@@ -6,11 +6,9 @@ if event.Button == 3
         coords = round(coords*100)/100;
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
-        if ~isempty(tab_data)
-            tab_var = tab_data.Variables;
-
-            dist1 = sqrt(sum((tab_var(:,3:4) - coords).^2,2));
-            z_idx = tab_var(:,5) == app.ZdepthSpinner.Value;
+        if ~isempty(tab_data.Idx)
+            dist1 = sqrt(sum(([tab_data.X, tab_data.Y] - coords).^2,2));
+            z_idx = tab_data.Z == app.ZdepthSpinner.Value;
 
             tab_data(logical(dist1 < 15 .* z_idx),:) = [];
 
@@ -26,27 +24,20 @@ elseif event.Button == 1
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
         
-        curr_pat = app.PatternSpinner.Value;
+        if isempty(tab_data.Idx)
+            idx_shift = 0;
+        else
+            idx_shift = max(tab_data.Idx);
+        end
         
-        new_row1 = [1,...
-                    curr_pat,...
-                    coords(1),...
-                    coords(2),...
-                    app.ZdepthSpinner.Value,...
-                    1];
-             
-        new_row2 = array2table(new_row1);
-        new_row2.Properties.VariableNames = tab_data.Properties.VariableNames;
-        
-        tab_data2 = [tab_data;new_row2];
+        new_row1 = f_sg_initialize_tabxyz(app.app_main, 1);
+        new_row1.Idx = idx_shift + 1;
+        new_row1.Pattern = app.PatternSpinner.Value;
+        new_row1.X = coords(:,1);
+        new_row1.Y = coords(:,2);
+        new_row1.Z = app.ZdepthSpinner.Value;
 
-        [~, idx1] = sort(tab_data2(:,2).Variables);
-
-        tab_data3 = tab_data2(idx1,:);
-
-        tab_data3(:,1).Variables = (1:numel(tab_data3(:,1).Variables))';
-
-        app.app_main.UIImagePhaseTable.Data = tab_data3;
+        app.app_main.UIImagePhaseTable.Data = [tab_data;new_row1];
         
         f_sg_pp_update_pat_plot(app);
     end

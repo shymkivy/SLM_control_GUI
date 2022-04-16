@@ -93,11 +93,10 @@ app.CurrentregionDropDown.Items = {region_list.reg_name};
 app.region_obj_params = app.SLM_ops.region_params;
 
 %% copy patterns
-Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight'};
+Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight', 'Power'};
 app.GUI_ops.table_var_names = Varnames;
 xyz_patterns(1).pat_name = 'Multiplane';
-tab_data = array2table(zeros(0,6));
-tab_data.Properties.VariableNames = Varnames;
+tab_data = f_sg_initialize_tabxyz(app, 0);
 xyz_patterns(1).xyz_pts = tab_data;
 xyz_patterns(1).SLM_region = app.CurrentregionDropDown.Value;
 
@@ -111,28 +110,24 @@ if isfield(app.SLM_ops, 'xyz_patterns')
         temp_pat(~reg_exists) = [];
         if ~isempty(temp_pat)
             for n_pat = 1:numel(temp_pat)
-                tab_data2 = tab_data;
-                tab_data2.Properties.VariableNames = Varnames;
                 if ~isempty(temp_pat(n_pat).xyz_pts)
                     [num_row, num_col] = size(temp_pat(n_pat).xyz_pts);
-                    for n_row = 1:num_row
-                        if num_col == 3
-                            xyz1 = temp_pat(n_pat).xyz_pts(n_row,:);
-                            weight = 1;
-                            pat1 = n_row;
-                        elseif num_col == 4
-                            xyz1 = temp_pat(n_pat).xyz_pts(n_row,1:3);
-                            weight = temp_pat(n_pat).xyz_pts(n_row,4);
-                            pat1 = n_row;
-                        elseif num_col == 5
-                            pat1 = temp_pat(n_pat).xyz_pts(n_row,1);
-                            xyz1 = temp_pat(n_pat).xyz_pts(n_row,2:4);
-                            weight = temp_pat(n_pat).xyz_pts(n_row,5);
-                        end
-                        new_row = array2table([n_row, pat1, xyz1, weight]);
-                        new_row.Properties.VariableNames = Varnames;
-                        tab_data2 = [tab_data2; new_row];
+                    tab_data2 = f_sg_initialize_tabxyz(app, num_row);
+                    if num_col == 3
+                        xyz1 = temp_pat(n_pat).xyz_pts;
+                    elseif num_col == 4
+                        xyz1 = temp_pat(n_pat).xyz_pts(:,1:3);
+                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,4);
+                    elseif num_col == 5
+                        xyz1 = temp_pat(n_pat).xyz_pts(:,2:4);
+                        tab_data2.Pattern = temp_pat(n_pat).xyz_pts(:,1);
+                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,5);
                     end
+                    tab_data2.X = xyz1(:,1);
+                    tab_data2.Y = xyz1(:,2);
+                    tab_data2.Z = xyz1(:,3);
+                else
+                    tab_data2 = tab_data;
                 end
                 temp_pat(n_pat).xyz_pts = tab_data2;
             end

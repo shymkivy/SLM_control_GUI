@@ -20,8 +20,10 @@ tab_data = app.app_main.UIImagePhaseTable.Data;
 
 if isempty(tab_data.Pattern)
     pat_shift = 0;
+    idx_shift = 0;
 else
     pat_shift = max(tab_data.Pattern);
+    idx_shift = max(tab_data.Idx);
 end
 
 if app.SamepatternCheckBox.Value
@@ -30,18 +32,14 @@ else
     curr_pat = (1:num_pts)' + pat_shift;
 end
 
+new_rows = f_sg_initialize_tabxyz(app.app_main, num_pts);
+new_rows.Idx = new_rows.Idx + idx_shift;
+new_rows.Pattern = curr_pat;
+new_rows.X = coords(:,1);
+new_rows.Y = coords(:,2);
+new_rows.Z = ones(num_pts,1)*app.ZdepthSpinner.Value;
 
-new_row1 = [ones(num_pts,1),...
-            curr_pat,...
-            coords(:,1),...
-            coords(:,2),...
-            ones(num_pts,1)*app.ZdepthSpinner.Value,...
-            ones(num_pts,1)];
-
-new_row2 = array2table(new_row1);
-new_row2.Properties.VariableNames = tab_data.Properties.VariableNames;
-
-tab_data2 = [tab_data;new_row2];
+tab_data2 = [tab_data;new_rows];
 
 [~, idx1] = sort(tab_data2(:,2).Variables);
 

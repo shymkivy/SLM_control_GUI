@@ -6,12 +6,13 @@ reg_params = app.region_obj_params(reg_params_idx);
 plot_stuff = 0;
 corr_out = f_sg_compute_pw_corr(app, reg_params, plot_stuff);
 
-   
 tab_data = app.UIImagePhaseTable.Data;
 
 pat_all = unique(tab_data.Pattern);
 
 for n_pat = 1:numel(pat_all)
-
+    tab_data2 = tab_data(tab_data.Pattern == pat_all(n_pat),:);
+    
+end
 
 end

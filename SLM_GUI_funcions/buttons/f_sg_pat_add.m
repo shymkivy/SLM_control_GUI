@@ -17,5 +17,4 @@ else
     disp('Pattern add failed, make a unique name');
 end
 
-
 end

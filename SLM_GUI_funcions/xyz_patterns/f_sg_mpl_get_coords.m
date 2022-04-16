@@ -17,11 +17,11 @@ if strcmp(from_where, 'custom')
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
         
-        tab_var = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),:).Variables;
+        tab_data = app.UIImagePhaseTable.Data(app.UIImagePhaseTableSelection(1),:);
         
-        coord.idx = tab_var(1);
-        coord.xyzp = [tab_var(3:4), tab_var(5)];
-        coord.weight = tab_var(6);
+        coord.idx = tab_data.Idx;
+        coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
+        coord.weight = tab_data.Weight;
         
         [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord.NA = reg1.effective_NA;
@@ -31,17 +31,17 @@ elseif strcmp(from_where, 'table_selection')
 elseif strcmp(from_where, 'pattern')
     if ~isempty(app.UIImagePhaseTable.Data)
         
-        tab_var = app.UIImagePhaseTable.Data.Variables; 
-        plan_idx = tab_var(:,2) == num;
+        tab_data = app.UIImagePhaseTable.Data; 
+        plan_idx = tab_data.Pattern == num;
         
         if sum(plan_idx)
             
-            tab_var2 = tab_var(plan_idx,:);
+            tab_data2 = tab_data(plan_idx,:);
             
-            coord.idx = tab_var2(:,1);
-            coord.xyzp = [tab_var2(:,3:4), tab_var2(:,5)];
-            coord.weight = tab_var2(:,6);
-            
+            coord.idx = tab_data2.Idx;
+            coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
+            coord.weight = tab_data2.Weight;
+
             [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
             coord.NA = reg1.effective_NA;
             

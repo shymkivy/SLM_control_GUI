@@ -1,7 +1,6 @@
 function f_sg_pp_initialize(app)
 
 tab_data = app.app_main.UIImagePhaseTable.Data;
-tab_data.Properties.VariableNames = {'Idx', 'Pattern', 'Z', 'X', 'Y', 'Weight'};
 pattern_data = table2struct(tab_data);
 app.data.pattern_data = pattern_data;
 

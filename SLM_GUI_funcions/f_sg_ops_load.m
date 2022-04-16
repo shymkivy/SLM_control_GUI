@@ -27,14 +27,16 @@ if exist(fname, 'file')
     %%
     temp_xyz = load_data.xyz_patterns;
     for n_pat = 1:numel(temp_xyz)
-        if size(temp_xyz(n_pat).xyz_pts,2)>6
-            temp_pts = temp_xyz(n_pat).xyz_pts;
-            temp_pts(:,6) = [];
-            temp_pts(:,3) = temp_xyz(n_pat).xyz_pts(:,4);
-            temp_pts(:,4) = temp_xyz(n_pat).xyz_pts(:,5);
-            temp_pts(:,5) = temp_xyz(n_pat).xyz_pts(:,3);
-            temp_xyz(n_pat).xyz_pts = temp_pts;
+        tab_load = temp_xyz(n_pat).xyz_pts;
+        num_rows = numel(tab_load.X);
+        table_data = f_sg_initialize_tabxyz(app, num_rows);
+        for n_varn = 1:numel(app.GUI_ops.table_var_names)
+            temp_name = app.GUI_ops.table_var_names{n_varn};
+            if sum(strcmpi(tab_load.Properties.VariableNames,temp_name))
+                table_data.(temp_name) = tab_load.(temp_name);
+            end
         end
+        temp_xyz(n_pat).xyz_pts = table_data;
     end
     app.xyz_patterns = temp_xyz;
     

@@ -3,14 +3,12 @@ function f_sg_pp_button_down_line(app,event)
 if event.Button == 3
     if app.rightclickremoveButton.Value
         coords = event.IntersectionPoint(1:2);
-        coords = round(coords);
+        coords = round(coords*100)/100;
 
         tab_data = app.app_main.UIImagePhaseTable.Data;
-        if ~isempty(tab_data)
-            tab_var = tab_data.Variables;
-
-            dist1 = sqrt(sum((tab_var(:,3:4) - coords).^2,2));
-            z_idx = tab_var(:,5) == app.ZdepthSpinner.Value;
+        if ~isempty(tab_data.Idx)
+            dist1 = sqrt(sum(([tab_data.X, tab_data.Y] - coords).^2,2));
+            z_idx = tab_data.Z == app.ZdepthSpinner.Value;
 
             tab_data(logical(dist1 < 15 .* z_idx),:) = [];
 

@@ -74,10 +74,11 @@ if app.ApplyPWcorrectionButton.Value
             coords_y_ip = linspace(min(coords_y), max(coords_y), max(coords_y) - min(coords_y) + 1);
             [X_ip,Y_ip] = meshgrid(coords_x_ip,coords_y_ip);
             pw_data_ip = interp2(X, Y, pw_data_sm, X_ip, Y_ip);
+            pw_data_ipn = pw_data_ip/max(pw_data_ip(:));
             
             % save
             pw_corr_data = struct();
-            pw_corr_data.pw_map_2d = pw_data_ip;
+            pw_corr_data.pw_map_2d = pw_data_ipn;
             pw_corr_data.x_coord = coords_x_ip;
             pw_corr_data.y_coord = coords_y_ip;
             pw_corr_data.pw_params = pw_params;
@@ -94,7 +95,7 @@ if app.ApplyPWcorrectionButton.Value
                 imagesc(coords_y, coords_x, pw_data_sm); caxis([0 1]); axis equal tight
                 title(sprintf('data smooth, std = [%.1f, %.1f]',pw_params.smooth_std(1), pw_params.smooth_std(2)));
                 subplot(2,2,4);
-                imagesc(coords_y_ip, coords_x_ip, pw_data_ip); caxis([0 1]); axis equal tight
+                imagesc(coords_y_ip, coords_x_ip, pw_data_ipn); caxis([0 1]); axis equal tight
                 title(sprintf('data interp, thresh=%.1f', pw_params.min_w_thesh));
                 sgtitle(reg_params.reg_name)
             end
