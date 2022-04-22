@@ -2,7 +2,7 @@ function f_sg_gui_startup(app)
 
 %% add all paths inside functions folder
 
-addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']))
+addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']));
 % list1 = dir([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']);
 % for n_ls = 1:numel(list1)
 %     if ~strcmpi(list1(n_ls).name, '..') && ~strcmpi(list1(n_ls).name, '.')
@@ -20,20 +20,20 @@ ops = app.SLM_ops;
 
 % LUT dir
 if ~exist(ops.lut_dir, 'dir')
-    mkdir(ops.lut_dir)
+    mkdir(ops.lut_dir);
 end
 
 % xyz calibration
 if ~exist(ops.xyz_calibration_dir, 'dir')
-    mkdir(ops.xyz_calibration_dir)
+    mkdir(ops.xyz_calibration_dir);
 end
 
 if ~exist(ops.AO_correction_dir, 'dir')
-    mkdir(ops.AO_correction_dir)
+    mkdir(ops.AO_correction_dir);
 end
 
 if ~exist(ops.point_weight_correction_dir, 'dir')
-    mkdir(ops.point_weight_correction_dir)
+    mkdir(ops.point_weight_correction_dir);
 end
 
 %% load lut lists

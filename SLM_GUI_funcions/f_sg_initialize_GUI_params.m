@@ -128,7 +128,7 @@ app.ApplyAOcorrectionButton.Value = 1;
 f_sg_apply_AO_correction_button(app);
 
 app.ApplyPWcorrectionButton.Value = 1;
-f_sg_apply_PW_correction_button(app)
+f_sg_apply_PW_correction_button(app);
 
 % initialize blank image
 app.SLM_blank_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);

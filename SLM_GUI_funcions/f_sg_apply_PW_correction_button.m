@@ -11,6 +11,6 @@ else
     pause(0.05);
 end
 
-f_sg_update_table_power(app)
+f_sg_update_table_power(app);
 
 end
