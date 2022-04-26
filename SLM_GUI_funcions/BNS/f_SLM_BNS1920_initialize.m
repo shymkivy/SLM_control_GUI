@@ -61,7 +61,7 @@ calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found,...
     ops.use_GPU, ops.max_transients, init_lut_fpath);
 
 % Convention follows that of C function return values: 0 is success, nonzero integer is an error
-if ops.constructed_okay.value ~= 0  
+if ops.constructed_okay.value ~= 0   % 0 for 1 for v4.856
     disp('Blink SDK was not successfully constructed');
     disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
     calllib('Blink_C_wrapper', 'Delete_SDK');

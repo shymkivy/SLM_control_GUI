@@ -14,6 +14,7 @@ imaging = true;
 frame_start_times = zeros(num_planes_all,1);
 stim_times_types = zeros(num_planes_all,2); % should not be more than num scans
 stim_trace = custom_stim_data.stim_trace;
+len_stim_trace = numel(stim_trace);
 SLM_frame = 1;
 SLM_stim_type = 0;
 n_SLM_stim = 1;
@@ -34,7 +35,11 @@ while imaging
     scan_frame = scan1(1)+1;
     if frame_start_times(2)
         cur_stim_time_ms = round((toc - frame_start_times(2))*1000);
-        stim_type = round(stim_trace(cur_stim_time_ms) + 1);
+        if cur_stim_time_ms > len_stim_trace
+            stim_type = 1;
+        else
+            stim_type = round(stim_trace(cur_stim_time_ms) + 1);
+        end
     end
     %stim_type = round(scan1(2)+1);
     if scan_frame > SLM_frame  % if new frame
