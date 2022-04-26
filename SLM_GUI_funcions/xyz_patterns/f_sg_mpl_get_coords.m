@@ -1,11 +1,42 @@
 function coord = f_sg_mpl_get_coords(app, from_where, num)
 
 if strcmp(from_where, 'custom')
-    coord.xyzp = [app.XdisplacementEditField.Value,...
-                  app.YdisplacementEditField.Value,...
-                  app.ZOffsetumEditField.Value];
+    X_disp = f_str_to_array(app.XdisplacementEditField.Value);
+    Y_disp = f_str_to_array(app.YdisplacementEditField.Value);
+    Z_disp = f_str_to_array(app.ZoffsetumEditField.Value);
+    W = f_str_to_array(app.WeightEditField.Value);
+    
+    max_len = max([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(W)]);
+    
+    if max_len > 1
+        if numel(X_disp) == 1
+            X_disp = ones(max_len,1)*X_disp;
+        end
+        if numel(Y_disp) == 1
+            Y_disp = ones(max_len,1)*Y_disp;
+        end
+        if numel(Z_disp) == 1
+            Z_disp = ones(max_len,1)*Z_disp;
+        end
+        if numel(W) == 1
+            W = ones(max_len,1)*W;
+        end
+    end
+    
+    min_len = min([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(W)]);
+    
+    if min_len < max_len
+        X_disp = X_disp(1:min_len);
+        Y_disp = Y_disp(1:min_len);
+        Z_disp = Z_disp(1:min_len);
+        W = W(1:min_len);
+    end
+    
+    coord.xyzp = [X_disp,...
+                  Y_disp,...
+                  Z_disp];
 
-    coord.weight = app.WeightEditField.Value;
+    coord.weight = W;
        
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;

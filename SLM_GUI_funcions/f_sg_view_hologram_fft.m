@@ -54,7 +54,7 @@ figure;
 app.hologram_fig_plot = newplot;
 imagesc(app.hologram_fig_plot,im1_amp);
 axis(app.hologram_fig_plot, 'image');
-caxis(app.hologram_fig_plot, [0 1]);
+%caxis(app.hologram_fig_plot, [0 1]);
 colorbar(app.hologram_fig_plot, 'eastoutside');
 if app.fftzoomed20xCheckBox.Value
     xlim(app.hologram_fig_plot,[siz/2-siz/20 siz/2+siz/20]);

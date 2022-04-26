@@ -9,7 +9,7 @@ if size(app.UIImagePhaseTableSelection,1) > 0
         app.UIImagePhaseTableSelection = [];
     end
     
-    f_sg_update_table_power(app, pat_num)
+    f_sg_update_table_power(app, pat_num);
 end
 
 

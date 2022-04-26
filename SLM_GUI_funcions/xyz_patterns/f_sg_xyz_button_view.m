@@ -17,7 +17,9 @@ end
 if ~isempty(coord)
     [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     
-    holo_phase = f_sg_xyz_gen_holo(app, coord, reg1);
+    holo_phase = f_sg_gen_holo_wgs(app, coord, reg1);
+    
+    %holo_phase = f_sg_xyz_gen_holo(app, coord, reg1);
     
     if app.ApplyAOcorrectionButton.Value
         AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
@@ -29,6 +31,8 @@ if ~isempty(coord)
     
     SLM_phase = app.SLM_phase;
     SLM_phase(reg1.m_idx, reg1.n_idx) = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
+    
+    %SLM_phase = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
     
     if strcmpi(view_out, 'phase')
         f_sg_view_hologram_phase(app, SLM_phase);
