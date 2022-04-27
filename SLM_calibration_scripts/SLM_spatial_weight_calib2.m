@@ -1,11 +1,11 @@
 clear;
-close all;
+%close all;
 
 addpath('C:\Users\ys2605\Desktop\stuff\AC_2p_analysis\s1_functions');
 
-fpath = 'D:\data\SLM\4_21_22_pwm';
+fpath = 'D:\data\SLM\4_25_22_pwm';
 
-fname = 'pwm_fianium_2pt_wrange7';
+fname = 'pwm_fianium_2pt_wrange_1_0_005_sym';
 
 half_size_slice = 10;
 
@@ -16,12 +16,13 @@ data_CCD = csvread([fpath '\' fname '_CCD_out.csv'], 1, 0);
 [d1, d2, T] = size(data_Y);
 
 %%
-data_slm = load([fpath '\'  'mpl_scan_4_9_22_15h_9m.mat']);
+data_slm = load([fpath '\'  fname '.mat']);
 
-data_slm = data_slm.scan_data;
+data_slm = data_slm.scan_data.group_table_stim;
 
-data_slm.custom_stim_data.stim_patterns
+pat_num = data_slm(1:21,2);
 
+weights_all = data_slm(1:21,6);
 
 
 %% first get pulse times
@@ -62,7 +63,7 @@ end
 
 mean_pulse_all = mean(cat(3,puls_frames{:}),3);
 
-num_pts = 3;
+num_pts = 2;
 mn_all = zeros(num_pts,2);
 im_curr = mean_pulse_all;
 for n_pt = 1:num_pts
@@ -109,20 +110,15 @@ for n_puls = 1:num_puls
     
 end
 
-x = [1,    1,   1,    1,   1,    1,   1,    1,   1,    1, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45;...
-     1.45, 1.4, 1.35, 1.3, 1.25, 1.2, 1.15, 1.1, 1.05, 1, 1,    1,   1,    1,   1,    1,   1, 1, 1];
-
-x_rat =  x(1,:)./x(2,:);
- 
 figure; hold on;
-plot(x_rat, max_all);
-plot(x_rat, sum(max_all,2))
+plot(weights_all, sqrt(max_all));
+plot(weights_all, sum(max_all,2))
 
 figure; hold on;
 plot(mean_all);
 plot(sum(mean_all,2))
 
-figure; plot(x_rat)
+figure; plot(weights_all)
 %%
 
 mean_frame = mean(data_Y,3);

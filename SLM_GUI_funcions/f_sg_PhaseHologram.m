@@ -1,4 +1,6 @@
 function holo_phase = f_sg_PhaseHologram(xyzp, SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+% most code here adopted from Weijian Yang slm gui
+
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 % xyz are in um
 %   Detailed explanation goes here
