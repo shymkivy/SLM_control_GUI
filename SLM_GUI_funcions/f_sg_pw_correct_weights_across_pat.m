@@ -33,7 +33,7 @@ min_power = min(tab_data.Power);
 
 new_row = f_sg_initialize_tabxyz(app, 1);
 reg_params_idx = f_sg_get_reg_params_idx(app, app.CurrentregionDropDown.Value);
-corr_data = app.region_obj_params(reg_params_idx).pw_corr_data;
+[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 tab_new = f_sg_initialize_tabxyz(app, 0);
 
@@ -55,7 +55,7 @@ for n_pat = 1:numel(all_pat)
     tab_data2 = [tab_data(tab_data.Pattern == curr_pat,:); new_row];
     tab_data2.Weight = weight_all;
     
-    [tab_data3, ~] = f_sg_update_table_power_core(corr_data, tab_data2);
+    [tab_data3, ~] = f_sg_update_table_power_core(reg1, tab_data2);
     
     tab_new = [tab_new; tab_data3];
 end

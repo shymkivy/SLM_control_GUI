@@ -1,6 +1,4 @@
-function [im_amp, xy_axis] = f_sg_compute_holo_fft(app, holo_image, defocus_dist)
-
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+function [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, holo_image, defocus_dist)
 
 dims = size(holo_image);
 siz = max(dims);
@@ -28,7 +26,7 @@ pupil_amp = pupil_amp.*pupil_mask;
 
 defocus = f_sg_DefocusPhase(siz, siz,...
                         reg1.effective_NA,...
-                        app.ObjectiveRIEditField.Value,...
+                        reg1.objective_RI,...
                         reg1.wavelength*1e-9);
 
 defocus = defocus .* pupil_mask;
@@ -41,9 +39,9 @@ SLM_complex_wave=pupil_amp.*(exp(1i.*holo_image1)./exp(1i.*(defocus_dist.*defocu
 im1 = fftshift(fft2(SLM_complex_wave));
 im_amp = abs(im1)/sum(abs(SLM_complex_wave(:)));
 
-if app.fftampsquaredCheckBox.Value
-    im_amp = im_amp.^2;
-end
+% if app.fftampsquaredCheckBox.Value
+%im_amp = im_amp.^2;
+% end
 
 xy_axis = linspace(-(siz-1)/2, (siz-1)/2, siz)/2;
 

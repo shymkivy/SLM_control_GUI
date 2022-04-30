@@ -47,6 +47,7 @@ default_region_params(1).AO_wf = [];
 default_region_params(1).pw_corr_data = [];
 default_region_params(1).xyz_offset = [0 0 0];
 default_region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
+default_region_params(1).beam_dump_xy = [0 0]; % axial beam offset by z
 
 app.SLM_ops.default_objectives = default_objectives;
 app.SLM_ops.default_region_list = default_region_list;

@@ -10,13 +10,15 @@ noise_frac = 0.01;
 
 max_iter = 50;
 
-plot_stuff = 1;
+plot_stuff = 0;
 
 w0 = coord.weight;
 num_w = numel(w0);
 
+[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+
 SLM_phase0 = angle(sum(exp(1i*(holo_phase)).*reshape(w0,[1 1 num_w]),3));
-data_w0 = f_sg_simulate_weights(app, SLM_phase0, coord);
+data_w0 = f_sg_simulate_weights(reg1, SLM_phase0, coord);
 
 I_target0 = I_target_in/sum(I_target_in)*sum(data_w0.pt_mags);
 err0 = mean(abs(I_target0 - data_w0.pt_mags));
@@ -35,7 +37,7 @@ while and(n_it <= max_iter, num_w*err_all(n_it) > error_final_thresh)
     w_mod = w_mod - alpha1*delta.*(1 + noise_frac*randn(num_w,1));
 
     SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(w_mod,[1 1 num_w]),3));
-    data_w = f_sg_simulate_weights(app, SLM_phase, coord);
+    data_w = f_sg_simulate_weights(reg1, SLM_phase, coord);
     I_target = I_target_in/sum(I_target_in)*sum(data_w.pt_mags);
 
     err_all(n_it+1) = mean(abs(I_target - data_w.pt_mags));

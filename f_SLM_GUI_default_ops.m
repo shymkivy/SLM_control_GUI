@@ -51,8 +51,6 @@ SLM_params(idx).regions_use = {'Full SLM'};
 ops.objective_RI = 1.33;    % used in defocus functions
 %ops.wavelength = 940;       % in nm    
 
-ops.X_offset = 0;           % amount to offset with X offset
-ops.Y_offset = 10;          % amount to offset with Y offset
 ops.ref_offset = 50;    % reference image offset for checking scan sequence 
 
 ops.NI_DAQ_dvice = 'dev2';
@@ -98,6 +96,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = 'Fianium_0z_4_10_22_pw_corr.mat';
 region_params(idx).xyz_offset = [0 0 -6];  % baseline beam offset
 region_params(idx).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [250, 0];
 
 %% 20x with BNS1920
 idx = 3;

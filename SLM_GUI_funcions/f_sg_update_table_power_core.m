@@ -1,19 +1,25 @@
-function [tab_data, powers_all] = f_sg_update_table_power_core(corr_data, tab_data)
+function [tab_data, powers_all] = f_sg_update_table_power_core(reg1, tab_data)
 
-num_pts = numel(tab_data.X);
-powers_all = ones(num_pts,1);
+coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
+coord.weight = tab_data.Weight;
+coord.NA = reg1.effective_NA;
 
-if ~isempty(corr_data)
-    [~, x_idx] = min((tab_data.X - corr_data.x_coord).^2,[],2);
-    [~, y_idx] = min((tab_data.Y - corr_data.y_coord).^2,[],2);
-    for n_pt = 1:num_pts
-        powers_all(n_pt) = corr_data.pw_map_2d(y_idx(n_pt), x_idx(n_pt));
-    end
-end
+coord_zero = coord;
+coord_zero.xyzp = [0 0 0];
 
-weights_all = tab_data.Weight/sum(tab_data.Weight);
-powers_corr = powers_all.*weights_all;
+[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
 
-tab_data.Power = powers_corr;
+SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord_corr.weight)]),3));
+
+data_w_zero = f_sg_simulate_weights(reg1, zeros(size(SLM_phase)), coord_zero);
+data_w = f_sg_simulate_weights(reg1, SLM_phase, coord_corr);
+
+power_sim = data_w.pt_mags/data_w_zero.pt_mags;
+
+power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
+
+tab_data.Power = power_sim.*power_corr;
+
+powers_all = tab_data.Power;
 
 end
