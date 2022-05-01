@@ -112,8 +112,6 @@ else
     app.region_obj_params = default_roparams;
 end
 
-app.region_obj_params = app.SLM_ops.region_params;
-
 %% copy patterns
 Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight', 'Power'};
 app.GUI_ops.table_var_names = Varnames;
