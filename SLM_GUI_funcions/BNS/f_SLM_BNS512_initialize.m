@@ -99,13 +99,8 @@ else
     ops.board_number = 1;
     calllib('Blink_SDK_C', 'Load_LUT_file', ops.sdk, ops.board_number, lut_path);
     
-
     % Turn the SLM power on
     calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
-    
-    
-    %ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);
-    %ops.width = calllib('Blink_C_wrapper', 'Get_image_width', ops.board_number);
     
     %allocate arrays for our images
     ops.height = 512;
