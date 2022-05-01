@@ -95,11 +95,17 @@ else
     % A blank calibration file must be loaded to the SLM controller
     %calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
     % A linear LUT must be loaded to the controller for OverDrive Plus
-    calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
+    %calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
     ops.board_number = 1;
+    calllib('Blink_SDK_C', 'Load_LUT_file',ops.board_number, lut_path);
     
+
     % Turn the SLM power on
-    calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
+    %calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
+    
+    
+    %ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);
+    %ops.width = calllib('Blink_C_wrapper', 'Get_image_width', ops.board_number);
     
     %allocate arrays for our images
     ops.height = 512;
