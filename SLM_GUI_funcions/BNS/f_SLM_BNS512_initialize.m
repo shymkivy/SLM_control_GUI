@@ -67,6 +67,7 @@ ops.max_transients = 10; % this is specific to ODP slms (512)
 ops.true_frames = 3;
 ops.slm_resolution = 512;
 ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
+ops.external_Pulse = 0;
 
 % % not sure if needed
 % % from new slm code
@@ -106,7 +107,7 @@ else
     ops.height = 512;
     ops.width = 512;
     
-    %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk)
+    %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk) not in ver 2.1
     %calllib('Blink_SDK_C', 'Get_version_info', ops.sdk)
 end
 

@@ -70,10 +70,11 @@ ops.max_transients = 10; % this is specific to ODP slms (512)
 ops.true_frames = 3;
 ops.slm_resolution = 512;
 ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
+ops.external_Pulse = 0;
 
 % % not sure if needed
 % % from new slm code
-% ops.external_Pulse = 0;
+
 % ops.timeout_ms = 5000;
 
 %%
