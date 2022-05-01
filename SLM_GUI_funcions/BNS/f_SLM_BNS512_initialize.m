@@ -93,7 +93,7 @@ else
     % Set the basic SLM parameters
     calllib('Blink_SDK_C', 'Set_true_frames', ops.sdk, ops.true_frames);
     % A blank calibration file must be loaded to the SLM controller
-    calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
+    %calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
     % A linear LUT must be loaded to the controller for OverDrive Plus
     calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
     ops.board_number = 1;
