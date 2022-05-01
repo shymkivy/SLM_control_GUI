@@ -97,7 +97,7 @@ else
     % A linear LUT must be loaded to the controller for OverDrive Plus
     %calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
     ops.board_number = 1;
-    calllib('Blink_SDK_C', 'Load_LUT_file',ops.board_number, lut_path);
+    calllib('Blink_SDK_C', 'Load_LUT_file', ops.sdk, ops.board_number, lut_path);
     
 
     % Turn the SLM power on
