@@ -1,6 +1,6 @@
 function f_SLM_BNS512_update(ops, image_pointer)
 
-im_out = f_sg_poiner_to_im(image_pointer, ops.height, ops.width);
+im_out = reshape(image_pointer.Value ,ops.height,ops.width);
 % loads image
 out1 = calllib('Blink_SDK_C', 'Write_image', ops.sdk, ops.board_number, im_out, ops.width*ops.height, ops.wait_For_Trigger, ops.external_Pulse);
 % checks if image is complete
