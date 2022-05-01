@@ -127,6 +127,21 @@ region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 -6];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 
+%% 25x with BNS512
+idx = 1;
+region_params(idx).obj_name = '25X_fat';
+region_params(idx).SLM_name = 'BNS512';
+region_params(idx).reg_name = 'Full SLM';
+region_params(idx).wavelength = 1040;
+region_params(idx).beam_diameter = 512;
+region_params(idx).effective_NA = 0.5; % 11/11/21 0.62  before 11/11/21 0.605;
+region_params(idx).lut_correction_fname = [];
+region_params(idx).xyz_affine_tf_fname = [];
+region_params(idx).AO_correction_fname = [];
+region_params(idx).point_weight_correction_fname = [];
+region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
+region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+
 %% default directories
 
 % where to save outputs

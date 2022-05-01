@@ -91,6 +91,9 @@ app.region_list = region_list;
 app.SelectRegionDropDown.Items = {region_list.reg_name};
 app.CurrentregionDropDown.Items = {region_list.reg_name};
 
+reg_obj_params = app.SLM_ops.region_params;
+
+
 app.region_obj_params = app.SLM_ops.region_params;
 
 %% copy patterns
