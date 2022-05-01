@@ -101,7 +101,7 @@ else
     
 
     % Turn the SLM power on
-    %calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
+    calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
     
     
     %ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);
