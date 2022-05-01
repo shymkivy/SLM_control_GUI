@@ -1,4 +1,5 @@
-function ops = f_SLM_BNS512OD_initialize(ops)
+function ops = f_SLM_BNS512_initialize(ops)
+
 % regionalLUTfileName, SLMInitializationImageFileName 
 % [ sdk ]
 %% SLM params
@@ -109,5 +110,6 @@ else
     %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk)
     %calllib('Blink_SDK_C', 'Get_version_info', ops.sdk)
 end
+
 
 end
