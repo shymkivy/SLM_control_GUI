@@ -37,7 +37,7 @@ idx = 3;
 SLM_params(idx).SLM_name = 'BNS512'; % prairie 1
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
-SLM_params(idx).lut_fname = 'linear.lut';
+SLM_params(idx).lut_fname = 'slm4317_at1064_P8.lut';
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
 SLM_params(idx).regions_use = {'Full SLM'};
 %% some default general params
