@@ -7,7 +7,7 @@ else
 end
 
 %% Which SLM is default ???? 
-ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
+ops.SLM_type = 'BNS512'; % 'BNS1920', 'BNS512', 'BNS512OD'
 % BNS1920
 % BNS512OD with OverDrive (OD) in 901D
 % BNS512 standard on prairie 1 or 901 not using OD
