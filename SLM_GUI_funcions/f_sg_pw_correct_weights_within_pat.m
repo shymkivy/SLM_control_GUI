@@ -26,6 +26,8 @@ if ~isempty(app.UIImagePhaseTableSelection)
 
     holo_phase_corr = holo_phase;
     
+    powers_all = powers_all.^2;
+    
     I_target = ones(numel(coord.weight),1)./powers_all;
     w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);
     
