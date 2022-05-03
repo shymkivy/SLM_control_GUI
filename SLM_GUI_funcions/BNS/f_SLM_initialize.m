@@ -16,6 +16,8 @@ if strcmpi(ops.SLM_type, 'BNS1920')
     ops = f_SLM_BNS1920_initialize(ops);
 elseif strcmpi(ops.SLM_type, 'BNS512OD')
     ops = f_SLM_BNS512OD_initialize(ops);
+elseif strcmpi(ops.SLM_type, 'BNS512OD_sdk3')
+    ops = f_SLM_BNS512OD_sdk3_initialize(ops);
 elseif strcmpi(ops.SLM_type, 'BNS512')
     ops = f_SLM_BNS512_initialize(ops);
 else

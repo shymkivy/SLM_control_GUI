@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS512OD_initialize(ops)
+function ops = f_SLM_BNS512OD_sdk3_initialize(ops)
 % regionalLUTfileName, SLMInitializationImageFileName 
 % [ sdk ]
 %% SLM params
@@ -14,11 +14,6 @@ end
 
 if ~isfield(ops, 'lut_dir') % where are lut files
     ops.lut_dir = '\..\SLM_calibration\lut_calibration\'; % regionalLUTfileName goes here
-end
-
-%%
-if ~isfield(ops, 'lut_dir')
-    ops.lut_dir = 'lut_calibration\';
 end
 
 %% Lut global
@@ -60,8 +55,8 @@ end
 %ops.path_library = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
 addpath(ops.SLM_SDK_dir);
 
-if ~libisloaded('Blink_C_wrapper')
-    loadlibrary('Blink_C_wrapper.dll', 'Blink_C_wrapper.h');
+if ~libisloaded('Blink_SDK_C')  % this is for old 512 BNS with OverDrive
+    loadlibrary('Blink_SDK_C.dll', 'Blink_SDK_C_matlab.h');
 end
 
 %% Basic parameters for calling Create_SDK for BNS 512 with OD
@@ -76,44 +71,44 @@ ops.true_frames = 3;
 ops.slm_resolution = 512;
 ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
 ops.external_Pulse = 0;
-ops.timeout_ms = 5000;
 
+% % not sure if needed
+% % from new slm code
+
+% ops.timeout_ms = 5000;
 
 %%
-calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found, ops.constructed_okay,...
+ops.sdk = calllib('Blink_SDK_C', 'Create_SDK', ops.bit_depth, ops.slm_resolution, ops.num_boards_found, ops.constructed_okay,...
                     ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, init_lut_fpath);
-               
-if ops.constructed_okay.value ~= 1
+
+if ops.constructed_okay.value == 0
     ops.SDK_created = 0;
     disp('Blink SDK was not successfully constructed');
-    disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
-    calllib('Blink_C_wrapper', 'Delete_SDK');
+    disp(calllib('Blink_SDK_C', 'Get_last_error_message', ops.sdk));
+    calllib('Blink_SDK_C', 'Delete_SDK', ops.sdk);
 else
     %%
-    ops.board_number = 1;
     ops.SDK_created = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
-    disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
-    
+    disp(calllib('Blink_SDK_C', 'Get_last_error_message', ops.sdk));
     % Set the basic SLM parameters
-    calllib('Blink_C_wrapper', 'Set_true_frames', ops.true_frames);
+    calllib('Blink_SDK_C', 'Set_true_frames', ops.sdk, ops.true_frames);
     % A blank calibration file must be loaded to the SLM controller
-    % calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
+    calllib('Blink_SDK_C', 'Write_cal_buffer', ops.sdk, 1, ops.cal_image);
     % A linear LUT must be loaded to the controller for OverDrive Plus
-    calllib('Blink_C_wrapper', 'Load_linear_LUT', ops.board_number);
-   
-
+    calllib('Blink_SDK_C', 'Load_linear_LUT', ops.sdk, 1);
+    ops.board_number = 1;
+    
     % Turn the SLM power on
-    calllib('Blink_C_wrapper', 'SLM_power', 1);
+    calllib('Blink_SDK_C', 'SLM_power', ops.sdk, 1);
     
     %allocate arrays for our images
-
-    ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);
-    ops.width = calllib('Blink_C_wrapper', 'Get_image_width', ops.board_number);
+    ops.height = 512;
+    ops.width = 512;
     
     %calllib('Blink_SDK_C', 'Is_overdrive_available', ops.sdk)
-    %calllib('Blink_C_wrapper', 'Get_version_info')
+    %calllib('Blink_SDK_C', 'Get_version_info', ops.sdk)
 end
 
 end

@@ -6,7 +6,7 @@ if strcmpi(ops.SLM_type, 'BNS1920')
 elseif strcmpi(ops.SLM_type, 'BNS512')
     f_SLM_BNS512_update_lut(ops);
 else 
-    disp('Lut update onlt available for BNS1920')
+    disp('Lut update only available for non overdrive SLM, deactivate and change in default ops')
 end
 
 end
