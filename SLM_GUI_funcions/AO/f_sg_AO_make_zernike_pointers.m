@@ -49,7 +49,7 @@ if app.InsertrefimageinscansCheckBox.Value
                    -app.SLM_ops.ref_offset, 0, 0;...
                     0, app.SLM_ops.ref_offset, 0;...
                     0,-app.SLM_ops.ref_offset, 0];
-    ref_phase = f_sg_xyz_gen_holo(app, ref_coords, reg1);
+    ref_phase = f_sg_xyz_gen_holo(ref_coords, reg1);
     ref_phase2 = angle(sum(exp(1i*ref_phase),3));
 end
 

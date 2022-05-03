@@ -19,14 +19,14 @@ if ~isempty(coord)
     
     %holo_phase = f_sg_gen_holo_wgs(app, coord, reg1);
     
-    %holo_phase = f_sg_xyz_gen_holo(app, coord, reg1);
+    %holo_phase = f_sg_xyz_gen_holo(coord, reg1);
     
     
     %% generate holo (need to apply AO separately for each)
     holo_phase = f_sg_PhaseHologram(coord.xyzp,...
                         sum(reg1.m_idx), sum(reg1.n_idx),...
                         coord.NA,...
-                        app.ObjectiveRIEditField.Value,...
+                        reg1.objective_RI,...
                         reg1.wavelength*1e-9,...
                         reg1.beam_diameter);
     
@@ -35,7 +35,7 @@ if ~isempty(coord)
     holo_phase0 = f_sg_PhaseHologram(coord0.xyzp,...
                         sum(reg1.m_idx), sum(reg1.n_idx),...
                         coord.NA,...
-                        app.ObjectiveRIEditField.Value,...
+                        reg1.objective_RI,...
                         reg1.wavelength*1e-9,...
                         reg1.beam_diameter);
     
@@ -59,7 +59,7 @@ if ~isempty(coord)
     %
     holo_phase0(~reg1.holo_mask) = 0;
     SLM_phase0 = angle(sum(exp(1i*(holo_phase0)),3));
-    data_holo0 = f_sg_simulate_weights(app, SLM_phase0, coord0);
+    data_holo0 = f_sg_simulate_weights(reg1, SLM_phase0, coord0);
 
     I_target = ones(numel(coord.weight),1);
     w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);
@@ -79,7 +79,10 @@ if ~isempty(coord)
         f_sg_view_hologram_phase(app, SLM_phase);
         title(sprintf('%s defocus %.1f um', view_source, app.fftdefocusumEditField.Value));
     elseif strcmpi(view_out, 'fft')
-        [im_amp, xy_axis] = f_sg_compute_holo_fft(app, SLM_phase(m_idx, n_idx), app.fftdefocusumEditField.Value);
+        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase(m_idx, n_idx), app.fftdefocusumEditField.Value);
+        if app.fftampsquaredCheckBox.Value
+            im_amp = im_amp.^2;
+        end
         f_sg_view_hologram_fft(app, im_amp, xy_axis);
         title(sprintf('%s PSF at %.1f um', view_source, app.fftdefocusumEditField.Value));
     end

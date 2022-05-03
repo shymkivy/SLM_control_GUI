@@ -23,7 +23,6 @@ n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
 m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
 n_idx = logical((n_px>n(1)).*(n_px<=n(2)));
 
-
 SLMm = sum(m_idx);
 SLMn = sum(n_idx);
 
@@ -42,8 +41,15 @@ if app.ZerooutsideunitcircCheckBox.Value
     holo_mask(RHO>1) = 0;
 end
 
+if app.ApplyXYZcalibrationButton.Value  
+    region_obj_params.xyz_offset = [0 0 0];
+end
+
+region_obj_params.SLMm = SLMm;
+region_obj_params.SLMn = SLMn;
 region_obj_params.m_idx = m_idx;
 region_obj_params.n_idx = n_idx;
 region_obj_params.holo_mask = holo_mask;
+region_obj_params.objective_RI = app.ObjectiveRIEditField.Value;
 
 end

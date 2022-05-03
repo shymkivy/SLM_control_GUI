@@ -14,8 +14,10 @@ end
 %%
 if strcmpi(ops.SLM_type, 'BNS1920')
     ops = f_SLM_BNS1920_initialize(ops);
-elseif strcmpi(ops.SLM_type, 'BNS512OD') || strcmpi(ops.SLM_type, 'BNS512')
+elseif strcmpi(ops.SLM_type, 'BNS512OD')
     ops = f_SLM_BNS512OD_initialize(ops);
+elseif strcmpi(ops.SLM_type, 'BNS512')
+    ops = f_SLM_BNS512_initialize(ops);
 else
     error('Undefined SLM in f_SLM_initialize');
 end

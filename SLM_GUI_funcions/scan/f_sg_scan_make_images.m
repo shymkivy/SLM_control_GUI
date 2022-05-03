@@ -32,7 +32,7 @@ if ~strcmpi(pattern, 'none')
         coord.weight = gr_subtable(:,6);
         coord.NA = reg1.effective_NA;
         
-        holo_phase = f_sg_xyz_gen_holo(app, coord, reg1);
+        holo_phase = f_sg_xyz_gen_holo(coord, reg1);
         
         AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
         

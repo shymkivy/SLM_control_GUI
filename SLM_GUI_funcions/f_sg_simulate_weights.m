@@ -1,4 +1,4 @@
-function data_out = f_sg_simulate_weights(app, SLM_phase, coord)
+function data_out = f_sg_simulate_weights(reg1, SLM_phase, coord)
 
 pt_hsize = 4;
 plot_stuff = 0;
@@ -8,7 +8,9 @@ all_z = unique(xyz_temp(:,3));
 pt_mags = zeros(size(xyz_temp,1),1);
 
 for n_z = 1:numel(all_z)
-    [im_amp, xy_axis] = f_sg_compute_holo_fft(app, SLM_phase, all_z(n_z));
+    [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase, all_z(n_z));
+    
+    im_amp = im_amp.^2;
     
     idx1 = xyz_temp(:,3)==all_z(n_z);
     

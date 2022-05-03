@@ -37,7 +37,7 @@ idx = 3;
 SLM_params(idx).SLM_name = 'BNS512'; % prairie 1
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
-SLM_params(idx).lut_fname = 'linear.lut';
+SLM_params(idx).lut_fname = 'slm4317_at1064_P8.lut';
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
 SLM_params(idx).regions_use = {'Full SLM'};
 %% some default general params
@@ -51,8 +51,6 @@ SLM_params(idx).regions_use = {'Full SLM'};
 ops.objective_RI = 1.33;    % used in defocus functions
 %ops.wavelength = 940;       % in nm    
 
-ops.X_offset = 0;           % amount to offset with X offset
-ops.Y_offset = 10;          % amount to offset with Y offset
 ops.ref_offset = 50;    % reference image offset for checking scan sequence 
 
 ops.NI_DAQ_dvice = 'dev2';
@@ -98,6 +96,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = 'Fianium_0z_4_10_22_pw_corr.mat';
 region_params(idx).xyz_offset = [0 0 -6];  % baseline beam offset
 region_params(idx).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [250, 0];
 
 %% 20x with BNS1920
 idx = 3;
@@ -126,6 +125,21 @@ region_params(idx).xyz_affine_tf_fname = 'xyz_calib_20x_fianium_z1_12_21_20.mat'
 region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 -6];
+region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+
+%% 25x with BNS512
+idx = 1;
+region_params(idx).obj_name = '25X_fat';
+region_params(idx).SLM_name = 'BNS512';
+region_params(idx).reg_name = 'Full SLM';
+region_params(idx).wavelength = 1040;
+region_params(idx).beam_diameter = 512;
+region_params(idx).effective_NA = 0.5; % 11/11/21 0.62  before 11/11/21 0.605;
+region_params(idx).lut_correction_fname = [];
+region_params(idx).xyz_affine_tf_fname = [];
+region_params(idx).AO_correction_fname = [];
+region_params(idx).point_weight_correction_fname = [];
+region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 
 %% default directories

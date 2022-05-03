@@ -1,50 +1,58 @@
-function f_sg_pw_correct_weights_within_pat(app)
+function f_sg_pw_correct_weights_within_pat(app, all_pat)
 
-if ~isempty(app.UIImagePhaseTableSelection)
-    current_pat = app.UIImagePhaseTable.Data.Pattern(app.UIImagePhaseTableSelection(1));
+tab_data =  app.UIImagePhaseTable.Data;
 
-    tab_data =  app.UIImagePhaseTable.Data;
-    
-    [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-    [tab_pat, powers_all] = f_sg_update_table_power_core(reg1.pw_corr_data, tab_data(tab_data.Pattern == current_pat,:));
-    
-    coord = f_sg_mpl_get_coords(app, 'pattern', current_pat);
-    
-    % get holo and compute w
-    holo_phase = f_sg_PhaseHologram(coord.xyzp,...
-                        sum(reg1.m_idx), sum(reg1.n_idx),...
-                        coord.NA,...
-                        app.ObjectiveRIEditField.Value,...
-                        reg1.wavelength*1e-9,...
-                        reg1.beam_diameter);
-    
-    for n_holo = 1:size(coord.xyzp,1)
-        temp_holo = holo_phase(:,:,n_holo);
-        temp_holo(~reg1.holo_mask) = 0;
-        holo_phase(:,:,n_holo) = temp_holo;
+[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+
+coord_zero.xyzp = [0 0 0];
+coord_zero.weight = 0;
+coord_zero.NA = reg1.effective_NA;
+data_w_zero = f_sg_simulate_weights(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero);
+
+if ~exist('all_pat', 'var')
+    if ~isempty(app.UIImagePhaseTableSelection)
+        all_pat = unique(app.UIImagePhaseTable.Data.Pattern(app.UIImagePhaseTableSelection(:,1)));
+    elseif ~isempty(tab_data)
+        all_pat = unique(tab_data.Pattern);
+    else
+        all_pat = [];
     end
+end
 
-    holo_phase_corr = holo_phase;
+for n_pat = 1:numel(all_pat)
+    curr_pat = all_pat(n_pat);
+    tab_pat = tab_data(tab_data.Pattern == curr_pat,:);
+
+    coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
+    coord.weight = tab_pat.Weight;
+    coord.NA = reg1.effective_NA;
     
-    powers_all = powers_all.^2;
-    
-    I_target = ones(numel(coord.weight),1)./powers_all;
-    w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);
-    
-    
-    %  zero offset power max = 1.2167
-    I_out = w_out.I_final/1.2167;
-    
-    I_out2 = I_out.*powers_all;
-    
+    beam_dump_idx = and(and(tab_pat.X == reg1.beam_dump_xy(1), tab_pat.Y == reg1.beam_dump_xy(2)), tab_pat.Z == 0);
+
+    power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
+
+    [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
+
+    I_target = ones(sum(~beam_dump_idx),1)./power_corr(~beam_dump_idx);
+    w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, beam_dump_idx);
+
     tab_pat.Weight = w_out.w_final;
-    tab_pat.Power = I_out2;
+    tab_pat.Power = w_out.I_final.*power_corr;
 
-    tab_data(tab_data.Pattern == current_pat,:) = tab_pat;
+    tab_data(tab_data.Pattern == all_pat(n_pat),:) = tab_pat;
+end
 
-    app.UIImagePhaseTable.Data = tab_data;
+for n_pat = 1:numel(all_pat)
+    curr_pat = all_pat(n_pat);
+    pat_idx = tab_data.Pattern == curr_pat;
+    tab_data(pat_idx,:).Weight = tab_data(pat_idx,:).Weight./sum(tab_data(pat_idx,:).Weight);
+end
+app.UIImagePhaseTable.Data = tab_data;
+
+if isempty(all_pat)
+    disp('Need to select a pattern');
 else
-    disp('Need to select a pattern')
+    disp('Done');
 end
 
 end

@@ -35,6 +35,4 @@ new_row.Weight = coord.weight;
                
 app.UIImagePhaseTable.Data = [app.UIImagePhaseTable.Data; new_row];
 
-f_sg_update_table_power(app, app.PatternnumberEditField.Value);
-
 end

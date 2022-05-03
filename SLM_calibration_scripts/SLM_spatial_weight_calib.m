@@ -3,7 +3,7 @@ close all;
 
 addpath('C:\Users\ys2605\Desktop\stuff\AC_2p_analysis\s1_functions');
 
-fpath = 'D:\data\SLM\pwm_4_9_22';
+fpath = 'D:\data\SLM\4_9_22_pwm';
 
 fname = 'Fianium_0z_1';
 
@@ -19,9 +19,6 @@ data_CCD = csvread([fpath '\' fname '_CCD_out.csv'], 1, 0);
 data_slm = load([fpath '\'  'mpl_scan_4_9_22_15h_9m.mat']);
 
 data_slm = data_slm.scan_data;
-
-data_slm.custom_stim_data.stim_patterns
-
 
 
 %%

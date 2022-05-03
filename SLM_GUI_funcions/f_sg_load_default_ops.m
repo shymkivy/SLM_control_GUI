@@ -47,6 +47,7 @@ default_region_params(1).AO_wf = [];
 default_region_params(1).pw_corr_data = [];
 default_region_params(1).xyz_offset = [0 0 0];
 default_region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
+default_region_params(1).beam_dump_xy = [0 0]; % axial beam offset by z
 
 app.SLM_ops.default_objectives = default_objectives;
 app.SLM_ops.default_region_list = default_region_list;
@@ -90,7 +91,26 @@ app.region_list = region_list;
 app.SelectRegionDropDown.Items = {region_list.reg_name};
 app.CurrentregionDropDown.Items = {region_list.reg_name};
 
-app.region_obj_params = app.SLM_ops.region_params;
+reg_obj_params = app.SLM_ops.region_params;
+rop_to_use = false(numel(reg_obj_params),1);
+for n_p = 1:numel(reg_obj_params)
+    if strcmpi(reg_obj_params(n_p).SLM_name, app.SLM_ops.SLM_type)
+        if sum(strcmpi(reg_obj_params(n_p).reg_name, {region_list.reg_name}))
+            rop_to_use(n_p) = 1;
+        end
+    end
+end
+
+if sum(rop_to_use)
+    app.region_obj_params = reg_obj_params(rop_to_use);
+else
+    
+    default_roparams.obj_name = default_objectives.obj_name;
+    default_roparams.SLM_name = app.SLM_ops.SLM_type;
+    default_roparams.reg_name = default_region_list.reg_name;
+    default_roparams = f_copy_fields(default_roparams, default_region_params);
+    app.region_obj_params = default_roparams;
+end
 
 %% copy patterns
 Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight', 'Power'};

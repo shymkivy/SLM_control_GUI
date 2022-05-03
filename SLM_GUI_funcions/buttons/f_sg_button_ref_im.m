@@ -8,7 +8,7 @@ coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
 
 [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
             
-holo_phase = f_sg_xyz_gen_holo(app, coords, reg1);
+holo_phase = f_sg_xyz_gen_holo(coords, reg1);
 holo_phase2 = angle(sum(exp(1i*(holo_phase)),3));
 
 app.SLM_phase_corr(reg1.m_idx, reg1.n_idx) = holo_phase2;            

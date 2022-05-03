@@ -60,6 +60,7 @@ if strcmpi(ops.SLM_type, 'BNS1920')
 elseif strcmpi(ops.SLM_type, 'BNS512')
     % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
+    ops.lut_fname =  'linear.lut';
 elseif strcmpi(ops.SLM_type, 'BNS512OD')
     % 901D, with overdrive, requires initial regional lut (init_lut_fname)
     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
