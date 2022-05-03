@@ -75,6 +75,9 @@ if ~isempty(reg_params)
     
     app.XZcorrEditField.Value = reg_params.xy_over_z_offset(1);
     app.YZcorrEditField.Value = reg_params.xy_over_z_offset(2);
+    
+    app.beamdumpXEditField.Value = reg_params.beam_dump_xy(1);
+    app.beamdumpYEditField.Value = reg_params.beam_dump_xy(2);
 else
     disp('Region update failed')
 end

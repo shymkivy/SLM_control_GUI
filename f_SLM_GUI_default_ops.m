@@ -82,6 +82,7 @@ region_params(idx).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat'
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0.027 -0.012]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [250, 0];
 
 idx = 2;
 region_params(idx).obj_name = '25X_fat';
