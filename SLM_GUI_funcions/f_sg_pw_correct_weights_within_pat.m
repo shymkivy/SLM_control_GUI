@@ -4,11 +4,6 @@ tab_data =  app.UIImagePhaseTable.Data;
 
 [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
-coord_zero.xyzp = [0 0 0];
-coord_zero.weight = 0;
-coord_zero.NA = reg1.effective_NA;
-data_w_zero = f_sg_simulate_weights(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero);
-
 if ~exist('all_pat', 'var')
     if ~isempty(app.UIImagePhaseTableSelection)
         all_pat = unique(app.UIImagePhaseTable.Data.Pattern(app.UIImagePhaseTableSelection(:,1)));
