@@ -82,7 +82,7 @@ region_params(idx).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat'
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0.027 -0.012]; % axial beam offset by z
-region_params(idx).beam_dump_xy = [250, 0];
+region_params(idx).beam_dump_xy = [-350, 0];
 
 idx = 2;
 region_params(idx).obj_name = '25X_fat';
@@ -97,7 +97,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = 'Fianium_0z_4_10_22_pw_corr.mat';
 region_params(idx).xyz_offset = [0 0 -6];  % baseline beam offset
 region_params(idx).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
-region_params(idx).beam_dump_xy = [250, 0];
+region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 20x with BNS1920
 idx = 3;
@@ -113,7 +113,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
-region_params(idx).beam_dump_xy = [250, 0];
+region_params(idx).beam_dump_xy = [-350, 0];
 
 idx = 4;
 region_params(idx).obj_name = '20X_fat';
@@ -128,7 +128,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 -6];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
-region_params(idx).beam_dump_xy = [250, 0];
+region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 25x with BNS512
 idx = 5;
