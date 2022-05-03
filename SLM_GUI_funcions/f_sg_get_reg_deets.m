@@ -41,7 +41,7 @@ if app.ZerooutsideunitcircCheckBox.Value
     holo_mask(RHO>1) = 0;
 end
 
-if app.ApplyXYZcalibrationButton.Value  
+if ~app.ApplyXYZcalibrationButton.Value  
     region_obj_params.xyz_offset = [0 0 0];
 end
 

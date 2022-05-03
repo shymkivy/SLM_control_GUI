@@ -113,6 +113,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [250, 0];
 
 idx = 4;
 region_params(idx).obj_name = '20X_fat';
@@ -127,9 +128,10 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 -6];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [250, 0];
 
 %% 25x with BNS512
-idx = 1;
+idx = 5;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512';
 region_params(idx).reg_name = 'Full SLM';
@@ -142,6 +144,7 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).beam_dump_xy = [0, 0];
 
 %% default directories
 
