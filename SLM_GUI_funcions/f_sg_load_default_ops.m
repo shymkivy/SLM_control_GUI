@@ -163,6 +163,9 @@ app.PWmincorrthreshEditField.Value = app.SLM_ops.pw_calibration.min_thresh;
 app.PWsqrt2pCheckBox.Value = app.SLM_ops.pw_calibration.pw_sqrt;
 
 %%
+app.ZoomEditField.Value = app.SLM_ops.zoom;
+
+%%
 % %%
 % current_reg = region_list(strcmpi(app.SelectRegionDropDown.Value, {region_list.reg_name}));
 % 

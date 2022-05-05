@@ -61,6 +61,8 @@ ops.objective_RI = 1.33;    % used in defocus functions
 
 ops.ref_offset = 50;    % reference image offset for checking scan sequence 
 
+ops.zoom = 1.2;
+
 ops.NI_DAQ_dvice = 'dev2';
 ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
