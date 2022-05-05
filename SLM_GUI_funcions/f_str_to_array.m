@@ -15,13 +15,16 @@ if numel(str_in)
         remove_ind = false(numel(str_in),1);
         remove_ind(strfind(str_in,'[')) = 1;
         remove_ind(strfind(str_in,']')) = 1;
-        remove_ind(strfind(str_in,' ')) = 1;
-
+        
         str_in2 = str_in;
         str_in2(remove_ind) = [];
+        
+        %remove_ind(strfind(str_in,' ')) = 1;
 
-        out1 = split(str_in2,',');
+        out1 = split(str_in2, [","," "]);
+  
         array_out = str2double(out1);
+        array_out = array_out(~isnan(array_out));
     end
 else
     array_out = 0;

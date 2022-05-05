@@ -6,7 +6,7 @@ if app.RunLUTcalibrationButton.Value
         % generate coordinates
         SLMn = app.SLM_ops.width;
         SLMm = app.SLM_ops.height;
-        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         beam_diameter = reg1.beam_diameter;
         
         xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);

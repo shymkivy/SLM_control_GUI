@@ -15,7 +15,7 @@ end
 
 %% gen image and view without saving to buffer
 if ~isempty(coord)
-    [m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+    reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     
     %holo_phase = f_sg_gen_holo_wgs(app, coord, reg1);
     
@@ -79,7 +79,7 @@ if ~isempty(coord)
         f_sg_view_hologram_phase(app, SLM_phase);
         title(sprintf('%s defocus %.1f um', view_source, app.fftdefocusumEditField.Value));
     elseif strcmpi(view_out, 'fft')
-        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase(m_idx, n_idx), app.fftdefocusumEditField.Value);
+        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase(reg1.m_idx, reg1.n_idx), app.fftdefocusumEditField.Value);
         if app.fftampsquaredCheckBox.Value
             im_amp = im_amp.^2;
         end

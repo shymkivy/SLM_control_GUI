@@ -10,7 +10,7 @@ tab_data_full = app.UIImagePhaseTable.Data;
 
 current_idx = max(tab_data_full.Idx)+1;
 
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 % coord_zero.xyzp = [0 0 0];
 % coord_zero.weight = 0;
 % coord_zero.NA = reg1.effective_NA;

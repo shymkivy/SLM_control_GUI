@@ -9,13 +9,14 @@ if sum(idx1)
         tab_data = app.xyz_patterns(idx1).xyz_pts;
         
         pat_all = unique(tab_data.Pattern);
+        pat_idx_all = (1:numel(pat_all))';
         init_delay = app.initialdelayEditField.Value;
         num_rep = app.patternrepeatsEditField.Value;
         duration = app.patterndurationEditField.Value;
         isi = app.patternintervalEditField.Value;
         isi_jitter = app.patternintervaljitterEditField.Value; 
 
-        pat_all2 = reshape(repmat(pat_all', [num_rep, 1]), [], 1);
+        pat_all2 = reshape(repmat(pat_idx_all', [num_rep, 1]), [], 1);
         if strcmpi(app.patternorderDropDown.Value, 'random')
             pat_all2 = pat_all2(randperm(numel(pat_all2)));
         end
@@ -34,7 +35,8 @@ if sum(idx1)
         end
         
         custom_stim.stim_times = stim_times;
-        custom_stim.stim_patterns = pat_all2;
+        custom_stim.stim_patterns_index = pat_all2;
+        custom_stim.stim_patterns_id = pat_all;
         custom_stim.stim_trace = trace1;
     end
 end

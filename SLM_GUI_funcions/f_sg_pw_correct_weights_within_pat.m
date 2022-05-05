@@ -2,7 +2,7 @@ function f_sg_pw_correct_weights_within_pat(app, all_pat)
 
 tab_data =  app.UIImagePhaseTable.Data;
 
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 if ~exist('all_pat', 'var')
     if ~isempty(app.UIImagePhaseTableSelection)

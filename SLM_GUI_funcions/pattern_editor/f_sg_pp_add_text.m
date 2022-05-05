@@ -8,7 +8,7 @@ if isfield(app.data, field_name)
     end
     if num_pts > num_txt
         app.data.(field_name) = [app.data.(field_name); cell(num_pts-num_txt,1)];
-        for n_pt = num_txt:num_pts
+        for n_pt = max(num_txt,1):num_pts
             app.data.(field_name){n_pt} = text(app.UIAxes);
         end
     end

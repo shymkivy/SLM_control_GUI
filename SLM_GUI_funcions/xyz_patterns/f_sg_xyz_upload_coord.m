@@ -2,7 +2,7 @@ function f_sg_xyz_upload_coord(app, coord)
 
 %% generate image
 if ~isempty(coord)
-    [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+    reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     
     %% update slm im
     holo_phase = f_sg_xyz_gen_holo(coord, reg1);

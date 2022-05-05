@@ -1,5 +1,7 @@
 function coord = f_sg_mpl_get_coords(app, from_where, num)
 
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+
 if strcmp(from_where, 'custom')
     X_disp = f_str_to_array(app.XdisplacementEditField.Value);
     Y_disp = f_str_to_array(app.YdisplacementEditField.Value);
@@ -41,7 +43,6 @@ if strcmp(from_where, 'custom')
     if app.ManualNAcorrectionCheckBox.Value
         coord.NA = app.ManualNAEditField.Value;
     else
-        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord.NA = reg1.effective_NA;
     end
     
@@ -54,7 +55,6 @@ elseif strcmp(from_where, 'table_selection')
         coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
         coord.weight = tab_data.Weight;
         
-        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord.NA = reg1.effective_NA;
     else
         coord = [];
@@ -73,7 +73,6 @@ elseif strcmp(from_where, 'pattern')
             coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
             coord.weight = tab_data2.Weight;
 
-            [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
             coord.NA = reg1.effective_NA;
             
         else
@@ -85,7 +84,6 @@ elseif strcmp(from_where, 'pattern')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
-    [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     coord.NA = reg1.effective_NA;
 end
 

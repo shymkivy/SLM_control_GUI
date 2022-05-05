@@ -21,7 +21,7 @@ end
 
 num_w_mod = sum(~fix_idx);
 
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 coord_zero.xyzp = [0 0 0];
 coord_zero.weight = 0;

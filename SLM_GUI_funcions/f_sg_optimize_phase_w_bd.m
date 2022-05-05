@@ -22,7 +22,7 @@ coord2 = coord;
 coord2.xyzp = [coord.xyzp; coord_bd.xyzp];
 coord2.weight = [coord.weight; coord_bd.weight];
 
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 coord_zero.xyzp = [0 0 0];
 coord_zero.weight = 0;

@@ -7,7 +7,7 @@ if app.ScanZernikeButton.Value
         time_stamp = clock;
         
         %% create AO file
-        [~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+        reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         coord = app.current_SLM_coord;
         
         AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));

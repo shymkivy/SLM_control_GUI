@@ -6,7 +6,7 @@ if ~exist('curr_pat_all', 'var')
     curr_pat_all = unique(app.UIImagePhaseTable.Data.Pattern);
 end
 
-[~, ~, reg1] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 reg1 = f_sg_get_reg_extra_deets(reg1);
 
 coord_zero.xyzp = [0 0 0];

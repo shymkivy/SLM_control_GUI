@@ -20,11 +20,10 @@ conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*ao_params.sigma_pixels^2));
 conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %%
-[m_idx, n_idx, reg1] = f_sg_get_reg_deets(app, ao_params.region_name);
-SLMm = sum(m_idx);
-SLMn = sum(n_idx);
-xlm = linspace(-SLMm/reg1.beam_diameter, SLMm/reg1.beam_diameter, SLMm);
-xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
+reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
+
+xlm = linspace(-reg1.SLMm/reg1.beam_diameter, reg1.SLMm/reg1.beam_diameter, reg1.SLMm);
+xln = linspace(-reg1.SLMn/reg1.beam_diameter, reg1.SLMn/reg1.beam_diameter, reg1.SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
@@ -56,7 +55,7 @@ zernike_table = app.ZernikeListTable.Data;
 
 % generate all polynomials
 num_modes = size(zernike_table,1);
-all_modes = zeros(SLMm, SLMn, num_modes);
+all_modes = zeros(reg1.SLMm, reg1.SLMn, num_modes);
 for n_mode = 1:num_modes
     Z_nm = f_sg_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
     if app.ZerooutsideunitcircCheckBox.Value
@@ -147,7 +146,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     ao_params.iteration = n_it;
     
     if isempty(AO_correction)
-        current_AO_phase = zeros(SLMm, SLMn);
+        current_AO_phase = zeros(reg1.SLMm, reg1.SLMn);
     else
         current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
@@ -174,7 +173,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         else
             holo_phase_corr = angle(exp(1i*(init_phase_corr + current_AO_phase + all_modes(:,:,n_mode)*n_weight)));
         end
-        holo_phase_corr_lut(m_idx,n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
+        holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
         %%
@@ -202,7 +201,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     AO_correction = [AO_correction; {AO_correction_new}];
 
     %% scan all corrections
-    all_corr = zeros(SLMm, SLMn, numel(AO_correction)+1);
+    all_corr = zeros(reg1.SLMm, reg1.SLMn, numel(AO_correction)+1);
     for n_corr = 1:numel(AO_correction)
         full_corr = cat(1,AO_correction{1:n_corr,1});
         all_corr(:,:,n_corr+1) = f_sg_AO_corr_to_phase(full_corr,all_modes);
@@ -224,7 +223,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
 
         holo_phase_corr_lut = init_phase_corr_lut;
         holo_phase_corr = angle(exp(1i*(init_phase_corr + all_corr(:,:,scan_seq2(n_scan)))));
-        holo_phase_corr_lut(m_idx,n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
+        holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
         %%

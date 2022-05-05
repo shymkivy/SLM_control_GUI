@@ -17,15 +17,12 @@ function [holo_phase_out, n, m] = f_sg_AO_gen_test_hologram(app)
 % Z4_4    = sqrt(10)*rho.^4.*cos(4*theta);
 
 % generate coordinates
-[m_idx, n_idx] = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
+reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         
-SLMm = sum(m_idx);
-SLMn = sum(n_idx);
+beam_diameter = max([reg1.SLMm reg1.SLMn]);
 
-beam_diameter = max([SLMm SLMn]);
-
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+xlm = linspace(-reg1.SLMm/beam_diameter, reg1.SLMm/beam_diameter, reg1.SLMm);
+xln = linspace(-reg1.SLMn/beam_diameter, reg1.SLMn/beam_diameter, reg1.SLMn);
 
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );

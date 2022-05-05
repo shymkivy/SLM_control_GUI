@@ -1,12 +1,12 @@
 function [wf_out, params] = f_sg_AO_compute_wf(app, reg_params)
-[m_idx, n_idx] = f_sg_get_reg_deets(app, reg_params.reg_name); 
+reg1 = f_sg_get_reg_deets(app, reg_params.reg_name); 
 
 params = struct;
 params.beam_diameter = reg_params.beam_diameter;
 params.AO_iteration = 1;
 params.AO_correction = [];
-params.SLMm = sum(m_idx);
-params.SLMn = sum(n_idx);
+params.SLMm = reg1.SLMm;
+params.SLMn = reg1.SLMm;
 
 if app.ApplyAOcorrectionButton.Value
     if isempty(reg_params.AO_correction_fname)

@@ -1,4 +1,4 @@
-function [m_idx, n_idx, region_obj_params] = f_sg_get_reg_deets(app, name_tag)
+function region_obj_params = f_sg_get_reg_deets(app, name_tag)
 
 if ~exist('name_tag', 'var')
     name_tag = app.CurrentregionDropDown.Value;

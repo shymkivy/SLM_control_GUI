@@ -31,4 +31,6 @@ app.data.plot_im.ButtonDownFcn = @(source,event)f_sg_pp_button_down(app,event);
 %%
 f_sg_pp_update_pat_plot(app);
 f_sg_pp_update_bkg_im(app);
+f_sg_pp_update_group_text(app);
+
 end
