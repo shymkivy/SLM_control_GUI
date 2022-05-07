@@ -16,7 +16,10 @@ data_w_zero = f_sg_simulate_weights(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zer
 
 powers_all = cell(numel(curr_pat_all),1);
 
-for n_pat = 1:numel(curr_pat_all)
+num_pat = numel(curr_pat_all);
+
+wb = f_waitbar_initialize(app, 'Updating power...');
+for n_pat = 1:num_pat
     curr_pat = curr_pat_all(n_pat);
     
     tab_data_pat = tab_data(tab_data.Pattern == curr_pat,:);
@@ -39,7 +42,9 @@ for n_pat = 1:numel(curr_pat_all)
     
     powers_all{n_pat} = tab_data_pat.Power;
     tab_data(tab_data.Pattern == curr_pat,:) = tab_data_pat;
+    f_waitbar_update(wb, n_pat/num_pat, 'Updating power...');
 end
+f_waitbar_close(wb);
 
 app.UIImagePhaseTable.Data = tab_data;
 

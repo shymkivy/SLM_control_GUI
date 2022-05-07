@@ -13,6 +13,23 @@ if isfield(app.app_main.xyz_patterns, 'groups_data')
         end
         app.ListgroupsTextArea.Value = line_text;
     end
+
+    tab_data = app.app_main.UIImagePhaseTable.Data;
+
+    group_tags_all = cell(numel(tab_data.Idx),1);
+    for n_gr = 1:numel(lists_all)
+        idx1 = find(sum(lists_all{n_gr} == tab_data.Idx',1));
+        for n_idx = 1:numel(idx1)
+            if ~numel(group_tags_all{idx1(n_idx)})
+                group_tags_all{idx1(n_idx)} = num2str(n_gr);
+            else
+                group_tags_all{idx1(n_idx)} = [group_tags_all{idx1(n_idx)} ',' num2str(n_gr)];
+            end
+        end
+    end
+    
+    app.data.group_tags = group_tags_all;
+    
 end
 
 end

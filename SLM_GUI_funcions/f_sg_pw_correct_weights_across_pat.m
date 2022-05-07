@@ -40,7 +40,10 @@ new_row_bd = f_sg_initialize_tabxyz(app, 1);
 new_row_bd.X = reg1.beam_dump_xy(1);
 new_row_bd.Y = reg1.beam_dump_xy(2);
 
-for n_pat = 1:numel(all_pat)
+num_pat = numel(all_pat);
+
+wb = f_waitbar_initialize(app, 'Correcting weights across pat...');
+for n_pat = 1:num_pat
     curr_pat = all_pat(n_pat);
     tab_pat = tab_data_target_pre_corr(tab_data_target_pre_corr.Pattern == curr_pat,:);
     
@@ -68,7 +71,9 @@ for n_pat = 1:numel(all_pat)
     tab_data_bd(pat_bd_idx,:).Power = w_out.Ibd_final;
 
     tab_data(tab_data.Pattern == curr_pat,:) = tab_pat;
+    f_waitbar_update(wb, n_pat/num_pat, 'Correcting weights across pat...');
 end
+f_waitbar_close(wb)
 
 tab_data_full2 = [tab_data; tab_data_bd];
 

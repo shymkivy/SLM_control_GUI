@@ -116,19 +116,19 @@ if app.InitializeimagingButton.Value
         end
     end
     
-    if exist('scan_data', 'var')
-        name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
-            app.SLM_ops.save_dir,...
-            'mpl_scan', ...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5));
+    scan_data.xyz_patterns = app.xyz_patterns;
+    scan_data.region_obj_params = app.region_obj_params;
+    
+    name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
+        app.SLM_ops.save_dir,...
+        'mpl_scan', ...
+        time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
+        time_stamp(5));
 
-        save([name_tag '.mat'], 'scan_data');
-        fprintf('Saved %s\n', name_tag);
-    else
-        disp('Nothing to save');
-    end
-        disp('Done');
+    save([name_tag '.mat'], 'scan_data');
+    fprintf('Saved %s\n', name_tag);
+
+    disp('Done');
         %figure; imagesc(f_sg_poiner_to_im(holo_pointers{1}, 1152, 1920));
 %     catch
 %         app.InitializeimagingButton.Value = 0;

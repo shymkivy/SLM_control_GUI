@@ -13,6 +13,7 @@ if event.Button == 3
             tab_data(logical(dist1 < 15 .* z_idx),:) = [];
 
             app.app_main.UIImagePhaseTable.Data = tab_data;
+            f_sg_pp_update_group_text(app);
             f_sg_pp_update_pat_plot(app);
         end
     end

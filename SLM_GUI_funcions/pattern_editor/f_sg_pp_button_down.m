@@ -13,6 +13,7 @@ if event.Button == 3
             tab_data(logical(dist1 < 15 .* z_idx),:) = [];
 
             app.app_main.UIImagePhaseTable.Data = tab_data;
+            f_sg_pp_update_group_text(app);
             f_sg_pp_update_pat_plot(app);
         end
     end
@@ -31,7 +32,11 @@ elseif event.Button == 1
         end
         
         if app.NewpatternCheckBox.Value
-            pat_num = max(tab_data.Pattern) + 1;
+            if isempty(tab_data.Pattern)
+                pat_num = 1;
+            else
+                pat_num = max(tab_data.Pattern) + 1;
+            end
         else
             pat_num = app.PatternSpinner.Value;
         end
@@ -44,7 +49,9 @@ elseif event.Button == 1
 
         app.app_main.UIImagePhaseTable.Data = [tab_data;new_row1];
         
+        f_sg_pp_update_group_text(app);
         f_sg_pp_update_pat_plot(app);
+        
     end
 end
 

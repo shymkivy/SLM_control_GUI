@@ -12,5 +12,6 @@ pat_idx = strcmpi({app.app_main.xyz_patterns.pat_name}, app.app_main.Patterngrou
 app.app_main.xyz_patterns(pat_idx).groups_data = lists_all;
 
 f_sg_pp_update_group_text(app);
+f_sg_pp_update_pat_plot(app);
 
 end

@@ -21,7 +21,11 @@ end
 if checkbox.Value
     for n_pt = 1:num_pts
         app.data.(field_name){n_pt}.Position = [x_pos(n_pt), y_pos(n_pt), 0];
-        app.data.(field_name){n_pt}.String = num2str(text_val(n_pt));
+        if iscell(text_val(n_pt))
+            app.data.(field_name){n_pt}.String = text_val{n_pt};
+        else
+            app.data.(field_name){n_pt}.String = num2str(text_val(n_pt));
+        end
         app.data.(field_name){n_pt}.Color = color1;
     end
 end
