@@ -54,10 +54,6 @@ for n_reg = 1:numel(app.region_obj_params)
 end
 
 %% xyz table
-% xyz_blank = table('Size', [0 6], 'VariableTypes', {'double', 'double','double', 'double', 'double', 'double'});
-% xyz_blank.Properties.VariableNames = {'Pattern', 'Z', 'X', 'Y', 'NA', 'Weight'};
-% app.GUI_ops.xyz_blank = xyz_blank;
-
 f_sg_pat_update(app, 1);
 app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];
 app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.pat_name];

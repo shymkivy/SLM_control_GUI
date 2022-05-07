@@ -165,49 +165,5 @@ app.PWsqrt2pCheckBox.Value = app.SLM_ops.pw_calibration.pw_sqrt;
 %%
 app.ZoomEditField.Value = app.SLM_ops.zoom;
 
-%%
-% %%
-% current_reg = region_list(strcmpi(app.SelectRegionDropDown.Value, {region_list.reg_name}));
-% 
-% 
-% app.RegionnameEditField.Value
-% app.regionheightminEditField.Value
-% app.regionheightmaxEditField.Value
-% region_list(1).reg_name
-% 
-% %% region-objective params
-% 
-% region_params = default_region_params;
-% 
-% current_reg = region_list(strcmpi(default_region_params.reg_name, {region_list.reg_name}));
-% current_reg_params = app.SLM_ops.region_params(strcmpi(app.ObjectiveDropDown.Value, {app.SLM_ops.region_params.obj_name}));
-% 
-% region_params.obj_name = current_obj.obj_name;
-% region_params.reg_name = current_reg.reg_name;
-% region_params.height_range = current_reg.height_range;
-% region_params.width_range = current_reg.width_range;
-% 
-% obj_params = app.SLM_ops.obj_params(strcmpi({app.SLM_ops.obj_params.SLM_name},app.SLMtypeDropDown.Value));
-% obj_params = app.SLM_ops.obj_params(strcmpi({obj_params.obj_name},app.ObjectiveDropDown.Value));
-% 
-% %% copy regions data
-% 
-% region_list = cell(numel(SLM_params.regions_use),1);
-% for n_reg = 1:numel(SLM_params.regions_use)
-%     reg0 = default_region_params;
-%     reg_source1 = app.SLM_ops.region_list(strcmpi(SLM_params.regions_use(n_reg), [app.SLM_ops.region_list.reg_name]));
-%     reg1 = f_copy_fields(reg0, reg_source1);
-%     reg_source2 = obj_params(strcmpi(reg_source1.reg_name, {obj_params.region}));
-%     if ~isempty(reg_source2)
-%         region_list{n_reg} = f_copy_fields(reg1, reg_source2);
-%     end
-% end
-% region_list = cat(1,region_list{:});
-% 
-% if isempty(region_list)
-%     region_list = default_region_params;
-% end
-% 
-% 
 
 end

@@ -3,7 +3,7 @@ function f_sg_xyz_button_add_to_holo(app)
 if isempty(app.UIImagePhaseTable.Data)
     idx = 1;
 else
-    idx = numel(app.UIImagePhaseTable.Data.Idx)+1;
+    idx = max(app.UIImagePhaseTable.Data.Idx)+1;
 end
 
 coord = f_sg_mpl_get_coords(app, 'custom');
