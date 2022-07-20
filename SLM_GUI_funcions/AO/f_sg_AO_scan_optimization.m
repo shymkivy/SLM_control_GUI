@@ -95,7 +95,9 @@ path1 = app.ScanframesdirpathEditField.Value;
 %exist(path1, 'dir');
 
 f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
-num_scans_done = 1;
+% make extra scan because stupid scanimage
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+num_scans_done = 2;
 
 % wait for frame to convert
 while num_frames < num_scans_done
@@ -105,6 +107,7 @@ while num_frames < num_scans_done
     pause(0.005)
 end
 
+% get all files except last
 frames = f_AO_op_get_all_frames(path1);
 num_frames = size(frames,3);
 
@@ -186,6 +189,9 @@ for n_it = 1:app.NumiterationsSpinner.Value
     end
     %% get frames and analyze 
     
+    % make extra scan because stupid scanimage
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    num_scans_done = num_scans_done + 1;
     while num_frames < num_scans_done
         files1 = dir([path1 '\' '*tif']);
         fnames = {files1.name}';
@@ -234,6 +240,9 @@ for n_it = 1:app.NumiterationsSpinner.Value
         num_scans_done = num_scans_done + 1;
     end
     
+    % make extra scan because stupid scanimage
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    num_scans_done = num_scans_done + 1;
     % wait for frame to convert
     while num_frames<num_scans_done
         files1 = dir([path1 '\' '*tif']);
