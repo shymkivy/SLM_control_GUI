@@ -119,8 +119,8 @@ bead_mn = zeros(1,2);
 bead_mn = round(bead_mn);
 
 %%
-im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
-im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
+im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
+im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
 
 im_cut = frames(im_m_idx, im_n_idx,num_frames);
 
@@ -154,8 +154,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
         current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
         
-    im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
-    im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
+    im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
+    im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
     
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
