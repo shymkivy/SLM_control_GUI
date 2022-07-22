@@ -6,7 +6,7 @@ params.beam_diameter = reg_params.beam_diameter;
 params.AO_iteration = 1;
 params.AO_correction = [];
 params.SLMm = reg1.SLMm;
-params.SLMn = reg1.SLMm;
+params.SLMn = reg1.SLMn;
 
 if app.ApplyAOcorrectionButton.Value
     if isempty(reg_params.AO_correction_fname)
@@ -36,7 +36,7 @@ if app.ApplyAOcorrectionButton.Value
             
             
         else
-            params.beam_diameter = data.ao_params.beam_width;
+            params.beam_diameter = reg1.beam_diameter;
 
             full_correction = cat(1,data.AO_correction{:,1});
 

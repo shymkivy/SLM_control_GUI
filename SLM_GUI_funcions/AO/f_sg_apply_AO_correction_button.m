@@ -1,7 +1,7 @@
 function f_sg_apply_AO_correction_button(app)
 
 %% compute all corrections (also maybe not needed, only during updates?)
-for n_reg = 1:numel(app.region_list) 
+for n_reg = 1:numel(app.region_obj_params) 
     app.region_obj_params(n_reg).AO_wf = f_sg_AO_compute_wf(app, app.region_obj_params(n_reg));
 end
 
