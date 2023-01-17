@@ -167,8 +167,8 @@ if ~exist(ops.custom_phase_dir, 'dir')
 end
 app.ImagepathEditField.Value = [ops.custom_phase_dir '\'];
 
-if ~exist(ops.patter_editor_dir, 'dir')
-    mkdir(ops.patter_editor_dir);
+if ~exist(ops.pattern_editor_dir, 'dir')
+    mkdir(ops.pattern_editor_dir);
 end
 
 % initialize DAQ

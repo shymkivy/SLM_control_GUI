@@ -201,7 +201,7 @@ ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
 ops.point_weight_correction_dir = [ops.calibration_dir '\point_weight_correction'];
 
 ops.custom_phase_dir = [ops.calibration_dir '\custom_phase'];
-ops.patter_editor_dir = [ops.calibration_dir '\pattern_editor'];
+ops.pattern_editor_dir = [ops.calibration_dir '\pattern_editor'];
 
 ops.save_AO_dir = [ops.save_dir '\AO_outputs'];
 ops.save_patterns_dir = [ops.save_dir '\saved_patterns'];
