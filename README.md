@@ -32,7 +32,7 @@ Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
 2. Default lut file specified by "ops.lut_fname" needs to be present in '\SLM_microscope_GUI\SLM_calibration\lut_calibration\' directory
 3. "ops.effective_NA" effects the defocus distance and needs to be adjusted for specific objective (calibrate with beads)
 4. "ops.NI_DAQ_dvice" channel name and appropriate AO, AI, and counter channels need to be specified and connected to 2p microscope. "End of Frame" trigger from microscope goes into counter and used for fast updating of SLM patterns following the end of frames. AO from DAQ controlled by GUI goes into microscope trigger in (for scanning with triggering of every frame). AI channel will be used to read what stimulation pattern is supposed to be uploaded at the time of scan.
-5. There is a "default roi list" wich refers to regions of the SLM that will be used independently. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
+5. There is a "default roi list" which refers to regions of the SLM that will be used independently. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
 
 # XYZ patterns
 There are 3 levels of organization
