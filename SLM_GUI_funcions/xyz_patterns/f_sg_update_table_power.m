@@ -11,7 +11,6 @@ reg1 = f_sg_get_reg_extra_deets(reg1);
 
 coord_zero.xyzp = [0 0 0];
 coord_zero.weight = 0;
-coord_zero.NA = reg1.effective_NA;
 data_w_zero = f_sg_simulate_weights(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero);
 
 powers_all = cell(numel(curr_pat_all),1);
@@ -27,8 +26,7 @@ for n_pat = 1:num_pat
     
     coord.xyzp = [tab_data_pat.X, tab_data_pat.Y, tab_data_pat.Z];
     coord.weight = tab_data_pat.Weight;
-    coord.NA = reg1.effective_NA;
-    
+
     [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
     SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord_corr.weight)]),3));

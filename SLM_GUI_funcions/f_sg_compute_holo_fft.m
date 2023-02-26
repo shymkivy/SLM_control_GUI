@@ -6,7 +6,7 @@ siz = max(dims);
 phase_sq = zeros(siz,siz);
 
 % beam shape
-Lx = linspace(-siz/reg1.beam_diameter, siz/reg1.beam_diameter, siz);
+Lx = linspace(-siz/reg1.holo_diameter, siz/reg1.holo_diameter, siz);
 sigma = 1;
 
 %Lx = linspace(-(siz-1)/2,(siz-1)/2,siz);
@@ -24,10 +24,7 @@ pupil_mask((1 + (siz - dims(1))/2):(siz - (siz - dims(1))/2),(1 + (siz - dims(2)
 
 pupil_amp = pupil_amp.*pupil_mask;
 
-defocus = f_sg_DefocusPhase(siz, siz,...
-                        reg1.effective_NA,...
-                        reg1.objective_RI,...
-                        reg1.wavelength*1e-9);
+defocus = f_sg_DefocusPhase(reg1);
 
 defocus = defocus .* pupil_mask;
 

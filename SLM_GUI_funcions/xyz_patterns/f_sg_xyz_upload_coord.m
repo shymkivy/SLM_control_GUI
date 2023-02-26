@@ -7,8 +7,10 @@ if ~isempty(coord)
     %% update slm im
     holo_phase = f_sg_xyz_gen_holo(coord, reg1);
     
-    SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
+    complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
 
+    SLM_phase = angle(complex_exp);
+    
     %% add ao corrections
     
     if app.ApplyAOcorrectionButton.Value
@@ -22,8 +24,10 @@ if ~isempty(coord)
     end
 
     %% superimpose points and apply weights
-    SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
-    %figure; imagesc(SLM_phase)
+    
+    complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
+
+    SLM_phase_corr = angle(complex_exp_corr);
     
     %% apply lut correction
     SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);

@@ -1,12 +1,21 @@
-function [ defocus ] = f_sg_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+function [ defocus ] = f_sg_DefocusPhase(reg_params)
 
-if ~exist('beam_diameter', 'var')
-    beam_diameter = max(SLMn,SLMm);
+SLMm = sum(reg_params.m_idx);
+SLMn = sum(reg_params.n_idx);
+objectiveNA = reg_params.NA;
+objectiveRI = reg_params.objective_RI;
+illuminationWavelength = reg_params.wavelength*1e-9;
+
+if isfield(reg_params, 'phase_diameter')
+    phase_diameter = reg_params.phase_diameter;
+else
+    phase_diameter = max(SLMn,SLMm);
 end
+
 %max_dim = max(SLMn,SLMm);
 
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+xlm = linspace(-SLMm/phase_diameter, SLMm/phase_diameter, SLMm);
+xln = linspace(-SLMn/phase_diameter, SLMn/phase_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [~, RHO] = cart2pol( fX, fY );
 
@@ -31,4 +40,5 @@ defocus = 2*pi.*(c_0_2.*Z_0_2 + c_0_4.*Z_0_4 + c_0_6.*Z_0_6);
 %    defocus = -objectiveRI*k*sqrt(1-RHO.^2.*(sin(alpha)^2));
 
 % this is now formated for exp(i*defocus*z)
+
 end

@@ -34,6 +34,8 @@ default_region_list(1).width_range = [0, 1];
 % default_region_params(1).obj_name = default_objectives.obj_name;
 % default_region_params(1).SLM_name = app.SLM_ops.SLM_type;
 % default_region_params(1).reg_name = default_region_list.reg_name;
+default_region_params(1).phase_diameter = [];
+default_region_params(1).zero_outside_phase_diameter = true;
 default_region_params(1).beam_diameter = [];
 default_region_params(1).wavelength = 940;
 default_region_params(1).effective_NA = .5;
@@ -104,7 +106,6 @@ end
 if sum(rop_to_use)
     app.region_obj_params = reg_obj_params(rop_to_use);
 else
-    
     default_roparams.obj_name = default_objectives.obj_name;
     default_roparams.SLM_name = app.SLM_ops.SLM_type;
     default_roparams.reg_name = default_region_list.reg_name;

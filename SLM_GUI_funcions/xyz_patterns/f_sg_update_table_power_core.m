@@ -2,7 +2,6 @@ function [tab_data, powers_all] = f_sg_update_table_power_core(reg1, tab_data)
 
 coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
 coord.weight = tab_data.Weight;
-coord.NA = reg1.effective_NA;
 
 coord_zero = coord;
 coord_zero.xyzp = [0 0 0];

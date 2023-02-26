@@ -26,8 +26,7 @@ if ~strcmpi(pattern, 'none')
         coord.idx = gr_subtable.Idx;
         coord.xyzp = [gr_subtable.X, gr_subtable.Y, gr_subtable.Z];
         coord.weight = gr_subtable.Weight;
-        coord.NA = reg1.effective_NA;
-        
+
         holo_phase = f_sg_xyz_gen_holo(coord, reg1);
         
         AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));

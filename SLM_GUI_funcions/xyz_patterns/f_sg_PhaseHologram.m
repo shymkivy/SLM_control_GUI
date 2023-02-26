@@ -1,16 +1,16 @@
-function holo_phase = f_sg_PhaseHologram(xyzp, SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
+function holo_phase = f_sg_PhaseHologram(xyzp, SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, phase_diameter)
 % most code here adopted from Weijian Yang slm gui
 
 %F_SLM_PHASEHOLOGRAM Summary of this function goes here
 % xyz are in um
 %   Detailed explanation goes here
     
-if ~exist('beam_diameter', 'var')
-    beam_diameter = max(SLMn,SLMm);
+if ~exist('phase_diameter', 'var')
+    phase_diameter = max(SLMn,SLMm);
 end
 
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+xlm = linspace(-SLMm/phase_diameter, SLMm/phase_diameter, SLMm);
+xln = linspace(-SLMn/phase_diameter, SLMn/phase_diameter, SLMn);
 [u, v] = meshgrid(xln, xlm);
 
 % max_dim = max(SLMn,SLMm);
@@ -20,7 +20,7 @@ num_points = size(xyzp,1);
 
 holo_phase = zeros(SLMm, SLMn, num_points);
 
-defocus_phase = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter);
+defocus_phase = SLMMicroscope_DefocusPhase(SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, phase_diameter);
 
 for idx=1:size(xyzp,1)
     holo_phase(:,:,idx)=2*pi.*xyzp(idx,1).*u ...
@@ -30,13 +30,13 @@ end
 
 end
 
-function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, beam_diameter)
-    if ~exist('beam_diameter', 'var')
-        beam_diameter = max(SLMn,SLMm);
+function [ defocus ] = SLMMicroscope_DefocusPhase( SLMm, SLMn, objectiveNA, objectiveRI, illuminationWavelength, phase_diameter)
+    if ~exist('phase_diameter', 'var')
+        phase_diameter = max(SLMn,SLMm);
     end
     
-    xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-    xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+    xlm = linspace(-SLMm/phase_diameter, SLMm/phase_diameter, SLMm);
+    xln = linspace(-SLMn/phase_diameter, SLMn/phase_diameter, SLMn);
     [fX, fY] = meshgrid(xln, xlm);
 
 %     max_dim = max(SLMn,SLMm);

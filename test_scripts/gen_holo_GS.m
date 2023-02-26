@@ -1,10 +1,9 @@
 SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
 
-addpath(SLM_SDK_dir);
 addpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI\SLM_GUI_funcions')
 
 if ~libisloaded('ImageGen') 
-    loadlibrary('ImageGen.dll', 'ImageGen.h');
+    loadlibrary([SLM_SDK_dir, '\ImageGen.dll'], [SLM_SDK_dir, '\ImageGen.h']);
 end
 
 

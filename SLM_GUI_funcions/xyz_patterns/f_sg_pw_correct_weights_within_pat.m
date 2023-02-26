@@ -20,8 +20,7 @@ for n_pat = 1:numel(all_pat)
 
     coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
     coord.weight = tab_pat.Weight;
-    coord.NA = reg1.effective_NA;
-    
+
     beam_dump_idx = and(and(tab_pat.X == reg1.beam_dump_xy(1), tab_pat.Y == reg1.beam_dump_xy(2)), tab_pat.Z == 0);
 
     power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));

@@ -22,8 +22,8 @@ conv_kernel = conv_kernel/sum(conv_kernel(:));
 %%
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
-xlm = linspace(-reg1.SLMm/reg1.beam_diameter, reg1.SLMm/reg1.beam_diameter, reg1.SLMm);
-xln = linspace(-reg1.SLMn/reg1.beam_diameter, reg1.SLMn/reg1.beam_diameter, reg1.SLMn);
+xlm = linspace(-reg1.SLMm/reg1.phase_diameter, reg1.SLMm/reg1.phase_diameter, reg1.SLMm);
+xln = linspace(-reg1.SLMn/reg1.phase_diameter, reg1.SLMn/reg1.phase_diameter, reg1.SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
@@ -58,7 +58,7 @@ num_modes = size(zernike_table,1);
 all_modes = zeros(reg1.SLMm, reg1.SLMn, num_modes);
 for n_mode = 1:num_modes
     Z_nm = f_sg_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
-    if app.ZerooutsideunitcircCheckBox.Value
+    if reg1.zero_outside_phase_diameter
         Z_nm(rho>1) = 0;
     end
     all_modes(:,:,n_mode) = Z_nm;

@@ -19,10 +19,10 @@ function [holo_phase_out, n, m] = f_sg_AO_gen_test_hologram(app)
 % generate coordinates
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         
-beam_diameter = max([reg1.SLMm reg1.SLMn]);
+phase_diameter = max([reg1.SLMm reg1.SLMn]);
 
-xlm = linspace(-reg1.SLMm/beam_diameter, reg1.SLMm/beam_diameter, reg1.SLMm);
-xln = linspace(-reg1.SLMn/beam_diameter, reg1.SLMn/beam_diameter, reg1.SLMn);
+xlm = linspace(-reg1.SLMm/phase_diameter, reg1.SLMm/phase_diameter, reg1.SLMm);
+xln = linspace(-reg1.SLMn/phase_diameter, reg1.SLMn/phase_diameter, reg1.SLMn);
 
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol( fX, fY );
@@ -35,7 +35,7 @@ n = zernike_data(mode_index,2);
 m = zernike_data(mode_index,3);
 
 [Z_nm, ~, ~] = f_sg_zernike_pol(rho, theta, n, m);
-if app.ZerooutsideunitcircCheckBox.Value
+if reg1.zero_outside_phase_diameter
     Z_nm(rho>1) = 0;
 end
 

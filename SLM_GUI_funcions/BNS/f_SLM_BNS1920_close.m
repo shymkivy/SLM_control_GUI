@@ -13,9 +13,5 @@ end
 if libisloaded('Blink_C_wrapper')
     unloadlibrary('Blink_C_wrapper');
 end
-
-if libisloaded('ImageGen')
-    unloadlibrary('ImageGen');
-end
     
 end

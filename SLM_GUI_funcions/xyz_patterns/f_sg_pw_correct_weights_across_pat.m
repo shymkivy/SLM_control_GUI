@@ -13,12 +13,10 @@ current_idx = max(tab_data_full.Idx)+1;
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 % coord_zero.xyzp = [0 0 0];
 % coord_zero.weight = 0;
-% coord_zero.NA = reg1.effective_NA;
 % data_w_zero = f_sg_simulate_weights(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero);
 
 coord_bd.xyzp = [reg1.beam_dump_xy 0];
 coord_bd.weight = 0;
-coord_bd.NA = reg1.effective_NA;
 [holo_phase_bd, coord_bd_corr] = f_sg_xyz_gen_holo(coord_bd, reg1);
 
 % find zeros and remove
@@ -49,7 +47,6 @@ for n_pat = 1:num_pat
     
     coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
     coord.weight = tab_pat.Weight;
-    coord.NA = reg1.effective_NA;
 
     [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
