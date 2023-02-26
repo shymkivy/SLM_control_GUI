@@ -21,19 +21,61 @@ if ~isempty(coord)
     
     %holo_phase = f_sg_xyz_gen_holo(coord, reg1);
     
-    
     %% generate holo (need to apply AO separately for each)                  
-    holo_phase = f_sg_PhaseHologram2(coord, reg1);
     
-    complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
+    if strcmpi(app.GenXYZpatmethodDropDown.Value, 'synthesis')
+        holo_phase = f_sg_xyz_gen_holo(coord, reg1);
+   
+        complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
+        
+        SLM_phase = angle(complex_exp);
 
-    phase = angle(complex_exp);
+    elseif strcmpi(app.GenXYZpatmethodDropDown.Value, 'GS meadowlark')
+        
+        coord_corr = coord;
+        coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
+        
+        if ~libisloaded('ImageGen') 
+            loadlibrary([app.SLM_ops.imageGen_dir, '\ImageGen.dll'], [app.SLM_ops.imageGen_dir, '\ImageGen.h']);
+        end
+        
+        phase_ptr = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
+        WFC_ptr = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
+        %bit_depth = app.SLM_ops.bit_depth;
+        bit_depth = 8;
+        n_iter = app.GSnumiterationsEditField.Value;
+        GS_z_fac = app.GSzfactorEditField.Value;
+        RGB = 0;
+        
+        
+        % IMAGE_GEN_API int Initialize_HologramGenerator(int width, int height, int depth, int iterations, int RGB)
+        % IMAGE_GEN_API int Generate_Hologram(unsigned char *Array, unsigned char* WFC, float *x_spots, float *y_spots, float *z_spots, float *I_spots, int N_spots, int ApplyAffine);
+        % IMAGE_GEN_API void Destruct_HologramGenerator();
+        
+        calllib('ImageGen', 'Initialize_HologramGenerator',...
+            reg1.SLMn, reg1.SLMm, bit_depth,...
+            n_iter, RGB);
+        
+        calllib('ImageGen', 'Generate_Hologram',...
+                    phase_ptr, WFC_ptr,...
+                    coord_corr.xyzp(:,1)*2,...
+                    -coord_corr.xyzp(:,2)*2,...
+                    coord_corr.xyzp(:,3)*GS_z_fac,....
+                    coord_corr.weight,...
+                    numel(coord_corr.weight),...
+                    0);
+        
+        calllib('ImageGen', 'Destruct_HologramGenerator')
+        
+        SLM_phase = f_sg_poiner_to_im(phase_ptr, reg1.SLMm, reg1.SLMn)-pi;
+    end
+    
     
 %     coord0.xyzp = [0 0 0];
 %     coord0.weight = 1;         
 %     holo_phase0 = f_sg_PhaseHologram(coord0.xyzp,...
 %                         sum(reg1.m_idx), sum(reg1.n_idx),...
-%                         reg1.NA,...
+%                         reg1.effective_NA,...
 %                         reg1.objective_RI,...
 %                         reg1.wavelength*1e-9,...
 %                         reg1.phase_diameter);
@@ -95,9 +137,12 @@ if ~isempty(coord)
 %         phase = temp_phase;
 %     end
     
+    if reg1.zero_outside_phase_diameter
+        SLM_phase(~reg1.holo_mask) = 0;
+    end
     
-    SLM_phase = app.SLM_phase;
-    SLM_phase(reg1.m_idx, reg1.n_idx) = phase;
+    SLM_phase_full = app.SLM_phase;
+    SLM_phase_full(reg1.m_idx, reg1.n_idx) = SLM_phase;
 
     %im1 = fftshift(fft2(complex_exp));
     %figure; imagesc(abs(im1))
@@ -105,15 +150,15 @@ if ~isempty(coord)
     %SLM_phase = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
     
     if strcmpi(view_out, 'phase')
-        f_sg_view_hologram_phase(app, SLM_phase);
-        title(sprintf('%s defocus %.1f um', view_source, app.fftdefocusumEditField.Value));
+        f_sg_view_hologram_phase(app, SLM_phase_full);
+        title(sprintf('%s defocus %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
     elseif strcmpi(view_out, 'fft')
-        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase(reg1.m_idx, reg1.n_idx), app.fftdefocusumEditField.Value);
+        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase, app.fftdefocusumEditField.Value);
         if app.fftampsquaredCheckBox.Value
             im_amp = im_amp.^2;
         end
         f_sg_view_hologram_fft(app, im_amp, xy_axis);
-        title(sprintf('%s PSF at %.1f um', view_source, app.fftdefocusumEditField.Value));
+        title(sprintf('%s PSF at %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
     end
 end
 

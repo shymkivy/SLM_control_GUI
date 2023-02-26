@@ -71,6 +71,9 @@ app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
 
+app.GSnumiterationsEditField.Value = ops.GS_num_iterations;
+app.GSzfactorEditField.Value = ops.GS_z_factor;
+
 %%
 % blank
 app.BlankPixelValueEditField.Value = 0;

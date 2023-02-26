@@ -6,7 +6,7 @@ SLMm = sum(reg_params.m_idx);
 SLMn = sum(reg_params.n_idx);
 
 if isfield(reg_params, 'phase_diameter')
-    phase_diameter = reg1.phase_diameter;
+    phase_diameter = reg_params.phase_diameter;
 else
     phase_diameter = max(SLMn,SLMm);
 end

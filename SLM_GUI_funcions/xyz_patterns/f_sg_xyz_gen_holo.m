@@ -16,11 +16,4 @@ coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
 %% generate holo (need to apply AO separately for each)          
 holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
 
-%% apply mask
-for n_holo = 1:size(coord_corr.xyzp,1)
-    temp_holo = holo_phase(:,:,n_holo);
-    temp_holo(~reg1.holo_mask) = 0;
-    holo_phase(:,:,n_holo) = temp_holo;
-end
-
 end

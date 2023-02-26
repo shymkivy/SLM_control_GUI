@@ -2,7 +2,7 @@ function [ defocus ] = f_sg_DefocusPhase(reg_params)
 
 SLMm = sum(reg_params.m_idx);
 SLMn = sum(reg_params.n_idx);
-objectiveNA = reg_params.NA;
+objectiveNA = reg_params.effective_NA;
 objectiveRI = reg_params.objective_RI;
 illuminationWavelength = reg_params.wavelength*1e-9;
 
