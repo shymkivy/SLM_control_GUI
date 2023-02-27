@@ -19,7 +19,7 @@ for n_pat = 1:numel(all_pat)
     tab_pat = tab_data(tab_data.Pattern == curr_pat,:);
 
     coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
-    coord.weight = tab_pat.Weight;
+    coord.weight = tab_pat.W_set;
 
     beam_dump_idx = and(and(tab_pat.X == reg1.beam_dump_xy(1), tab_pat.Y == reg1.beam_dump_xy(2)), tab_pat.Z == 0);
 
@@ -27,10 +27,10 @@ for n_pat = 1:numel(all_pat)
 
     [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
 
-    I_target = ones(sum(~beam_dump_idx),1)./power_corr(~beam_dump_idx);
+    I_target = coord.weight(~beam_dump_idx)./power_corr(~beam_dump_idx);
     w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, beam_dump_idx);
 
-    tab_pat.Weight = w_out.w_final;
+    tab_pat.W_comp = w_out.w_final;
     tab_pat.Power = w_out.I_final.*power_corr;
 
     tab_data(tab_data.Pattern == all_pat(n_pat),:) = tab_pat;
@@ -39,7 +39,7 @@ end
 for n_pat = 1:numel(all_pat)
     curr_pat = all_pat(n_pat);
     pat_idx = tab_data.Pattern == curr_pat;
-    tab_data(pat_idx,:).Weight = tab_data(pat_idx,:).Weight./sum(tab_data(pat_idx,:).Weight);
+    tab_data(pat_idx,:).W_comp = tab_data(pat_idx,:).W_comp./sum(tab_data(pat_idx,:).W_comp);
 end
 app.UIImagePhaseTable.Data = tab_data;
 

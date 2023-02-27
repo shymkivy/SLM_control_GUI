@@ -114,7 +114,7 @@ else
 end
 
 %% copy patterns
-Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight', 'Power'};
+Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'W_set', 'W_comp', 'Power'};
 app.GUI_ops.table_var_names = Varnames;
 xyz_patterns(1).pat_name = 'Multiplane';
 tab_data = f_sg_initialize_tabxyz(app, 0);
@@ -132,18 +132,9 @@ if isfield(app.SLM_ops, 'xyz_patterns')
         if ~isempty(temp_pat)
             for n_pat = 1:numel(temp_pat)
                 if ~isempty(temp_pat(n_pat).xyz_pts)
-                    [num_row, num_col] = size(temp_pat(n_pat).xyz_pts);
+                    [num_row, ~] = size(temp_pat(n_pat).xyz_pts);
                     tab_data2 = f_sg_initialize_tabxyz(app, num_row);
-                    if num_col == 3
-                        xyz1 = temp_pat(n_pat).xyz_pts;
-                    elseif num_col == 4
-                        xyz1 = temp_pat(n_pat).xyz_pts(:,1:3);
-                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,4);
-                    elseif num_col == 5
-                        xyz1 = temp_pat(n_pat).xyz_pts(:,2:4);
-                        tab_data2.Pattern = temp_pat(n_pat).xyz_pts(:,1);
-                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,5);
-                    end
+                    xyz1 = temp_pat(n_pat).xyz_pts;
                     tab_data2.X = xyz1(:,1);
                     tab_data2.Y = xyz1(:,2);
                     tab_data2.Z = xyz1(:,3);

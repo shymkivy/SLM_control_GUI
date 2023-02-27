@@ -18,7 +18,7 @@ reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 coord_bd.xyzp = [reg1.beam_dump_xy 0];
 coord_bd.weight = 0;
 [holo_phase_bd, coord_bd_corr] = f_sg_xyz_gen_holo(coord_bd, reg1);
-
+    
 % find zeros and remove
 beam_dump_idx = and(and(tab_data_full.X == reg1.beam_dump_xy(1), tab_data_full.Y == reg1.beam_dump_xy(2)), tab_data_full.Z == 0);
 tab_data = tab_data_full(~beam_dump_idx,:);
@@ -46,14 +46,14 @@ for n_pat = 1:num_pat
     tab_pat = tab_data_target_pre_corr(tab_data_target_pre_corr.Pattern == curr_pat,:);
     
     coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
-    coord.weight = tab_pat.Weight;
+    coord.weight = tab_pat.W_comp;
 
     [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
     I_target = tab_pat.Power;
     w_out = f_sg_optimize_phase_w_bd(app, holo_phase, holo_phase_bd, coord_corr, coord_bd_corr, I_target);
     
-    tab_pat.Weight = w_out.w_final;
+    tab_pat.W_comp = w_out.w_final;
     tab_pat.Power = w_out.I_final;
     
     pat_bd_idx = tab_data_bd.Pattern == curr_pat;
@@ -64,7 +64,7 @@ for n_pat = 1:num_pat
         tab_data_bd = [tab_data_bd; new_row_bd];
     end
     pat_bd_idx = tab_data_bd.Pattern == curr_pat;
-    tab_data_bd(pat_bd_idx,:).Weight = w_out.wbd_final;
+    tab_data_bd(pat_bd_idx,:).W_comp = w_out.wbd_final;
     tab_data_bd(pat_bd_idx,:).Power = w_out.Ibd_final;
 
     tab_data(tab_data.Pattern == curr_pat,:) = tab_pat;

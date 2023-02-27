@@ -22,10 +22,10 @@ for n_pat = 1:num_pat
     curr_pat = curr_pat_all(n_pat);
     
     tab_data_pat = tab_data(tab_data.Pattern == curr_pat,:);
-    tab_data_pat.Weight = tab_data_pat.Weight./sum(tab_data_pat.Weight);
+    tab_data_pat.W_comp = tab_data_pat.W_comp./sum(tab_data_pat.W_comp);
     
     coord.xyzp = [tab_data_pat.X, tab_data_pat.Y, tab_data_pat.Z];
-    coord.weight = tab_data_pat.Weight;
+    coord.weight = tab_data_pat.W_comp;
 
     [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     

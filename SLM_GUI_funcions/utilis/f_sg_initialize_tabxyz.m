@@ -7,6 +7,7 @@ table_data.Properties.VariableNames = app.GUI_ops.table_var_names;
 
 table_data.Idx = (1:num_rows)';
 table_data.Pattern = (1:num_rows)';
-table_data.Weight = ones(num_rows,1);
+table_data.W_set = ones(num_rows,1);
+table_data.W_comp = ones(num_rows,1);
 table_data.Power = ones(num_rows,1);
 end
