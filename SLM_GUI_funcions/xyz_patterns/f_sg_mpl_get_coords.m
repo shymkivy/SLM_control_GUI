@@ -37,6 +37,7 @@ if strcmp(from_where, 'custom')
                   Z_disp];
 
     coord.weight = W;
+    coord.weight_set = W;
 
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
@@ -46,6 +47,7 @@ elseif strcmp(from_where, 'table_selection')
         coord.idx = tab_data.Idx;
         coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
         coord.weight = tab_data.W_comp;
+        coord.weight_set = tab_data.W_set;
 
     else
         coord = [];
@@ -63,6 +65,7 @@ elseif strcmp(from_where, 'pattern')
             coord.idx = tab_data2.Idx;
             coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
             coord.weight = tab_data2.W_comp;
+            coord.weight_set = tab_data.W_set;
             
         else
             coord = [];
@@ -73,6 +76,7 @@ elseif strcmp(from_where, 'pattern')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
+    coord.weight_set = 1;
 end
 
 

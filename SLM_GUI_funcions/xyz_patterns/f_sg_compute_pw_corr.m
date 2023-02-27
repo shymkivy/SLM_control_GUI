@@ -86,16 +86,16 @@ if app.ApplyPWcorrectionButton.Value
             if plot_stuff
                 figure;
                 subplot(2,2,1);
-                imagesc(coords_y, coords_x, pw_data_pad); clim([0 1]); axis equal tight
+                imagesc(coords_y, coords_x, pw_data_pad); caxis([0 1]); axis equal tight
                 title('data raw padded');
                 subplot(2,2,2);
-                imagesc(coords_y_ip, coords_x_ip, pw_data_pad2); clim([0 1]); axis equal tight
+                imagesc(coords_y_ip, coords_x_ip, pw_data_pad2); caxis([0 1]); axis equal tight
                 title(sprintf('data padded, thresh=%.1f', pw_params.min_w_thesh));
                 subplot(2,2,3);
-                imagesc(coords_y, coords_x, pw_data_sm); clim([0 1]); axis equal tight
+                imagesc(coords_y, coords_x, pw_data_sm); caxis([0 1]); axis equal tight
                 title(sprintf('data smooth, std = [%.1f, %.1f]',pw_params.smooth_std(1), pw_params.smooth_std(2)));
                 subplot(2,2,4);
-                imagesc(coords_y_ip, coords_x_ip, pw_data_ipn); clim([0 1]); axis equal tight
+                imagesc(coords_y_ip, coords_x_ip, pw_data_ipn); caxis([0 1]); axis equal tight
                 title(sprintf('data interp, thresh=%.1f', pw_params.min_w_thesh));
                 sgtitle(reg_params.reg_name)
             end

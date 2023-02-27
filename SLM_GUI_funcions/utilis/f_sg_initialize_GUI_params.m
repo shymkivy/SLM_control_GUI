@@ -54,12 +54,13 @@ end
 
 %%
 app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark'};
+app.ImageGenverEditField.Value = 'none';
 
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));
 app.UIImagePhaseTable.ColumnEditable(end) = 0;
-app.UIImagePhaseTable.ColumnWidth = {53, 67, 54, 54, 54, 76, 76, 61};
+app.UIImagePhaseTable.ColumnWidth = {53, 68, 53, 53, 53, 76, 77, 62};
 
 
 f_sg_pat_update(app, 1);
@@ -154,7 +155,7 @@ app.SLM_gh_phase_preview = app.SLM_blank_phase;
 app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_blank_phase+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
-clim(app.UIAxesGenerateHologram, [0 2*pi]);
+caxis(app.UIAxesGenerateHologram, [0 2*pi]);
 
 clim_x = linspace(app.UIAxesGenerateHologram.CLim(1), app.UIAxesGenerateHologram.CLim(2), size(app.UIAxesGenerateHologram.Colormap,1))/pi;
 clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerateHologram.Colormap,1) 3]);

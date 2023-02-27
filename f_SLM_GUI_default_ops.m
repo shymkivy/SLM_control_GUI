@@ -14,7 +14,8 @@ ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD', 'BNS512OD_sdk3'
 
 %% for meadowlark GS algorithm
 
-ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
+%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version, different functs
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';       % older version
 
 ops.GS_z_factor = 50/39.7;  % scaling factor for meadowlark GS defocus to match effNA
 ops.GS_num_iterations = 50; % number of iterations for meadowlark GS optimization
