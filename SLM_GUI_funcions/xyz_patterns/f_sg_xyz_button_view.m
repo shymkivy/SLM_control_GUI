@@ -116,11 +116,11 @@ if ~isempty(coord)
         f_sg_view_hologram_phase(app, SLM_phase_full);
         title(sprintf('%s defocus %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
     elseif strcmpi(view_out, 'fft')
-        [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase, app.fftdefocusumEditField.Value);
+        [im_amp, x_lab, y_lab] = f_sg_compute_holo_fft(reg1, SLM_phase, app.fftdefocusumEditField.Value);
         if app.fftampsquaredCheckBox.Value
             im_amp = im_amp.^2;
         end
-        f_sg_view_hologram_fft(app, im_amp, xy_axis);
+        f_sg_view_hologram_fft(app, im_amp, x_lab, y_lab);
         title(sprintf('%s PSF at %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
     end
 end
