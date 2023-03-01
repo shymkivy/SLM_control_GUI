@@ -1,6 +1,6 @@
 function holo_phase = f_sg_gh_gen_image(app, pattern, reg1)
 
-f_sg_initialize_imageGen(app);
+f_sg_initialize_imageGen(app, reg1);
 
 pointer = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
 

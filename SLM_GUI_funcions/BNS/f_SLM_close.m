@@ -10,8 +10,6 @@ else
     error('Undefined SLM in f_SLM_close');
 end
 
-if libisloaded('ImageGen')
-    unloadlibrary('ImageGen');
-end
+
     
 end

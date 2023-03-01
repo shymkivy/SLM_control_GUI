@@ -17,22 +17,10 @@ end
 if ~isempty(coord)
     reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
     
-    %% generate holo (need to apply AO separately for each)                  
-    coord_corr = coord;
-    coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
+    %% generate holo (need to apply AO separately for each) 
+    coord_corr = f_sg_coord_correct(reg1, coord);
     
-    if strcmpi(app.GenXYZpatmethodDropDown.Value, 'synthesis')
-        holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
-   
-        complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
-        
-        SLM_phase = angle(complex_exp);
-
-    elseif strcmpi(app.GenXYZpatmethodDropDown.Value, 'GS meadowlark')
-        
-        SLM_phase = f_sg_xyz_gen_holo_MGS(app, coord_corr, reg1);
-    end
-    
+    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0);
     
 %     coord0.xyzp = [0 0 0];
 %     coord0.weight = 1;         
@@ -63,7 +51,7 @@ if ~isempty(coord)
     %
     %holo_phase0(~reg1.holo_mask) = 0;
     %SLM_phase0 = angle(sum(exp(1i*(holo_phase0)),3));
-    %data_holo0 = f_sg_simulate_weights(reg1, SLM_phase0, coord0);
+    %data_holo0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord0, app.pointsizepixEditField.Value);
 
     %I_target = ones(numel(coord.weight),1);
     %w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);

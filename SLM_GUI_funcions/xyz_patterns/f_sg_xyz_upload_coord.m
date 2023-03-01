@@ -3,42 +3,11 @@ function f_sg_xyz_upload_coord(app, coord)
 %% generate image
 if ~isempty(coord)
     reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-    
-    app.GUI_buffer.current_AO_phase = [];
-    
+
     %% update slm im
+    coord_corr = f_sg_coord_correct(reg1, coord);
     
-    coord_corr = coord;
-    coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
-    
-    if strcmpi(app.GenXYZpatmethodDropDown.Value, 'synthesis')
-        
-        holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
-   
-        complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
-        
-        SLM_phase = angle(complex_exp);
-
-        % add ao corrections
-        if app.ApplyAOcorrectionButton.Value
-            AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
-            app.GUI_buffer.current_AO_phase = AO_phase;
-
-            holo_phase_corr = holo_phase+AO_phase;
-        else
-            holo_phase_corr = holo_phase;
-        end
-
-        complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
-        SLM_phase_corr = angle(complex_exp_corr);
-        
-    elseif strcmpi(app.GenXYZpatmethodDropDown.Value, 'GS meadowlark')
-        SLM_phase = f_sg_xyz_gen_holo_MGS(app, coord_corr, reg1);
-
-        holo_phase = [];
-        holo_phase_corr = [];
-        SLM_phase_corr = SLM_phase;
-    end
+    [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, app.ApplyAOcorrectionButton.Value);
     
     %% apply mask
     if reg1.zero_outside_phase_diameter
@@ -50,6 +19,7 @@ if ~isempty(coord)
     SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
     
     %% save
+    app.GUI_buffer.current_AO_phase = AO_phase;
     
     app.current_SLM_coord = coord;
     app.GUI_buffer.current_SLM_coord = coord;

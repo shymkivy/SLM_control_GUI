@@ -19,15 +19,20 @@ for n_pat = 1:numel(all_pat)
     tab_pat = tab_data(tab_data.Pattern == curr_pat,:);
 
     coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
-    coord.weight = tab_pat.W_set;
-
+    coord.weight = tab_pat.W_comp;
+    coord.weight_set = tab_pat.W_set;
+    
     beam_dump_idx = and(and(tab_pat.X == reg1.beam_dump_xy(1), tab_pat.Y == reg1.beam_dump_xy(2)), tab_pat.Z == 0);
 
     power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
+    
+    coord_corr = f_sg_coord_correct(reg1, coord);
+    
+    [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0);
+    
+    %[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
 
-    [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
-
-    I_target = coord.weight(~beam_dump_idx)./power_corr(~beam_dump_idx);
+    I_target = coord.weight_set(~beam_dump_idx)./power_corr(~beam_dump_idx);
     w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, beam_dump_idx);
 
     tab_pat.W_comp = w_out.w_final;

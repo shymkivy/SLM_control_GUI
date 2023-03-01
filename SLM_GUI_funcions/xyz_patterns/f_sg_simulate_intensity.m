@@ -1,6 +1,5 @@
-function data_out = f_sg_simulate_weights(reg1, SLM_phase, coord)
+function data_out = f_sg_simulate_intensity(reg1, SLM_phase, coord, point_size)
 
-pt_hsize = 4;
 plot_stuff = 0;
 
 xyz_temp = [coord.xyzp; [0 0 0]];
@@ -8,7 +7,7 @@ all_z = unique(xyz_temp(:,3));
 pt_mags = zeros(size(xyz_temp,1),1);
 
 for n_z = 1:numel(all_z)
-    [im_amp, xy_axis] = f_sg_compute_holo_fft(reg1, SLM_phase, all_z(n_z));
+    [im_amp, x_lab, y_lab] = f_sg_compute_holo_fft(reg1, SLM_phase, all_z(n_z));
     
     im_amp = im_amp.^2;
     
@@ -17,14 +16,14 @@ for n_z = 1:numel(all_z)
     xyz_temp2 = xyz_temp(idx1,:);
     num_pts = sum(idx1);
     
-    [~, x_coord_idx] = min((xyz_temp2(:,1) - xy_axis).^2, [], 2);
-    [~, y_coord_idx] = min((xyz_temp2(:,2) - xy_axis).^2, [], 2);
-    
-    
+    distx = point_size/reg1.SLMn*(x_lab(end) - x_lab(1));
+    disty = point_size/reg1.SLMn*(y_lab(end) - y_lab(1));
+    x_idx = and(x_lab >= (xyz_temp2(:,1) - distx/2), x_lab <= (xyz_temp2(:,1) + distx/2));
+    y_idx = and(y_lab >= (xyz_temp2(:,2) - disty/2), y_lab <= (xyz_temp2(:,2) + disty/2));
+
     pt_mags1 = zeros(num_pts,1);
     for n_pt = 1:num_pts
-        im1 = im_amp((y_coord_idx(n_pt)-pt_hsize):(y_coord_idx(n_pt)+pt_hsize),...
-                     (x_coord_idx(n_pt)-pt_hsize):(x_coord_idx(n_pt)+pt_hsize));
+        im1 = im_amp(y_idx(n_pt,:), x_idx(n_pt,:));
         pt_mags1(n_pt) = sum(im1(:));
         %figure; imagesc(im1)
     end
@@ -35,7 +34,7 @@ for n_z = 1:numel(all_z)
         figure; hold on;
         imagesc(xy_axis, xy_axis, im_amp)
         for n_pt = 1:num_pts
-            rectangle('Position', [xyz_temp2(n_pt,1)-pt_hsize xyz_temp2(n_pt,2)-pt_hsize 2*pt_hsize 2*pt_hsize])
+            rectangle('Position', [xyz_temp2(n_pt,1)-pt_size xyz_temp2(n_pt,2)-pt_size 2*pt_size 2*pt_size]);
         end
         axis equal tight
         caxis([0 .01])
