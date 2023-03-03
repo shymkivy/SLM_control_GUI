@@ -44,18 +44,16 @@ err_all = [err0; zeros(max_iter,1)];
 alpha_all = [alpha_start; zeros(max_iter,1)];
 tic();
 if err0 > error_final_thresh
-    
     while and(n_it <= max_iter, num_w_mod*err_all(n_it) > error_final_thresh)
         delta = data_w.pt_mags(~fix_idx) - I_target;
+        delta2 = alpha1*delta.*(1 + noise_frac*randn(num_w_mod,1));
         temp_w_mod = w_mod;
-        temp_w_mod(~fix_idx) = w_mod(~fix_idx) - alpha1*delta.*(1 + noise_frac*randn(num_w_mod,1));
+        temp_w_mod(~fix_idx) = w_mod(~fix_idx) - delta2;
 
         SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(temp_w_mod,[1 1 num_w]),3));
         temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizepixEditField.Value);
         
-        
         I_target = I_target_in/sum(I_target_in)*sum(temp_data_w.pt_mags(~fix_idx));
-
         temp_err = mean(abs(I_target - temp_data_w.pt_mags(~fix_idx)));
 
         % if error decreases, update w
@@ -102,8 +100,8 @@ if plot_stuff
     xlabel('iterations');
 
     figure; hold on;
-    plot(I_target, 'o-', 'linewidth', 2)
-    plot(data_w.pt_mags, 'o-.', 'linewidth', 2)
+    plot(w_out.I_target, 'o-', 'linewidth', 2)
+    plot(w_out.I_final, 'o-.', 'linewidth', 2)
     plot(data_w0.pt_mags, 'o--', 'linewidth', 2)
     xlabel('points')
     legend('target', 'data w', 'data wo');

@@ -9,9 +9,9 @@ end
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 reg1 = f_sg_get_reg_extra_deets(reg1);
 
-coord_zero.xyzp = [0 0 0];
-coord_zero.weight = 0;
-data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
+%coord_zero.xyzp = [0 0 0];
+%coord_zero.weight = 0;
+%data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
 
 powers_all = cell(numel(curr_pat_all),1);
 
@@ -22,15 +22,21 @@ for n_pat = 1:num_pat
     curr_pat = curr_pat_all(n_pat);
     
     tab_data_pat = tab_data(tab_data.Pattern == curr_pat,:);
-    tab_data_pat.W_comp = tab_data_pat.W_comp./sum(tab_data_pat.W_comp);
+    if sum(isnan(tab_data_pat.W_est))
+        w_use = tab_data_pat.W_set;
+    else
+        w_use = tab_data_pat.W_est;
+    end
+    
+    tab_data_pat.W_est = w_use./sum(w_use);
     
     coord.xyzp = [tab_data_pat.X, tab_data_pat.Y, tab_data_pat.Z];
-    coord.weight = tab_data_pat.W_comp;
-    coord.weight_set = tab_data_pat.W_comp;
+    coord.weight = tab_data_pat.W_est;
+    coord.weight_set = tab_data_pat.W_est;
     
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0);
+    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, app.GenXYZpatmethodDropDown.Value);
     
     data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord_corr, app.pointsizepixEditField.Value);
     

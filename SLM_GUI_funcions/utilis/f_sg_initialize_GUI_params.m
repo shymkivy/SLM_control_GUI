@@ -60,8 +60,7 @@ app.ImageGenverEditField.Value = 'none';
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));
 app.UIImagePhaseTable.ColumnEditable(end) = 0;
-app.UIImagePhaseTable.ColumnWidth = {53, 68, 53, 53, 53, 76, 77, 62};
-
+app.UIImagePhaseTable.ColumnWidth = {50, 68, 63, 63, 63, 63, 63, 63};
 
 f_sg_pat_update(app, 1);
 app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];

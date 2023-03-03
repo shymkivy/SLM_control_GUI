@@ -20,7 +20,7 @@ if ~isempty(coord)
     %% generate holo (need to apply AO separately for each) 
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0);
+    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, app.GenXYZpatmethodDropDown.Value);
     
 %     coord0.xyzp = [0 0 0];
 %     coord0.weight = 1;         

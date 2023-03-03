@@ -46,7 +46,7 @@ elseif strcmp(from_where, 'table_selection')
         
         coord.idx = tab_data.Idx;
         coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
-        coord.weight = tab_data.W_comp;
+        coord.weight = tab_data.W_est;
         coord.weight_set = tab_data.W_set;
 
     else
@@ -64,7 +64,7 @@ elseif strcmp(from_where, 'pattern')
             
             coord.idx = tab_data2.Idx;
             coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
-            coord.weight = tab_data2.W_comp;
+            coord.weight = tab_data2.W_est;
             coord.weight_set = tab_data2.W_set;
             
         else

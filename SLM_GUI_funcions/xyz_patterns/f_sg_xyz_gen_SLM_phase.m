@@ -1,10 +1,10 @@
-function [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, apply_AO)
+function [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, apply_AO, method)
 
 % if ~exist('apply_AO', 'var')
 %     apply_AO = app.ApplyAOcorrectionButton.Value;
 % end
 
-if strcmpi(app.GenXYZpatmethodDropDown.Value, 'synthesis')
+if strcmpi(method, 'synthesis')
 
     holo_phase = f_sg_PhaseHologram2(coord, reg1);
 
@@ -24,7 +24,7 @@ if strcmpi(app.GenXYZpatmethodDropDown.Value, 'synthesis')
     complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3);
     SLM_phase_corr = angle(complex_exp_corr);
 
-elseif strcmpi(app.GenXYZpatmethodDropDown.Value, 'GS meadowlark')
+elseif strcmpi(method, 'GS meadowlark')
     SLM_phase = f_sg_xyz_gen_holo_MGS(app, coord, reg1);
 
     holo_phase = [];

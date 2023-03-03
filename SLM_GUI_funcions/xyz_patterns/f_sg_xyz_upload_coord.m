@@ -7,7 +7,7 @@ if ~isempty(coord)
     %% update slm im
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, app.ApplyAOcorrectionButton.Value);
+    [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, app.ApplyAOcorrectionButton.Value, app.GenXYZpatmethodDropDown.Value);
     
     %% apply mask
     if reg1.zero_outside_phase_diameter

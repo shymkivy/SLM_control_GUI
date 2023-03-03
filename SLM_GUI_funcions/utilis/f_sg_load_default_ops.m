@@ -114,7 +114,7 @@ else
 end
 
 %% copy patterns
-Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'W_set', 'W_comp', 'Power'};
+Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'W_set', 'W_est', 'Power'};
 app.GUI_ops.table_var_names = Varnames;
 xyz_patterns(1).pat_name = 'Multiplane';
 tab_data = f_sg_initialize_tabxyz(app, 0);

@@ -32,9 +32,9 @@ for n_z = 1:numel(all_z)
     
     if plot_stuff
         figure; hold on;
-        imagesc(xy_axis, xy_axis, im_amp)
+        imagesc(x_lab, y_lab, im_amp)
         for n_pt = 1:num_pts
-            rectangle('Position', [xyz_temp2(n_pt,1)-pt_size xyz_temp2(n_pt,2)-pt_size 2*pt_size 2*pt_size]);
+            rectangle('Position', [xyz_temp2(n_pt,1)-distx/2 xyz_temp2(n_pt,2)-distx/2 2*distx/2 2*distx/2]);
         end
         axis equal tight
         caxis([0 .01])
