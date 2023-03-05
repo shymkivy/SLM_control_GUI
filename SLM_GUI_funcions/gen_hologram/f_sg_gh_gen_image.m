@@ -4,7 +4,7 @@ f_sg_initialize_imageGen(app, reg1);
 
 pointer = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
 
-if app.SLM_ops.imageGen_newver
+if app.SLM_ops.ImageGen.new_ver
     WFC_ptr = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
     bit_depth = 8;
     RGB = 0;
