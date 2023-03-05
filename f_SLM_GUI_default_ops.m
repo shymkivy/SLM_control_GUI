@@ -12,13 +12,22 @@ ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD', 'BNS512OD_sdk3'
 % BNS512OD with OverDrive (OD) in 901D
 % BNS512 standard on prairie 1 or 901 not using OD
 
+%% for meadowlark ImageGen and GS algorithm
+
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version, different functs
+%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';       % older version
+
+ops.GS_z_factor = 50/39.7;  % scaling factor for meadowlark GS defocus to match effNA
+ops.GS_num_iterations = 50; % number of iterations for meadowlark GS optimization
+
 %% SLM specific params
 idx = 1;
 SLM_params(idx).SLM_name = 'BNS1920';
 SLM_params(idx).height = 1152;
 SLM_params(idx).width = 1920;
 SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 %lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -84,6 +93,8 @@ region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Right half';
 region_params(idx).wavelength = 940;
+region_params(idx).phase_diameter = 1152;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 1152;
 region_params(idx).effective_NA = 0.61; % 11/11/21 0.62  before 11/11/21 0.605;
 region_params(idx).lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
@@ -99,6 +110,8 @@ region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Left half';
 region_params(idx).wavelength = 1064;
+region_params(idx).phase_diameter = 1152;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 1152;
 region_params(idx).effective_NA = 0.565; % 0.565 from 11/11/21% 0.51 before
 region_params(idx).lut_correction_fname = 'photodiode_lut_1064_slm5221_4_7_22_left_half_corr2_sub_region_interp_corr.mat';
@@ -115,6 +128,8 @@ region_params(idx).obj_name = '20X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Right half'; % imaging
 region_params(idx).wavelength = 940;
+region_params(idx).phase_diameter = 1152;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 1152;
 region_params(idx).effective_NA = 0.48;
 region_params(idx).lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
@@ -130,6 +145,8 @@ region_params(idx).obj_name = '20X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Left half'; % stimulation
 region_params(idx).wavelength = 1064;
+region_params(idx).phase_diameter = 1152;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 1152;
 region_params(idx).effective_NA = 0.415;
 region_params(idx).lut_correction_fname = 'photodiode_lut_1064_slm5221_4_7_22_left_half_corr2_sub_region_interp_corr.mat';
@@ -146,6 +163,8 @@ region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512';
 region_params(idx).reg_name = 'Full SLM';
 region_params(idx).wavelength = 1040;
+region_params(idx).phase_diameter = 512;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 512;
 region_params(idx).effective_NA = 0.5; %
 region_params(idx).lut_correction_fname = [];
@@ -162,6 +181,8 @@ region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512OD';
 region_params(idx).reg_name = 'Full SLM';
 region_params(idx).wavelength = 1040;
+region_params(idx).phase_diameter = 512;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 512;
 region_params(idx).effective_NA = 0.5; 
 region_params(idx).lut_correction_fname = [];
@@ -178,6 +199,8 @@ region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512OD_sdk3';
 region_params(idx).reg_name = 'Full SLM';
 region_params(idx).wavelength = 1040;
+region_params(idx).phase_diameter = 512;
+region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 512;
 region_params(idx).effective_NA = 0.5; 
 region_params(idx).lut_correction_fname = [];
@@ -201,7 +224,7 @@ ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
 ops.point_weight_correction_dir = [ops.calibration_dir '\point_weight_correction'];
 
 ops.custom_phase_dir = [ops.calibration_dir '\custom_phase'];
-ops.patter_editor_dir = [ops.calibration_dir '\pattern_editor'];
+ops.pattern_editor_dir = [ops.calibration_dir '\pattern_editor'];
 
 ops.save_AO_dir = [ops.save_dir '\AO_outputs'];
 ops.save_patterns_dir = [ops.save_dir '\saved_patterns'];

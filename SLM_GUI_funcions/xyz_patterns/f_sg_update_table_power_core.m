@@ -1,8 +1,7 @@
 function [tab_data, powers_all] = f_sg_update_table_power_core(reg1, tab_data)
 
 coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
-coord.weight = tab_data.Weight;
-coord.NA = reg1.effective_NA;
+coord.weight = tab_data.W_est;
 
 coord_zero = coord;
 coord_zero.xyzp = [0 0 0];
@@ -11,8 +10,8 @@ coord_zero.xyzp = [0 0 0];
 
 SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(coord.weight,[1 1 numel(coord_corr.weight)]),3));
 
-data_w_zero = f_sg_simulate_weights(reg1, zeros(size(SLM_phase)), coord_zero);
-data_w = f_sg_simulate_weights(reg1, SLM_phase, coord_corr);
+data_w_zero = f_sg_simulate_intensity(reg1, zeros(size(SLM_phase)), coord_zero, app.pointsizepixEditField.Value);
+data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord_corr, app.pointsizepixEditField.Value);
 
 power_sim = data_w.pt_mags/data_w_zero.pt_mags;
 

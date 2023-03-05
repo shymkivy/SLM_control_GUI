@@ -1,8 +1,8 @@
-function f_sg_view_hologram_fft(app, im1_amp, axis1)
+function f_sg_view_hologram_fft(app, im1_amp, x_lab, y_lab)
 
 figure;
 app.hologram_fig_plot = newplot;
-imagesc(app.hologram_fig_plot,axis1, axis1, im1_amp);
+imagesc(app.hologram_fig_plot, x_lab, y_lab, im1_amp);
 axis(app.hologram_fig_plot, 'image');
 %app.hologram_fig_plot.YDir = 'normal';
 %caxis(app.hologram_fig_plot, [0 1]);

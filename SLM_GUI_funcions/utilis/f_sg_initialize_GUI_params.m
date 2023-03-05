@@ -45,7 +45,6 @@ for n_reg = 1:numel(app.region_obj_params)
     end
 end
 
-
 for n_reg = 1:numel(app.region_obj_params)
     app.region_obj_params(n_reg).lut_correction_data = f_sg_get_corr_data(app, app.region_obj_params(n_reg).lut_correction_fname);
     app.region_obj_params(n_reg).xyz_affine_tf_mat = f_sg_compute_xyz_affine_tf_mat_reg(app, app.region_obj_params(n_reg));
@@ -53,7 +52,16 @@ for n_reg = 1:numel(app.region_obj_params)
     app.region_obj_params(n_reg).pw_corr_data = f_sg_compute_pw_corr(app, app.region_obj_params(n_reg));
 end
 
+%%
+app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark'};
+app.ImageGenverEditField.Value = 'none';
+
 %% xyz table
+app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
+app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));
+app.UIImagePhaseTable.ColumnEditable(end) = 0;
+app.UIImagePhaseTable.ColumnWidth = {50, 68, 63, 63, 63, 63, 63, 63};
+
 f_sg_pat_update(app, 1);
 app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];
 app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.pat_name];
@@ -68,6 +76,9 @@ app.NIDAQdeviceEditField.Value = ops.NI_DAQ_dvice;
 app.DAQcounterchannelEditField.Value = ops.NI_DAQ_counter_channel;
 app.DAQAIchannelEditField.Value = ops.NI_DAQ_AI_channel;
 app.DAQAOchannelEditField.Value = ops.NI_DAQ_AO_channel;
+
+app.GSnumiterationsEditField.Value = ops.GS_num_iterations;
+app.GSzfactorEditField.Value = ops.GS_z_factor;
 
 %%
 % blank
@@ -167,8 +178,8 @@ if ~exist(ops.custom_phase_dir, 'dir')
 end
 app.ImagepathEditField.Value = [ops.custom_phase_dir '\'];
 
-if ~exist(ops.patter_editor_dir, 'dir')
-    mkdir(ops.patter_editor_dir);
+if ~exist(ops.pattern_editor_dir, 'dir')
+    mkdir(ops.pattern_editor_dir);
 end
 
 % initialize DAQ

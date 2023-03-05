@@ -34,6 +34,8 @@ default_region_list(1).width_range = [0, 1];
 % default_region_params(1).obj_name = default_objectives.obj_name;
 % default_region_params(1).SLM_name = app.SLM_ops.SLM_type;
 % default_region_params(1).reg_name = default_region_list.reg_name;
+default_region_params(1).phase_diameter = [];
+default_region_params(1).zero_outside_phase_diameter = true;
 default_region_params(1).beam_diameter = [];
 default_region_params(1).wavelength = 940;
 default_region_params(1).effective_NA = .5;
@@ -104,7 +106,6 @@ end
 if sum(rop_to_use)
     app.region_obj_params = reg_obj_params(rop_to_use);
 else
-    
     default_roparams.obj_name = default_objectives.obj_name;
     default_roparams.SLM_name = app.SLM_ops.SLM_type;
     default_roparams.reg_name = default_region_list.reg_name;
@@ -113,7 +114,7 @@ else
 end
 
 %% copy patterns
-Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'Weight', 'Power'};
+Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'W_set', 'W_est', 'Power'};
 app.GUI_ops.table_var_names = Varnames;
 xyz_patterns(1).pat_name = 'Multiplane';
 tab_data = f_sg_initialize_tabxyz(app, 0);
@@ -131,18 +132,9 @@ if isfield(app.SLM_ops, 'xyz_patterns')
         if ~isempty(temp_pat)
             for n_pat = 1:numel(temp_pat)
                 if ~isempty(temp_pat(n_pat).xyz_pts)
-                    [num_row, num_col] = size(temp_pat(n_pat).xyz_pts);
+                    [num_row, ~] = size(temp_pat(n_pat).xyz_pts);
                     tab_data2 = f_sg_initialize_tabxyz(app, num_row);
-                    if num_col == 3
-                        xyz1 = temp_pat(n_pat).xyz_pts;
-                    elseif num_col == 4
-                        xyz1 = temp_pat(n_pat).xyz_pts(:,1:3);
-                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,4);
-                    elseif num_col == 5
-                        xyz1 = temp_pat(n_pat).xyz_pts(:,2:4);
-                        tab_data2.Pattern = temp_pat(n_pat).xyz_pts(:,1);
-                        tab_data2.Weight = temp_pat(n_pat).xyz_pts(:,5);
-                    end
+                    xyz1 = temp_pat(n_pat).xyz_pts;
                     tab_data2.X = xyz1(:,1);
                     tab_data2.Y = xyz1(:,2);
                     tab_data2.Z = xyz1(:,3);

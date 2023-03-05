@@ -26,6 +26,6 @@ end
 
 %% load imagegen library which is in new BNS 1920 slm sdk path
 
-f_SLM_BNS_load_imagegen();
+%f_SLM_BNS_load_imagegen(ops);
 
 end

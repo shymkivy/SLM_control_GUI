@@ -53,10 +53,10 @@ end
 % library
 
 %ops.path_library = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-addpath(ops.SLM_SDK_dir);
+%addpath(ops.SLM_SDK_dir);
 
 if ~libisloaded('Blink_SDK_C')  % this is for old 512 BNS with OverDrive
-    loadlibrary('Blink_SDK_C.dll', 'Blink_SDK_C_matlab.h');
+    loadlibrary([ops.SLM_SDK_dir, '\Blink_SDK_C.dll'], [ops.SLM_SDK_dir, '\Blink_SDK_C_matlab.h']);
 end
 
 %% Basic parameters for calling Create_SDK for BNS 512 with OD

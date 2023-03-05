@@ -28,16 +28,16 @@ SLMn = sum(n_idx);
 
 if isempty(region_obj_params)
     region_obj_params = app.SLM_ops.default_region_params;
-    region_obj_params.beam_diameter = max([SLMm, SLMn]);
+    region_obj_params.phase_diameter = max([SLMm, SLMn]);
 end
 
-xlm = linspace(-SLMm/region_obj_params.beam_diameter, SLMm/region_obj_params.beam_diameter, SLMm);
-xln = linspace(-SLMn/region_obj_params.beam_diameter, SLMn/region_obj_params.beam_diameter, SLMn);
+xlm = linspace(-SLMm/region_obj_params.phase_diameter, SLMm/region_obj_params.phase_diameter, SLMm);
+xln = linspace(-SLMn/region_obj_params.phase_diameter, SLMn/region_obj_params.phase_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [~, RHO] = cart2pol(fX, fY);
 holo_mask = true(SLMm, SLMn);
 
-if app.ZerooutsideunitcircCheckBox.Value
+if app.regionZerooutsidephasediameterCheckBox.Value
     holo_mask(RHO>1) = 0;
 end
 

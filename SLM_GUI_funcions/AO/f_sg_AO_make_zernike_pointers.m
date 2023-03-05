@@ -3,8 +3,8 @@ function [holo_pointers, zernike_scan_sequence] = f_sg_AO_make_zernike_pointers(
 %%
 SLMm = sum(reg1.m_idx);
 SLMn = sum(reg1.n_idx);
-xlm = linspace(-SLMm/reg1.beam_diameter, SLMm/reg1.beam_diameter, SLMm);
-xln = linspace(-SLMn/reg1.beam_diameter, SLMn/reg1.beam_diameter, SLMn);
+xlm = linspace(-SLMm/reg1.phase_diameter, SLMm/reg1.phase_diameter, SLMm);
+xln = linspace(-SLMn/reg1.phase_diameter, SLMn/reg1.phase_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
@@ -16,7 +16,7 @@ num_modes = size(zernike_table,1);
 all_modes = zeros(SLMm, SLMn, num_modes);
 for n_mode = 1:num_modes
     Z_nm = f_sg_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
-    if app.ZerooutsideunitcircCheckBox.Value
+    if reg1.zero_outside_phase_diameter
         Z_nm(rho>1) = 0;
     end
     all_modes(:,:,n_mode) = Z_nm;

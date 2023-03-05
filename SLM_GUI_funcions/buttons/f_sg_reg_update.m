@@ -11,8 +11,8 @@ if sum(reg_params_idx)
     reg_params = app.region_obj_params(reg_params_idx);
 else
     reg_params = app.SLM_ops.default_region_params;
-    if isempty(reg_params.beam_diameter)
-        reg_params.beam_diameter = max([app.SLM_ops.height app.SLM_ops.width]);
+    if isempty(reg_params.phase_diameter)
+        reg_params.phase_diameter = max([app.SLM_ops.height app.SLM_ops.width]);
     end
 end
 
@@ -27,9 +27,10 @@ end
 if ~isempty(reg_params)
     % load region obj params
     app.regionWavelengthnmEditField.Value = reg_params.wavelength;
-    app.regionBeamDiameterEditField.Value = reg_params.beam_diameter;
+    app.regionPhaseDiameterEditField.Value = reg_params.phase_diameter;
+    app.regionZerooutsidephasediameterCheckBox.Value = reg_params.zero_outside_phase_diameter;
     app.regionEffectiveNAEditField.Value = reg_params.effective_NA;
-    
+    app.regionBeamDiameterEditField.Value = reg_params.beam_diameter;
     % update dropdowns
     
     %lut_fname = app.LUTDropDown.Value;
@@ -76,8 +77,8 @@ if ~isempty(reg_params)
     app.XZcorrEditField.Value = reg_params.xy_over_z_offset(1);
     app.YZcorrEditField.Value = reg_params.xy_over_z_offset(2);
     
-    app.beamdumpXEditField.Value = reg_params.beam_dump_xy(1);
-    app.beamdumpYEditField.Value = reg_params.beam_dump_xy(2);
+    app.BeamdumpXEditField.Value = reg_params.beam_dump_xy(1);
+    app.BeamdumpYEditField.Value = reg_params.beam_dump_xy(2);
 else
     disp('Region update failed')
 end

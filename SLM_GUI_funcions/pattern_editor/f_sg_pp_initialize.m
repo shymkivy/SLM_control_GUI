@@ -10,7 +10,7 @@ else
     app.PatternSpinner.Value = min([tab_data.Pattern]);
 end
 
-app.imagedirEditField.Value = f_clean_path(app.app_main.SLM_ops.patter_editor_dir);
+app.imagedirEditField.Value = f_clean_path(app.app_main.SLM_ops.pattern_editor_dir);
 
 %% load ops
 var_list = {'imagedirEditField', 'image_dir';...

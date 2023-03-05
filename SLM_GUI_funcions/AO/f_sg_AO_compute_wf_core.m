@@ -1,11 +1,11 @@
 function all_modes_sum = f_sg_AO_compute_wf_core(modes_in, params)
 
-beam_diameter = params.beam_diameter;
+phase_diameter = params.phase_diameter;
 SLMm = params.SLMm;
 SLMn = params.SLMn;
 
-xlm = linspace(-SLMm/beam_diameter, SLMm/beam_diameter, SLMm);
-xln = linspace(-SLMn/beam_diameter, SLMn/beam_diameter, SLMn);
+xlm = linspace(-SLMm/phase_diameter, SLMm/phase_diameter, SLMm);
+xln = linspace(-SLMn/phase_diameter, SLMn/phase_diameter, SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 

@@ -29,7 +29,7 @@ for n_point = 1:num_points
             end
         end
     end
-    if app.ZerooutsideunitcircCheckBox.Value
+    if reg1.zero_outside_phase_diameter
         temp_phase(~reg1.holo_mask) = 0;
     end
     AO_phase(:,:,n_point) = temp_phase;

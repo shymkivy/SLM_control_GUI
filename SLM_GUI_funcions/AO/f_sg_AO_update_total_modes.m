@@ -19,5 +19,5 @@ total_modes = total_modes * app.ScanspermodeEditField.Value;
 
 app.NumscanvolumesEditField.Value = total_modes;
 app.NumscanframesEditField.Value = total_modes*app.ScansperVolZEditField.Value;
-app.NumscanframesOpEditField.Value = total_modes*app.NumiterationsSpinner.Value + 1 + sum((1:app.NumiterationsSpinner.Value)+1)*app.ScanspermodeEditField.Value;
+app.NumscanframesOpEditField.Value = total_modes*app.NumiterationsSpinner.Value + 1 + sum((1:app.NumiterationsSpinner.Value)+1)*app.ScanspermodeEditField.Value+ 1 + app.NumiterationsSpinner.Value*2; % last 2 thing s are stupid scanimage update
 end

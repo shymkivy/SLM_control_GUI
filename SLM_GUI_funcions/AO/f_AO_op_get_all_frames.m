@@ -3,7 +3,7 @@ function all_frames = f_AO_op_get_all_frames(path1)
 files1 = dir([path1 '\' '*tif']);
 
 fnames = {files1.name}';
-num_frames = numel(fnames);
+num_frames = numel(fnames)-1;
 all_frames = zeros(256,256,num_frames);
 for n_fr = 1:num_frames
     all_frames(:,:,n_fr) = imread([path1 '\' fnames{n_fr}]);  

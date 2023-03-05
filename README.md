@@ -16,14 +16,14 @@ Download code and run "SLM_control_GUI" from its directory
 # Calibrations to do:
 1. Align the laser polarization to SLM
 2. LUT calibration, global plus global/regional correction if using different wavelengths simultaneously
-3. XYZ affine transform calibration for coordinate rotaion, beam xyz offset for alignmen of two beams, and axial x/z and y/z offsets
-4. Adaptove Optics corrections (with large image of SLM at pupil plane can have significant z dependent abberations)
+3. XYZ affine transform calibration for coordinate rotation, beam xyz offset for alignment of two beams, and axial x/z and y/z offsets
+4. Adaptive Optics corrections (with large image of SLM at pupil plane can have significant z dependent aberrations)
 
 # LUT calibration and correction
 SLM will require a LUT calibration file, either global(.lut) or regional(.txt) that will be specific to a wavelength. Lut scripts in the SLM_calibration_scripts folder can be used to generate global/regional lut. Note, with regional (.txt) lut SLM upload speed will be slowed down by 1-2ms if not using triggering.
 LUT calibration file should be placed in 'SLM_calibration/lut_calibration/' dir. In 'f_SLM_GIU_default_ops.m' it can be specified under 'SLM_params(1).lut_fname' parameter.
-LUT correction files can be used to load corrections to hologram ahead of application of LUT calibration file. This allows the use of single global lut and multibple wavelenghts in different regions of SLM by applying local correction for each wavelength. Also using lut correction with global lut can speed up upload time by avoiding regional(.txt) lut.
-LUT corretions files for each LUT calibration file should be placed in a subdirectory with the name of LUT calibration file 'SLM_calibration/lut_calibration/linear/'
+LUT correction files can be used to load corrections to hologram ahead of application of LUT calibration file. This allows the use of single global lut and multiple wavelengths in different regions of SLM by applying local correction for each wavelength. Also using lut correction with global lut can speed up upload time by avoiding regional(.txt) lut.
+LUT correction files for each LUT calibration file should be placed in a subdirectory with the name of LUT calibration file 'SLM_calibration/lut_calibration/linear/'
 
 # Parameters
 
@@ -32,7 +32,7 @@ Basic parameters may need to be changed inside "f_SLM_GUI_default_ops.m"
 2. Default lut file specified by "ops.lut_fname" needs to be present in '\SLM_microscope_GUI\SLM_calibration\lut_calibration\' directory
 3. "ops.effective_NA" effects the defocus distance and needs to be adjusted for specific objective (calibrate with beads)
 4. "ops.NI_DAQ_dvice" channel name and appropriate AO, AI, and counter channels need to be specified and connected to 2p microscope. "End of Frame" trigger from microscope goes into counter and used for fast updating of SLM patterns following the end of frames. AO from DAQ controlled by GUI goes into microscope trigger in (for scanning with triggering of every frame). AI channel will be used to read what stimulation pattern is supposed to be uploaded at the time of scan.
-5. There is a "default roi list" wich refers to regions of the SLM that will be used independantly. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
+5. There is a "default roi list" which refers to regions of the SLM that will be used independently. Each region will need a "lateral_affine_transform" file located in "\SLM_microscope_GUI\SLM_calibration\xyz_calibration\", otherwise erase the specified file names.
 
 # XYZ patterns
 There are 3 levels of organization
@@ -65,7 +65,7 @@ On SLM_GUI side:
 2. Move to desired Z through XYZ patterns window
 3. Fill zernike table with appropriate number of modes.
 4. Select the number of iterations to scan 
-5. Adjust "Post scan delay" to long enough period (+.5sec for 16 ave and +.8sec for 32 ave for PrairieView). SLM_GUI needs to wait this extra time because the microscope software annot keep up with imaging with every frame being triggered
+5. Adjust "Post scan delay" to long enough period (+.5sec for 16 ave and +.8sec for 32 ave for PrairieView). SLM_GUI needs to wait this extra time because the microscope software cannot keep up with imaging with every frame being triggered
 
 On microscope side (works with PrairieView):
 1. Set scan with triggering every frame, preferably averaging 16 or 32.

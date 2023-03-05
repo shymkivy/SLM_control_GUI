@@ -3,17 +3,15 @@ function f_sg_gh_defocus(app)
 % get reg
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
-beam_diameter = reg1.beam_diameter;
-wavelength = reg1.wavelength*1e-9;
-
 defocus_weight = app.DeficusWeightEditField.Value*1e-6; % convert to um
 
 defocus_phase = f_sg_DefocusPhase(reg1.SLMm, reg1.SLMn,...
                 app.SLM_ops.effective_NA,...
                 app.SLM_ops.objective_RI,...
-                wavelength, beam_diameter)*defocus_weight; % was wavelength*10 idk why
+                reg1.wavelength*1e-9,...        % convert to m
+                reg1.phase_diameter)*defocus_weight;
 
-if app.ZerooutsideunitcircCheckBox.Value
+if reg1.zero_outside_phase_diameter
     defocus_phase(reg1.holo_mask) = 0;
 end
             

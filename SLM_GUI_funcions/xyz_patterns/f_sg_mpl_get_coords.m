@@ -1,7 +1,5 @@
 function coord = f_sg_mpl_get_coords(app, from_where, num)
 
-reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-
 if strcmp(from_where, 'custom')
     X_disp = f_str_to_array(app.XdisplacementEditField.Value);
     Y_disp = f_str_to_array(app.YdisplacementEditField.Value);
@@ -39,13 +37,8 @@ if strcmp(from_where, 'custom')
                   Z_disp];
 
     coord.weight = W;
-       
-    if app.ManualNAcorrectionCheckBox.Value
-        coord.NA = app.ManualNAEditField.Value;
-    else
-        coord.NA = reg1.effective_NA;
-    end
-    
+    coord.weight_set = W;
+
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
         
@@ -53,9 +46,9 @@ elseif strcmp(from_where, 'table_selection')
         
         coord.idx = tab_data.Idx;
         coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
-        coord.weight = tab_data.Weight;
-        
-        coord.NA = reg1.effective_NA;
+        coord.weight = tab_data.W_est;
+        coord.weight_set = tab_data.W_set;
+
     else
         coord = [];
     end
@@ -71,9 +64,8 @@ elseif strcmp(from_where, 'pattern')
             
             coord.idx = tab_data2.Idx;
             coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
-            coord.weight = tab_data2.Weight;
-
-            coord.NA = reg1.effective_NA;
+            coord.weight = tab_data2.W_est;
+            coord.weight_set = tab_data2.W_set;
             
         else
             coord = [];
@@ -84,7 +76,7 @@ elseif strcmp(from_where, 'pattern')
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
     coord.weight = 1;
-    coord.NA = reg1.effective_NA;
+    coord.weight_set = 1;
 end
 
 

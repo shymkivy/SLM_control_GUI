@@ -22,8 +22,8 @@ conv_kernel = conv_kernel/sum(conv_kernel(:));
 %%
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
-xlm = linspace(-reg1.SLMm/reg1.beam_diameter, reg1.SLMm/reg1.beam_diameter, reg1.SLMm);
-xln = linspace(-reg1.SLMn/reg1.beam_diameter, reg1.SLMn/reg1.beam_diameter, reg1.SLMn);
+xlm = linspace(-reg1.SLMm/reg1.phase_diameter, reg1.SLMm/reg1.phase_diameter, reg1.SLMm);
+xln = linspace(-reg1.SLMn/reg1.phase_diameter, reg1.SLMn/reg1.phase_diameter, reg1.SLMn);
 [fX, fY] = meshgrid(xln, xlm);
 [theta, rho] = cart2pol(fX, fY);
 
@@ -58,7 +58,7 @@ num_modes = size(zernike_table,1);
 all_modes = zeros(reg1.SLMm, reg1.SLMn, num_modes);
 for n_mode = 1:num_modes
     Z_nm = f_sg_zernike_pol(rho, theta, zernike_table(n_mode,2), zernike_table(n_mode,3));
-    if app.ZerooutsideunitcircCheckBox.Value
+    if reg1.zero_outside_phase_diameter
         Z_nm(rho>1) = 0;
     end
     all_modes(:,:,n_mode) = Z_nm;
@@ -95,7 +95,9 @@ path1 = app.ScanframesdirpathEditField.Value;
 %exist(path1, 'dir');
 
 f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
-num_scans_done = 1;
+% make extra scan because stupid scanimage
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+num_scans_done = 2;
 
 % wait for frame to convert
 while num_frames < num_scans_done
@@ -105,6 +107,7 @@ while num_frames < num_scans_done
     pause(0.005)
 end
 
+% get all files except last
 frames = f_AO_op_get_all_frames(path1);
 num_frames = size(frames,3);
 
@@ -116,8 +119,8 @@ bead_mn = zeros(1,2);
 bead_mn = round(bead_mn);
 
 %%
-im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
-im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
+im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
+im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
 
 im_cut = frames(im_m_idx, im_n_idx,num_frames);
 
@@ -151,8 +154,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
         current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
         
-    im_m_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1);
-    im_n_idx = ((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2);
+    im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
+    im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
     
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
@@ -186,6 +189,9 @@ for n_it = 1:app.NumiterationsSpinner.Value
     end
     %% get frames and analyze 
     
+    % make extra scan because stupid scanimage
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    num_scans_done = num_scans_done + 1;
     while num_frames < num_scans_done
         files1 = dir([path1 '\' '*tif']);
         fnames = {files1.name}';
@@ -234,6 +240,9 @@ for n_it = 1:app.NumiterationsSpinner.Value
         num_scans_done = num_scans_done + 1;
     end
     
+    % make extra scan because stupid scanimage
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    num_scans_done = num_scans_done + 1;
     % wait for frame to convert
     while num_frames<num_scans_done
         files1 = dir([path1 '\' '*tif']);
