@@ -1,13 +1,15 @@
-function f_sg_destruct_imageGen(app)
+function ops = f_sg_destruct_imageGen(ops)
 
-if app.SLM_ops.ImageGen.GS_init
-    calllib('ImageGen', 'Destruct_HologramGenerator')
-    app.SLM_ops.ImageGen.GS_init = 0;
-end
+if isfield(ops, 'ImageGen')
+    if ops.ImageGen.GS_init
+        calllib('ImageGen', 'Destruct_HologramGenerator')
+        ops.ImageGen.GS_init = 0;
+    end
 
-if libisloaded('ImageGen')
-    unloadlibrary('ImageGen');
-    app.SLM_ops.ImageGen.loaded = 0;
+    if libisloaded('ImageGen')
+        unloadlibrary('ImageGen');
+        ops.ImageGen.loaded = 0;
+    end
 end
 
 end

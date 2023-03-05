@@ -1,8 +1,8 @@
-function f_sg_gui_startup(app)
+function f_sg_gui_startup(app, GUI_dir)
 
 %% add all paths inside functions folder
 
-addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']));
+%addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']));
 % list1 = dir([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']);
 % for n_ls = 1:numel(list1)
 %     if ~strcmpi(list1(n_ls).name, '..') && ~strcmpi(list1(n_ls).name, '.')
@@ -13,7 +13,7 @@ addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']));
 % end
 
 %%
-f_SLM_GUI_default_ops(app);
+app.SLM_ops = f_SLM_default_ops(GUI_dir);
 
 %% create calibration dirs
 ops = app.SLM_ops;

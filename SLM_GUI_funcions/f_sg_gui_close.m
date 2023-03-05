@@ -5,7 +5,7 @@ if app.ActivateSLMButton.Value
     app.SLM_ops = f_SLM_close(app.SLM_ops);
 end
 
-f_sg_destruct_imageGen(app);
+app.SLM_ops = f_sg_destruct_imageGen(app.SLM_ops);
 
 delete(app);
 

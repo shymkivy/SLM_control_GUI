@@ -26,7 +26,7 @@ save_csv_path = [save_path '\' 'lut_raw' save_pref time_stamp '\'];
 mkdir(save_csv_path);
 %% Initialize SLM
 
-ops = f_SLM_GUI_default_ops();
+ops = f_SLM_default_ops();
 ops = f_SLM_initialize(ops);
 
 %% Initialize DAQ

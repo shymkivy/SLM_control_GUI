@@ -1,10 +1,6 @@
-function f_SLM_GUI_default_ops(app)
+function ops = f_SLM_default_ops(GUI_dir)
 
-if isprop(app, 'SLM_ops')
-    ops = app.SLM_ops;
-else
-    ops = struct;
-end
+ops = struct;
 
 %% Which SLM is default ???? 
 ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD', 'BNS512OD_sdk3'
@@ -213,6 +209,11 @@ region_params(idx).beam_dump_xy = [0, 0];
 
 %% default directories
 
+if ~exist('GUI_dir', 'var')
+     GUI_dir = fileparts(mfilename('fullpath'));
+end
+ops.GUI_dir = GUI_dir;
+ 
 % where to save outputs
 ops.calibration_dir = [ops.GUI_dir '\..\SLM_calibration'];
 ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
@@ -228,6 +229,7 @@ ops.pattern_editor_dir = [ops.calibration_dir '\pattern_editor'];
 
 ops.save_AO_dir = [ops.save_dir '\AO_outputs'];
 ops.save_patterns_dir = [ops.save_dir '\saved_patterns'];
+ops.save_lut_dir = [ops.save_dir '\lut_calibration'];
 
 % directory from microscope computer where frames are saved during AO optimization
 ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
@@ -268,6 +270,5 @@ ops.region_params = region_params;
 ops.region_list = region_list;
 ops.xyz_patterns = xyz_patterns;
 ops.pw_calibration = pw_calibration;
-app.SLM_ops = ops;
 
 end
