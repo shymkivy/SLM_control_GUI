@@ -41,7 +41,7 @@ end
 %addpath(ops.SLM_SDK_dir);
 
 if ~libisloaded('Blink_C_wrapper')
-    loadlibrary([ops.SLM_SDK_dir, '\Blink_C_wrapper.dll'], [ops.SLM_SDK_dir, '\Blink_C_wrapper.h']);
+    loadlibrary([ops.SLM_SDK_dir, '\Blink_C_wrapper.dll'], [ops.SLM_SDK_dir, '\Blink_C_wrapper.h']); % [not_found,warn] = 
 end
 
 %% Basic parameters for calling Create_SDK

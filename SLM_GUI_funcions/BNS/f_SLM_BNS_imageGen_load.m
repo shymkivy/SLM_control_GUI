@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS_load_imagegen(ops)
+function ops = f_SLM_BNS_imageGen_load(ops)
 
 %% SLM params
 if ~exist('ops', 'var')
@@ -16,8 +16,6 @@ end
 if exist([ops.imageGen_dir '\ImageGen.dll'], 'file')
     if ~libisloaded('ImageGen')
         loadlibrary([ops.imageGen_dir '\ImageGen.dll'], [ops.imageGen_dir '\ImageGen.h']);
-        ops.ImageGen.loaded = 1;
-        ops.ImageGen.GS_init = 1;
     end
 else
     warning('image gen dll does not exist in %s', ops.imageGen_dir)

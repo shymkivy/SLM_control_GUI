@@ -12,6 +12,9 @@ try %#ok<*TRYNC>
     f_SLM_close(ops);
 end
 try 
+    f_SLM_BNS_imageGen_unload();
+end
+try 
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end
 
@@ -19,10 +22,15 @@ clear;
 
 %% initialize params
 script_dir = fileparts(mfilename('fullpath'));
-ops = f_SLM_default_ops([script_dir '\\..']);
+gui_dir = [script_dir '\\..'];
 
 addpath(genpath(script_dir));
-addpath(genpath([ops.GUI_dir '\..\SLM_GUI_funcions']));
+addpath(gui_dir);
+addpath(genpath([gui_dir '\SLM_GUI_funcions']));
+
+ops = f_SLM_default_ops(gui_dir);
+
+ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 
 %%
 ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
@@ -34,6 +42,9 @@ ops = f_copy_fields(ops, SLM_params);
 ops.use_TLDC = 0;           % otherwise wait for trigger
 ops.use_photodiode = 0;
 ops.plot_phase = 1;
+
+
+ops.weight_start = 0.95;    % the other is 1
 
 ops.NumGray = 256;          % bit depth
 
@@ -69,8 +80,37 @@ regions_run = sort(regions_run(:));
 
 %% Initialize SLM
 ops = f_SLM_initialize(ops);
-ops = f_SLM_BNS_load_imagegen(ops);
+ops = f_SLM_BNS_imageGen_load(ops);
 %%
+lut_data = [];
+
+if ~isempty(ops.lut_correction_fname)
+    lut_corr_path = [ops.lut_dir '\' ops.lut_fname(1:end-4) '_correction\' ops.lut_correction_fname];
+    lut_load = load(lut_corr_path);    
+    lut_data2(1).lut_corr = lut_load.lut_corr.lut_corr;
+    
+    region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
+    
+    n_idx = ones(ops.width, 1);
+    n_px = ceil((1:ops.width)'/ops.width*ops.num_regions_n);
+    if strcmpi(slm_roi, 'right_half')
+        n_idx(n_px <= floor(ops.num_regions_n/2)) = 0;
+    elseif strcmpi(slm_roi, 'left_half')
+        n_idx(n_px > floor(ops.num_regions_n/2)) = 0;
+    end
+    
+    lut_data2(1).m_idx = ones(ops.height, 1);
+    lut_data2(1).n_idx = n_idx;
+    lut_data = [lut_data; lut_data2];
+end
+
+ops.lut_data = lut_data;
+ops.slm_roi = slm_roi;
+ops.regions_run = regions_run;
+
+%%
+
+
 cont1 = input('Turn laser on and reply [y] to continue:', 's');
 
 %%
@@ -124,6 +164,10 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
                 ops.BlazeIncreasing,...
                 ops.BlazeHorizontal);
     
+            
+    blazed_ph = f_sg_poiner_to_im(blazed, ops.height, ops.width);
+    
+       
     region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
     %ops.region_idx = region_idx;
     %%
@@ -163,10 +207,17 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             region_mask = zeros(ops.height, ops.width);
             region_mask(region_idx == Region) = 1;
             region_mask = flipud(region_mask);
-            holo_image = stripes.*region_mask*Gray;
+            
+            %holo_image = stripes.*region_mask*Gray;
+            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.weight_start*exp(1i*0/(ops.NumGray-1)*2*pi);
+            
+            holo_image = angle(holo_image_cpx)+pi.*region_mask;
 
             holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
-            SLM_mask.Value = reshape(rot90(uint8(holo_image_corr), 3),[],1);
+            
+            SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
+            
+            %SLM_mask.Value = reshape(rot90(uint8(holo_image_corr), 3),[],1);
 
             %Generate the stripe pattern and mask out current region
             %calllib('ImageGen', 'Generate_Stripe', SLM_blank, ops.width, ops.height, ops.PixelValue, Gray, ops.PixelsPerStripe);
@@ -209,16 +260,16 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     f_SLM_update(ops, SLM_blank);
     
     if ops.use_photodiode
-        save([ops.ops.save_lut_dir '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
+        save([ops.ops.save_lut_dir '\photodiode_' ops.save_file_name], 'zero_order_region_gray', 'AI_intensity', 'ops', '-v7.3');
         new_dir1 = [ops.ops.save_lut_dir '\photodiode_' ops.save_file_name(1:end-4)];
         % dump the AI measurements to a csv file
-        mkdir(new_dir1);
-        for n_reg = 1:numel(regions_run)
-            Region = regions_run(n_reg);
-            r_idx = region_gray(:,1) == Region;
-            filename = ['Raw' num2str(Region) '.csv'];
-            csvwrite([new_dir1 '\' filename], [region_gray(r_idx,2), AI_intensity(r_idx)]);  
-        end
+%         mkdir(new_dir1);
+%         for n_reg = 1:numel(regions_run)
+%             Region = regions_run(n_reg);
+%             r_idx = region_gray(:,1) == Region;
+%             filename = ['Raw' num2str(Region) '.csv'];
+%             csvwrite([new_dir1 '\' filename], [region_gray(r_idx,2), AI_intensity(r_idx)]);  
+%         end
     end
     if ops.use_TLDC
         save([ops.ops.save_lut_dir '\TDLC_' ops.save_file_name], 'region_gray', 'calib_im_series', 'ops', '-v7.3');
@@ -233,6 +284,9 @@ cont1 = input('Done, turnb off laser and press [y] close SLM:', 's');
 
 try 
     f_SLM_close(ops);
+end
+try 
+    f_SLM_BNS_imageGen_unload();
 end
 if ops.use_TLDC
     TLDC_set_Cam_Close(cam_out.hdl_cam);            

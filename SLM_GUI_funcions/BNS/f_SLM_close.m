@@ -11,5 +11,8 @@ else
 end
 
 
-    
+if libisloaded('Blink_C_wrapper')
+    unloadlibrary('Blink_C_wrapper');
+end
+
 end

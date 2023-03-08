@@ -42,9 +42,10 @@ f_sg_load_calibration(app);
 f_sg_reg_update(app);
 
 app.SLM_ops = f_SLM_initialize(app.SLM_ops);
-app.ActivateSLMButton.Value = 1;
-app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
-
+if app.SLM_ops.SDK_created
+    app.ActivateSLMButton.Value = 1;
+    app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
+end
 f_sg_initialize_GUI_params(app);
 
 %f_sg_ops_load(app);

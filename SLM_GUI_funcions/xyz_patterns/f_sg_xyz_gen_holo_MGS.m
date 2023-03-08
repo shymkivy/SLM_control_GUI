@@ -1,9 +1,8 @@
 function SLM_phase = f_sg_xyz_gen_holo_MGS(app, coord, reg1)
 
-f_sg_initialize_imageGen(app, reg1);
+f_sg_imageGen_initGS_wrap(app, reg1);
 
 phase_ptr = libpointer('uint8Ptr', zeros(reg1.SLMn*reg1.SLMm,1));
-
 
 GS_z_fac = app.GSzfactorEditField.Value;
 
