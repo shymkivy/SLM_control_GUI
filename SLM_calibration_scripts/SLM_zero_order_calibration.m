@@ -32,6 +32,9 @@ ops = f_SLM_default_ops(gui_dir);
 
 ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 
+% overwrite the imagegen lib used
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
+
 %%
 ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
 
@@ -42,7 +45,6 @@ ops = f_copy_fields(ops, SLM_params);
 ops.use_TLDC = 0;           % otherwise wait for trigger
 ops.use_photodiode = 0;
 ops.plot_phase = 1;
-
 
 ops.weight_start = 0.95;    % the other is 1
 
@@ -109,8 +111,6 @@ ops.slm_roi = slm_roi;
 ops.regions_run = regions_run;
 
 %%
-
-
 cont1 = input('Turn laser on and reply [y] to continue:', 's');
 
 %%
@@ -141,7 +141,6 @@ if ops.use_photodiode
     session.Rate = ops.DAQ_rate;
     %session.NumberOfScans = ops.DAQ_num_sessions;
 end
-
 
 %% create gratings and upload
 if ops.SDK_created == 1 && strcmpi(cont1, 'y')

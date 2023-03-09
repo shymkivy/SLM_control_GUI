@@ -13,7 +13,7 @@ ops.sdk3_ver = 0; % using the old sdk 3 library?
 %% for meadowlark ImageGen and GS algorithm
 
 ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version, different functs
-%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % older version
+%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';       % older version
 
 ops.GS_z_factor = 50/39.7;  % scaling factor for meadowlark GS defocus to match effNA
 ops.GS_num_iterations = 50; % number of iterations for meadowlark GS optimization
