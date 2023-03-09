@@ -30,7 +30,16 @@ SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
 %lut_fname =  'linear_cut_940_1064.lut';
 
-idx = 2;
+idx = idx + 1;
+SLM_params(idx).SLM_name = 'BNS1920';
+SLM_params(idx).height = 1152;
+SLM_params(idx).width = 1920;
+SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
+%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
+SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
+
+idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512OD'; % 901D with overdrive
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
@@ -38,7 +47,7 @@ SLM_params(idx).init_lut_fname = 'SLM_3329_20150303.txt'; % SLM_3329_20150303.tx
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';
 SLM_params(idx).regions_use = {'Full SLM'};
 
-idx = 3;
+idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512'; % prairie 1
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
@@ -46,13 +55,14 @@ SLM_params(idx).lut_fname = 'slm4317_at1064_P8.lut';
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
 
-idx = 4;
+idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512OD_sdk3'; % 901D with overdrive
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
 SLM_params(idx).init_lut_fname = 'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
+
 %% some default general params
 % 20X olympus specific params
 % ops.objective_mag = 20; %
@@ -101,7 +111,7 @@ region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0.027 -0.012]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [-350, 0];
 
-idx = 2;
+idx = idx + 1;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Left half';
@@ -119,7 +129,7 @@ region_params(idx).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 20x with BNS1920
-idx = 3;
+idx = idx + 1;
 region_params(idx).obj_name = '20X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Right half'; % imaging
@@ -136,7 +146,7 @@ region_params(idx).xyz_offset = [0 0 0];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [-350, 0];
 
-idx = 4;
+idx = idx + 1;
 region_params(idx).obj_name = '20X_fat';
 region_params(idx).SLM_name = 'BNS1920';
 region_params(idx).reg_name = 'Left half'; % stimulation
@@ -154,7 +164,7 @@ region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 25x with BNS512
-idx = 5;
+idx = idx + 1;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512';
 region_params(idx).reg_name = 'Full SLM';
@@ -172,7 +182,7 @@ region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [0, 0];
 
 %% 25x with BNS512
-idx = 6;
+idx = idx + 1;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512OD';
 region_params(idx).reg_name = 'Full SLM';
@@ -190,7 +200,7 @@ region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [0, 0];
 
 %% 25x with BNS512
-idx = 7;
+idx = idx + 1;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512OD_sdk3';
 region_params(idx).reg_name = 'Full SLM';
@@ -235,28 +245,33 @@ ops.save_lut_dir = [ops.save_dir '\lut_calibration'];
 ops.AO_recording_dir = ''; % E:\data\SLM\AO\12_4_20\zernike_100um_1modes-001
 
 %% defauld regions list
-region_list(1).reg_name = 'Right half';
-region_list(1).height_range = [0, 1];
-region_list(1).width_range = [0.5, 1];
+idx = 1;
+region_list(idx).reg_name = 'Right half';
+region_list(idx).height_range = [0, 1];
+region_list(idx).width_range = [0.5, 1];
 
-region_list(2).reg_name = 'Left half';
-region_list(2).height_range = [0, 1];
-region_list(2).width_range = [0, 0.5];
+idx = idx + 1;
+region_list(idx).reg_name = 'Left half';
+region_list(idx).height_range = [0, 1];
+region_list(idx).width_range = [0, 0.5];
 
-region_list(3).reg_name = 'Full SLM';
-region_list(3).height_range = [0, 1];
-region_list(3).width_range = [0, 1];
+idx = idx + 1;
+region_list(idx).reg_name = 'Full SLM';
+region_list(idx).height_range = [0, 1];
+region_list(idx).width_range = [0, 1];
 
 
 %% default xyz pattern - regions
 % xyz_pts formats: [x y z]; [x y z weight]; [pat x y z weight]
-xyz_patterns(1).pat_name = 'Multiplane';
-xyz_patterns(1).xyz_pts = [8 0 -50; 0 8 -25; 8 0 0; 0 8 25; 8 0 50;];
-xyz_patterns(1).SLM_region = 'Right half';
+idx = 1;
+xyz_patterns(idx).pat_name = 'Multiplane';
+xyz_patterns(idx).xyz_pts = [8 0 -50; 0 8 -25; 8 0 0; 0 8 25; 8 0 50;];
+xyz_patterns(idx).SLM_region = 'Right half';
 
-xyz_patterns(2).pat_name = 'Stim';
-xyz_patterns(2).xyz_pts = [8 0 0];
-xyz_patterns(2).SLM_region = 'Left half';
+idx = idx + 1;
+xyz_patterns(idx).pat_name = 'Stim';
+xyz_patterns(idx).xyz_pts = [8 0 0];
+xyz_patterns(idx).SLM_region = 'Left half';
 
 %% 
 pw_calibration.smooth_std = 1;
