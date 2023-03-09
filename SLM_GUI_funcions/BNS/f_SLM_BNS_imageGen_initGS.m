@@ -2,6 +2,11 @@ function ops = f_SLM_BNS_imageGen_initGS(ops, reg1, num_iter)
 
 if ~libisloaded('ImageGen') 
     loadlibrary([ops.imageGen_dir, '\ImageGen.dll'], [ops.imageGen_dir, '\ImageGen.h']);
+end
+
+if ~isfield(ops, 'ImageGen')
+    ops.ImageGen.GS_init = 0;
+elseif ~isfield(ops.ImageGen, 'GS_init')
     ops.ImageGen.GS_init = 0;
 end
 
@@ -21,7 +26,7 @@ if ~ops.ImageGen.GS_init
         
         init_out = calllib('ImageGen', 'Initialize_HologramGenerator',...
                 reg1.SLMn, reg1.SLMm, ops.ImageGen.bit_depth,...
-                ops.ImageGen.num_iter, ops.ImageGen.RGB);
+                num_iter, ops.ImageGen.RGB);
     else
         ops.ImageGen.new_ver = 0;
         init_out = calllib('ImageGen', 'Initalize_HologramGenerator',...
