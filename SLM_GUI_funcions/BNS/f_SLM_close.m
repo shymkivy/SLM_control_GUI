@@ -1,18 +1,16 @@
 function ops = f_SLM_close(ops)
+% reg and OD
 
 if strcmpi(ops.SLM_type, 'BNS1920')
     ops = f_SLM_BNS1920_close(ops);
-elseif strcmpi(ops.SLM_type, 'BNS512OD_sdk3') || strcmpi(ops.SLM_type, 'BNS512')
-    ops = f_SLM_BNS512OD_sdk3_close(ops);
-elseif strcmpi(ops.SLM_type, 'BNS512OD')
-    ops = f_SLM_BNS512OD_close(ops);
+elseif strcmpi(ops.SLM_type, 'BNS512OD') || strcmpi(ops.SLM_type, 'BNS512')
+    if ops.sdk3_ver
+        ops = f_SLM_BNS512OD_sdk3_close(ops);
+    else
+        ops = f_SLM_BNS512OD_close(ops);
+    end
 else
     error('Undefined SLM in f_SLM_close');
-end
-
-
-if libisloaded('Blink_C_wrapper')
-    unloadlibrary('Blink_C_wrapper');
 end
 
 end

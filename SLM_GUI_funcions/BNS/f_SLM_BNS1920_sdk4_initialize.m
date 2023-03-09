@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS1920_initialize(ops)
+function ops = f_SLM_BNS1920_sdk4_initialize(ops)
 
 %% SLM params
 if ~exist('ops', 'var')
@@ -53,8 +53,11 @@ ops.RAM_write_enable = 1;
 ops.use_GPU = 0;    % this is specific to ODP slms (512)
 ops.max_transients = 10; % this is specific to ODP slms (512)
 ops.wait_For_Trigger = 0; % This feature is user-settable; use 1 for 'on' or 0 for 'off'
-ops.external_Pulse = 0;
+ops.external_Pulse = 0; % same as output_pulse_image_flip?
 ops.timeout_ms = 5000;
+% new sdk params for update
+ops.flip_immediate = 0;
+ops.output_pulse_image_refresh = 0;
 
 %% - create SDK
 init_lut_fpath = libpointer('string'); % null for new bns, only important for old
@@ -64,15 +67,17 @@ calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found,...
     ops.use_GPU, ops.max_transients, init_lut_fpath);
 
 % Convention follows that of C function return values: 0 is success, nonzero integer is an error
-if ~ops.constructed_okay.value   % 0 for 1 for v4.856
+if ~ops.constructed_okay.value   % 0 for v3;  1 for v4.856
+    ops.SDK_created = 0;
     disp('Blink SDK was not successfully constructed');
     disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
     calllib('Blink_C_wrapper', 'Delete_SDK');
+    disp('Deleted SDK')
 else
+    ops.SDK_created = 1;
     ops.board_number = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
-    ops.SDK_created = 1;
     
     % load a LUT 
     calllib('Blink_C_wrapper', 'Load_LUT_file',ops.board_number, lut_path);

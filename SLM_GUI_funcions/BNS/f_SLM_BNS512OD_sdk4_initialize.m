@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS512OD_initialize(ops)
+function ops = f_SLM_BNS512OD_sdk4_initialize(ops)
 % regionalLUTfileName, SLMInitializationImageFileName 
 % [ sdk ]
 %% SLM params
@@ -84,14 +84,14 @@ calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found, op
                     ops.is_nematic_type, ops.RAM_write_enable, ops.use_GPU, ops.max_transients, init_lut_fpath);
                
 if ops.constructed_okay.value ~= 1
-    ops.SDK_created = 0;
     disp('Blink SDK was not successfully constructed');
     disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
     calllib('Blink_C_wrapper', 'Delete_SDK');
+    disp('Deleted SDK')
 else
     %%
-    ops.board_number = 1;
     ops.SDK_created = 1;
+    ops.board_number = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
     disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));

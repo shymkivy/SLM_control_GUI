@@ -8,6 +8,8 @@ ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD', 'BNS512OD_sdk3'
 % BNS512OD with OverDrive (OD) in 901D
 % BNS512 standard on prairie 1 or 901 not using OD
 
+ops.sdk3_ver = 0; % using the old sdk 3 library?
+
 %% for meadowlark ImageGen and GS algorithm
 
 ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version, different functs
@@ -22,8 +24,9 @@ SLM_params(idx).SLM_name = 'BNS1920';
 SLM_params(idx).height = 1152;
 SLM_params(idx).width = 1920;
 SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
-%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+% SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
+SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 %lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -31,20 +34,12 @@ SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear_cut_940_1064.lut';
 
 idx = idx + 1;
-SLM_params(idx).SLM_name = 'BNS1920';
-SLM_params(idx).height = 1152;
-SLM_params(idx).width = 1920;
-SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
-%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
-SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
-
-idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512OD'; % 901D with overdrive
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
 SLM_params(idx).init_lut_fname = 'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';
+SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
 
 idx = idx + 1;
@@ -52,15 +47,8 @@ SLM_params(idx).SLM_name = 'BNS512'; % prairie 1
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
 SLM_params(idx).lut_fname = 'slm4317_at1064_P8.lut';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
-SLM_params(idx).regions_use = {'Full SLM'};
-
-idx = idx + 1;
-SLM_params(idx).SLM_name = 'BNS512OD_sdk3'; % 901D with overdrive
-SLM_params(idx).height = 512;
-SLM_params(idx).width = 512;
-SLM_params(idx).init_lut_fname = 'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';
+SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
 
 %% some default general params
@@ -181,28 +169,11 @@ region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
 region_params(idx).beam_dump_xy = [0, 0];
 
-%% 25x with BNS512
+%% 25x with BNS512 overdrive plus
+
 idx = idx + 1;
 region_params(idx).obj_name = '25X_fat';
 region_params(idx).SLM_name = 'BNS512OD';
-region_params(idx).reg_name = 'Full SLM';
-region_params(idx).wavelength = 1040;
-region_params(idx).phase_diameter = 512;
-region_params(idx).zero_outside_phase_diameter = true;
-region_params(idx).beam_diameter = 512;
-region_params(idx).effective_NA = 0.5; 
-region_params(idx).lut_correction_fname = [];
-region_params(idx).xyz_affine_tf_fname = [];
-region_params(idx).AO_correction_fname = [];
-region_params(idx).point_weight_correction_fname = [];
-region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
-region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
-region_params(idx).beam_dump_xy = [0, 0];
-
-%% 25x with BNS512
-idx = idx + 1;
-region_params(idx).obj_name = '25X_fat';
-region_params(idx).SLM_name = 'BNS512OD_sdk3';
 region_params(idx).reg_name = 'Full SLM';
 region_params(idx).wavelength = 1040;
 region_params(idx).phase_diameter = 512;
