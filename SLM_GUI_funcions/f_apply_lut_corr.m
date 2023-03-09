@@ -1,10 +1,11 @@
-function holo_pix_out = f_apply_lut_corr(holo_pix, lut_corr_data)
+function holo_pix_out = f_apply_lut_corr(SLM_phase, lut_corr_data)
 
 if ~exist('lut_corr_data', 'var')
     lut_corr_data = [];
 end
 
-temp_holo1 = uint8(holo_pix);
+%temp_holo1 = uint8(SLM_phase);
+temp_holo1 = uint8(((SLM_phase+pi)/(2*pi))*255);
 
 if ~isempty(lut_corr_data)
     for n_corr = 1:size(lut_corr_data,1)

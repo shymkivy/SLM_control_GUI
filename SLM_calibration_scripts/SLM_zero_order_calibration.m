@@ -43,22 +43,24 @@ ops = f_copy_fields(ops, SLM_params);
 
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
-ops.use_photodiode = 0;
+ops.use_photodiode = 1;
 ops.plot_phase = 1;
 
-ops.weight_start = 0.95;    % the other is 1
+
+ops.weight_start = 0.23;    % the other is 1
+ops.w_range = 0:0.01:1;
 
 ops.NumGray = 256;          % bit depth
 
 % to use meadolwark analysis need 8x8, to use their mask need equal m and n
 ops.num_regions_m = 1;% 4 8;
-ops.num_regions_n = 1;% 8 16;
+ops.num_regions_n = 2;% 8 16;
 
-ops.BlazePeriod = 20;
-ops.BlazeIncreasing = true;
+ops.BlazePeriod = 40;
+ops.BlazeIncreasing = false;
 ops.BlazeHorizontal = true;
 
-ops.DAQ_num_sessions = 200;
+ops.DAQ_num_sessions = 500;
 
 %%
 slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
@@ -175,6 +177,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
         SLM_im = imagesc(reshape(blazed.Value, ops.width, ops.height)'); axis equal tight;
         caxis([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
+        colorbar
     end
     
     if ops.use_TLDC
@@ -208,16 +211,19 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             region_mask = flipud(region_mask);
             
             %holo_image = stripes.*region_mask*Gray;
-            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.weight_start*exp(1i*0/(ops.NumGray-1)*2*pi);
+            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.weight_start*exp(1i*Gray/(ops.NumGray-1)*2*pi);
             
-            holo_image = angle(holo_image_cpx)+pi.*region_mask;
+            holo_image = angle(holo_image_cpx).*region_mask;
 
             holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
             
-            SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
+            SLM_mask.Value = reshape(holo_image_corr', [],1); 
+            %SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
             
             %SLM_mask.Value = reshape(rot90(uint8(holo_image_corr), 3),[],1);
-
+            
+            f_SLM_update(ops, SLM_mask);
+            
             %Generate the stripe pattern and mask out current region
             %calllib('ImageGen', 'Generate_Stripe', SLM_blank, ops.width, ops.height, ops.PixelValue, Gray, ops.PixelsPerStripe);
             %calllib('ImageGen', 'Mask_Image', SLM_blank, ops.width, ops.height, Region, ops.NumRegions); % 
@@ -250,17 +256,88 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             
             if ops.plot_phase
                 SLM_im.CData = reshape(SLM_mask.Value, ops.width, ops.height)';
-                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
+                SLM_fig.Children(end).Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
         end
     end
     f_SLM_update(ops, SLM_blank);
+    cam_fig.Children.Title.String = sprintf('Select min intensity phase; Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
+    [min_pix, ~] = ginput(1);
+    Gray = round(min_pix);
+    
+    ops.num_w = numel(ops.w_range);
+    region_w = zeros(ops.num_w*numel(regions_run),2);
     
     if ops.use_photodiode
-        save([ops.ops.save_lut_dir '\photodiode_' ops.save_file_name], 'zero_order_region_gray', 'AI_intensity', 'ops', '-v7.3');
-        new_dir1 = [ops.ops.save_lut_dir '\photodiode_' ops.save_file_name(1:end-4)];
+        AI_intensity_w = zeros(ops.NumGray*numel(regions_run), 1);
+        phd_fig2 = figure;
+        x1 = ones(ops.num_w, numel(regions_run)).*ops.w_range;
+        y1 = zeros(ops.num_w, numel(regions_run));
+        phd_plot2 = plot(x1,y1); axis tight;
+        %caxis([1 256]);
+        phd_fig2.Children.Title.String = 'Photodiode w calib';
+        xlabel('w')
+    end
+    for n_reg = 1:numel(regions_run)
+        for n_w = 1:ops.num_w
+            idx1 = (n_reg-1)*ops.num_w+n_w;
+            
+            region_w(idx1,:) = [Region, ops.w_range(n_w)];
+
+            region_mask = zeros(ops.height, ops.width);
+            region_mask(region_idx == Region) = 1;
+            region_mask = flipud(region_mask);
+
+            %holo_image = stripes.*region_mask*Gray;
+            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.w_range(n_w)*exp(1i*Gray/(ops.NumGray-1)*2*pi);
+
+            holo_image = angle(holo_image_cpx).*region_mask;
+
+            holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
+
+            SLM_mask.Value = reshape(holo_image_corr', [],1); 
+            %SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
+
+            %SLM_mask.Value = reshape(rot90(uint8(holo_image_corr), 3),[],1);
+
+            f_SLM_update(ops, SLM_mask);
+
+            if ops.use_photodiode
+                f_SLM_update(ops, SLM_mask);
+                pause(0.01); %let the SLM settle for 10 ms
+                % scan intensity
+                %data = startForeground(session);
+                data = read(session,ops.DAQ_num_sessions,"OutputFormat","Matrix");
+                AI_intensity_w(idx1) = mean(data);
+                phd_plot2(n_reg).XData(n_w) = region_w(idx1,2); 
+                phd_plot2(n_reg).YData(n_w) = AI_intensity_w(idx1);
+                phd_fig2.Children.Title.String = sprintf('W %d/%d; Region %d/%d', n_w, ops.num_w, Region+1, ops.NumRegions);
+            end
+            
+            if ops.use_TLDC   % Thorlabs camera
+                f_SLM_update(ops, SLM_mask);
+                pause(0.01); %let the SLM settle for 10 ms
+                TLDC_get_Cam_Im(cam_out.hdl_cam);
+                cam_im.CData = cam_out.cam_frame';
+                calib_im_series(:,:,idx1) = (cam_out.cam_frame);
+                cam_fig.Children.Title.String = sprintf('W %d/%d; Region %d/%d', n_w, ops.num_w, Region+1, ops.NumRegions);
+                pause(.02);
+            end
+            
+            if ops.plot_phase
+                SLM_im.CData = reshape(SLM_mask.Value, ops.width, ops.height)';
+                SLM_fig.Children(end).Title.String = sprintf('W %d/%d; Region %d/%d', n_w, ops.num_w, Region+1, ops.NumRegions);
+                drawnow;
+                %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
+            end
+        end
+    end
+    
+    if ops.use_photodiode
+        save([ops.save_lut_dir '\photodiode_zero_order' ops.save_file_name], 'region_gray', 'AI_intensity', 'region_w', 'AI_intensity_w', 'ops', '-v7.3');
+        new_dir1 = [ops.save_lut_dir '\photodiode_' ops.save_file_name(1:end-4)];
         % dump the AI measurements to a csv file
 %         mkdir(new_dir1);
 %         for n_reg = 1:numel(regions_run)
@@ -270,8 +347,11 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
 %             csvwrite([new_dir1 '\' filename], [region_gray(r_idx,2), AI_intensity(r_idx)]);  
 %         end
     end
+    
+    
+    
     if ops.use_TLDC
-        save([ops.ops.save_lut_dir '\TDLC_' ops.save_file_name], 'region_gray', 'calib_im_series', 'ops', '-v7.3');
+        save([ops.save_lut_dir '\TDLC_' ops.save_file_name], 'region_gray', 'calib_im_series', 'ops', '-v7.3');
     end
 else
     disp('Not running anything...')
