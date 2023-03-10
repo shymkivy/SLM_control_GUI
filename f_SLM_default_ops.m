@@ -97,6 +97,8 @@ region_params(idx).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat'
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0.027 -0.012]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 5.51935; % in radians % 224 from [0 - 255]
+region_params(idx).zero_order_supp_w = 0.26;
 region_params(idx).beam_dump_xy = [-350, 0];
 
 idx = idx + 1;
@@ -114,6 +116,8 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = 'Fianium_0z_4_10_22_pw_corr.mat';
 region_params(idx).xyz_offset = [0 0 -6];  % baseline beam offset
 region_params(idx).xy_over_z_offset = [-0.018 0.0095]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+region_params(idx).zero_order_supp_w = 0;
 region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 20x with BNS1920
