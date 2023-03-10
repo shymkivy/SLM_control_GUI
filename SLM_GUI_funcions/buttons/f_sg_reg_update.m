@@ -77,6 +77,9 @@ if ~isempty(reg_params)
     app.XZcorrEditField.Value = reg_params.xy_over_z_offset(1);
     app.YZcorrEditField.Value = reg_params.xy_over_z_offset(2);
     
+    app.ZOsuppphaseEditField.Value = reg_params.zero_order_supp_phase;
+    app.ZOsuppWEditField.Value = reg_params.zero_order_supp_w;
+    
     app.BeamdumpXEditField.Value = reg_params.beam_dump_xy(1);
     app.BeamdumpYEditField.Value = reg_params.beam_dump_xy(2);
 else

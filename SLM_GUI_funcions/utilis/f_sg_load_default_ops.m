@@ -24,32 +24,36 @@ else
 end
 
 %% some default params if not defined
-default_objectives(1).obj_name = 'default';
-default_objectives(1).FOV_size = 500;
+idx = 1;
 
-default_region_list(1).reg_name = 'Full SLM';
-default_region_list(1).height_range = [0, 1];
-default_region_list(1).width_range = [0, 1];
+default_objectives(idx).obj_name = 'default';
+default_objectives(idx).FOV_size = 500;
 
-% default_region_params(1).obj_name = default_objectives.obj_name;
-% default_region_params(1).SLM_name = app.SLM_ops.SLM_type;
-% default_region_params(1).reg_name = default_region_list.reg_name;
-default_region_params(1).phase_diameter = [];
-default_region_params(1).zero_outside_phase_diameter = true;
-default_region_params(1).beam_diameter = [];
-default_region_params(1).wavelength = 940;
-default_region_params(1).effective_NA = .5;
-default_region_params(1).lut_correction_fname = [];
-default_region_params(1).xyz_affine_tf_fname = [];
-default_region_params(1).AO_correction_fname = [];
-default_region_params(1).point_weight_correction_fname = [];
-default_region_params(1).lut_correction_data = [];
-default_region_params(1).xyz_affine_tf_mat = [];
-default_region_params(1).AO_wf = [];
-default_region_params(1).pw_corr_data = [];
-default_region_params(1).xyz_offset = [0 0 0];
-default_region_params(1).xy_over_z_offset = [0 0]; % axial beam offset by z
-default_region_params(1).beam_dump_xy = [0 0]; % axial beam offset by z
+default_region_list(idx).reg_name = 'Full SLM';
+default_region_list(idx).height_range = [0, 1];
+default_region_list(idx).width_range = [0, 1];
+
+% default_region_params(idx).obj_name = default_objectives.obj_name;
+% default_region_params(idx).SLM_name = app.SLM_ops.SLM_type;
+% default_region_params(idx).reg_name = default_region_list.reg_name;
+default_region_params(idx).phase_diameter = [];
+default_region_params(idx).zero_outside_phase_diameter = true;
+default_region_params(idx).beam_diameter = [];
+default_region_params(idx).wavelength = 940;
+default_region_params(idx).effective_NA = .5;
+default_region_params(idx).lut_correction_fname = [];
+default_region_params(idx).xyz_affine_tf_fname = [];
+default_region_params(idx).AO_correction_fname = [];
+default_region_params(idx).point_weight_correction_fname = [];
+default_region_params(idx).lut_correction_data = [];
+default_region_params(idx).xyz_affine_tf_mat = [];
+default_region_params(idx).AO_wf = [];
+default_region_params(idx).pw_corr_data = [];
+default_region_params(idx).xyz_offset = [0 0 0];
+default_region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+default_region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+default_region_params(idx).zero_order_supp_w = 0;
+default_region_params(idx).beam_dump_xy = [0 0]; % axial beam offset by z
 
 app.SLM_ops.default_objectives = default_objectives;
 app.SLM_ops.default_region_list = default_region_list;
@@ -93,6 +97,8 @@ app.region_list = region_list;
 app.SelectRegionDropDown.Items = {region_list.reg_name};
 app.CurrentregionDropDown.Items = {region_list.reg_name};
 
+
+%%
 reg_obj_params = app.SLM_ops.region_params;
 rop_to_use = false(numel(reg_obj_params),1);
 for n_p = 1:numel(reg_obj_params)

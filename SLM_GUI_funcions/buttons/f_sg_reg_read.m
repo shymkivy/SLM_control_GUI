@@ -8,7 +8,9 @@ reg_params(1).obj_name = app.ObjectiveDropDown.Value;
 reg_params(1).SLM_name = app.SLMtypeDropDown.Value;
 reg_params(1).reg_name = app.RegionnameEditField.Value;
 reg_params(1).wavelength = app.regionWavelengthnmEditField.Value;
-reg_params(1).phase_diameter = app.regionPhasePatDiameterEditField.Value;
+reg_params(1).phase_diameter = app.regionPhaseDiameterEditField.Value;
+reg_params(1).zero_outside_phase_diameter = app.regionZerooutsidephasediameterCheckBox.Value;
+reg_params(1).beam_diameter = app.regionBeamDiameterEditField.Value;
 reg_params(1).effective_NA = app.regionEffectiveNAEditField.Value;
 
 if strcmpi(app.LUTcorrectionDropDown.Value, 'none')
@@ -46,6 +48,9 @@ reg_params(1).xyz_offset = [app.XoffsetEditField.Value,...
                         
 reg_params(1).xy_over_z_offset = [app.XZcorrEditField.Value,...
                                   app.YZcorrEditField.Value];
+
+reg_params(1).zero_order_supp_phase = app.ZOsuppphaseEditField.Value;
+reg_params(1).zero_order_supp_w = app.ZOsuppWEditField.Value;
                               
 reg_params(1).beam_dump_xy = [app.BeamdumpXEditField.Value,...
                               app.BeamdumpYEditField.Value];

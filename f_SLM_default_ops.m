@@ -24,8 +24,8 @@ SLM_params(idx).SLM_name = 'BNS1920';
 SLM_params(idx).height = 1152;
 SLM_params(idx).width = 1920;
 SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-% SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
+%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
 SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -136,6 +136,8 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+region_params(idx).zero_order_supp_w = 0;
 region_params(idx).beam_dump_xy = [-350, 0];
 
 idx = idx + 1;
@@ -153,6 +155,8 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 -6];
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+region_params(idx).zero_order_supp_w = 0;
 region_params(idx).beam_dump_xy = [-350, 0];
 
 %% 25x with BNS512
@@ -171,6 +175,8 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+region_params(idx).zero_order_supp_w = 0;
 region_params(idx).beam_dump_xy = [0, 0];
 
 %% 25x with BNS512 overdrive plus
@@ -190,6 +196,8 @@ region_params(idx).AO_correction_fname = [];
 region_params(idx).point_weight_correction_fname = [];
 region_params(idx).xyz_offset = [0 0 0]; % baseline beam offset
 region_params(idx).xy_over_z_offset = [0 0]; % axial beam offset by z
+region_params(idx).zero_order_supp_phase = 0; % in radians % 224 from [0 - 255] 
+region_params(idx).zero_order_supp_w = 0;
 region_params(idx).beam_dump_xy = [0, 0];
 
 %% default directories
