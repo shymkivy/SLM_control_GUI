@@ -17,7 +17,10 @@ end
 reg_params_idx = f_sg_get_reg_params_idx(app, current_reg_name);
 
 if sum(reg_params_idx)
-    app.region_obj_params(reg_params_idx) = reg_params;
+    fields1 = fields(app.region_obj_params(reg_params_idx));
+    for n_fl = 1:numel(fields1)
+        app.region_obj_params(reg_params_idx).(fields1{n_fl}) = reg_params.(fields1{n_fl});
+    end
 else
     disp('Adding new reg params');
     app.region_obj_params = [app.region_obj_params, reg_params];

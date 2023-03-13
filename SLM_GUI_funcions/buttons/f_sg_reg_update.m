@@ -14,6 +14,9 @@ else
     if isempty(reg_params.phase_diameter)
         reg_params.phase_diameter = max([app.SLM_ops.height app.SLM_ops.width]);
     end
+    if isempty(reg_params.beam_diameter)
+        reg_params.beam_diameter = max([app.SLM_ops.height app.SLM_ops.width]);
+    end
 end
 
 if ~isempty(reg1)

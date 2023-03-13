@@ -2,7 +2,7 @@ function f_sg_update_params_SLM(app)
 
 was_on = app.SLM_ops.SDK_created;
 
-if app.SLM_ops.SDK_created
+if was_on
     app.SLM_ops = f_SLM_close(app.SLM_ops);
     if ~app.SLM_ops.SDK_created
         app.ActivateSLMLamp.Color = [0.80,0.80,0.80]; %[0.00,1.00,0.00];
@@ -42,30 +42,31 @@ if was_on
 end
 
 %%
-region_list = app.SLM_ops.default_region_list;
-if isfield(app.SLM_ops, 'region_list')
-    if ~isempty(app.SLM_ops.region_list)
-        region_list = app.SLM_ops.region_list;
-    end
-end
+f_sg_load_region_list(app);
 
-if isfield(SLM_params, 'regions_use')
-    if ~isempty(SLM_params.regions_use)
-        is_reg = false(numel(region_list),1);
-        for n_reg = 1:numel(region_list)
-            is_reg(n_reg) = sum(strcmpi(region_list(n_reg).reg_name, SLM_params.regions_use));
+%%
+% first save region object params before reloading
+
+for n_par = 1:numel(app.region_obj_params)
+    temp_data = app.region_obj_params(n_par);
+
+    idx_SLM_name = strcmpi(temp_data.SLM_name, {app.SLM_ops.region_params.SLM_name});
+    idx_obj_name = strcmpi(temp_data.obj_name, {app.SLM_ops.region_params.obj_name});
+    idx_reg_name = strcmpi(temp_data.reg_name, {app.SLM_ops.region_params.reg_name});
+    
+    idx_joint = and(and(idx_SLM_name, idx_obj_name), idx_reg_name);
+    
+    if sum(idx_joint)
+        fields1 = fields(app.SLM_ops.region_params(idx_joint));
+        for n_fl = 1:numel(fields1)
+            app.SLM_ops.region_params(idx_joint).(fields1{n_fl}) = temp_data.(fields1{n_fl});
         end
-        region_list(~is_reg) = [];
+    else
+        warning('Cannot update region data in f_sg_update_params_SLM, line 61ish');
     end
 end
-
-if isempty(region_list)
-    region_list = default_region_list;
-end
-
-app.region_list = region_list;
-app.SelectRegionDropDown.Items = {region_list.reg_name};
-app.CurrentregionDropDown.Items = {region_list.reg_name};
+% load new reg params
+f_sg_load_load_regobj_params(app);
 
 %%
 f_sg_load_calibration(app);
