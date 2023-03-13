@@ -88,6 +88,10 @@ if ~isempty(coord)
 %         phase = temp_phase;
 %     end
     
+    if app.ApplyZOsuppressionButton.Value
+        SLM_phase = f_sg_apply_ZO_corr(SLM_phase, reg1);
+    end
+
     if reg1.zero_outside_phase_diameter
         SLM_phase(~reg1.holo_mask) = 0;
     end
