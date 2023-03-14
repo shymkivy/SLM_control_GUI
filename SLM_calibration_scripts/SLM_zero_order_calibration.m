@@ -56,9 +56,15 @@ ops.NumGray = 256;          % bit depth
 ops.num_regions_m = 1;% 4 8;
 ops.num_regions_n = 2;% 8 16;
 
+ops.pattern_type = 'blazed'; % blazed, stripes
+
 ops.BlazePeriod = 40;
 ops.BlazeIncreasing = false;
-ops.BlazeHorizontal = true;
+ops.BlazeHorizontal = 0;
+
+ops.StripePixelValue = 0;
+app.StripeGray = 127;
+app.StripePixelPerStripe = 8;
 
 ops.DAQ_num_sessions = 500;
 
@@ -157,16 +163,24 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     
     %% generate SLM image
     
-    blazed = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
-    calllib('ImageGen', 'Generate_Grating',...
-                blazed,...
+    pattern_pt = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
+    if strcmpi(ops.pattern_type, 'blazed')
+        
+        calllib('ImageGen', 'Generate_Grating',...
+                pattern_pt,...
                 ops.width, ops.height,...
                 ops.BlazePeriod,...
                 ops.BlazeIncreasing,...
                 ops.BlazeHorizontal);
-    
-            
-    blazed_ph = f_sg_poiner_to_im(blazed, ops.height, ops.width);
+    elseif strcmpi(ops.pattern_type, 'stripes')
+        calllib('ImageGen', 'Generate_Stripe',...
+                pattern_pt,...
+                ops.width, ops.height,...
+                ops.StripePixelValue,...
+                app.StripeGray,...
+                app.StripePixelPerStripe);
+    end
+    pat_phase_ph = f_sg_poiner_to_im(pattern_pt, ops.height, ops.width);
     
        
     region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
@@ -174,7 +188,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     %%
     if ops.plot_phase
         SLM_fig = figure;
-        SLM_im = imagesc(reshape(blazed.Value, ops.width, ops.height)'); axis equal tight;
+        SLM_im = imagesc(reshape(pattern_pt.Value, ops.width, ops.height)'); axis equal tight;
         caxis([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
         colorbar
@@ -211,7 +225,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             region_mask = flipud(region_mask);
             
             %holo_image = stripes.*region_mask*Gray;
-            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.weight_start*exp(1i*Gray/(ops.NumGray-1)*2*pi);
+            holo_image_cpx = exp(1i*(pat_phase_ph-pi)) + ops.weight_start*exp(1i*Gray/(ops.NumGray-1)*2*pi);
             
             holo_image = angle(holo_image_cpx).*region_mask;
 
@@ -291,7 +305,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             region_mask = flipud(region_mask);
 
             %holo_image = stripes.*region_mask*Gray;
-            holo_image_cpx = exp(1i*(blazed_ph-pi)) + ops.w_range(n_w)*exp(1i*Gray/(ops.NumGray-1)*2*pi);
+            holo_image_cpx = exp(1i*(pat_phase_ph-pi)) + ops.w_range(n_w)*exp(1i*Gray/(ops.NumGray-1)*2*pi);
 
             holo_image = angle(holo_image_cpx).*region_mask;
 
