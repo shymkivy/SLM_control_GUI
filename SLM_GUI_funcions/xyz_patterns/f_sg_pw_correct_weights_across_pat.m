@@ -72,7 +72,7 @@ for n_pat = 1:num_pat
     tab_data(tab_data.Pattern == curr_pat,:) = tab_pat;
     f_waitbar_update(wb, n_pat/num_pat, 'Correcting weights across pat...');
 end
-f_waitbar_close(wb)
+f_waitbar_close(wb);
 
 tab_data_full2 = [tab_data; tab_data_bd];
 

@@ -12,10 +12,60 @@ try %#ok<*TRYNC>
     f_SLM_close(ops);
 end
 try 
+    f_SLM_BNS_imageGen_unload();
+end
+try 
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end
 
 clear;
+
+%%
+%script_dir = which('SLM_lut_s1_run_calibration.m');
+script_dir = fileparts(mfilename('fullpath'));
+gui_dir = [script_dir '\\..'];
+
+addpath(genpath(script_dir));
+addpath(gui_dir);
+addpath(genpath([gui_dir '\SLM_GUI_funcions']));
+
+ops = f_SLM_default_ops(gui_dir);
+
+ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
+
+% overwrite the imagegen lib used
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
+
+ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
+%ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_10_10_21_left_half_sub_region_interp_corr.mat';
+
+% overwrite the imagegen lib used
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
+
+%%
+ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
+
+SLM_params = ops.SLM_params(strcmpi({ops.SLM_params.SLM_name}, ops.SLM_type));
+ops = f_copy_fields(ops, SLM_params);
+
+% if strcmpi(ops.SLM_type, 'BNS1920')
+%     %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+%     %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
+%     %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
+%     ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
+%     %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
+%     %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
+%     %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
+% elseif strcmpi(ops.SLM_type, 'BNS512')
+%     % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
+%     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
+%     ops.lut_fname =  'linear.lut';
+% elseif strcmpi(ops.SLM_type, 'BNS512OD')  % overdrive SLM needs to be initialized with regional lut
+%     % 901D, with overdrive, requires initial regional lut (init_lut_fname)
+%     ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
+%     ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
+% end
+
 
 %% Parameters
 ops.use_TLDC = 0;           % otherwise wait for trigger
@@ -30,62 +80,24 @@ ops.num_regions_n = 16;% 8 16;
 
 %16R 940nm p120
 ops.PixelsPerStripe = 8;	
-ops.PixelValue = 0;
 
 ops.DAQ_num_sessions = 200;
 
-% ops.lut_correction_fname = 'photodiode_lut_940_slm5221_10_10_21_right_half_sub_region_corr.mat';
-ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_10_10_21_left_half_sub_region_interp_corr.mat';
+%%
 
-slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
 save_pref = '1064_Fianium_maitai_corr2';
 %save_pref = '1064_slm5221_fianium';
 
 ops.NumRegions = ops.num_regions_m  * ops.num_regions_n;
-%% Which SLM????
-ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
-
-if strcmpi(ops.SLM_type, 'BNS1920')
-    %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-    %ops.lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
-    %ops.lut_fname =  'photodiode_lut_940_1r_11_10_20_14h_37m_from_linear.lut';
-    ops.lut_fname = 'linear_cut_940_1064.lut'; %'linear_cut_940_1064.lut';
-    %ops.lut_fname = 'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt'; %;linear.lut
-    %ops.lut_fname = 'slm5221_at940_fo_1r_11_5_20.lut'; %'linear.lut';
-    %ops.lut_fname = 'slm5221_at1064_fo_1r_11_5_20.lut'; %'linear.lut';
-elseif strcmpi(ops.SLM_type, 'BNS512')
-    % Prairie 1, sdk with no overdrive. Will not accept initial regional lut
-    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink\SDK';
-    ops.lut_fname =  'linear.lut';
-elseif strcmpi(ops.SLM_type, 'BNS512OD')  % overdrive SLM needs to be initialized with regional lut
-    % 901D, with overdrive, requires initial regional lut (init_lut_fname)
-    ops.SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-    ops.init_lut_fname =  'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
-end
 
 %% add paths and create save name
-origin_path = which('SLM_lut_s1_run_calibration.m');
-if ~numel(origin_path)
-    error('Error: Move to the script folder');
-else
-    ops.working_dir = fileparts(which('SLM_lut_s1_run_calibration.m'));
-end
-
-ops.lut_dir = [ops.working_dir '\..\..\SLM_calibration\lut_calibration'];
-
-addpath([ops.working_dir '\..\']);
-addpath([ops.working_dir '\..\SLM_GUI_funcions']);
-addpath([ops.working_dir '\..\SLM_GUI_funcions\BNS']);
-addpath([ops.working_dir '\calibration_functions']);
-
 ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
-ops.save_path = [ops.working_dir '\..\..\SLM_outputs\lut_calibration'];
 ops.save_file_name = sprintf('lut_%s_%dr_%s.mat', save_pref,ops.NumRegions, ops.time_stamp);
-if ~exist(ops.save_path, 'dir')
-    mkdir(ops.save_path);
+if ~exist(ops.save_lut_dir, 'dir')
+    mkdir(ops.save_lut_dir);
 end
-
 
 %%
 regions_run = f_lut_get_regions_run2(slm_roi, ops.num_regions_m, ops.num_regions_n);
@@ -93,7 +105,7 @@ regions_run = sort(regions_run(:));
 
 %% Initialize SLM
 ops = f_SLM_initialize(ops);
-
+ops = f_SLM_BNS_imageGen_load(ops);
 %% load lut correction data
 lut_data = [];
 
@@ -120,7 +132,6 @@ end
 ops.lut_data = lut_data;
 ops.slm_roi = slm_roi;
 ops.regions_run = regions_run;
-
 
 %%
 cont1 = input('Turn laser on and reply [y] to continue:', 's');
@@ -160,12 +171,10 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     region_gray = zeros(ops.NumGray*numel(regions_run),2);
     
     SLM_blank = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
-    calllib('ImageGen', 'Generate_Solid', SLM_blank, ops.width, ops.height, ops.PixelValue);
     f_SLM_update(ops, SLM_blank);
     
-    SLM_mask = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
-    calllib('ImageGen', 'Generate_Solid', SLM_mask, ops.width, ops.height, 1);
-    
+    SLM_mask = libpointer('uint8Ptr', ones(ops.width*ops.height,1));
+   
     %% generate SLM image
     is_horizontal = 0;
     stripes = f_gen_stripes(ops.height, ops.width, ops.PixelsPerStripe, is_horizontal);
@@ -254,8 +263,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     f_SLM_update(ops, SLM_blank);
     
     if ops.use_photodiode
-        save([ops.save_path '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
-        new_dir1 = [ops.save_path '\photodiode_' ops.save_file_name(1:end-4)];
+        save([ops.save_lut_dir '\photodiode_' ops.save_file_name], 'region_gray', 'AI_intensity', 'ops', '-v7.3');
+        new_dir1 = [ops.save_lut_dir '\photodiode_' ops.save_file_name(1:end-4)];
         % dump the AI measurements to a csv file
         mkdir(new_dir1);
         for n_reg = 1:numel(regions_run)
@@ -278,6 +287,9 @@ cont1 = input('Done, turnb off laser and press [y] close SLM:', 's');
 
 try 
     f_SLM_close(ops);
+end
+try 
+    f_SLM_BNS_imageGen_unload();
 end
 if ops.use_TLDC
     TLDC_set_Cam_Close(cam_out.hdl_cam);            

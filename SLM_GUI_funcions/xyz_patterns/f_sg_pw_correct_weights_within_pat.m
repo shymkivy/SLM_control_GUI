@@ -13,8 +13,10 @@ if ~exist('all_pat', 'var')
         all_pat = [];
     end
 end
+num_pat = numel(all_pat);
 
-for n_pat = 1:numel(all_pat)
+wb = f_waitbar_initialize(app, 'Correcting weights across pat...');
+for n_pat = 1:num_pat
     curr_pat = all_pat(n_pat);
     tab_pat = tab_data(tab_data.Pattern == curr_pat,:);
 
@@ -45,7 +47,9 @@ for n_pat = 1:numel(all_pat)
     tab_pat.Power = w_out.I_final.*power_corr;
     
     tab_data(tab_data.Pattern == all_pat(n_pat),:) = tab_pat;
+    f_waitbar_update(wb, n_pat/num_pat, 'Correcting weights within pat...');
 end
+f_waitbar_close(wb);
 
 for n_pat = 1:numel(all_pat)
     curr_pat = all_pat(n_pat);
