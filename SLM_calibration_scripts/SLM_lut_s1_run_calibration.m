@@ -80,6 +80,7 @@ ops.num_regions_n = 16;% 8 16;
 
 %16R 940nm p120
 ops.PixelsPerStripe = 8;	
+ops.horizontalStripe = True;
 
 ops.DAQ_num_sessions = 200;
 
@@ -176,8 +177,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
     SLM_mask = libpointer('uint8Ptr', ones(ops.width*ops.height,1));
    
     %% generate SLM image
-    is_horizontal = 0;
-    stripes = f_gen_stripes(ops.height, ops.width, ops.PixelsPerStripe, is_horizontal);
+
+    stripes = f_gen_stripes(ops.height, ops.width, ops.PixelsPerStripe, ops.horizontalStripe);
     region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
     %ops.region_idx = region_idx;
     %%

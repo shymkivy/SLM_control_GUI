@@ -36,12 +36,12 @@ pupil_amp = A  * exp(-res);
 %holo_image1(pupil_mask) = holo_image;
 
 holo_image2 = holo_image - defocus_dist.*defocus*1e-6;
-sim_crosstalk = 1;
 bin_fac = 5;
+smooth_std2 = reg1.sim_smooth_std*bin_fac;
 
-if sim_crosstalk
+if reg1.sim_pixel_crosstalk
     holo_image_rep = f_repmat_xy(holo_image2, bin_fac);
-    holo_image3 = f_smooth_nd(holo_image_rep, [2 2]);
+    holo_image3 = f_smooth_nd(holo_image_rep, smooth_std2);
 
     pupil_amp2 = f_repmat_xy(pupil_amp, bin_fac)/bin_fac^2;
 
@@ -65,7 +65,7 @@ SLM_complex_wave=pupil_amp2.*exp(1i.*(holo_image3));
 im1 = fftshift(fft2(SLM_complex_wave));
 im_amp = abs(im1)/prod(dims);
 
-if sim_crosstalk
+if reg1.sim_pixel_crosstalk
     %im_amp = f_bin_sum(im_amp, bin_fac);
     
     dims2 = size(im_amp);
@@ -99,10 +99,3 @@ mat_out = reshape(permute(repmat(holo_image2, [1, 1, num_rep]), [3, 2, 1]), [d2*
 
 end
 
-function mat_out = f_bin_sum(mat_in, num_bin)
-
-[d1, d2] = size(mat_in);
-mat_in2 = reshape(sum(reshape(mat_in, [num_bin, d1/num_bin, d2]),1), [d1/num_bin, d2]);
-mat_out = reshape(sum(reshape(mat_in2', [num_bin, d2/num_bin, d1/num_bin]),1), [d2/num_bin, d1/num_bin])';
-
-end

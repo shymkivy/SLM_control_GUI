@@ -37,6 +37,10 @@ for n_pat = 1:num_pat
     coord_corr = f_sg_coord_correct(reg1, coord);
     
     [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, app.GenXYZpatmethodDropDown.Value);
+
+    if reg1.zero_outside_phase_diameter
+        SLM_phase(~reg1.holo_mask) = 0;
+    end
     
     data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord_corr, app.pointsizepixEditField.Value);
     
