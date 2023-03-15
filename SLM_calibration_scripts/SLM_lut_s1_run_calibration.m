@@ -36,7 +36,8 @@ ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_s
 % overwrite the imagegen lib used
 ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 
-ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
+ops.lut_correction_fname = [];
+%ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 %ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_10_10_21_left_half_sub_region_interp_corr.mat';
 
 % overwrite the imagegen lib used
@@ -75,8 +76,8 @@ ops.plot_phase = 1;
 ops.NumGray = 256;          % bit depth
 
 % to use meadolwark analysis need 8x8, to use their mask need equal m and n
-ops.num_regions_m = 8;% 4 8;
-ops.num_regions_n = 16;% 8 16;
+ops.num_regions_m = 1;% 4 8;
+ops.num_regions_n = 2;% 8 16;
 
 %16R 940nm p120
 ops.PixelsPerStripe = 8;	
@@ -87,7 +88,8 @@ ops.DAQ_num_sessions = 200;
 
 slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
-save_pref = '1064_Fianium_maitai_corr2';
+save_pref = '940_check_Fianium_maitai_corr2';
+%save_pref = '1064_Fianium_maitai_corr2';
 %save_pref = '1064_slm5221_fianium';
 
 ops.NumRegions = ops.num_regions_m  * ops.num_regions_n;
@@ -219,7 +221,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             region_mask = flipud(region_mask);
             holo_image = stripes.*region_mask*Gray;
 
-            holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
+            holo_image_corr = f_apply_lut_corr(holo_image, lut_data, 0);
             SLM_mask.Value = reshape(rot90(uint8(holo_image_corr), 3),[],1);
 
             %Generate the stripe pattern and mask out current region
@@ -254,7 +256,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             
             if ops.plot_phase
                 SLM_im.CData = reshape(SLM_mask.Value, ops.width, ops.height)';
-                SLM_fig.Children.Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
+                SLM_fig.Children(end).Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
             end
@@ -283,7 +285,7 @@ end
 
 %% close SLM
 
-cont1 = input('Done, turnb off laser and press [y] close SLM:', 's');
+cont1 = input('Done, turn off laser and press [y] close SLM:', 's');
 
 try 
     f_SLM_close(ops);

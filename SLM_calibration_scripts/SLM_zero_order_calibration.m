@@ -228,7 +228,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             
             holo_image = angle(holo_image_cpx).*region_mask;
 
-            holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
+            holo_image_corr = f_apply_lut_corr(holo_image, lut_data, 1);
             
             SLM_mask.Value = reshape(holo_image_corr', [],1); 
             %SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
@@ -308,7 +308,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
 
             holo_image = angle(holo_image_cpx).*region_mask;
 
-            holo_image_corr = f_apply_lut_corr(holo_image, lut_data);
+            holo_image_corr = f_apply_lut_corr(holo_image, lut_data, 1);
 
             SLM_mask.Value = reshape(holo_image_corr', [],1); 
             %SLM_mask.Value = f_sg_im_to_pointer(holo_image_corr);
