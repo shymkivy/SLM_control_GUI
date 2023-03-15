@@ -31,14 +31,12 @@ addpath(genpath([gui_dir '\SLM_GUI_funcions']));
 
 ops = f_SLM_default_ops(gui_dir);
 
-ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
-
 % overwrite the imagegen lib used
 ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 
 ops.lut_correction_fname = [];
 %ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
-%ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_10_10_21_left_half_sub_region_interp_corr.mat';
+%ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_4_7_22_left_half_corr2_sub_region_interp_corr.mat';
 
 % overwrite the imagegen lib used
 ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
@@ -81,15 +79,15 @@ ops.num_regions_n = 2;% 8 16;
 
 %16R 940nm p120
 ops.PixelsPerStripe = 8;	
-ops.horizontalStripe = True;
+ops.horizontalStripe = 0;
 
 ops.DAQ_num_sessions = 200;
 
 %%
 
-slm_roi = 'right_half'; % 'full' 'left_half'(1064) 'right_half'(940)
+slm_roi = 'left_half'; % 'full' 'left_half'(1064) 'right_half'(940)
 
-save_pref = '940_check_Fianium_maitai_corr2';
+save_pref = '1064_check_Fianium_maitai_corr2';
 %save_pref = '1064_Fianium_maitai_corr2';
 %save_pref = '1064_slm5221_fianium';
 
