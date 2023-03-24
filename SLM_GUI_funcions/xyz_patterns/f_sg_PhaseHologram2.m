@@ -23,6 +23,7 @@ num_points = size(xyzp,1);
 holo_phase = zeros(SLMm, SLMn, num_points);
 
 defocus_phase = f_sg_DefocusPhase(reg_params);
+%defocus_phase = f_sg_DefocusPhase2(reg_params);
 
 for idx=1:size(xyzp,1)
     holo_phase(:,:,idx)=2*pi.*xyzp(idx,1).*u ...

@@ -5,15 +5,17 @@ reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 defocus_weight = app.DeficusWeightEditField.Value*1e-6; % convert to um
 
-defocus_phase = f_sg_DefocusPhase(reg1.SLMm, reg1.SLMn,...
-                app.SLM_ops.effective_NA,...
-                app.SLM_ops.objective_RI,...
-                reg1.wavelength*1e-9,...        % convert to m
-                reg1.phase_diameter)*defocus_weight;
+% zernike way
+defocus_phase = f_sg_DefocusPhase(reg1)*defocus_weight;
+
+% defocus equation
+defocus_phase2 = f_sg_DefocusPhase2(reg1)*defocus_weight;
 
 if reg1.zero_outside_phase_diameter
-    defocus_phase(reg1.holo_mask) = 0;
+    defocus_phase(~reg1.holo_mask) = 0;
 end
+
+%sum(sum(defocus_phase2*2/reg1.SLMm*2/reg1.SLMn))
             
 defocus_phase2=angle(sum(exp(1i*(defocus_phase)),3));
 

@@ -37,6 +37,10 @@ Z_0_6 = sqrt(7).*( 20.*RHO.^6 - 30.*RHO.^4 + 12.*RHO.^2 - 1 );
 %dsp_debug on line below can include HOA corrections...
 %    defocus = 2*pi.*(c_0_2.*Z_0_2 + c_0_4.*Z_0_4 );%+ c_0_6.*Z_0_6;
 defocus = 2*pi.*(c_0_2.*Z_0_2 + c_0_4.*Z_0_4 + c_0_6.*Z_0_6);
+
+% x1 = Z_0_4.*(2/SLMm)*(2/SLMn);
+% sum(x1(RHO<=1))
+
 %    defocus = -objectiveRI*k*sqrt(1-RHO.^2.*(sin(alpha)^2));
 
 % this is now formated for exp(i*defocus*z)
