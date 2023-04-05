@@ -1,3 +1,6 @@
+% this trying to do both regions together, but if split beam just do split
+% by region version.
+
 % load traces, smooth
 % compute aproximate peaks from full regions
 % spatial filter raw lut (decide to normalize per region or no before)
@@ -17,7 +20,7 @@ path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
 fname_list = {'photodiode_lut_940_slm5221_maitai_64r_10_10_21_22h_40m.mat';...
               'photodiode_lut_1064_slm5221_fianium_64r_10_10_21_20h_36m.mat'};
 
-regions_run_list = {'left_half', 'right_half'};
+regions_run_list = {'right_half', 'left_half'};
 
 save_tag = 'photodiode_lut_940_1064_slm5221_10_10_21';
           
@@ -122,7 +125,7 @@ for n_file = 1:num_files
     xlabel('pixel val SLM');
     ylabel('image intensity');
     legend('Average E', 'Smooth E', 'phase', 'Location', 'northwest');
-    title(sprintf('Full region %d gamma cal, 2p corr=%d', n_file, params.two_photon));
+    title(sprintf('Full region %d; %s; gamma cal, 2p corr=%d', n_file, regions_run_list{n_file}, params.two_photon), 'interpreter', 'none');
     
     full_region_px(n_file,:) = px_fo2;
     full_region_mmm_idx(n_file,:) = mmm_ind;
@@ -218,7 +221,6 @@ subreg_px_3d = permute(reshape(subreg_px, [8 8, num_pix]), [2 1 3]);
 
 interp_fac = 2;
 
-
 subreg_px_3d_ip = cell(num_files,1);
 subreg_mmm_idx_3d_ip = cell(num_files,1);
 for n_file = 1:num_files
@@ -264,11 +266,6 @@ if params.plot_stuff
     plot(lut_all2(n_reg,:))
     plot(lut_all_s(n_reg,:))
     plot(lut_all_ss(n_reg,:))
-
-    n_reg = 2;
-    figure; hold on;
-    plot(lut_all2(n_reg,:))
-    plot(lut_all2_s(n_reg,:))
 
     figure; hold on;
     plot(diff(lut_all_ss(n_reg,:)))

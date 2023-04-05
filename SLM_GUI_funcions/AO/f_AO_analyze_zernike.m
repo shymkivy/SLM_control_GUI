@@ -2,7 +2,6 @@ function [AO_correction, mode_data] = f_AO_analyze_zernike(frames2, zernike_scan
 num_scans = size(zernike_scan_sequence,1);
 deets_all = cell(num_scans,1);
 
-
 %%
 kernel_half_size = ceil(sqrt(-log(0.1)*2*params.sigma_pixels^2));
 [X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);

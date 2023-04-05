@@ -62,8 +62,6 @@ SLM_params(idx).regions_use = {'Full SLM'};
 ops.objective_RI = 1.33;    % used in defocus functions
 %ops.wavelength = 940;       % in nm    
 
-ops.ref_offset = 50;    % reference image offset for checking scan sequence 
-
 ops.zoom = 1.2;
 
 ops.NI_DAQ_dvice = 'dev2';

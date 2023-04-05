@@ -92,7 +92,7 @@ zernike_table = app.ZernikeListTable.Data;
 zernike_table2 = zernike_table(logical(zernike_table(:,7)),:);
 
 % generate all polynomials
-all_modes = f_sg_gen_zernike_modes(reg1, zernike_table);
+all_modes = f_sg_gen_zernike_modes(reg1, zernike_table2);
 
 %% generate scan sequence
 num_modes = size(zernike_table2,1);
@@ -120,7 +120,6 @@ mode_data_all = cell(app.NumiterationsSpinner.Value,1);
 deeps_post = cell(app.NumiterationsSpinner.Value,1);
 
 for n_it = 1:app.NumiterationsSpinner.Value
-    fprintf('Iteration %d...\n', n_it);
     ao_params.iteration = n_it;
     
     if isempty(AO_correction)
@@ -128,7 +127,10 @@ for n_it = 1:app.NumiterationsSpinner.Value
     else
         current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
     end
-
+        
+    im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
+    im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
+    
     % pre scan 
     if app.ShufflemodesCheckBox.Value
         zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
@@ -136,21 +138,21 @@ for n_it = 1:app.NumiterationsSpinner.Value
         zernike_scan_sequence2 = zernike_scan_sequence;
     end
     
-    num_scans_done2 = f_sg_AO_scan_ao_seq(current_AO_phase, zernike_scan_sequence2(:,1), zernike_scan_sequence2(:,2), all_modes);
-    
-    num_scans_done = num_scans_done + num_scans_done2;
+    fprintf('Iteration %d...\n', n_it);
     
     for n_scan = 1:num_scans
         % add zernike pol on top of image
         n_mode = zernike_scan_sequence2(n_scan,1);
         n_weight = zernike_scan_sequence2(n_scan,2);
-        ao_corr = current_AO_phase + all_modes(:,:,n_mode)*n_weight;
         
         holo_phase_corr_lut = init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(init_phase_corr + ao_corr)));
+
+        holo_phase_corr = angle(exp(1i*(init_phase_corr + current_AO_phase + all_modes(:,:,n_mode)*n_weight)));
+
         holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
+        %
         f_SLM_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         
@@ -159,9 +161,6 @@ for n_it = 1:app.NumiterationsSpinner.Value
         
     end
     % get frames and analyze 
-    
-    im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
-    im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
     
     % make extra scan because stupid scanimage
     f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
@@ -179,9 +178,6 @@ for n_it = 1:app.NumiterationsSpinner.Value
     [AO_correction_new, mode_data_all{n_it}] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
     
     AO_correction = [AO_correction; {AO_correction_new}];
-    
-    %% can optimize most problematic mode here
-    
     
     %% scan all corrections
     all_corr = zeros(reg1.SLMm, reg1.SLMn, numel(AO_correction)+1);
@@ -201,17 +197,15 @@ for n_it = 1:app.NumiterationsSpinner.Value
         scan_seq2 = scan_seq;
     end
     
-    ao_corr_list = all_corr(:,:,scan_seq2);
-    
     for n_scan = 1:num_scans_ver
-        % add zernike pol on top of image
-        ao_corr = all_corr(:,:,scan_seq2(n_scan));
-        
+        %% add zernike pol on top of image
+
         holo_phase_corr_lut = init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(init_phase_corr + ao_corr)));
+        holo_phase_corr = angle(exp(1i*(init_phase_corr + all_corr(:,:,scan_seq2(n_scan)))));
         holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
+        %%
         f_SLM_update(app.SLM_ops, holo_im_pointer)
         pause(0.005); % wait 3ms for SLM to stabilize
         

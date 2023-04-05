@@ -27,12 +27,7 @@ all_patterns = cell(num_modes,1);
 for n_mode = 1:num_modes
     if zernike_table(n_mode,7)
         weights1 = zernike_table(n_mode,4):zernike_table(n_mode,5):zernike_table(n_mode,6);
-        temp_patterns = [ones(numel(weights1),1)*zernike_table(n_mode,1), weights1']; 
-        if app.InsertrefimageinscansCheckBox.Value
-            all_patterns{n_mode} = [999,999; temp_patterns];
-        else
-            all_patterns{n_mode} = temp_patterns;
-        end
+        all_patterns{n_mode} = [ones(numel(weights1),1)*zernike_table(n_mode,1), weights1']; 
     end
 end
 
@@ -41,16 +36,6 @@ zernike_scan_sequence = repmat(zernike_scan_sequence,app.ScanspermodeEditField.V
 num_scans = size(zernike_scan_sequence,1);
 if app.ShufflemodesCheckBox.Value
     zernike_scan_sequence = zernike_scan_sequence(randsample(num_scans,num_scans),:);
-end
-
-if app.InsertrefimageinscansCheckBox.Value
-    ref_coords = f_sg_mpl_get_coords(app, 'zero');
-    ref_coords.xyzp = [app.SLM_ops.ref_offset, 0, 0;...
-                   -app.SLM_ops.ref_offset, 0, 0;...
-                    0, app.SLM_ops.ref_offset, 0;...
-                    0,-app.SLM_ops.ref_offset, 0];
-    ref_phase = f_sg_xyz_gen_holo(ref_coords, reg1);
-    ref_phase2 = angle(sum(exp(1i*ref_phase),3));
 end
 
 %% generate pointers

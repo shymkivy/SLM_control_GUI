@@ -30,7 +30,9 @@ params.manual_peak_selection = 0;
 params.plot_stuff = 0;
 
 sm_spline_global = 0.5; % modify for different level of smoothing
-sm_spline_reg = 0.0001; % modify for different level of smoothing  0.005 for 8*4
+% not enough smoothing may mess up peak selection, reduce for more
+sm_spline_reg = 0.0001; %0.0001; % modify for different level of smoothing  0.005 for 8*4
+
 %%
 data_load = load([path1 '/' fname_lut]);
 
@@ -110,7 +112,7 @@ if isfield(data_load.ops, 'lut_correction_fname')
         SLMn_corr = SLMn/2;
     else
         SLMm_corr = SLMm;
-        SLMn_corr = SLMn/2;
+        SLMn_corr = SLMn;
     end
     lut_corr_data2(1).m_idx = true(SLMm, 1);
     lut_corr_data2(1).n_idx = n_idx;
@@ -120,7 +122,7 @@ if isfield(data_load.ops, 'lut_correction_fname')
     lut_corr_data2(1).SLMrn = lut_corr_load.SLMrn;
     %lut_corr_data2(1).SLMrm = SLMrm;
     %lut_corr_data2(1).SLMrn = SLMrn;
-    lut_corr_data = [lut_corr_data; lut_corr_data2];
+    lut_corr_data = lut_corr_data2;
 end
 
 %% extract data and estimate approximate peak locations
@@ -237,12 +239,13 @@ for n_reg = 1:num_regions_run
     phi_fo_int2 = (0:255)';
     px_fo2 = interp1(phi_fo_int, px_fo, phi_fo_int2);
     
-    figure; hold on; axis tight;
-    plot(gray1, temp_lut_n)
-    plot(gray1, temp_lut_ssn)
-    plot(px_fo, phi_fo, 'k')
-    title(sprintf('reg %d', n_reg))
-    
+    if params.plot_stuff
+        figure; hold on; axis tight;
+        plot(gray1, temp_lut_n)
+        plot(gray1, temp_lut_ssn)
+        plot(px_fo, phi_fo, 'k')
+        title(sprintf('reg %d', n_reg))
+    end
 %     figure; hold on;
 %     plot(px_fo, phi_fo_int)
 %     plot(px_fo2, phi_fo_int2)
@@ -339,7 +342,17 @@ if params.plot_stuff
 
     figure; hold on;
     plot(diff(lut_all_ss(n_reg,:)))
-
+    
+    figure; plot(lut_all2');
+    
+    % plot intensity distribution
+    pad1 = 5;
+    peak_idx = subreg_mmm_idx(:,2);
+    peak_val = mean(lut_all2(:,(peak_idx - pad1):(peak_idx+pad1)),2);
+    peak_val_3d = reshape(peak_val, [regions_run_n, regions_run_m])';
+    figure;
+    imagesc(peak_val_3d);
+    
     f_save_tif_stack2_YS(subreg_px_3d_corr - mean(mean(subreg_px_3d_corr,1),2), [path1, save_tag, 'lut_view.tif'])
     f_save_tif_stack2_YS(subreg_px_3d_corr_ip - mean(mean(subreg_px_3d_corr_ip,1),2), [path1, save_tag, 'lut_view_interp.tif'])
 end

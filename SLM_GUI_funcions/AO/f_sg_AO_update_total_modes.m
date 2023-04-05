@@ -10,12 +10,7 @@ for n_mode = 1:num_modes
     weights_cell{n_mode} = zernike_table(n_mode,4):zernike_table(n_mode,5):zernike_table(n_mode,6);
 end
 
-total_modes = numel(cat(2,weights_cell{:}));
-if app.InsertrefimageinscansCheckBox.Value
-    total_modes = total_modes + num_modes;
-end
-
-total_modes = total_modes * app.ScanspermodeEditField.Value;
+total_modes = numel(cat(2,weights_cell{:})) * app.ScanspermodeEditField.Value;
 
 app.NumscanvolumesEditField.Value = total_modes;
 app.NumscanframesEditField.Value = total_modes*app.ScansperVolZEditField.Value;

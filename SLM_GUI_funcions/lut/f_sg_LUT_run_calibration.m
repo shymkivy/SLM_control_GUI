@@ -21,13 +21,8 @@ if app.RunLUTcalibrationButton.Value
         pixels_per_stripe = app.PixelsPerStripeEditField.Value;
         baseline_pixel_value = app.BaselinepixelvalueEditField.Value;
              
-        if app.InsertrefimageinscansCheckBox.Value
-            pix_range = repmat([999; (0:(bit_depth-1))'; 999],1,num_regions);
-            region_range = [ones(1,2)*999; repmat(0:(num_regions-1),bit_depth,1); ones(1,2)*999];
-        else
-            pix_range = repmat((0:(bit_depth-1))',1,num_regions);
-            region_range = repmat(0:(num_regions-1),bit_depth,1);
-        end
+        pix_range = repmat((0:(bit_depth-1))',1,num_regions);
+        region_range = repmat(0:(num_regions-1),bit_depth,1);
         
         pix_region_table = cat(3,pix_range , region_range);
         pix_region_table = reshape(pix_region_table,[],2);
