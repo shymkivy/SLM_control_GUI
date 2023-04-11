@@ -26,7 +26,6 @@ sin_alpha = objectiveNA/objectiveRI;
 % from doi.org/10.1016/j.optcom.2007.10.007
 phase = objectiveRI * k * sqrt(1 - RHO.^2 * sin_alpha^2);
 
-
 % first strategy, can compute area by summing the pixels, but SLM region
 % may not have equal m and n ... not sure which way is correct yet
 % bias is integral / area of unit circle, which is pi

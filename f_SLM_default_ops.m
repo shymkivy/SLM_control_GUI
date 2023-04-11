@@ -69,13 +69,21 @@ ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
 ops.NI_DAQ_AO_channel = 0;
 
+
+ops.orbital_mag = 1;
+
 %% objective list
+idx = 1;
+objectives(idx).obj_name = '25X_fat';
+objectives(idx).FOV_size = 511;
+objectives(idx).magnification = 25;
+objectives(idx).orbital = 1;
 
-objectives(1).obj_name = '25X_fat';
-objectives(1).FOV_size = 511;
-
-objectives(2).obj_name = '20X_fat';
-objectives(2).FOV_size = 637.4;
+idx = idx + 1;
+objectives(idx).obj_name = '20X_fat';
+objectives(idx).FOV_size = 637.4;
+objectives(idx).magnification = 20;
+objectives(idx).orbital = 1;
 
 %% specific SLM-region-objective combos params
 

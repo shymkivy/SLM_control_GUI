@@ -19,6 +19,7 @@ xyz_affine_calib.input_coords = input_coords;
 xyz_affine_calib.pix_step_xy = pix_step_xy;
 xyz_affine_calib.islateral = islateral;
 xyz_affine_calib.isaxial = isaxial;
+
 if isfield(app.data, 'y_flip_bug')
     xyz_affine_calib.y_flip_bug = app.data.y_flip_bug;
 end
