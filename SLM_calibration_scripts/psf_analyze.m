@@ -26,7 +26,7 @@ elseif data_source == 2
                   'PSF_ETLp2_25x_16z_01um_256_z-100-008',...
                   'PSF_ETLp2_25x_16z_01um_256_z-150-009'};
     z_loc = [150, 100, 50, 0, -50, -100, -150];
-    description = 'EL-16-40-TC:Obj'; 
+    description = 'EL-16-40-TC-Obj'; 
 elseif data_source == 3
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb\';
     data_path2 = {'PSF_25x_16z_01um_256-001',...
@@ -34,6 +34,35 @@ elseif data_source == 3
               
     z_loc = [0, 0];
     description = 'Regular path';
+elseif data_source == 4
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb_SLM_AO\';
+    data_path2 = {'PSF_SLM_256_z16_01um_z150_AO-009',...
+                  'PSF_SLM_256_z16_01um_z100_AO-007',...
+                  'PSF_SLM_256_z16_01um_z50_AO-005',...
+                  'PSF_SLM_256_z16_01um_z0-001',...
+                  'PSF_SLM_256_z16_01um_z0-002',...
+                  'PSF_SLM_256_z16_01um_z0-003',...
+                  'PSF_SLM_256_z16_01um_z-50_AO-011',...
+                  'PSF_SLM_256_z16_01um_z-100_AO-012',...
+                  'PSF_SLM_256_z16_01um_z-150_AO-015'};
+              
+    z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -150];
+    description = 'SLM AO';
+elseif data_source == 5
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb_SLM\';
+    data_path2 = {'PSF_SLM_256_z16_01um_z150-008',...
+                  'PSF_SLM_256_z16_01um_z100-006',...
+                  'PSF_SLM_256_z16_01um_z50-004',...
+                  'PSF_SLM_256_z16_01um_z0-001',...
+                  'PSF_SLM_256_z16_01um_z0-002',...
+                  'PSF_SLM_256_z16_01um_z0-003',...
+                  'PSF_SLM_256_z16_01um_z-50-010',...
+                  'PSF_SLM_256_z16_01um_z-100-013',...
+                  'PSF_SLM_256_z16_01um_z-100-014',...
+                  'PSF_SLM_256_z16_01um_z-150-016'};
+              
+    z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -100, -150];
+    description = 'SLM no AO';
 end
 
 %%
@@ -42,7 +71,9 @@ pix = 256;
 zoom = 16;
 dz = 0.1; % in um
 
-FOV_half_size = 20;
+FOV_half_size = 30;
+
+min_dist = FOV_half_size * 2.5;
 
 pix_size = FOV_size/zoom/pix;
 
@@ -114,13 +145,18 @@ for n_loc = 1:num_loc
                     y_max = min(y_coord + FOV_half_size, y1);
                     x_min = max(x_coord - FOV_half_size, 1);
                     x_max = min(x_coord + FOV_half_size, x1);
+                    
+                    pts_all3 = cat(1,points_all2{:});
+                    
                     if min([idx1, z1 - idx1]) > z1/4
-                        % check if far from edge
-                        if min([y_coord, y1 - y_coord]) > FOV_half_size
-                            if min([x_coord, x1 - x_coord]) > FOV_half_size
-                                points_all2 = [points_all2; [y_coord, x_coord]];
-                                pts2 = [pts2; [y_coord, x_coord]];
-                                PSF_all = [PSF_all; double(data(y_min:y_max, x_min:x_max,:))];
+                        if ~numel(pts_all3) || (min(sqrt((y_coord - pts_all3(:,1)).^2 + (x_coord - pts_all3(:,2)).^2)) > min_dist)
+                            % check if far from edge
+                            if min([y_coord, y1 - y_coord]) > FOV_half_size
+                                if min([x_coord, x1 - x_coord]) > FOV_half_size
+                                    points_all2 = [points_all2; [y_coord, x_coord]];
+                                    pts2 = [pts2; [y_coord, x_coord]];
+                                    PSF_all = [PSF_all; double(data(y_min:y_max, x_min:x_max,:))];
+                                end
                             end
                         end
                     end
@@ -133,13 +169,25 @@ for n_loc = 1:num_loc
 
         end
         num_pts2 = numel(pts2);
-        figure; 
-        imagesc(mean_frame); hold on;
-        for n_pt = 1:num_pts2
-            rectangle('Position',[pts2{n_pt}(2) - FOV_half_size, pts2{n_pt}(1) - FOV_half_size, 2*FOV_half_size+1, 2*FOV_half_size+1])
+        
+        if plot_deets
+            figure; 
+            imagesc(mean_frame); hold on; axis equal tight
+            for n_pt = 1:num_pts2
+                rectangle('Position',[pts2{n_pt}(2) - FOV_half_size, pts2{n_pt}(1) - FOV_half_size, 2*FOV_half_size+1, 2*FOV_half_size+1])
+            end
+            xlabel('x axis');
+            ylabel('y axis')
+            title(sprintf('selected points, z=%d; data %d', z_loc(n_loc), n_fil));
+            
+            figure; 
+            imagesc(squeeze(mean(data,2))); hold on; axis equal tight
+            for n_pt = 1:num_pts2
+                rectangle('Position',[round(z1/40), pts2{n_pt}(1) - FOV_half_size, z1-round(z1/20), 2*FOV_half_size+1])
+            end
+            xlabel('z axis');
+            ylabel('y axis');
         end
-        title(sprintf('selected points, z=%d; data %d', z_loc(n_loc), n_fil));
-
     end
     
     num_pts = numel(points_all2);
@@ -193,10 +241,18 @@ for n_loc = 1:num_loc
                     data_marg2 = squeeze(permute(mean(data_marg, d2), [d3, d2]));
                     tag1 = 'mean';
                 else
-                    data_marg3 = squeeze(mean(data_marg, d3));
-                    [~, idx1] = max(data_marg3);
+                    
                     data_marg4 = permute(data_marg, [d2, d3, n_d]);
-                    data_marg2 = data_marg4(idx1,:)';
+                    
+                    dims1 = size(data_marg4);
+                    
+                    [~, idx1] = max(data_marg4(:));
+                    [idx2, ~] = ind2sub(dims1, idx1);
+                    
+                    %data_marg3 = squeeze(mean(data_marg, d3));
+                    %[~, idx2] = max(data_marg3);
+
+                    data_marg2 = data_marg4(idx2,:)';
                     tag1 = 'peak';
                 end
 
@@ -277,4 +333,4 @@ data_fwhm.dxy = pix_size;
 data_fwhm.description = description;
 
 date1 = datetime;
-save(sprintf('%s\\psf_data_ETLp2_%d_%d_%d', data_path, date1.Year, date1.Month, date1.Day), 'data_fwhm');
+save(sprintf('%s\\psf_data_%s_%d_%d_%d', data_path, description, date1.Year, date1.Month, date1.Day), 'data_fwhm');
