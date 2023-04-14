@@ -86,12 +86,16 @@ zernike_table2 = zernike_table(logical(zernike_table(:,7)),:);
 % generate all polynomials
 all_modes = f_sg_gen_zernike_modes(reg1, zernike_table);
 ao_params.all_modes = all_modes;
-%% generate scan sequence
+
 num_modes = size(zernike_table2,1);
 
-W_lim = app.WeightlimitEditField.Value;
 W_step = app.WeightstepEditField.Value;
-weights1 = -W_lim:W_step:W_lim;
+if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
+    W_lim = app.WeightlimitEditField.Value;
+    weights1 = -W_lim:W_step:W_lim;   
+elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
+    weights1 = [-W_step, W_step];
+end
 
 num_weights = numel(weights1);
 
@@ -117,7 +121,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     fprintf('Iteration %d...\n', n_it);
     ao_params.iteration = n_it;
     
-    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
+    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}), ao_params);
     
     %% scan gradient
     % pre scan 
@@ -148,10 +152,10 @@ for n_it = 1:app.NumiterationsSpinner.Value
     % process find best mode
     [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, zernike_scan_sequence2, ao_params);
 
+    % can optimize most problematic mode here
+
+    % update corrections
     AO_correction = [AO_correction; {AO_correction_new}];
-    
-    %% can optimize most problematic mode here
-    
     
     %% scan all corrections
     num_corrections = numel(AO_correction);
