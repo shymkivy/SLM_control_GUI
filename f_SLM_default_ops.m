@@ -75,7 +75,7 @@ ops.orbital_mag = 1;
 %% objective list
 idx = 1;
 objectives(idx).obj_name = '25X_fat';
-objectives(idx).FOV_size = 511;
+objectives(idx).FOV_size = 497; % w orb 511; no orb 497
 objectives(idx).magnification = 25;
 objectives(idx).orbital = 1;
 
