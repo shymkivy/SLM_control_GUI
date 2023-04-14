@@ -1,10 +1,8 @@
-function phase = f_sg_AO_corr_to_phase(correction,all_modes)
+function phase = f_sg_AO_corr_to_phase(correction, ao_params)
 
-[SLMm, SLMn,~] = size(all_modes);
-phase = zeros(SLMm, SLMn);
+phase = zeros(ao_params.region.SLMm, ao_params.region.SLMn);
 for n_corr = 1:size(correction,1)
-    phase = phase + all_modes(:,:,correction(n_corr,1))*correction(n_corr,2);
+    phase = phase + ao_params.all_modes(:,:,correction(n_corr,1))*correction(n_corr,2);
 end
 
-%figure; imagesc(phase)
 end

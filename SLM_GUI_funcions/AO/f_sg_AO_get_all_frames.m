@@ -1,4 +1,4 @@
-function all_frames = f_AO_op_get_all_frames(path1)
+function all_frames = f_sg_AO_get_all_frames(path1)
 
 files1 = dir([path1 '\' '*tif']);
 

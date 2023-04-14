@@ -1,4 +1,6 @@
-function [AO_correction, mode_data] = f_AO_analyze_zernike(frames2, zernike_scan_sequence, params)
+function [AO_correction, mode_data] = f_sg_AO_find_best_mode_grid(frames2, zernike_scan_sequence, params)
+zernike_scan_sequence = cat(1,zernike_scan_sequence{:,1});
+
 num_scans = size(zernike_scan_sequence,1);
 deets_all = cell(num_scans,1);
 

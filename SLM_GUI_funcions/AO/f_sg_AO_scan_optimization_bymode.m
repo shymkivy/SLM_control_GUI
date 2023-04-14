@@ -31,7 +31,6 @@ resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
 app.DAQ_session.outputSingleScan(0);
 
-num_frames = 0;
 %path1 = '\\PRAIRIE2000\p2f\Yuriy\AO\12_6_20\test-006';
 path1 = app.ScanframesdirpathEditField.Value;
 %exist(path1, 'dir');
@@ -41,16 +40,10 @@ f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
 f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
 num_scans_done = 2;
 
-% wait for frame to convert
-while num_frames < num_scans_done
-    files1 = dir([path1 '\' '*tif']);
-    fnames = {files1.name}';
-    num_frames = numel(fnames);
-    pause(0.005)
-end
+f_sg_AO_wait_for_frame_convert(path1, num_scans_done);
 
 % get all files except last
-frames = f_AO_op_get_all_frames(path1);
+frames = f_sg_AO_get_all_frames(path1);
 num_frames = size(frames,3);
 
 f1 = figure; axis equal tight;
@@ -92,26 +85,28 @@ zernike_table2 = zernike_table(logical(zernike_table(:,7)),:);
 
 % generate all polynomials
 all_modes = f_sg_gen_zernike_modes(reg1, zernike_table);
+ao_params.all_modes = all_modes;
 
-%% generate scan sequence
 num_modes = size(zernike_table2,1);
 
 W_step = app.WeightstepEditField.Value;
-weights1 = -W_step:W_step:W_step;
+weights1 = [-W_step, W_step];
 
-all_patterns = cell(num_modes,1);
-for n_mode = 1:num_modes
-    all_patterns{n_mode} = [ones(numel(weights1),1)*zernike_table2(n_mode,1), weights1']; 
-end
+num_weights = numel(weights1);
 
-zernike_scan_sequence = cat(1,all_patterns{:});
-zernike_scan_sequence = repmat(zernike_scan_sequence,app.ScanspermodeEditField.Value,1);
+scan_seq1 = cat(3, repmat(zernike_table2(:,1), [1, num_weights]), ones(num_modes, num_weights).*weights1);
+scan_seq1 = permute(scan_seq1, [2, 1, 3]);
+scan_seq1 = reshape(scan_seq1, [num_modes*num_weights, 2]);
+scan_seq1 = repmat(scan_seq1, [app.ScanspermodeEditField.Value, 1]);
+
+zernike_scan_sequence = num2cell(scan_seq1, 2);
+
 num_scans = size(zernike_scan_sequence,1);
 
 ao_params.zernike_scan_sequence = zernike_scan_sequence;
 
 %% scan
-AO_correction = [];
+AO_correction = {[1, 0]};
 holo_im_pointer = f_sg_initialize_pointer(app);
 
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
@@ -121,69 +116,45 @@ for n_it = 1:app.NumiterationsSpinner.Value
     fprintf('Iteration %d...\n', n_it);
     ao_params.iteration = n_it;
     
-    if isempty(AO_correction)
-        current_AO_phase = zeros(reg1.SLMm, reg1.SLMn);
-    else
-        current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}),all_modes);
-    end
-
+    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}), ao_params);
+    
+    %% scan gradient
     % pre scan 
     if app.ShufflemodesCheckBox.Value
-        zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans),:);
+        zernike_scan_sequence2 = zernike_scan_sequence(randsample(num_scans,num_scans));
     else
         zernike_scan_sequence2 = zernike_scan_sequence;
     end
     
-    %num_scans_done2 = f_sg_AO_scan_ao_seq(current_AO_phase, zernike_scan_sequence2(:,1), zernike_scan_sequence2(:,2), all_modes);
+    % scan mode sequence
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, zernike_scan_sequence2, ao_params);
+    scan_start = num_scans_done + 1;
+    num_scans_done = num_scans_done + num_scans_done2;
     
-    %num_scans_done = num_scans_done + num_scans_done2;
-    
-    for n_scan = 1:num_scans
-        % add zernike pol on top of image
-        n_mode = zernike_scan_sequence2(n_scan,1);
-        n_weight = zernike_scan_sequence2(n_scan,2);
-        ao_corr = current_AO_phase + all_modes(:,:,n_mode)*n_weight;
-        
-        holo_phase_corr_lut = ao_params.init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(ao_params.init_phase_corr_reg + ao_corr)));
-        holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
-        holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
-        
-        f_SLM_update(app.SLM_ops, holo_im_pointer)
-        pause(0.005); % wait 3ms for SLM to stabilize
-        
-        f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
-        num_scans_done = num_scans_done + 1;
-        
-    end
     % get frames and analyze 
-    
     im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
     im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
     
     % make extra scan because stupid scanimage
     f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
     num_scans_done = num_scans_done + 1;
-    while num_frames < num_scans_done
-        files1 = dir([path1 '\' '*tif']);
-        fnames = {files1.name}';
-        num_frames = numel(fnames);
-        pause(0.005)
-    end
+    f_sg_AO_wait_for_frame_convert(path1, num_scans_done);
     
-    frames = f_AO_op_get_all_frames(path1);
-    frames2 = frames(im_m_idx, im_n_idx,(end-num_scans+1):end);
+    % load scanned frames
+    frames = f_sg_AO_get_all_frames(path1);
+    frames2 = frames(im_m_idx, im_n_idx, scan_start:(scan_start+num_scans_done2));
     
-    [AO_correction_new, mode_data_all{n_it}] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
+    % process find best mode
+    [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, zernike_scan_sequence2, ao_params);
 
+    % can optimize most problematic mode here
+
+    % update corrections
     AO_correction = [AO_correction; {AO_correction_new}];
     
-    %% can optimize most problematic mode here
-    
-    
     %% scan all corrections
-    % make scan seq
-    scan_seq = repmat(1:(numel(AO_correction)+1), 1, app.ScanspermodeEditField.Value)';
+    num_corrections = numel(AO_correction);
+    scan_seq = repmat(1:num_corrections, 1, app.ScanspermodeEditField.Value)';
     num_scans_ver = numel(scan_seq);
     
     if app.ShufflemodesCheckBox.Value
@@ -192,57 +163,36 @@ for n_it = 1:app.NumiterationsSpinner.Value
         scan_seq2 = scan_seq;
     end
     
-    
-    all_corr = zeros(reg1.SLMm, reg1.SLMn, numel(AO_correction)+1);
-    for n_corr = 1:numel(AO_correction)
-        full_corr = cat(1,AO_correction{1:n_corr,1});
-        all_corr(:,:,n_corr+1) = f_sg_AO_corr_to_phase(full_corr,all_modes);
+    scan_seq3 = cell(num_scans_ver, 1);
+    for n_seq = 1:num_scans_ver
+        scan_seq3{n_seq} = cat(1,AO_correction{1:scan_seq(n_seq),1});
     end
-    
-    for n_scan = 1:num_scans_ver
-        % add zernike pol on top of image
-        
-        
-        ao_corr = all_corr(:,:,scan_seq2(n_scan));
-        
-        holo_phase_corr_lut = ao_params.init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(ao_params.init_phase_corr_reg + ao_corr)));
-        holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
-        holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
-        
-        f_SLM_update(app.SLM_ops, holo_im_pointer)
-        pause(0.005); % wait 3ms for SLM to stabilize
-        
-        f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
-        num_scans_done = num_scans_done + 1;
-    end
-    
+
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, scan_seq3, ao_params);
+    scan_start = num_scans_done + 1;
+    num_scans_done = num_scans_done + num_scans_done2;
+
     % make extra scan because stupid scanimage
     f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
     num_scans_done = num_scans_done + 1;
-    % wait for frame to convert
-    while num_frames<num_scans_done
-        files1 = dir([path1 '\' '*tif']);
-        fnames = {files1.name}';
-        num_frames = numel(fnames);
-        pause(0.005)
-    end
+    f_sg_AO_wait_for_frame_convert(path1, num_scans_done);
 
-    frames = f_AO_op_get_all_frames(path1);
-    frames2 = frames(im_m_idx, im_n_idx,(end-num_scans_ver+1):end);
-
-    intensit = zeros(numel(AO_correction)+1,1);
-    for n_fr = 1:(numel(AO_correction)+1)
-        n_fr2 = find(scan_seq2 == n_fr);
-        for n_fr3 = 1:numel(n_fr2)
-            if n_fr3 == 1
-                deets_corr = f_get_PFS_deets_fast(frames2(:,:,n_fr2(n_fr3)), conv_kernel);
+    % load scanned frames
+    frames = f_sg_AO_get_all_frames(path1);
+    frames2 = frames(im_m_idx, im_n_idx, scan_start:(scan_start+num_scans_done2));
+    
+    intensit = zeros(num_corrections,1);
+    for n_fr = 1:num_corrections
+        fr_idx1 = find(scan_seq2 == n_fr);
+        for n_fr2 = 1:numel(fr_idx1)
+            if n_fr2 == 1
+                deets_corr = f_get_PFS_deets_fast(frames2(:,:,fr_idx1(n_fr2)), conv_kernel);
             else
-                deets_corr(n_fr3) = f_get_PFS_deets_fast(frames2(:,:,n_fr2(n_fr3)), conv_kernel);
+                deets_corr(n_fr2) = f_get_PFS_deets_fast(frames2(:,:,fr_idx1(n_fr2)), conv_kernel);
             end
         end
         
-        curr_fr = mean(frames2(:,:,n_fr2),3);
+        curr_fr = mean(frames2(:,:,fr_idx1),3);
         
         intensit(n_fr) = mean([deets_corr.intensity_raw]);
         cent_mn = mean([deets_corr.cent_mn],2);
