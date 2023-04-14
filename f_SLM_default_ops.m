@@ -81,7 +81,7 @@ objectives(idx).orbital = 1;
 
 idx = idx + 1;
 objectives(idx).obj_name = '20X_fat';
-objectives(idx).FOV_size = 637.4;
+objectives(idx).FOV_size = 620; % w orb 637.4; no orb est 620
 objectives(idx).magnification = 20;
 objectives(idx).orbital = 1;
 
@@ -96,7 +96,7 @@ region_params(idx).wavelength = 940;
 region_params(idx).phase_diameter = 1152;
 region_params(idx).zero_outside_phase_diameter = true;
 region_params(idx).beam_diameter = 1152;
-region_params(idx).effective_NA = 0.61; % 11/11/21 0.62  before 11/11/21 0.605;
+region_params(idx).effective_NA = 0.503; % w orb 0.632; 0.503 no orb % w orb 0.61; no orb 0.632 % 11/11/21 0.62  before 11/11/21 0.605;
 region_params(idx).lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 region_params(idx).xyz_affine_tf_fname = 'xyz_calib_25x_maitai_11_11_21.mat';
 region_params(idx).AO_correction_fname = 'AO_correction_25x_maitai_11_21_21.mat';

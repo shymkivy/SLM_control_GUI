@@ -117,6 +117,8 @@ holo_im_pointer = f_sg_initialize_pointer(app);
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
 deeps_post = cell(app.NumiterationsSpinner.Value,1);
 
+step_size = 0.01;
+
 for n_it = 1:app.NumiterationsSpinner.Value
     fprintf('Iteration %d...\n', n_it);
     ao_params.iteration = n_it;
@@ -134,6 +136,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
     % scan mode sequence
     num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, zernike_scan_sequence2, ao_params);
     scan_start = num_scans_done + 1;
+    scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
     
     % get frames and analyze 
@@ -147,13 +150,56 @@ for n_it = 1:app.NumiterationsSpinner.Value
     
     % load scanned frames
     frames = f_sg_AO_get_all_frames(path1);
-    frames2 = frames(im_m_idx, im_n_idx, scan_start:(scan_start+num_scans_done2));
+    frames2 = frames(im_m_idx, im_n_idx, scan_start:scan_end);
     
-    % process find best mode
-    [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, zernike_scan_sequence2, ao_params);
+    if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
+        % process find best mode
+        [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, zernike_scan_sequence2, ao_params);
+    elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
+        % can optimize most problematic mode here
+        intensity = zeros(num_scans, 1);
+        for n_scan = 1:num_scans
+            deets1 = f_get_PFS_deets_fast(frames2(:,:,n_scan), conv_kernel);
+            intensity(n_scan) = deets1.intensity_sm;
+        end
+        
+        mode_weight_int = [cat(1, zernike_scan_sequence2{:}), intensity];
+        
+        [~, sort_idx] = sort(mode_weight_int(:,2));
+        mode_weight_int2 = mode_weight_int(sort_idx,:);
+        
+        [~, sort_idx2] = sort(mode_weight_int2(:,1));
+        mode_weight_int3 = mode_weight_int2(sort_idx2,:);
+        
+        mode_weight_int4 = squeeze(mean(reshape(mode_weight_int3, app.ScanspermodeEditField.Value, [], 3),1));
+        
+        mode_weight_int5 = reshape(mode_weight_int4, 2, [], 3);
+        
+        modes2 = mode_weight_int5(1, :, 1)';
+        weights2 = mode_weight_int5(:, 1, 2);
+        
+        intens2 = mode_weight_int5(:,:,3);
+        
+        d_i = (intens2(2,:) - intens2(1,:))';
+        d_w = weights2(2) - weights2(1);
+        grad2 = d_i/d_w;
 
-    % can optimize most problematic mode here
+        w_step = grad2*step_size;
+        
+        AO_correction_new = [modes2, w_step];
+        
+        figure;
+        subplot(2,1,1);
+        plot(modes2, grad2)
+        ylabel('weight gradient')
+        title(sprintf('AO optimization iter%d', n_it));
+        subplot(2,1,2);
+        plot(modes2, abs(w_step))
+        xlabel('mode')
+        ylabel('abs weight step')
 
+    end
+    
     % update corrections
     AO_correction = [AO_correction; {AO_correction_new}];
     
@@ -170,11 +216,12 @@ for n_it = 1:app.NumiterationsSpinner.Value
     
     scan_seq3 = cell(num_scans_ver, 1);
     for n_seq = 1:num_scans_ver
-        scan_seq3{n_seq} = cat(1,AO_correction{1:scan_seq(n_seq),1});
+        scan_seq3{n_seq} = cat(1,AO_correction{1:scan_seq2(n_seq),1});
     end
 
     num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, scan_seq3, ao_params);
     scan_start = num_scans_done + 1;
+    scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
 
     % make extra scan because stupid scanimage
@@ -184,7 +231,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
 
     % load scanned frames
     frames = f_sg_AO_get_all_frames(path1);
-    frames2 = frames(im_m_idx, im_n_idx, scan_start:(scan_start+num_scans_done2));
+    frames2 = frames(im_m_idx, im_n_idx, scan_start:scan_end);
     
     intensit = zeros(num_corrections,1);
     for n_fr = 1:num_corrections
@@ -213,7 +260,7 @@ for n_it = 1:app.NumiterationsSpinner.Value
         sp1.Children(pl_idx_line).YData = cent_mn(1);
 
         subplot(sp2);
-        plot(0:numel(AO_correction), intensit, '-o');
+        plot(0:(numel(AO_correction)-1), intensit, '-o');
     end
     
     bead_mn = bead_mn + round(cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
