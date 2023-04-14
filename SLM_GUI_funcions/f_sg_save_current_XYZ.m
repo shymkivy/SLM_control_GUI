@@ -11,10 +11,9 @@ XYZ_data.current_SLM_phase_corr_lut = app.SLM_phase_corr_lut;
 XYZ_data.xyz_patterns = app.xyz_patterns;
 XYZ_data.region_obj_params = app.region_obj_params;
 
-temp_time = clock;
-file_time = sprintf('%d_%d_%d_%dh_%dm',temp_time(2), temp_time(3), temp_time(1)-2000, temp_time(4), temp_time(5));
+timestamp = f_sg_get_timestamp();
 
-[file,path1] = uiputfile([app.SLM_ops.save_dir '\current_XYZ_' file_time '.mat']); % {'*.bmp';'*.*', 'pattern.bmp'}, 
+[file,path1] = uiputfile([app.SLM_ops.save_dir '\current_XYZ_' timestamp '.mat']); % {'*.bmp';'*.*', 'pattern.bmp'}, 
 
 if file
     save([path1 file], 'XYZ_data');

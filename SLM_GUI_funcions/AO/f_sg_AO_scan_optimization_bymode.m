@@ -1,7 +1,8 @@
 function f_sg_AO_scan_optimization_bymode(app)
 disp('Starting optimization...');
 
-time_stamp = clock;
+timestamp = f_sg_get_timestamp();
+
 %%
 ao_params.bead_im_window = app.BeadwindowsizeEditField.Value;
 ao_params.n_corrections_to_use = 1;
@@ -15,16 +16,14 @@ ao_params.file_dir = app.ScanframesdirpathEditField.Value;
 
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
-init_phase_corr_lut = app.SLM_phase_corr_lut;
-init_phase_corr = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
-
 ao_params.region = reg1;
 ao_params.coord = app.current_SLM_coord;
-ao_params.init_phase_corr = init_phase_corr;
+ao_params.init_phase_corr_lut = app.SLM_phase_corr_lut;
+ao_params.init_phase_corr_reg = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
 
 %% first upload (maybe not needed. already there)
-app.SLM_phase_corr_lut = init_phase_corr_lut;
-app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(init_phase_corr, reg1);
+
+app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(ao_params.init_phase_corr_reg, reg1);
 f_sg_upload_image_to_SLM(app);
 
 %%
@@ -145,8 +144,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
         n_weight = zernike_scan_sequence2(n_scan,2);
         ao_corr = current_AO_phase + all_modes(:,:,n_mode)*n_weight;
         
-        holo_phase_corr_lut = init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(init_phase_corr + ao_corr)));
+        holo_phase_corr_lut = ao_params.init_phase_corr_lut;
+        holo_phase_corr = angle(exp(1i*(ao_params.init_phase_corr_reg + ao_corr)));
         holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
@@ -176,26 +175,15 @@ for n_it = 1:app.NumiterationsSpinner.Value
     frames2 = frames(im_m_idx, im_n_idx,(end-num_scans+1):end);
     
     [AO_correction_new, mode_data_all{n_it}] = f_AO_analyze_zernike(frames2, zernike_scan_sequence2, ao_params);
-    
-    
-    
-    
-    
+
     AO_correction = [AO_correction; {AO_correction_new}];
     
     %% can optimize most problematic mode here
     
     
     %% scan all corrections
-    all_corr = zeros(reg1.SLMm, reg1.SLMn, numel(AO_correction)+1);
-    for n_corr = 1:numel(AO_correction)
-        full_corr = cat(1,AO_correction{1:n_corr,1});
-        all_corr(:,:,n_corr+1) = f_sg_AO_corr_to_phase(full_corr,all_modes);
-    end
-    
     % make scan seq
     scan_seq = repmat(1:(numel(AO_correction)+1), 1, app.ScanspermodeEditField.Value)';
-    
     num_scans_ver = numel(scan_seq);
     
     if app.ShufflemodesCheckBox.Value
@@ -204,14 +192,21 @@ for n_it = 1:app.NumiterationsSpinner.Value
         scan_seq2 = scan_seq;
     end
     
-    ao_corr_list = all_corr(:,:,scan_seq2);
+    
+    all_corr = zeros(reg1.SLMm, reg1.SLMn, numel(AO_correction)+1);
+    for n_corr = 1:numel(AO_correction)
+        full_corr = cat(1,AO_correction{1:n_corr,1});
+        all_corr(:,:,n_corr+1) = f_sg_AO_corr_to_phase(full_corr,all_modes);
+    end
     
     for n_scan = 1:num_scans_ver
         % add zernike pol on top of image
+        
+        
         ao_corr = all_corr(:,:,scan_seq2(n_scan));
         
-        holo_phase_corr_lut = init_phase_corr_lut;
-        holo_phase_corr = angle(exp(1i*(init_phase_corr + ao_corr)));
+        holo_phase_corr_lut = ao_params.init_phase_corr_lut;
+        holo_phase_corr = angle(exp(1i*(ao_params.init_phase_corr_reg + ao_corr)));
         holo_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(holo_phase_corr, reg1);
         holo_im_pointer.Value = reshape(holo_phase_corr_lut', [],1);
         
@@ -271,11 +266,10 @@ end
 ao_params.mode_data_all = mode_data_all;
 ao_params.deeps_post = deeps_post;
 
-name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
+name_tag = sprintf('%s\\%s_%s',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value, ...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5));
+            timestamp);
 
 save([name_tag '.mat'], 'AO_correction', 'ao_params', '-v7.3');
 saveas(f1,[name_tag '.fig']);

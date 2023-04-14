@@ -13,7 +13,7 @@ if app.RunLUTcalibrationButton.Value
         [fX, fY] = meshgrid(xln, xlm);
         [theta, rho] = cart2pol( fX, fY );
 
-        time_stamp = clock;
+        timestamp = f_sg_get_timestamp();
         
         %% generate pointers
         bit_depth = app.BitDepthEditField.Value;
@@ -49,12 +49,11 @@ if app.RunLUTcalibrationButton.Value
         
         % store data from scan if succesfull
         app.AO_last_LUT_data{1} = pix_region_table;
-        app.AO_last_LUT_data{2} = time_stamp;
+        app.AO_last_LUT_data{2} = timestamp;
         
-        save(sprintf('%s\\LUT_calibration_GUI_data_%d_%d_%d_%dh_%dm.mat',...
+        save(sprintf('%s\\LUT_calibration_GUI_data_%s.mat',...
             [app.SLM_ops.GUI_dir '\' app.LUTsavedirEditField.Value],...
-            temp_time(2), temp_time(3), temp_time(1)-2000, temp_time(4),...
-            temp_time(5)), 'pix_region_table', 'time_stamp');
+            timestamp), 'pix_region_table', 'time_stamp');
         
         app.RunLUTcalibrationButton.Value = 0;
         app.RunLUTcalibReadyLamp.Color = [0.80,0.80,0.80];

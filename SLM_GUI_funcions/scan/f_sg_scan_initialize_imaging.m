@@ -4,8 +4,8 @@ if app.InitializeimagingButton.Value
     init_image_lut = app.SLM_phase_corr_lut;
     %try
     disp('Initializing multiplane imaging...');
-    time_stamp = clock;
-    
+    timestamp = f_sg_get_timestamp();
+        
     if ~strcmpi(app.PatternDropDownCtr.Value, 'none')
         [holo_patterns_im, im_params, group_table_im] = f_sg_scan_make_images(app, app.PatternDropDownCtr.Value);
         num_planes = size(holo_patterns_im,3);
@@ -119,12 +119,8 @@ if app.InitializeimagingButton.Value
     scan_data.xyz_patterns = app.xyz_patterns;
     scan_data.region_obj_params = app.region_obj_params;
     
-    name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
-        app.SLM_ops.save_dir,...
-        'mpl_scan', ...
-        time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-        time_stamp(5));
-
+    name_tag = sprintf('%s\\mpl_scan_%s', app.SLM_ops.save_dir, timestamp);
+     
     save([name_tag '.mat'], 'scan_data');
     fprintf('Saved %s\n', name_tag);
 

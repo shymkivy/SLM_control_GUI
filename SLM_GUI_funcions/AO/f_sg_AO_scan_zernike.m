@@ -4,7 +4,7 @@ if app.ScanZernikeButton.Value
     init_phase_corr_lut = app.SLM_phase_corr_lut;
     try
         disp('Initializing Zernike Scan...')
-        time_stamp = clock;
+        timestamp = f_sg_get_timestamp();
         
         %% create AO file
         reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
@@ -27,11 +27,10 @@ if app.ScanZernikeButton.Value
         zernike_AO_data.region_data = reg1;
         zernike_AO_data.correction_on = app.ApplyAOcorrectionButton.Value;
         
-        save(sprintf('%s\\%s_iter%d_%d_%d_%dh_%dm.mat',...
+        save(sprintf('%s\\%s_iter%s.mat',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value,...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5)), 'zernike_AO_data');
+            timestamp), 'zernike_AO_data');
         
         app.ScanZernikeButton.Value = 0;
         app.ZernikeReadyLamp.Color = [0.80,0.80,0.80];

@@ -158,10 +158,8 @@ figure; imagesc(y_coords, x_coords, peak_mag_st_2d); title('peaks')
 
 
 %%
-time_stamp = clock;
-name_tag = sprintf('%d_%d_%d_%dh_%dm',...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5));
+
+name_tag = f_sg_get_timestamp();
 
 weight_cal.coords_xy = coords;
 weight_cal.weight_means = means_local_st;

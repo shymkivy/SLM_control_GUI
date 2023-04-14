@@ -1,7 +1,8 @@
 function f_sg_AO_scan_optimization(app)
 disp('Starting optimization...');
 
-time_stamp = clock;
+timestamp = f_sg_get_timestamp();
+
 %%
 ao_params.bead_im_window = app.BeadwindowsizeEditField.Value;
 ao_params.n_corrections_to_use = 1;
@@ -262,11 +263,10 @@ end
 ao_params.mode_data_all = mode_data_all;
 ao_params.deeps_post = deeps_post;
 
-name_tag = sprintf('%s\\%s_%d_%d_%d_%dh_%dm',...
+name_tag = sprintf('%s\\%s_%s',...
             app.SLM_ops.save_AO_dir,...
             app.SavefiletagEditField.Value, ...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5));
+            time_stamp);
 
 save([name_tag '.mat'], 'AO_correction', 'ao_params', '-v7.3');
 saveas(f1,[name_tag '.fig']);

@@ -3,10 +3,7 @@ function f_sg_lc_initialize(app)
 % temp orary settings
 app.imagedirEditField.Value = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\XYZcalibration\XYZcalibration\11_25_20\zoom2\all_im';
 
-time_stamp = clock;
-name_tag = sprintf('%d_%d_%d_%dh_%dm',...
-            time_stamp(2), time_stamp(3), time_stamp(1)-2000, time_stamp(4),...
-            time_stamp(5));
+name_tag = f_sg_get_timestamp();
 
 app.calibfilenameEditField.Value = ['xyz_calib_' name_tag '.mat'];
 
