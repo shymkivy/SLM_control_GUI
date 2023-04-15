@@ -17,23 +17,30 @@ ao_params.file_dir = app.ScanframesdirpathEditField.Value;
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
 ao_params.region = reg1;
-ao_params.coord = app.current_SLM_coord;
-ao_params.init_phase_corr_lut = app.SLM_phase_corr_lut;
-ao_params.init_phase_corr_reg = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
+ao_params.init_coord = app.current_SLM_coord;
+ao_params.init_SLM_phase_corr_lut = app.SLM_phase_corr_lut;
 
 %% first upload (maybe not needed. already there)
+init_SLM_phase_corr_lut = app.SLM_phase_corr_lut;
+holo_im_pointer = f_sg_initialize_pointer(app);
 
-coord_corr = f_sg_coord_correct(reg1, ao_params.coord);
+if app.ApplyAOcorrectionButton.Value
+    init_AO = f_sg_AO_get_z_corrections(app, reg1, ao_params.init_coord.xyzp(:,3));
+else
+    init_AO = zeros(reg1.SLMm, reg1.SLMn);
+end
 
-holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
+coord_corr = f_sg_coord_correct(reg1, ao_params.init_coord);
+init_holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
 
+% convert to exp and slm phase 
+complex_exp_corr = exp(1i*(init_holo_phase+init_AO));
+SLM_phase_corr = angle(complex_exp_corr);
 
-
-
-%app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(ao_params.init_phase_corr_reg, reg1);
-%f_sg_upload_image_to_SLM(app);
-
-f_sg_xyz_upload_coord(app, ao_params.coord);
+% apply lut and upload
+init_SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
+holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);
+f_SLM_update(app.SLM_ops, holo_im_pointer);
 
 %%
 resetCounters(app.DAQ_session);
@@ -121,7 +128,9 @@ ao_params.zernike_scan_sequence = zernike_scan_sequence;
 
 %% scan
 AO_correction = {[1, 0]};
-holo_im_pointer = f_sg_initialize_pointer(app);
+
+center_defocus_z_range = (-5:5);
+current_coord = ao_params.init_coord;
 
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
 deeps_post = cell(app.NumiterationsSpinner.Value,1);
@@ -132,7 +141,30 @@ for n_it = 1:app.NumiterationsSpinner.Value
     fprintf('Iteration %d...\n', n_it);
     ao_params.iteration = n_it;
     
-    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}), ao_params);
+    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_correction{:,1}), ao_params) + init_AO;
+    
+    %% refocus in z
+    
+    num_scans_done2 = f_sg_AO_scan_z_defocus(app, holo_im_pointer, current_coord, center_defocus_z_range, current_AO_phase, ao_params);
+    scan_start = num_scans_done + 1;
+    scan_end = (scan_start+num_scans_done2-1);
+    num_scans_done = num_scans_done + num_scans_done2;
+
+    % make extra scan because stupid scanimage
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    num_scans_done = num_scans_done + 1;
+    f_sg_AO_wait_for_frame_convert(path1, num_scans_done);
+
+    % load scanned frames
+    frames = f_sg_AO_get_all_frames(path1);
+    frames2 = frames(im_m_idx, im_n_idx, scan_start:scan_end);
+
+    % analyze
+    disp('fit defocus analysis here')
+    
+    current_coord_corr = f_sg_coord_correct(reg1, current_coord);
+    current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
+    
     
     %% scan gradient
     % pre scan 
@@ -141,9 +173,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
     else
         zernike_scan_sequence2 = zernike_scan_sequence;
     end
-    
     % scan mode sequence
-    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, zernike_scan_sequence2, ao_params);
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_holo_phase, current_AO_phase, zernike_scan_sequence2, ao_params);
     scan_start = num_scans_done + 1;
     scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
@@ -227,8 +258,8 @@ for n_it = 1:app.NumiterationsSpinner.Value
     for n_seq = 1:num_scans_ver
         scan_seq3{n_seq} = cat(1,AO_correction{1:scan_seq2(n_seq),1});
     end
-
-    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_AO_phase, scan_seq3, ao_params);
+    
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_holo_phase, current_AO_phase, scan_seq3, ao_params);
     scan_start = num_scans_done + 1;
     scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
