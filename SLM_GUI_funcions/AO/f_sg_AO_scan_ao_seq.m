@@ -8,7 +8,7 @@ num_scans_done = 0;
 for n_scan = 1:num_scans
     % add zernike pol on top of image
     full_corr = zernike_scan_sequence{n_scan};
-    ao_corr = f_sg_AO_corr_to_phase(full_corr, ao_params) + current_AO_phase;
+    ao_corr = current_AO_phase + f_sg_AO_corr_to_phase(full_corr, ao_params);
 
 %     n_mode = zernike_scan_sequence{n_scan}(1);
 %     n_weight = zernike_scan_sequence{n_scan}(2);

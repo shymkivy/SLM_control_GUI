@@ -23,8 +23,17 @@ ao_params.init_phase_corr_reg = app.SLM_phase_corr(reg1.m_idx, reg1.n_idx);
 
 %% first upload (maybe not needed. already there)
 
-app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(ao_params.init_phase_corr_reg, reg1);
-f_sg_upload_image_to_SLM(app);
+coord_corr = f_sg_coord_correct(reg1, ao_params.coord);
+
+holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
+
+
+
+
+%app.SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(ao_params.init_phase_corr_reg, reg1);
+%f_sg_upload_image_to_SLM(app);
+
+f_sg_xyz_upload_coord(app, ao_params.coord);
 
 %%
 resetCounters(app.DAQ_session);
