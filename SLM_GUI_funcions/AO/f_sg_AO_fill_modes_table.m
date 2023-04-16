@@ -5,18 +5,13 @@ W_lim = app.WeightlimitEditField.Value;
 W_step = app.WeightstepEditField.Value;
 ignore_modes_list = app.AO_ignore_modes_list;
 
-num_modes = sum(1:(max_modes+1));
+modes_all = 0:max_modes;
+num_modes = sum(modes_all+1);
+
+zernike_table_list = f_sg_get_zernike_mode_nm(modes_all);
+
 scan_modes = true(num_modes,1);
 scan_modes(ignore_modes_list) = 0;
-
-zernike_cell_list = cell(max_modes+1,1);
-for mode = 0:max_modes
-    n_modes = (-mode:2:mode)';
-    m_modes = ones(mode+1,1)*mode;
-    zernike_cell_list{mode+1} = [m_modes,n_modes]; 
-end
-
-zernike_table_list = cat(1, zernike_cell_list{:});
 
 if app.AOignoredefocusmodesCheckBox.Value
     scan_modes(and(zernike_table_list(:,1) == 2, zernike_table_list(:,2) == 0)) = 0;
