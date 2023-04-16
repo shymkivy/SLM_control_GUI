@@ -6,7 +6,7 @@ init_SLM_phase_corr_lut = ao_params.init_SLM_phase_corr_lut;
 num_scans_done = 0;
 num_z = numel(z_range);
 
-z_range2 = z_range + center_coord(3);
+z_range2 = z_range + center_coord.xyzp(3);
 
 for n_z = 1:num_z
     temp_coord = center_coord;

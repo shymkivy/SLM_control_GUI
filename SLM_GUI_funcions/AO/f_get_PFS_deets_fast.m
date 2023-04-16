@@ -1,4 +1,4 @@
-function deets = f_get_PFS_deets_fast(im_in, conv_kernel, intensity_win)
+function deets = f_get_PFS_deets_fast(im_in, smooth_std, intensity_win)
 
 interp_factor = 5;
 
@@ -8,11 +8,17 @@ X = 1:im_size;
 [Xq,Yq] = meshgrid(linspace(X(1), X(end), numel(X)*interp_factor-interp_factor+1));
 
 %%
-im_sm = conv2(im_in,conv_kernel, 'same');
+im_sm = f_smooth_nd(im_in, smooth_std);
 cent_mn_no_interp = f_get_center(im_sm);
 
 im_sm2 = interp2(double(im_sm),Xq,Yq);
-im_sm2 = conv2(im_sm2,conv_kernel, 'same');
+im_sm2 = f_smooth_nd(im_sm2, smooth_std);
+
+% im_sm = conv2(im_in,conv_kernel, 'same');
+% cent_mn_no_interp = f_get_center(im_sm);
+
+% im_sm2 = interp2(double(im_sm),Xq,Yq);
+% im_sm2 = conv2(im_sm2,conv_kernel, 'same');
 
 cent_mn = f_get_center(im_sm2);
 

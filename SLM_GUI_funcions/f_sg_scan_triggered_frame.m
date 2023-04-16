@@ -1,6 +1,6 @@
 function f_sg_scan_triggered_frame(session, delay)
 
-max_delay = 5; % in sec
+max_delay = 3; % in sec
 
 scan1 = inputSingleScan(session);
 trig_num = scan1(1);
@@ -22,7 +22,7 @@ while trig_num2 <= trig_num
     pause(0.001);
     % to prevent getting stuck when microscope misses trigger
     if toc > max_delay
-        disp('maybe stuck, sending another trigger, increase "post scan delay"')
+        disp('maybe missed trigger, sending another, can increase "post scan delay"')
         % send trigger
         session.outputSingleScan(5);
         session.outputSingleScan(5);

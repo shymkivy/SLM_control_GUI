@@ -5,10 +5,10 @@ num_scans = size(zernike_scan_sequence,1);
 deets_all = cell(num_scans,1);
 
 %%
-kernel_half_size = ceil(sqrt(-log(0.1)*2*params.sigma_pixels^2));
-[X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);
-conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*params.sigma_pixels^2));
-conv_kernel = conv_kernel/sum(conv_kernel(:));
+% kernel_half_size = ceil(sqrt(-log(0.1)*2*params.sigma_pixels^2));
+% [X_gaus,Y_gaus] = meshgrid((-kernel_half_size):kernel_half_size);
+% conv_kernel = exp(-(X_gaus.^2 + Y_gaus.^2)/(2*params.sigma_pixels^2));
+% conv_kernel = conv_kernel/sum(conv_kernel(:));
 
 %% find best mode and weight
 scanned_modes = unique(zernike_scan_sequence(:,1));
@@ -39,7 +39,7 @@ end
 
 %%
 for n_scan = 1:num_scans
-    deets_all{n_scan} = f_get_PFS_deets_fast(mode_data(n_scan).im, conv_kernel, params.intensity_win);
+    deets_all{n_scan} = f_get_PFS_deets_fast(mode_data(n_scan).im, [params.sigma_pixels, params.sigma_pixels], params.intensity_win);
     fnames = fieldnames(deets_all{1,1});
     for n_fl = 1:numel(fnames)
         mode_data(n_scan).(fnames{n_fl}) = deets_all{n_scan}.(fnames{n_fl});
