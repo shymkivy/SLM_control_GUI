@@ -1,11 +1,18 @@
+clear;
+close all;
 
-path1 = 'E:\data\SLM\AO\12_20_20';
-
+path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\12_12_20';
 fnames = {'zernike_scan_data_20x_0um_25step_12_20_20_19h_10m';...
           'zernike_scan_data_20x_60um_25step_12_20_20_16h_53m';...
           'zernike_scan_data_20x_-60um_25step_12_20_20_18h_27m';...
           'zernike_scan_data_20x_120um_25step_12_20_20_16h_6m';...
-          'zernike_scan_data_20x_-120um_25step__12_20_20_17h_41m'};
+          'zernike_scan_data_20x_-120um_25step_12_20_20_17h_41m'};
+
+% 
+% path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs';
+% fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50';...
+%           'zernike_scan_data_4_16_23_23h_45m_z50'};
+% 
 
     
     
