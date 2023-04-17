@@ -27,10 +27,14 @@ ao_temp.init_SLM_phase_corr_lut = app.SLM_phase_corr_lut;
 ao_temp.holo_im_pointer = f_sg_initialize_pointer(app);
 ao_temp.reg1 = reg1;
 
+name_tag2 = sprintf('%s\\%s_z%d',...
+            app.SLM_ops.save_AO_dir, name_tag, ao_params.init_coord.xyzp(3));
+
 %% first upload (maybe not needed. already there)
 
 if app.ApplyAOcorrectionButton.Value
     ao_temp.init_AO_phase = f_sg_AO_get_z_corrections(app, reg1, ao_params.init_coord.xyzp(:,3));
+    init_AO_correction = [1, 0];
 else
     init_AO_correction = [1, 0];
     ao_temp.init_AO_phase = zeros(reg1.SLMm, reg1.SLMn);
@@ -58,6 +62,7 @@ app.DAQ_session.outputSingleScan(0);
 %path1 = '\\PRAIRIE2000\p2f\Yuriy\AO\12_6_20\test-006';
 path1 = app.ScanframesdirpathEditField.Value;
 %exist(path1, 'dir');
+ao_temp.path1 = path1;
 
 files1 = dir([path1 '\' '*tif']);
 fnames = {files1.name}';
@@ -87,12 +92,11 @@ ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_windo
 
 bead_im = frames(ao_temp.im_m_idx, ao_temp.im_n_idx,num_frames);
 deets_pre = f_get_PFS_deets_fast(bead_im, [ao_params.sigma_pixels, ao_params.sigma_pixels]);
-cent_mn = deets_pre.cent_mn;
 
 ao_params.deets_pre = deets_pre;
 
 ao_temp.bead_mn = bead_mn;
-ao_temp.cent_mn = cent_mn;
+ao_temp.cent_mn = deets_pre.cent_mn;
 
 
 %% create patterns
@@ -112,7 +116,7 @@ if app.PlotprogressCheckBox.Value
     figure(f1);
     sp1 = subplot(1,2,1); hold on; axis tight equal;
     imagesc(bead_im);
-    plot(deets_pre.cent_mn(2),deets_pre.cent_mn(1), 'ro');
+    plot(ao_temp.cent_mn(2), ao_temp.cent_mn(1), 'ro');
     sp2 = subplot(1,2,2); hold on; axis tight;
     plot(0, deets_pre.intensity_raw, '-o');
     pl_idx_line = isprop(sp1.Children, 'LineStyle');
@@ -147,18 +151,17 @@ num_iter = app.NumiterationsSpinner.Value;
 
 center_defocus_z_range = (-5:5);
 current_coord = ao_params.init_coord;
-current_modes = 3;
+current_modes = 2;
 
 W_lim = app.WeightlimitEditField.Value;
 W_step = app.WeightstepEditField.Value;
+W_step_thresh = 0.05;
 
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
 deeps_post = cell(app.NumiterationsSpinner.Value,1);
 
 step_size = 10/num_modes_all;
 ma_num_it = 2;
-
-d_w_fac = 1;
 
 z_all = zeros(num_iter, 1);
 z_all_idx = false(num_iter, 1);
@@ -169,21 +172,35 @@ d_w_all = zeros(num_iter, 1);
 AO_corrections_all = cell(num_iter, 1);
 good_correction = false(num_iter, 1);
 
-refocus_scan = num_scans_done;
-iter_intens_scan = num_scans_done;
+refocus_scan = num_scans_done - ao_params.refocus_every - 1; % to do it on first iteration
+iter_intens_scan = num_scans_done - ao_params.refocus_every -1;
 
 ao_data.ao_params = ao_params;
 
+reduce_d_w = 0;
+
+added_modes = 0;
+
 for n_it = 1:num_iter
     fprintf('Iteration %d; scan %d...\n', n_it, num_scans_done);
-    ao_temp.iteration = n_it;
+    ao_temp.n_it = n_it;
+    if reduce_d_w 
+        W_step = W_step/2;
+    end
+    reduce_d_w = 0;
+    good_correction(n_it) = 1;
     
-    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{good_correction}), ao_temp) + ao_temp.init_AO_phase;
+    if W_step < W_step_thresh
+        added_modes = added_modes + 1;
+        W_step = app.WeightstepEditField.Value/(added_modes + 1);
+        current_modes = current_modes + 1;
+    end
+    
+    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
     ao_temp.current_AO_phase = current_AO_phase;
     
     %% refocus in z
     if (num_scans_done - refocus_scan) > ao_params.refocus_every
-
         [current_coord, num_scans_done, PSF_all{n_it}] = f_sg_AO_refocus_PSF(app, center_defocus_z_range, num_scans_done, ao_temp, ao_params);
         ao_temp.current_coord = current_coord;
         z_all(n_it) = current_coord.xyzp(3);
@@ -193,7 +210,7 @@ for n_it = 1:num_iter
     
     current_coord_corr = f_sg_coord_correct(reg1, ao_temp.current_coord);
     current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
-    
+    ao_temp.current_holo_phase = current_holo_phase;
     %% scan gradient
     
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
@@ -205,10 +222,11 @@ for n_it = 1:num_iter
     end
 
     zernike_imn = f_sg_AO_get_zernike_imn(current_modes);
-    num_modes = size(zernike_imn,1);
-    
+    zernike_imn2 = zernike_imn(zernike_imn(:,2) == current_modes,:);
+    num_modes = size(zernike_imn2,1);
+
     num_weights = numel(weights1);
-    scan_seq1 = cat(3, repmat(zernike_imn(:,1), [1, num_weights]), ones(num_modes, num_weights).*weights1);
+    scan_seq1 = cat(3, repmat(zernike_imn2(:,1), [1, num_weights]), ones(num_modes, num_weights).*weights1);
     scan_seq1 = permute(scan_seq1, [2, 1, 3]);
     scan_seq1 = reshape(scan_seq1, [num_modes*num_weights, 2]);
     scan_seq1 = repmat(scan_seq1, [app.ScanspermodeEditField.Value, 1]);
@@ -216,13 +234,15 @@ for n_it = 1:num_iter
 
     num_scans = size(grad_scan_seq,1);
     if app.ShufflemodesCheckBox.Value
-        grad_scan_seq2 = grad_scan_seq(randsample(num_scans,num_scans));
+        scan_seq2 = scan_seq1(randsample(num_scans,num_scans),:);
     else
-        grad_scan_seq2 = grad_scan_seq;
+        scan_seq2 = scan_seq1;
     end
     
+    grad_scan_seq = num2cell(scan_seq2, 2);
+    
     %% scan mode sequence
-    num_scans_done2 = f_sg_AO_scan_ao_seq(app, current_holo_phase, current_AO_phase, grad_scan_seq2, ao_temp);
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, ao_temp.current_AO_phase, grad_scan_seq, ao_temp);
     scan_start = num_scans_done + 1;
     scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
@@ -239,8 +259,8 @@ for n_it = 1:num_iter
     %% analyze
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
         % process find best mode
-        [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, grad_scan_seq2, ao_params);
-    elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
+        [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, grad_scan_seq, ao_params);
+    else %if strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
 
         % can optimize most problematic mode here
         intensity = zeros(num_scans, 1);
@@ -249,29 +269,66 @@ for n_it = 1:num_iter
             intensity(n_scan) = deets1.intensity_sm;
         end
         
-        mode_weight_int = [cat(1, grad_scan_seq2{:}), intensity];
+        mode_weight_int = [cat(1, grad_scan_seq{:}), intensity];
         
-        [~, sort_idx] = sort(mode_weight_int(:,2));
-        mode_weight_int2 = mode_weight_int(sort_idx,:);
-        
-        [~, sort_idx2] = sort(mode_weight_int2(:,1));
-        mode_weight_int3 = mode_weight_int2(sort_idx2,:);
-        
-        mode_weight_int4 = squeeze(mean(reshape(mode_weight_int3, app.ScanspermodeEditField.Value, [], 3),1));
-        mode_weight_int5 = reshape(mode_weight_int4, 2, [], 3);
-        
-        modes2 = mode_weight_int5(1, :, 1)';
-        %weights2 = mode_weight_int5(:, 1, 2);
-        
-        intens2 = mode_weight_int5(:,:,3);
-        d_w = (weights1(2) - weights1(1))/d_w_fac;
-        d_i = ((intens2(2,:) - intens2(1,:))/mean(intens2(:)))';
-        
-        grad2 = d_i/d_w;
+        modes2 = unique(mode_weight_int(:,1));
 
-        w_step = grad2*d_w*step_size;
+        if 1
+            d_w = zeros(num_modes_all,1);
+            d_i = zeros(num_modes_all,1);
+            for n_mode = 1:numel(modes2)
+                idx1 = mode_weight_int(:,1) == modes2(n_mode);
+
+                x0 = mode_weight_int(idx1,2);
+                y0 = mode_weight_int(idx1,3);
+                
+                x_fit = weights1(1):(W_step/100):weights1(end);
+                if 1
+                    yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 1);
+                    [~, idx2] = max(yf(x_fit));
+                    peak_loc = x_fit(idx2);
+                else
+                    yf = fit(x0 ,y0, 'gauss1');
+                    peak_loc = yf.b1;
+                end
+
+                figure; hold on;
+                plot(x0, y0, 'o')
+                plot(x_fit, yf(x_fit), '-')
+                plot(peak_loc, yf(peak_loc), 'ro')
+                title(sprintf('iter %d; mode %d; wstep=%.2f', n_it, modes2(n_mode), peak_loc))
+                
+                d_w(modes2(n_mode)) = peak_loc;
+                d_i(modes2(n_mode)) = yf(peak_loc) - yf(0);
+            end
+            w_step = d_w .* d_i/sum(d_i);
+        else
+            [~, sort_idx] = sort(mode_weight_int(:,2));
+            mode_weight_int2 = mode_weight_int(sort_idx,:);
+
+            [~, sort_idx2] = sort(mode_weight_int2(:,1));
+            mode_weight_int3 = mode_weight_int2(sort_idx2,:);
+
+            mode_weight_int4 = squeeze(mean(reshape(mode_weight_int3, app.ScanspermodeEditField.Value, [], 3),1));
+            mode_weight_int5 = reshape(mode_weight_int4, num_weights, [], 3);
+
+            intens2 = mode_weight_int5(:,:,3);
+            
+            d_w = (weights1(end) - weights1(1));
+            d_i = ((intens2(end,:) - intens2(1,:))/mean(intens2(:)))';
+            
+            grad2 = d_i/d_w;
+
+            w_step2 = grad2*d_w*step_size;
+            w_step(modes2) = w_step2;
+        end
+        
         step_size_all(n_it) = sum(abs(w_step));
-        w_step_all(n_it,modes2) = w_step;
+        w_step_all(n_it, :) = w_step;
+        
+        step_size_all(~good_correction,:) = 0;
+        w_step_all(~good_correction, :) = 0;
+        
         w_step_all_cum = cumsum(w_step_all,1);
         corr_all_weights_ma = zeros(n_it, num_modes_all);
         for n_it2 = 1:(n_it)
@@ -279,12 +336,12 @@ for n_it = 1:num_iter
             corr_all_weights_ma(n_it2,:) = mean(w_step_all(it_start:n_it2,:),1);
         end
         
-        AO_correction_new = [modes2, w_step];
+        AO_correction_new = [modes2, w_step(modes2)];
         
-        d_w_all(n_it) = d_w;
-        if max(abs(corr_all_weights_ma(n_it,:))) < W_step
-            W_step = W_step/2;
-        end
+        d_w_all(n_it) = weights1(end) - weights1(1);
+%         if max(abs(corr_all_weights_ma(n_it,:))) < W_step
+%             reduce_d_w = 1;
+%         end
     end
     
     x_it = 1:n_it;
@@ -334,33 +391,33 @@ for n_it = 1:num_iter
     % update corrections
     AO_corrections_all{n_it} = AO_correction_new;
     %% scan all corrections
-    num_corrections = numel(AO_correction);
-    
-    x_intens_scan = 0:(numel(AO_correction)-1);
+    x_intens_scan = 0:n_it;
+    scan_seq = x_intens_scan' + 1;
     if or((num_scans_done - iter_intens_scan) > ao_params.interate_intens_every, n_it == app.NumiterationsSpinner.Value)
-        scan_seq = repmat(1:num_corrections, 1, app.ScanspermodeEditField.Value)';
         iter_intens_scan = num_scans_done;
     else
-        scan_seq = repmat(num_corrections, 1, app.ScanspermodeEditField.Value)';
+        scan_seq = scan_seq(end-1:end);
     end
     
-    x_intens_scan2 = unique(x_intens_scan(scan_seq));
+    scan_seq2 = repmat(scan_seq, app.ScanspermodeEditField.Value, 1);
+    
+    x_intens_scan2 = x_intens_scan(scan_seq);
     num_scan_corrections = numel(x_intens_scan2);
     
-    num_scans_ver = numel(scan_seq);
+    num_scans_ver = numel(scan_seq2);
 
     if app.ShufflemodesCheckBox.Value
-        scan_seq2 = scan_seq(randsample(num_scans_ver,num_scans_ver),:);
-    else
-        scan_seq2 = scan_seq;
+        scan_seq2 = scan_seq2(randsample(num_scans_ver,num_scans_ver),:);
     end
+    
+    AO_corr2 = [{[1 0]}; AO_corrections_all];
     
     scan_seq3 = cell(num_scans_ver, 1);
     for n_seq = 1:num_scans_ver
-        scan_seq3{n_seq} = cat(1,AO_correction{1:scan_seq2(n_seq),1});
+        scan_seq3{n_seq} = cat(1,AO_corr2{1:scan_seq2(n_seq)});
     end
     
-    num_scans_done2 = f_sg_AO_scan_ao_seq(app, holo_im_pointer, current_holo_phase, init_AO_wf, scan_seq3, ao_params);
+    num_scans_done2 = f_sg_AO_scan_ao_seq(app, ao_temp.init_AO_phase, scan_seq3, ao_temp);
     scan_start = num_scans_done + 1;
     scan_end = (scan_start+num_scans_done2-1);
     num_scans_done = num_scans_done + num_scans_done2;
@@ -374,7 +431,19 @@ for n_it = 1:num_iter
     frames = f_sg_AO_get_all_frames(path1);
     frames2 = frames(ao_temp.im_m_idx, ao_temp.im_n_idx, scan_start:scan_end);
     
+%     intens_all = zeros(num_scans_ver,1);
+%     for n_scan = 1:num_scans_ver
+%         temp_deets = f_get_PFS_deets_fast(frames2(:,:,n_scan), [ao_params.sigma_pixels, ao_params.sigma_pixels]);
+%         intens_all(n_scan) = temp_deets.intensity_sm;
+%     end
+%     intensit2 = zeros(num_scan_corrections,1);
+%     for n_fr = 1:num_scan_corrections
+%         idx3 = scan_seq2 == n_fr;
+%         intensit2(n_fr) = mean(intens_all(idx3));
+%     end
+    
     intensit = zeros(num_scan_corrections,1);
+    
     for n_fr = 1:num_scan_corrections
         fr_idx1 = find(scan_seq2 == (x_intens_scan2(n_fr)+1));
         for n_fr2 = 1:numel(fr_idx1)
@@ -385,15 +454,24 @@ for n_it = 1:num_iter
                 deets_corr(n_fr2) = temp_deets;
             end
         end
-        intensit(n_fr) = mean([deets_corr.intensity_raw]);
+        intensit(n_fr) = mean([deets_corr.intensity_sm]);
     end
     
-    if num_scan_corrections == num_corrections
+    if intensit(end) > intensit(end-1)
+        good_correction(n_it) = 1;
+    else
+        reduce_d_w = 1;
+        AO_corrections_all(n_it) = {[]};
+    end
+    
+    %AO_corrections_all(~good_correction) = {[]};
+    
+    if num_scan_corrections == (n_it+1)
         ao_temp.cent_mn = mean([deets_corr.cent_mn],2)';
         bead_im = mean(frames2(:,:,fr_idx1),3);
         deeps_post{n_it} = deets_corr;
         
-        ao_temp.bead_mn = ao_temp.bead_mn + round(cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
+        ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
 
         ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(1));
         ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(2));
@@ -403,8 +481,8 @@ for n_it = 1:num_iter
     if app.PlotprogressCheckBox.Value
         figure(f1);
         sp1.Children(~pl_idx_line).CData = bead_im;
-        sp1.Children(pl_idx_line).XData = cent_mn(2);
-        sp1.Children(pl_idx_line).YData = cent_mn(1);
+        sp1.Children(pl_idx_line).XData = ao_temp.cent_mn(2);
+        sp1.Children(pl_idx_line).YData = ao_temp.cent_mn(1);
 
         subplot(sp2);
         plot(x_intens_scan2, intensit, '-o');
@@ -418,10 +496,13 @@ for n_it = 1:num_iter
     ao_data.mode_data_all = mode_data_all;
     ao_data.deeps_post = deeps_post;
     ao_data.PSF_all = PSF_all;
+
+    save([name_tag2 '.mat'], 'ao_data', '-v7.3');
 end
 
 %% scan PSF at end
-current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{good_correction}), ao_temp) + ao_temp.init_AO_phase;
+current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
+ao_temp.current_AO_phase = current_AO_phase;
 
 if 0
     psf_z = -10:0.1:10;
@@ -444,24 +525,21 @@ if 0
 end
 
 %%
-current_coord.xyzp(3) = current_z;
-current_coord_corr = f_sg_coord_correct(reg1, current_coord);
+current_coord_corr = f_sg_coord_correct(reg1, ao_temp.current_coord);
 current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
 
 complex_exp_corr = exp(1i*(current_holo_phase+current_AO_phase));
 SLM_phase_corr = angle(complex_exp_corr);
 
 % apply lut and upload
+init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
 init_SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
-holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);
-f_SLM_update(app.SLM_ops, holo_im_pointer);
+ao_temp.holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);
+f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
 %% save
 
-name_tag2 = sprintf('%s\\%s_%s_z%d',...
-            app.SLM_ops.save_AO_dir, name_tag, ao_params.init_coord.xyzp(3));
-
-save([name_tag2 '.mat'], 'AO_correction', 'ao_params', '-v7.3');
+save([name_tag2 '.mat'], 'ao_data', '-v7.3');
 saveas(f1,[name_tag2 'f1.fig']);
 saveas(f2,[name_tag2 'f2.fig']);
 %% save stuff

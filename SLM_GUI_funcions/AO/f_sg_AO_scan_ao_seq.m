@@ -1,7 +1,8 @@
-function num_scans_done = f_sg_AO_scan_ao_seq(app, holo_phase, init_AO_phase, zernike_scan_sequence, ao_temp)
+function num_scans_done = f_sg_AO_scan_ao_seq(app, input_AO_phase, zernike_scan_sequence, ao_temp)
 
-reg1 = ao_temp.region;
+reg1 = ao_temp.reg1;
 init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
+holo_phase = ao_temp.current_holo_phase;
 
 num_scans = numel(zernike_scan_sequence);
 num_scans_done = 0;
@@ -12,7 +13,7 @@ for n_scan = 1:num_scans
     ao_corr = f_sg_AO_corr_to_phase(full_corr, ao_temp);
 
     % convert to exp and slm phase 
-    complex_exp_corr = exp(1i*(holo_phase + init_AO_phase + ao_corr));
+    complex_exp_corr = exp(1i*(holo_phase + input_AO_phase + ao_corr));
     SLM_phase_corr = angle(complex_exp_corr);
     
     % apply lut and upload

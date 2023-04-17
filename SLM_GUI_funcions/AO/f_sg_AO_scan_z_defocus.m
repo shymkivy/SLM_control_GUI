@@ -1,6 +1,6 @@
 function num_scans_done = f_sg_AO_scan_z_defocus(app, z_range, ao_temp)
 
-reg1 = ao_temp.region;
+reg1 = ao_temp.reg1;
 init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
 center_coord = ao_temp.current_coord;
 current_AO_phase = ao_temp.current_AO_phase;
