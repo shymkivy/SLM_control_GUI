@@ -19,7 +19,12 @@ if app.ApplyAOcorrectionButton.Value
             wf_out = struct;
             if isfield(data.AO_correction, 'fit_weights')
                 wf_out.fit_weights = data.AO_correction.fit_weights;
-                z_weight_params = data.AO_correction.fit_params(1);
+                if isfield(data.AO_correction, 'fit_params')
+                    z_weight_params = data.AO_correction.fit_params(1);
+                elseif isfield(data.AO_correction, 'AO_data')
+                    z_weight_params = data.AO_correction.AO_data(1).ao_params;
+                    wf_out.AO_correction = data.AO_correction;
+                end
                 if isfield(z_weight_params, 'phase_diameter')
                     params.phase_diameter = z_weight_params.phase_diameter;
                 elseif isfield(z_weight_params, 'beam_diameter')
@@ -27,9 +32,9 @@ if app.ApplyAOcorrectionButton.Value
                 elseif isfield(z_weight_params, 'beam_width')
                     params.phase_diameter = z_weight_params.beam_width;
                 end
-                
                 wf_out.wf_out_fit = f_sg_AO_compute_wf_core(wf_out.fit_weights, params);
             end
+            
             if isfield(data.AO_correction, 'z_weights')
                 wf_out.Z_corr = struct();
                 for n_corr = 1:numel([data.AO_correction.z_weights])
@@ -42,9 +47,7 @@ if app.ApplyAOcorrectionButton.Value
                     elseif isfield(z_weight_params, 'beam_width')
                         params.phase_diameter = z_weight_params.beam_width;
                     end
-                    
                     full_correction = cat(1,data.AO_correction.z_weights(n_corr).AO_correction{:,1});
-
                     wf_out.Z_corr(n_corr).wf_out = f_sg_AO_compute_wf_core(full_correction, params);
                 end
             end

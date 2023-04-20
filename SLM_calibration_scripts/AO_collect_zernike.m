@@ -1,7 +1,8 @@
 clear;
 close all;
 
-path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\12_12_20';
+fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\12_12_20';
+
 fnames = {'zernike_scan_data_20x_0um_25step_12_20_20_19h_10m';...
           'zernike_scan_data_20x_60um_25step_12_20_20_16h_53m';...
           'zernike_scan_data_20x_-60um_25step_12_20_20_18h_27m';...
@@ -14,17 +15,15 @@ fnames = {'zernike_scan_data_20x_0um_25step_12_20_20_19h_10m';...
 %           'zernike_scan_data_4_16_23_23h_45m_z50'};
 % 
 
+%%
 num_fnames = numel(fnames);
     
 AO_correction = struct;
 for n_corr = 1:num_fnames
-
-    data = load([path1 '\' fnames{n_corr}]);
-
+    data = load([fpath '\' fnames{n_corr}]);
     AO_correction(n_corr).Z = data.ao_params.coord.xyzp(3)*1e5;
     AO_correction(n_corr).AO_correction = cat(1,data.AO_correction{:});
     AO_correction(n_corr).ao_params = data.ao_params;
-
 end
 
 max_mode = 1;
@@ -45,6 +44,7 @@ for n_corr = 1:num_fnames
     corr_all(n_corr,:) = corr_all2;
     AO_correction(n_corr).AO_correction2 = [corr_idx, corr_all2];
 end
+
 
 colors1 = jet(max_mode);
 [~, idx1] = sort(z_all);
@@ -67,4 +67,4 @@ end
 legend(leg_all(has_data))
 
 
-save([path1 '\all_zernike_data_12_12_20.mat'], 'AO_correction');
+save([fpath '\all_zernike_data_12_12_20.mat'], 'AO_correction');

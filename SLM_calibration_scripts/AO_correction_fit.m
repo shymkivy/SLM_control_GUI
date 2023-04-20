@@ -2,6 +2,14 @@ clear;
 close all;
 
 %%
+fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
+          'zernike_scan_data_4_16_23_23h_45m_z50.mat'};
+      
+fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_16_23\';
+
+save_fname = 'AO_correction_25x_maitai_4_16_23';
+
+
 % fnames = {'zernike_scan_data_fianium_11_25_21_18h_53m';...
 %           'zernike_scan_data_fianium_11_25_21_19h_31m.mat';...
 %           'zernike_scan_data_fianium_11_25_21_20h_47m.mat';...
@@ -11,19 +19,35 @@ close all;
 %           'zernike_scan_data_fianium_11_25_21_22h_15m.mat'};
 %       
 % fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_25_21\';
+% 
+% save_fname = 'AO_correction_25x_fianium_11_21_21_test';
 
-fnames = {'zernike_scan_data_11_21_21_14h_59m.mat';...
-          'zernike_scan_data_11_21_21_15h_40m.mat';...
-          'zernike_scan_data_11_21_21_17h_12m.mat';...
-          'zernike_scan_data_11_21_21_18h_7m.mat';...
-          'zernike_scan_data_11_21_21_19h_10m.mat'};
-      
-fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_21_21\';
+% % no z
+% fnames = {'zernike_scan_data_11_21_21_14h_59m.mat';...
+%           'zernike_scan_data_11_21_21_15h_40m.mat';...
+%           'zernike_scan_data_11_21_21_17h_12m.mat';...
+%           'zernike_scan_data_11_21_21_18h_7m.mat';...
+%           'zernike_scan_data_11_21_21_19h_10m.mat'};
+%       
+% fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\11_21_21\';
+% 
+% save_fname = 'AO_correction_25x_maitai_11_21_21_test';
 
-save_fname = 'AO_correction_25x_maitai_11_21_21';
+
+% fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\12_12_20';
+% 
+% fnames = {'zernike_scan_data_20x_0um_25step_12_20_20_19h_10m';...
+%           'zernike_scan_data_20x_60um_25step_12_20_20_16h_53m';...
+%           'zernike_scan_data_20x_-60um_25step_12_20_20_18h_27m';...
+%           'zernike_scan_data_20x_120um_25step_12_20_20_16h_6m';...
+%           'zernike_scan_data_20x_-120um_25step_12_20_20_17h_41m'};
+% 
+% save_fname = 'AO_correction_20x_maitai_12_20_20_test';
 
 %%
-mode = 5;
+modes_to_fit = [6];
+
+save_mode_data = 0;
 
 extra_plots = 0;
 
@@ -31,18 +55,40 @@ extra_plots = 0;
 
 %z_depths = [-100; 100; 0; 50; -50];
 
-z_depths = zeros(numel(fnames),1);
-mode_data = cell(numel(fnames),1);
-all_corr = cell(numel(fnames),1);
-for n_fil = 1:numel(fnames)
-    data = load([fpath fnames{n_fil}]);
-    z_depths(n_fil) = data.ao_params.coord.xyzp(3);
-    mode_data{n_fil} = data.ao_params.mode_data_all;
-    all_corr{n_fil} = cat(1,data.AO_correction{:});
+num_fnames = numel(fnames);
+  
+AO_data = struct;
+has_mode_data = false(num_fnames,1);
+mode_data_all = cell(num_fnames,1);
+for n_corr = 1:num_fnames
+    data = load([fpath '\' fnames{n_corr}]);
+    if isfield(data, 'ao_data')
+        data = data.ao_data;
+    end
+    if isfield(data.ao_params, 'coord')
+        AO_data(n_corr).Z = data.ao_params.coord.xyzp(3)*1e6;
+        if abs(AO_data(n_corr).Z) > 500
+            AO_data(n_corr).Z = AO_data(n_corr).Z/10;
+        end
+    else
+        AO_data(n_corr).Z = data.ao_params.init_coord.xyzp(3);
+    end
+    AO_data(n_corr).AO_correction = cat(1,data.AO_correction{:});
+    AO_data(n_corr).ao_params = data.ao_params;
+    if isfield(AO_data(n_corr), 'mode_data_all')
+        has_mode_data(n_corr) = 1;
+        mode_data_all(n_corr) = AO_data(n_corr).mode_data_all;
+        if ~save_mode_data
+            AO_data(n_corr) = rmfield(AO_data(n_corr), 'mode_data_all');
+        end
+    end
 end
 
+z_all = [AO_data.Z]';
+
+%%
 if extra_plots
-    mode_data1 = mode_data{3}{1};
+    mode_data1 = mode_data_all{3}{1};
 
     mode_data2 = mode_data1([mode_data1.mode] == 4);
 
@@ -119,52 +165,61 @@ if extra_plots
 end
 
 %%
-all_all_corr = cat(1,all_corr{:});
-unique_modes = unique(all_all_corr(:,1));
+all_all_corr = cat(1,AO_data.AO_correction);
+max_mode = max(all_all_corr(:,1));
 
-all_w = nan(numel(unique_modes),numel(fnames));
-for n_mod = 1:numel(unique_modes)
-    for n_fil = 1:numel(fnames)
-        idx1 = all_corr{n_fil}(:,1) == unique_modes(n_mod);
-        if sum(idx1)
-            all_w(n_mod, n_fil) = sum(all_corr{n_fil}(idx1,2));
-        end
+corr_all = zeros(num_fnames, max_mode);
+corr_idx = (1:max_mode)';
+for n_corr = 1:num_fnames
+    corr_all2 = zeros(max_mode,1);
+    temp_corr = AO_data(n_corr).AO_correction;
+    for n_it = 1:size(temp_corr,1)
+        n_mode = temp_corr(n_it,1);
+        corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
     end
+    corr_all(n_corr,:) = corr_all2;
+    AO_data(n_corr).AO_correction2 = [corr_idx, corr_all2];
 end
 
-[z_depths_sort, sort_idx] = sort(z_depths);
-all_w_sort = all_w(:,sort_idx);
 
-col1 = jet(6);
-figure; hold on;
-legend_all = cell(numel(unique_modes),1);
-for n_mod = 1:numel(unique_modes)
-    plot(z_depths_sort, all_w_sort(n_mod,:), 'o-', 'color', col1(n_mod,:));
-    legend_all{n_mod} = ['mode ' num2str(unique_modes(n_mod))];
+colors1 = jet(max_mode);
+[~, sort_idx] = sort(z_all);
+z_alls = z_all(sort_idx);
+corr_alls = corr_all(sort_idx, :);
+
+figure; hold on
+leg_all = cell(max_mode,1);
+has_data = false(max_mode,1);
+for n_mode = 1:max_mode
+    has_vals = corr_alls(:,n_mode) ~= 0;
+    if sum(has_vals)
+        leg_all{n_mode} = num2str(n_mode);
+        has_data(n_mode) = 1;
+    end
+    plot(z_alls(has_vals), corr_alls(has_vals,n_mode), 'o-', 'color', colors1(n_mode,:));
 end
+legend(leg_all(has_data))
 
 %%
 
-w_all = zeros(numel(fnames),1);
-for n_fil = 1:numel(fnames)
-    corr_all2 = all_corr{n_fil};
-    w_all(n_fil) = sum(corr_all2(corr_all2(:,1) == mode,2));
-end
+z1 = min(z_all):max(z_all);
 
-w_fit = z_depths\w_all;
-
-z1 = -100:100;
-y1 = z1*w_fit;
-
+w_fit = zeros(numel(modes_to_fit),1);
 figure; hold on;
-plot(z_depths, w_all,'o')
-plot(z1, y1)
+for n_mode = 1:numel(modes_to_fit)
+    temp_data = corr_alls(:,modes_to_fit(n_mode));
+    do_fit = or(z_alls == 0, temp_data ~=0);
+    w_fit2 = z_alls(do_fit)\corr_alls(do_fit,modes_to_fit(n_mode));
+    w_fit(n_mode) = w_fit2;
+    plot(z_alls(do_fit), corr_alls(do_fit,modes_to_fit),'o', 'color', colors1(modes_to_fit(n_mode),:))
+    y1 = z1*w_fit2;
+    plot(z1, y1)
+end
 xlabel('z')
 ylabel('weight')
-title(['Mode ' num2str(mode)])
+title(['Mode ' num2str(modes_to_fit)])
 
-AO_correction = struct();
-AO_correction.fit_weights = [mode, w_fit];
-AO_correction.fit_params = AO_params_fit;
+AO_correction.fit_weights = [modes_to_fit', w_fit'];
+AO_correction.AO_data = AO_data;
 
-%save([fpath save_fname '.mat'], 'AO_correction');
+Ssave([fpath save_fname '.mat'], 'AO_correction');
