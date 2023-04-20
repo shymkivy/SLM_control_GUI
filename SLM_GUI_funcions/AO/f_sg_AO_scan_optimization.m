@@ -33,10 +33,9 @@ name_tag2 = sprintf('%s\\%s_z%d',...
 %% first upload (maybe not needed. already there)
 
 if app.ApplyAOcorrectionButton.Value
-    ao_temp.init_AO_phase = f_sg_AO_get_z_corrections(app, reg1, ao_params.init_coord.xyzp(:,3));
-    init_AO_correction = [1, 0];
+    [ao_temp.init_AO_phase, ao_temp.init_AO_correction] = f_sg_AO_get_z_corrections(app, reg1, ao_params.init_coord.xyzp(:,3));
 else
-    init_AO_correction = [1, 0];
+    ao_temp.init_AO_correction = [1, 0];
     ao_temp.init_AO_phase = zeros(reg1.SLMm, reg1.SLMn);
 end
 
@@ -150,11 +149,10 @@ end
 num_iter = app.NumiterationsSpinner.Value;
 
 center_defocus_z_range = (-5:5);
-current_coord = ao_params.init_coord;
 current_modes = 2;
 
-W_lim = app.WeightlimitEditField.Value;
 W_step = app.WeightstepEditField.Value;
+W_lim_fac = app.WeightlimitEditField.Value/W_step;
 W_step_thresh = 0.05;
 
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
@@ -180,6 +178,7 @@ ao_data.ao_params = ao_params;
 reduce_d_w = 0;
 
 added_modes = 0;
+num_seq_it = 0;
 
 for n_it = 1:num_iter
     fprintf('Iteration %d; scan %d...\n', n_it, num_scans_done);
@@ -196,7 +195,10 @@ for n_it = 1:num_iter
         current_modes = current_modes + 1;
     end
     
-    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
+    AO_corrections_all2 = [{ao_temp.init_AO_correction}; AO_corrections_all];
+    %current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
+    current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all2{:}), ao_temp);
+
     ao_temp.current_AO_phase = current_AO_phase;
     
     %% refocus in z
@@ -212,19 +214,29 @@ for n_it = 1:num_iter
     current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
     ao_temp.current_holo_phase = current_holo_phase;
     %% scan gradient
-    
+
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
-        weights1 = -W_lim:W_step:W_lim;   
+        weights1 = (-W_lim_fac*W_step):W_step:(W_lim_fac*W_step);
+    elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
+        if ~num_seq_it
+            weights1 = [-W_step, 0,  W_step];
+        else
+            weights1 = (-W_lim_fac*W_step):W_step:(W_lim_fac*W_step);
+        end
     elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
         weights1 = [-W_step, W_step];
     elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient3')
         weights1 = [-W_step, 0,  W_step];
     end
-
+    
     zernike_imn = f_sg_AO_get_zernike_imn(current_modes);
     zernike_imn2 = zernike_imn(zernike_imn(:,2) == current_modes,:);
+    num_modes2 = size(zernike_imn2,1);
+    if num_seq_it
+        zernike_imn2 = zernike_imn2(zernike_imn(:,1) == mode_seq(mode_seq_idx),:);
+    end
     num_modes = size(zernike_imn2,1);
-
+    
     num_weights = numel(weights1);
     scan_seq1 = cat(3, repmat(zernike_imn2(:,1), [1, num_weights]), ones(num_modes, num_weights).*weights1);
     scan_seq1 = permute(scan_seq1, [2, 1, 3]);
@@ -257,6 +269,7 @@ for n_it = 1:num_iter
     frames2 = frames(ao_temp.im_m_idx, ao_temp.im_n_idx, scan_start:scan_end);
     
     %% analyze
+    
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
         % process find best mode
         [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames2, grad_scan_seq, ao_params);
@@ -284,7 +297,7 @@ for n_it = 1:num_iter
                 
                 x_fit = weights1(1):(W_step/100):weights1(end);
                 if 1
-                    yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 1);
+                    yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 0.9);
                     [~, idx2] = max(yf(x_fit));
                     peak_loc = x_fit(idx2);
                 else
@@ -301,6 +314,7 @@ for n_it = 1:num_iter
                 d_w(modes2(n_mode)) = peak_loc;
                 d_i(modes2(n_mode)) = yf(peak_loc) - yf(0);
             end
+            
             w_step = d_w .* d_i/sum(d_i);
         else
             [~, sort_idx] = sort(mode_weight_int(:,2));
@@ -342,6 +356,21 @@ for n_it = 1:num_iter
 %         if max(abs(corr_all_weights_ma(n_it,:))) < W_step
 %             reduce_d_w = 1;
 %         end
+    end
+    
+    if strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
+        if ~num_seq_it
+            num_seq_it = 1;
+            [~, idx1] = sort(abs(w_step_all(n_it,:)), 'descend');
+            mode_seq = idx1(1:num_modes);
+            mode_seq_idx = 1;
+        else
+            if mode_seq_idx < num_modes2
+                mode_seq_idx = mode_seq_idx + 1;
+            else
+                num_seq_it = 0;
+            end
+        end
     end
     
     x_it = 1:n_it;
@@ -457,7 +486,8 @@ for n_it = 1:num_iter
         intensit(n_fr) = mean([deets_corr.intensity_sm]);
     end
     
-    if intensit(end) > intensit(end-1)
+    
+    if or(intensit(end) > intensit(end-1), strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential'))
         good_correction(n_it) = 1;
     else
         reduce_d_w = 1;

@@ -34,7 +34,7 @@ updates = 0;
 
 if num_rows == numel(pat_num)
     for n_row = 1:num_rows
-        if sum(sum(abs([tab_data.Pattern, tab_data.X, tab_data.Y, tab_data.Z] - [pat_num(n_row), coord.xyzp(n_row,:)]),2) == 0)
+        if 0%sum(sum(abs([tab_data.Pattern, tab_data.X, tab_data.Y, tab_data.Z] - [pat_num(n_row), coord.xyzp(n_row,:)]),2) == 0)
             fprintf('coordinate pat %d (%.2f, %.2f, %.2f) already exists\n', pat_num(n_row), coord.xyzp(n_row,1), coord.xyzp(n_row,2), coord.xyzp(n_row,3))
         else
             new_row.Idx = current_idx;

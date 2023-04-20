@@ -33,7 +33,7 @@ for n_pat = 1:num_pat
     
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, 'synthesis');
+    [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, 'synthesis');
     
     %[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
