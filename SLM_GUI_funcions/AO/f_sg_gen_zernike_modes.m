@@ -1,6 +1,6 @@
-function all_modes = f_sg_gen_zernike_modes(reg1, zernike_mn)
+function all_modes = f_sg_gen_zernike_modes(reg1, zernike_nm)
 
-num_modes = size(zernike_mn,1);
+num_modes = size(zernike_nm,1);
 
 xlm = linspace(-reg1.SLMm/reg1.phase_diameter, reg1.SLMm/reg1.phase_diameter, reg1.SLMm);
 xln = linspace(-reg1.SLMn/reg1.phase_diameter, reg1.SLMn/reg1.phase_diameter, reg1.SLMn);
@@ -9,7 +9,7 @@ xln = linspace(-reg1.SLMn/reg1.phase_diameter, reg1.SLMn/reg1.phase_diameter, re
 
 all_modes = zeros(reg1.SLMm, reg1.SLMn, num_modes);
 for n_mode = 1:num_modes
-    Z_nm = f_sg_zernike_pol(rho, theta, zernike_mn(n_mode,1), zernike_mn(n_mode,2));
+    Z_nm = f_sg_zernike_pol(rho, theta, zernike_nm(n_mode,1), zernike_nm(n_mode,2));
     if reg1.zero_outside_phase_diameter
         Z_nm(rho>1) = 0;
     end

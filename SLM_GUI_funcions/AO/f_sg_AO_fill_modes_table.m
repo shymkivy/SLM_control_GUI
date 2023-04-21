@@ -1,19 +1,19 @@
 function f_sg_AO_fill_modes_table(app)
 
-max_modes = app.MaxmodesEditField.Value;
+max_Zn = app.MaxZnEditField.Value;
 W_lim = app.WeightlimitEditField.Value;
 W_step = app.WeightstepEditField.Value;
 ignore_modes_list = app.AO_ignore_modes_list;
 
-modes_all = 0:max_modes;
-num_modes = sum(modes_all+1);
+Zn_all = 0:max_Zn;
+num_modes = sum(Zn_all+1);
 
-zernike_table_list = f_sg_get_zernike_mode_nm(modes_all);
+zernike_table_list = f_sg_get_zernike_mode_nm(Zn_all);
 
 scan_modes = true(num_modes,1);
 scan_modes(ignore_modes_list) = 0;
 
-if app.AOignoredefocusmodesCheckBox.Value
+if app.AOignoresphericalmodeCheckBox.Value
     scan_modes(and(zernike_table_list(:,1) == 2, zernike_table_list(:,2) == 0)) = 0;
 end
 

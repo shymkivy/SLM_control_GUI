@@ -1,16 +1,18 @@
-function num_scans_done = f_sg_AO_scan_z_defocus(app, z_range, ao_temp)
+function [frames_out, num_scans_done] = f_sg_AO_scan_z_defocus(app, z_range, num_scans_done, ao_temp)
 
 reg1 = ao_temp.reg1;
 init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
 center_coord = ao_temp.current_coord;
 current_AO_phase = ao_temp.current_AO_phase;
 
-num_scans_done = 0;
-num_z = numel(z_range);
+num_scans = numel(z_range);
 
 z_range2 = z_range + center_coord.xyzp(3);
 
-for n_z = 1:num_z
+scan_start = num_scans_done + 1;
+scan_end = (scan_start+num_scans-1);
+
+for n_z = 1:num_scans
     temp_coord = center_coord;
     temp_coord.xyzp(3) = z_range2(n_z);
     temp_coord_corr = f_sg_coord_correct(reg1, temp_coord);
@@ -30,7 +32,17 @@ for n_z = 1:num_z
     
     f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
     
-    num_scans_done = num_scans_done + 1;
+    
 end
+num_scans_done = num_scans_done + num_scans;
+
+% make extra scan because stupid scanimage
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+num_scans_done = num_scans_done + 1;
+f_sg_AO_wait_for_frame_convert(ao_temp.scan_path, num_scans_done);
+
+% load scanned frames
+frames = f_sg_AO_get_all_frames(path1);
+frames_out = frames(im_m_idx, im_n_idx, scan_start:scan_end);
 
 end

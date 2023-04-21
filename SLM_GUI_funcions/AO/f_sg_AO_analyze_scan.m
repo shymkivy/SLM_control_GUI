@@ -1,4 +1,4 @@
-function [AO_correction_new, ao_temp] = f_sg_AO_analyze_scan(frames2, grad_scan_seq, ao_params, ao_temp)
+function [AO_correction_new, ao_temp, intensity_change] = f_sg_AO_analyze_scan(frames2, grad_scan_seq, ao_params, ao_temp)
 
 n_it = ao_temp.n_it;
 
@@ -44,6 +44,8 @@ if 1
     end
 
     w_step = d_w .* d_i/sum(d_i);
+    
+    intensity_change = sum(d_i .* d_i/sum(d_i));
 else
     [~, sort_idx] = sort(mode_weight_int(:,2));
     mode_weight_int2 = mode_weight_int(sort_idx,:);

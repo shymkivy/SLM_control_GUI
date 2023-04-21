@@ -56,7 +56,7 @@ end
 app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark'};
 app.ImageGenverEditField.Value = 'none';
 
-app.OptimizationmethodDropDown.Items = {'Sequential', 'Gradient desc', 'Gradient3', 'Grid search'};
+app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
 
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
