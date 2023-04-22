@@ -21,6 +21,7 @@ for n_scan = 1:num_scans
     if reg1.zero_outside_phase_diameter
         SLM_phase_corr(~reg1.holo_mask) = 0;
     end
+    
     % apply lut and upload
     init_SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
     ao_temp.holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);

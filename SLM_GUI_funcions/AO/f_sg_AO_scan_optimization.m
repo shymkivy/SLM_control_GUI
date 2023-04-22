@@ -52,6 +52,10 @@ init_holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
 complex_exp_corr = exp(1i*(init_holo_phase + ao_temp.init_AO_phase));
 SLM_phase_corr = angle(complex_exp_corr);
 
+if reg1.zero_outside_phase_diameter
+    SLM_phase_corr(~reg1.holo_mask) = 0;
+end
+
 % apply lut and upload
 init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
 init_SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
@@ -240,8 +244,17 @@ for n_it = 1:num_iter
     AO_corrections_all{n_it} = AO_correction_new;
     
     %% scan all corrections
-    x_intens_scan = 0:n_it;
-    scan_seq = x_intens_scan' + 1;
+    if sum(ao_temp.init_AO_correction) == 1
+        x_intens_scan = 0:n_it;
+        AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; AO_corrections_all];
+        scan_pad = 1;
+    else
+        x_intens_scan = -1:n_it;
+        AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; AO_corrections_all];
+        scan_pad = 2;
+    end
+        
+    scan_seq = x_intens_scan' + scan_pad;
     if or((num_scans_done - num_iter_intens_scan) > ao_params.interate_intens_every, n_it == app.NumiterationsSpinner.Value)
         num_iter_intens_scan = num_scans_done;
     else
@@ -258,20 +271,18 @@ for n_it = 1:num_iter
     if app.ShufflemodesCheckBox.Value
         scan_seq2 = scan_seq2(randsample(num_scans_ver,num_scans_ver),:);
     end
-    
-    AO_corr2 = [{[1 0]}; AO_corrections_all];
-    
+
     scan_seq3 = cell(num_scans_ver, 1);
     for n_seq = 1:num_scans_ver
-        scan_seq3{n_seq} = cat(1,AO_corr2{1:scan_seq2(n_seq)});
+        scan_seq3{n_seq} = cat(1,AO_corrections_all2{1:scan_seq2(n_seq)});
     end
     
-    [frames, num_scans_done] = f_sg_AO_scan_ao_seq(app, ao_temp.init_AO_phase, scan_seq3, num_scans_done, ao_temp);
+    [frames, num_scans_done] = f_sg_AO_scan_ao_seq(app, zeros(reg1.SLMm, reg1.SLMn), scan_seq3, num_scans_done, ao_temp);
 
     intensit = zeros(num_scan_corrections,1);
     
     for n_fr = 1:num_scan_corrections
-        fr_idx1 = find(scan_seq2 == (x_intens_scan2(n_fr)+1));
+        fr_idx1 = find(scan_seq2 == (x_intens_scan2(n_fr)+scan_pad));
         for n_fr2 = 1:numel(fr_idx1)
             temp_deets = f_get_PFS_deets_fast(frames(:,:,fr_idx1(n_fr2)), [ao_params.sigma_pixels, ao_params.sigma_pixels]);
             if n_fr2 == 1
@@ -346,6 +357,10 @@ current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
 
 complex_exp_corr = exp(1i*(current_holo_phase+current_AO_phase));
 SLM_phase_corr = angle(complex_exp_corr);
+
+if reg1.zero_outside_phase_diameter
+    SLM_phase_corr(~reg1.holo_mask) = 0;
+end
 
 % apply lut and upload
 init_SLM_phase_corr_lut = ao_temp.init_SLM_phase_corr_lut;
