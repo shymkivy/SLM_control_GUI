@@ -18,6 +18,7 @@ ao_params.refocus_every = 100;
 ao_params.interate_intens_every = 100;
 ao_params.scans_per_mode = app.ScanspermodeEditField.Value;
 ao_params.shuff_scan = app.ShufflemodesCheckBox.Value;
+ao_params.intensity_use_peak = 0;
 
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
@@ -58,6 +59,19 @@ init_SLM_phase_corr_lut(reg1.m_idx, reg1.n_idx) = f_sg_lut_apply_reg_corr(SLM_ph
 ao_temp.holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);
 f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
+%% create patterns
+
+max_Zn = app.MaxZnEditField.Value;
+zernike_nm_all = f_sg_get_zernike_mode_nm(0:max_Zn);
+num_modes_all = size(zernike_nm_all ,1);
+% generate all polynomials
+all_modes_phase = f_sg_gen_zernike_modes(reg1, zernike_nm_all);
+ao_temp.all_modes = all_modes_phase;
+
+zernike_imn = f_sg_AO_get_zernike_imn(max_Zn);
+
+ao_temp.zernike_nm_all = zernike_nm_all;
+ 
 %%
 resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
@@ -65,62 +79,10 @@ app.DAQ_session.outputSingleScan(0);
 
 [num_scans_done,ao_temp, ao_params] = f_sg_AO_init_xy_align(app, ao_temp, ao_params);
 
-%% create patterns
-
-max_Zn = app.MaxZnEditField.Value;
-zernike_nm_all = f_sg_get_zernike_mode_nm(0:max_Zn);
-
-num_modes_all = size(zernike_nm_all ,1);
-x_modes_all = 1:num_modes_all;
-% generate all polynomials
-all_modes_phase = f_sg_gen_zernike_modes(reg1, zernike_nm_all);
-ao_temp.all_modes = all_modes_phase;
-
-zernike_imn = f_sg_AO_get_zernike_imn(max_Zn);
-
-%% plot
-
-if app.PlotprogressCheckBox.Value
-    figure(ao_temp.f1);
-    ao_temp.sp1 = cell(2,1);
-    ao_temp.sp1{1} = subplot(1,2,1); hold on; axis tight equal;
-    imagesc(ao_temp.bead_im);
-    plot(ao_temp.cent_mn(2), ao_temp.cent_mn(1), 'ro');
-    ao_temp.sp1{2} = subplot(1,2,2); hold on; axis tight;
-    plot(0, deets_pre.intensity_raw, '-o');
-    pl_idx_line = isprop(ao_temp.sp1{1}.Children, 'LineStyle');
-    sgtitle(sprintf('%s, z = %.1f', ao_params.name_tag, ao_params.init_coord.xyzp(3)), 'interpreter', 'none');
-    
-    ao_temp.f2 = figure();
-    ao_temp.sp2 = cell(5,1);
-    ao_temp.sp2{1} = subplot(5,1,1);
-    plot(0, ao_params.init_coord.xyzp(3), 'k-o');
-    xlabel('iteration');
-    ylabel('z location (um)');
-    ao_temp.sp2{2} = subplot(5,1,2);
-    plot(0, 0, 'k-o');
-    xlabel('iteration');
-    ylabel('total step size (w)');
-    ao_temp.sp2{3} = subplot(5,1,3);
-    plot(x_modes_all, zeros(num_modes_all,1), 'k');
-    xlabel('all modes');
-    ylabel('cumul corr weight');
-    ao_temp.sp2{4} = subplot(5,1,4);
-    plot(x_modes_all, zeros(num_modes_all,1), 'k');
-    xlabel('all modes');
-    ylabel('corr step size');
-    ao_temp.sp2{5} = subplot(5,1,5);
-    plot(x_modes_all, zeros(num_modes_all,1), 'k');
-    xlabel('all modes');
-    ylabel('ma step size');
-    sgtitle(sprintf('%s, z = %.1f', name_tag, ao_params.init_coord.xyzp(3)), 'interpreter', 'none');
-end
-
 %% scan
 num_iter = app.NumiterationsSpinner.Value;
 
 center_defocus_z_range = (-5:5);
-
 
 init_W_step = app.WeightstepEditField.Value;
 W_step = init_W_step;
@@ -137,14 +99,14 @@ PSF_all = cell(num_iter, 1);
 ao_params.step_size = 10/num_modes_all;
 ao_params.ma_num_it = 2;
 
-z_all = zeros(num_iter, 1);
-z_all_idx = false(num_iter, 1);
+ao_temp.z_all = zeros(num_iter, 1);
+ao_temp.z_all_idx = false(num_iter, 1);
 
 currentZn = 2;
 currentZm_seq = 1;
 Zn_all = zeros(num_iter, 1);
 Zm_all = zeros(num_iter, 1);
-num_W_step_reps = 2;
+num_W_step_reps = 3;
 Zm_seq_all = cell(max_Zn,1);
 grad3_weights = 1;
 
@@ -178,17 +140,16 @@ for n_it = 1:num_iter
     if (num_scans_done - num_refocus_scan) > ao_params.refocus_every
         [current_coord, num_scans_done, PSF_all{n_it}] = f_sg_AO_refocus_PSF(app, center_defocus_z_range, num_scans_done, ao_temp, ao_params);
         ao_temp.current_coord = current_coord;
-        z_all(n_it) = current_coord.xyzp(3);
-        z_all_idx(n_it) = 1;
+        ao_temp.z_all(n_it) = current_coord.xyzp(3);
+        ao_temp.z_all_idx(n_it) = 1;
         num_refocus_scan = num_scans_done;
     end
     
     current_coord_corr = f_sg_coord_correct(reg1, ao_temp.current_coord);
     current_holo_phase = f_sg_PhaseHologram2(current_coord_corr, reg1);
     ao_temp.current_holo_phase = current_holo_phase;
+
     %% create scan sequence
-    
-    
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
         zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
         num_Zm = size(zernike_imn2,1);
@@ -197,6 +158,9 @@ for n_it = 1:num_iter
         if currentZm_seq > num_Zm_seq
             currentZn = currentZn + 1;
             currentZm_seq = 1;
+            zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
+            num_Zm = size(zernike_imn2,1);
+            num_Zm_seq = num_Zm*num_W_step_reps;
         end
 
         if isempty(Zm_seq_all{currentZn})
@@ -208,6 +172,8 @@ for n_it = 1:num_iter
         %zernike_imn3 = zernike_imn2(zernike_imn(:,1) == mode_seq(mode_seq_idx),:);
         zernike_imn3 = Zm_seq_all{currentZn}(currentZm_seq,:);
         n_rep = ceil(currentZm_seq/num_Zm);
+        currentZm_seq = currentZm_seq + 1;
+
 
         W_step = init_W_step/n_rep;
         weights1 = (-W_lim_steps*W_step):W_step:(W_lim_steps*W_step);
@@ -239,12 +205,15 @@ for n_it = 1:num_iter
         end
     end
     
+    ao_temp.W_step = W_step;
+    ao_temp.d_w_all(n_it) = W_step;
+    ao_temp.weights1 = weights1;
     num_modes_scan = size(zernike_imn3,1);
     num_weights = numel(weights1);
     scan_seq1 = cat(3, repmat(zernike_imn3(:,1), [1, num_weights]), ones(num_modes_scan, num_weights).*weights1);
     scan_seq1 = permute(scan_seq1, [2, 1, 3]);
     scan_seq1 = reshape(scan_seq1, [num_modes_scan*num_weights, 2]);
-    scan_seq1 = repmat(scan_seq1, [app.ScanspermodeEditField.Value, 1]);
+    scan_seq1 = repmat(scan_seq1, [ao_params.scans_per_mode, 1]);
     grad_scan_seq = num2cell(scan_seq1, 2);
 
     num_scans = size(grad_scan_seq,1);
@@ -260,7 +229,6 @@ for n_it = 1:num_iter
     [frames, num_scans_done] = f_sg_AO_scan_ao_seq(app, ao_temp.current_AO_phase, grad_scan_seq, num_scans_done, ao_temp);
     
     %% analyze
-    
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
         % process find best mode
         [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames, grad_scan_seq, ao_params);
@@ -312,21 +280,25 @@ for n_it = 1:num_iter
                 deets_corr(n_fr2) = temp_deets;
             end
         end
-        intensit(n_fr) = mean([deets_corr.intensity_sm]);
+        if ao_params.intensity_use_peak
+            intensit(n_fr) = deets_corr.intensity_peak;
+        else
+            intensit(n_fr) = deets_corr.intensity_mean_sm;
+        end
+
     end
     
     %% update w_step
-    if or(intensit(end) > intensit(end-1), strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential'))
-        ao_temp.good_correction(n_it) = 1;
-    else
-        reduce_d_w = 1;
+    if and(intensit(end) < intensit(end-1), sum(strcmpi(app.OptimizationmethodDropDown.Value, {'Sequential gradient', 'Full gradient'})))
+        ao_temp.good_correction(n_it) = 0;
+        reduce_w_step_fac = reduce_w_step_fac*2;
         AO_corrections_all(n_it) = {[]};
     end
     
     %AO_corrections_all(~good_correction) = {[]};
     
     if num_scan_corrections == (n_it+1)
-        ao_temp.cent_mn = mean([deets_corr.cent_mn],2)';
+        ao_temp.cent_mn = round(mean(cat(1,deets_corr.cent_mn),1));
         bead_im = mean(frames(:,:,fr_idx1),3);
         deeps_post{n_it} = deets_corr;
         
@@ -339,20 +311,20 @@ for n_it = 1:num_iter
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(ao_temp.f1);
-        ao_temp.sp1{1}.Children(~pl_idx_line).CData = bead_im;
-        ao_temp.sp1{1}.Children(pl_idx_line).XData = ao_temp.cent_mn(2);
-        ao_temp.sp1{1}.Children(pl_idx_line).YData = ao_temp.cent_mn(1);
+        ao_temp.sp1{1}.Children(~ao_temp.pl_idx_line).CData = bead_im;
+        ao_temp.sp1{1}.Children(ao_temp.pl_idx_line).XData = ao_temp.cent_mn(2);
+        ao_temp.sp1{1}.Children(ao_temp.pl_idx_line).YData = ao_temp.cent_mn(1);
 
         subplot(ao_temp.sp1{2});
         plot(x_intens_scan2, intensit, '-o');
     end
     
     ao_data.AO_correction = AO_corrections_all;
-    ao_data.good_correction = good_correction;
-    ao_data.z_all = z_all;
-    ao_data.step_size_all = step_size_all;
-    ao_data.w_step_all = w_step_all;
-    ao_data.mode_data_all = mode_data_all;
+    ao_data.good_correction = ao_temp.good_correction;
+    ao_data.z_all = ao_temp.z_all;
+    ao_data.step_size_all = ao_temp.step_size_all;
+    ao_data.w_step_all = ao_temp.w_step_all;
+    ao_data.mode_data_all = ao_temp.all_modes;
     ao_data.deeps_post = deeps_post;
     ao_data.PSF_all = PSF_all;
 

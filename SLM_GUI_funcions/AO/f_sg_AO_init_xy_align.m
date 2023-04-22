@@ -1,4 +1,4 @@
-function [num_scans_done,ao_temp, ao_params] = f_sg_AO_init_xy_align(app, ao_temp, ao_params)
+function [num_scans_done, ao_temp, ao_params] = f_sg_AO_init_xy_align(app, ao_temp, ao_params)
 
 files1 = dir([ao_temp.scan_path '\' '*tif']);
 fnames = {files1.name}';
@@ -36,6 +36,15 @@ ao_temp.cent_mn = deets_pre.cent_mn;
 
 %% plot
 
+if ao_params.intensity_use_peak
+    intens = deets_pre.intensity_peak;
+else
+    intens = deets_pre.intensity_mean_sm;
+end
+
+num_modes_all = size(ao_temp.zernike_nm_all ,1);
+x_modes_all = 1:num_modes_all;
+
 if app.PlotprogressCheckBox.Value
     figure(ao_temp.f1);
     ao_temp.sp1 = cell(2,1);
@@ -43,8 +52,8 @@ if app.PlotprogressCheckBox.Value
     imagesc(bead_im);
     plot(ao_temp.cent_mn(2), ao_temp.cent_mn(1), 'ro');
     ao_temp.sp1{2} = subplot(1,2,2); hold on; axis tight;
-    plot(0, deets_pre.intensity_raw, '-o');
-    pl_idx_line = isprop(ao_temp.sp1{1}.Children, 'LineStyle');
+    plot(0, intens, '-o');
+    ao_temp.pl_idx_line = isprop(ao_temp.sp1{1}.Children, 'LineStyle');
     sgtitle(sprintf('%s, z = %.1f', ao_params.name_tag, ao_params.init_coord.xyzp(3)), 'interpreter', 'none');
     
     ao_temp.f2 = figure();
@@ -69,7 +78,7 @@ if app.PlotprogressCheckBox.Value
     plot(x_modes_all, zeros(num_modes_all,1), 'k');
     xlabel('all modes');
     ylabel('ma step size');
-    sgtitle(sprintf('%s, z = %.1f', name_tag, ao_params.init_coord.xyzp(3)), 'interpreter', 'none');
+    sgtitle(sprintf('%s, z = %.1f', ao_params.name_tag, ao_params.init_coord.xyzp(3)), 'interpreter', 'none');
 end
 
 end
