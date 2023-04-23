@@ -86,7 +86,7 @@ title(['Mode ' num2str(modes_to_fit)])
 legend([pl{has_data}], leg_all(has_data))
 
 if app.SavefiletagEditField.Value
-    reg1.AO_wf.fit_weights = [modes_to_fit(has_data)', w_fit1(has_data), w_fit2(has_data)];
+    reg1.AO_wf.fit_weights = [modes_to_fit', w_fit1(modes_to_fit), w_fit2(modes_to_fit)];
 
     z_weight_params = ao_data(1).ao_params.region_params;
     params = struct;
