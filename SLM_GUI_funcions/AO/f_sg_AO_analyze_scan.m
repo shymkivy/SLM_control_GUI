@@ -21,6 +21,11 @@ modes2 = unique(mode_weight_int(:,1));
 num_modes_all = size(ao_temp.zernike_nm_all ,1);
 x_modes_all = 1:num_modes_all;
 
+init_coor_all = zeros(1,num_modes_all);
+for n_corr = 1:size(ao_temp.init_AO_correction,1)
+    init_coor_all(ao_temp.init_AO_correction(n_corr,1)) = init_coor_all(ao_temp.init_AO_correction(n_corr,1)) + ao_temp.init_AO_correction(n_corr,2);
+end
+
 if 1
     d_w = zeros(num_modes_all,1);
     d_i = zeros(num_modes_all,1);
@@ -56,13 +61,14 @@ if 1
         d_i(modes2(n_mode)) = yf(peak_loc) - yf(0);
     end
     
-    if sum(d_w)
+    if sum(d_i)
         w_step = d_w .* d_i/sum(d_i);
+        intensity_change = sum(d_i .* d_i/sum(d_i));
     else
         w_step = d_w;
+        intensity_change = sum(d_i);
     end
-    
-    intensity_change = sum(d_i .* d_i/sum(d_i));
+
 else
     [~, sort_idx] = sort(mode_weight_int(:,2));
     mode_weight_int2 = mode_weight_int(sort_idx,:);
@@ -90,7 +96,7 @@ ao_temp.w_step_all(n_it, :) = w_step;
 ao_temp.step_size_all(~ao_temp.good_correction) = 0;
 ao_temp.w_step_all(~ao_temp.good_correction, :) = 0;
 
-w_step_all_cum = cumsum(ao_temp.w_step_all,1);
+w_step_all_cum = cumsum(ao_temp.w_step_all,1)+init_coor_all;
 corr_all_weights_ma = zeros(n_it, num_modes_all);
 for n_it2 = 1:n_it
     it_start = max(n_it2 - ao_params.ma_num_it , 1);

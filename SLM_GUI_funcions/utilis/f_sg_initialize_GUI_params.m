@@ -58,6 +58,8 @@ app.ImageGenverEditField.Value = 'none';
 
 app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
 
+app.ScanframesdirpathEditField.Value = app.SLM_ops.default_AO_scan_path;
+
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));

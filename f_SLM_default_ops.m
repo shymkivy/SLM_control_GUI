@@ -69,8 +69,9 @@ ops.NI_DAQ_counter_channel = 0;
 ops.NI_DAQ_AI_channel = 0;
 ops.NI_DAQ_AO_channel = 0;
 
-
 ops.orbital_mag = 1;
+
+ops.default_AO_scan_path = '\\PRAIRIE2000\p2f\Yuriy\SLM\PSF\AO_optimization-001';
 
 %% objective list
 idx = 1;

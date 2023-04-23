@@ -27,8 +27,8 @@ bead_mn = round(bead_mn);
 ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(1));
 ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + bead_mn(2));
 
-bead_im = frames(ao_temp.im_m_idx, ao_temp.im_n_idx,num_frames);
-deets_pre = f_get_PFS_deets_fast(bead_im, [ao_params.sigma_pixels, ao_params.sigma_pixels]);
+ao_temp.bead_im = frames(ao_temp.im_m_idx, ao_temp.im_n_idx,num_frames);
+deets_pre = f_get_PFS_deets_fast(ao_temp.bead_im, [ao_params.sigma_pixels, ao_params.sigma_pixels]);
 
 ao_params.deets_pre = deets_pre;
 ao_temp.bead_mn = bead_mn;
@@ -49,7 +49,7 @@ if app.PlotprogressCheckBox.Value
     figure(ao_temp.f1);
     ao_temp.sp1 = cell(2,1);
     ao_temp.sp1{1} = subplot(1,2,1); hold on; axis tight equal;
-    imagesc(bead_im);
+    imagesc(ao_temp.bead_im);
     plot(ao_temp.cent_mn(2), ao_temp.cent_mn(1), 'ro');
     ao_temp.sp1{2} = subplot(1,2,2); hold on; axis tight;
     plot(0, intens, '-o');

@@ -15,7 +15,7 @@ ao_params.sigma_pixels = 1;
 ao_params.region_name = app.CurrentregionDropDown.Value;
 ao_params.file_dir = app.ScanframesdirpathEditField.Value;
 ao_params.refocus_every = 100;
-ao_params.interate_intens_every = 100;
+ao_params.interate_intens_every = 200;
 ao_params.scans_per_mode = app.ScanspermodeEditField.Value;
 ao_params.shuff_scan = app.ShufflemodesCheckBox.Value;
 ao_params.intensity_use_peak = 0;
@@ -111,12 +111,14 @@ currentZm_seq = 1;
 Zn_all = zeros(num_iter, 1);
 Zm_all = zeros(num_iter, 1);
 num_W_step_reps = 3;
-Zm_seq_all = cell(max_Zn,1);
+Zm_seq_all = cell(num_iter,1);
 grad3_weights = 1;
 
 ao_temp.step_size_all = zeros(num_iter, 1);
 ao_temp.w_step_all = zeros(num_iter, num_modes_all);
 ao_temp.d_w_all = zeros(num_iter, 1);
+ao_data.intensity_x_all = cell(num_iter,1);
+ao_data.intensity_all = cell(num_iter,1);
 
 AO_corrections_all = cell(num_iter, 1);
 ao_temp.good_correction = false(num_iter, 1);
@@ -124,9 +126,10 @@ ao_temp.good_correction = false(num_iter, 1);
 num_refocus_scan = num_scans_done - ao_params.refocus_every - 1; % to do it on first iteration
 num_iter_intens_scan = num_scans_done - ao_params.refocus_every -1;
 reduce_w_step_fac = 1;
-added_modes = 0;
-n_rep_mode = 0;
 
+
+make_scan = 1;
+step_fac = 1;
 ao_data.ao_params = ao_params;
 
 for n_it = 1:num_iter
@@ -155,31 +158,35 @@ for n_it = 1:num_iter
 
     %% create scan sequence
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
-        zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
-        num_Zm = size(zernike_imn2,1);
-        num_Zm_seq = num_Zm*num_W_step_reps;
-
-        if currentZm_seq > num_Zm_seq
+        
+        if step_fac > 2
             currentZn = currentZn + 1;
+            step_fac = 1;
+        end
+        
+        if make_scan
+            zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
+            num_Zm = size(zernike_imn2,1);
+            %num_Zm_seq = num_Zm*num_W_step_reps;
+            Zm_seq = 1:num_Zm;
+            delta_i_seq = zeros(num_Zm,1);
+            delta_w_seq = zeros(num_Zm,1);
+            Zm_seq2 = Zm_seq(randsample(num_Zm, num_Zm));
+            %Zm_seq2 = repmat(Zm_seq(randsample(num_Zm, num_Zm))', [num_W_step_reps, 1]);
+            
+            
+            make_scan = 0;
+            %currentZn = currentZn + 1;
             currentZm_seq = 1;
             zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
             num_Zm = size(zernike_imn2,1);
-            num_Zm_seq = num_Zm*num_W_step_reps;
-        end
-
-        if isempty(Zm_seq_all{currentZn})
-            Zm_seq = 1:num_Zm;
-            Zm_seq2 = repmat(Zm_seq(randsample(num_Zm, num_Zm))', [num_W_step_reps, 1]);
-            Zm_seq_all{currentZn} = zernike_imn2(Zm_seq2,:);
+            %num_Zm_seq = num_Zm*num_W_step_reps;
         end
 
         %zernike_imn3 = zernike_imn2(zernike_imn(:,1) == mode_seq(mode_seq_idx),:);
-        zernike_imn3 = Zm_seq_all{currentZn}(currentZm_seq,:);
-        n_rep = ceil(currentZm_seq/num_Zm);
-        currentZm_seq = currentZm_seq + 1;
-
-
-        W_step = init_W_step/n_rep;
+        zernike_imn3 = zernike_imn2(Zm_seq2(currentZm_seq), :);
+        
+        W_step = init_W_step/step_fac;
         weights1 = (-W_lim_steps*W_step):W_step:(W_lim_steps*W_step);
     elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential gradient')
         zernike_imn3 = zernike_imn(zernike_imn(:,2) == currentZn,:);
@@ -209,6 +216,7 @@ for n_it = 1:num_iter
         end
     end
     
+    Zm_seq_all{n_it} = zernike_imn3;
     ao_temp.W_step = W_step;
     ao_temp.d_w_all(n_it) = W_step;
     ao_temp.weights1 = weights1;
@@ -240,13 +248,25 @@ for n_it = 1:num_iter
         [AO_correction_new, ao_temp, intensity_change] = f_sg_AO_analyze_scan(frames, grad_scan_seq, ao_params, ao_temp);
     end
     
+    if strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
+        delta_i_seq(currentZm_seq) = intensity_change;
+        delta_w_seq(currentZm_seq) = sum(AO_correction_new(:,2));
+        currentZm_seq = currentZm_seq + 1;
+        if currentZm_seq > num_Zm
+            make_scan = 1;
+            if mean(abs(delta_w_seq)) < (W_step/2)
+                step_fac = step_fac * 2;
+            end
+        end
+    end
+    
     % update corrections
     AO_corrections_all{n_it} = AO_correction_new;
     
     %% scan all corrections
     if sum(ao_temp.init_AO_correction) == 1
         x_intens_scan = 0:n_it;
-        AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; AO_corrections_all];
+        AO_corrections_all2 = [{[1 0]}; AO_corrections_all];
         scan_pad = 1;
     else
         x_intens_scan = -1:n_it;
@@ -296,7 +316,6 @@ for n_it = 1:num_iter
         else
             intensit(n_fr) = deets_corr.intensity_mean_sm;
         end
-
     end
     
     %% update w_step
@@ -308,9 +327,9 @@ for n_it = 1:num_iter
     
     %AO_corrections_all(~good_correction) = {[]};
     
-    if num_scan_corrections == (n_it+1)
+    if num_scan_corrections == (n_it+scan_pad)
         ao_temp.cent_mn = round(mean(cat(1,deets_corr.cent_mn),1));
-        bead_im = mean(frames(:,:,fr_idx1),3);
+        ao_temp.bead_im = mean(frames(:,:,fr_idx1),3);
         deeps_post{n_it} = deets_corr;
         
         ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
@@ -322,7 +341,7 @@ for n_it = 1:num_iter
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(ao_temp.f1);
-        ao_temp.sp1{1}.Children(~ao_temp.pl_idx_line).CData = bead_im;
+        ao_temp.sp1{1}.Children(~ao_temp.pl_idx_line).CData = ao_temp.bead_im;
         ao_temp.sp1{1}.Children(ao_temp.pl_idx_line).XData = ao_temp.cent_mn(2);
         ao_temp.sp1{1}.Children(ao_temp.pl_idx_line).YData = ao_temp.cent_mn(1);
 
@@ -338,7 +357,9 @@ for n_it = 1:num_iter
     ao_data.mode_data_all = ao_temp.all_modes;
     ao_data.deeps_post = deeps_post;
     ao_data.PSF_all = PSF_all;
-
+    ao_data.intensity_x_all{n_it} = x_intens_scan2;
+    ao_data.intensity_all{n_it} = intensit;
+    
     save([name_tag2 '.mat'], 'ao_data', '-v7.3');
 end
 
