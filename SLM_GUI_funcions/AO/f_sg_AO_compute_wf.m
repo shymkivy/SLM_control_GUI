@@ -17,13 +17,15 @@ if app.ApplyAOcorrectionButton.Value
         data = load([app.SLM_ops.AO_correction_dir '\' reg_params.AO_correction_fname]);
         if isstruct(data.AO_correction)
             wf_out = struct;
+            if isfield(data.AO_correction, 'AO_data')
+                wf_out.AO_data = data.AO_correction.AO_data;
+            end
             if isfield(data.AO_correction, 'fit_weights')
                 wf_out.fit_weights = data.AO_correction.fit_weights;
                 if isfield(data.AO_correction, 'fit_params')
                     z_weight_params = data.AO_correction.fit_params(1);
                 elseif isfield(data.AO_correction, 'AO_data')
                     z_weight_params = data.AO_correction.AO_data(1).ao_params;
-                    wf_out.AO_correction = data.AO_correction;
                 end
                 if isfield(z_weight_params, 'phase_diameter')
                     params.phase_diameter = z_weight_params.phase_diameter;
@@ -32,7 +34,7 @@ if app.ApplyAOcorrectionButton.Value
                 elseif isfield(z_weight_params, 'beam_width')
                     params.phase_diameter = z_weight_params.beam_width;
                 end
-                wf_out.wf_out_fit = f_sg_AO_compute_wf_core(wf_out.fit_weights, params);
+                [wf_out.wf_out_fit, wf_out.wf_out_const] = f_sg_AO_compute_wf_core(wf_out.fit_weights, params);
             end
             
             if isfield(data.AO_correction, 'z_weights')

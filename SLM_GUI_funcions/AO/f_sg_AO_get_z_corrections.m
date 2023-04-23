@@ -17,7 +17,10 @@ for n_point = 1:num_points
                 if isfield(reg1.AO_wf, 'wf_out_fit')
                     AO_wf1 = reg1.AO_wf.wf_out_fit*Z(n_point);
                     temp_phase = temp_phase + AO_wf1;
-                    AO_corr = reg1.AO_wf.fit_weights .* [1 Z(n_point)];
+                    AO_corr = reg1.AO_wf.fit_weights(:,1:2) .* [1 Z(n_point)];
+                    if isfield(reg1.AO_wf, 'wf_out_const')
+                        AO_corr(:,2) = AO_corr(:,2) + reg1.AO_wf.fit_weights(:,3);
+                    end
                 end
                 if isfield(reg1.AO_wf, 'Z_corr')
                     [dist1, idx] = min(abs(Z(n_point) - [reg1.AO_wf.Z_corr.Z]));

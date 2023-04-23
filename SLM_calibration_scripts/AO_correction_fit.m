@@ -2,12 +2,24 @@ clear;
 close all;
 
 %%
-fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
-          'zernike_scan_data_4_16_23_23h_45m_z50.mat'};
-      
-fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_16_23\';
 
-save_fname = 'AO_correction_25x_maitai_4_16_23';
+fnames = {'zernike_scan_data_4_22_23_20h_35m_z-100.mat';...
+          'zernike_scan_data_4_23_23_2h_5m_z50.mat';...
+          'zernike_scan_data_4_22_23_23h_46m_z100.mat'};
+      
+init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
+      
+fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
+
+save_fname = 'AO_correction_25x_maitai_4_22_23';
+
+
+% fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
+%           'zernike_scan_data_4_16_23_23h_45m_z50.mat'};
+%       
+% fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_16_23\';
+% 
+% save_fname = 'AO_correction_25x_maitai_4_16_23';
 
 
 % fnames = {'zernike_scan_data_fianium_11_25_21_18h_53m';...
@@ -45,13 +57,20 @@ save_fname = 'AO_correction_25x_maitai_4_16_23';
 % save_fname = 'AO_correction_20x_maitai_12_20_20_test';
 
 %%
-modes_to_fit = [6];
+modes_to_fit = 1:10;
 
 save_mode_data = 0;
 
 extra_plots = 0;
 
 %%
+ao_init_corr_weights = [1 0];
+if exist('init_ao_file', 'var')
+    if ~isempty(init_ao_file)
+        ao_init_data = load([fpath '\' init_ao_file]);
+        ao_init_corr_weights = ao_init_data.AO_correction.fit_weights;
+    end
+end
 
 %z_depths = [-100; 100; 0; 50; -50];
 
@@ -60,28 +79,51 @@ num_fnames = numel(fnames);
 AO_data = struct;
 has_mode_data = false(num_fnames,1);
 mode_data_all = cell(num_fnames,1);
+max_modes = 1;
 for n_corr = 1:num_fnames
     data = load([fpath '\' fnames{n_corr}]);
     if isfield(data, 'ao_data')
         data = data.ao_data;
     end
-    if isfield(data.ao_params, 'coord')
-        AO_data(n_corr).Z = data.ao_params.coord.xyzp(3)*1e6;
-        if abs(AO_data(n_corr).Z) > 500
-            AO_data(n_corr).Z = AO_data(n_corr).Z/10;
+    if isfield(data, 'ao_params')
+        ao_params = data.ao_params;
+        AO_data(n_corr).ao_params = ao_params;
+        if isfield(ao_params, 'coord')
+            AO_data(n_corr).Z = ao_params.coord.xyzp(3)*1e6;
+            if abs(AO_data(n_corr).Z) > 500
+                AO_data(n_corr).Z = AO_data(n_corr).Z/10;
+            end
+        else
+            AO_data(n_corr).Z = ao_params.init_coord.xyzp(3);
         end
-    else
-        AO_data(n_corr).Z = data.ao_params.init_coord.xyzp(3);
-    end
-    AO_data(n_corr).AO_correction = cat(1,data.AO_correction{:});
-    AO_data(n_corr).ao_params = data.ao_params;
-    if isfield(AO_data(n_corr), 'mode_data_all')
-        has_mode_data(n_corr) = 1;
-        mode_data_all(n_corr) = AO_data(n_corr).mode_data_all;
-        if ~save_mode_data
-            AO_data(n_corr) = rmfield(AO_data(n_corr), 'mode_data_all');
+        if isfield(AO_data(n_corr).ao_params, 'mode_data_all')
+            has_mode_data(n_corr) = 1;
+            mode_data_all(n_corr) = AO_data(n_corr).ao_params.mode_data_all;
+            if ~save_mode_data
+                AO_data(n_corr).ao_params = rmfield(AO_data(n_corr).ao_params, 'mode_data_all');
+            end
+        end
+        if isfield(AO_data(n_corr).ao_params, 'deets_pre')
+            AO_data(n_corr).ao_params = rmfield(AO_data(n_corr).ao_params, 'deets_pre');
         end
     end
+    AO_init = ao_init_corr_weights .* [1, AO_data(n_corr).Z];
+    correction1 = [{AO_init}; data.AO_correction];
+    correction2 = cat(1,correction1{:});
+    
+    max_modes2 = max(correction2(:,1));
+    correction3 = zeros(max_modes2, 2);
+    has_data = false(max_modes2,1);
+    for n_mode = 1:max_modes2
+        idx1 = correction2(:,1) == n_mode;
+        correction3(n_mode, 1) = n_mode;
+        if sum(idx1)
+            correction3(n_mode, 2) = sum(correction2(idx1,2));
+            has_data(n_mode) = 1;
+        end
+    end
+    max_modes = max(max_modes, max_modes2);
+    AO_data(n_corr).AO_correction = correction3(has_data,:);
 end
 
 z_all = [AO_data.Z]';
@@ -165,32 +207,29 @@ if extra_plots
 end
 
 %%
-all_all_corr = cat(1,AO_data.AO_correction);
-max_mode = max(all_all_corr(:,1));
 
-corr_all = zeros(num_fnames, max_mode);
-corr_idx = (1:max_mode)';
+corr_all = zeros(num_fnames, max_modes);
+corr_idx = (1:max_modes)';
 for n_corr = 1:num_fnames
-    corr_all2 = zeros(max_mode,1);
+    corr_all2 = zeros(max_modes,1);
     temp_corr = AO_data(n_corr).AO_correction;
     for n_it = 1:size(temp_corr,1)
         n_mode = temp_corr(n_it,1);
         corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
     end
     corr_all(n_corr,:) = corr_all2;
-    AO_data(n_corr).AO_correction2 = [corr_idx, corr_all2];
 end
 
 
-colors1 = jet(max_mode);
+colors1 = jet(max_modes);
 [~, sort_idx] = sort(z_all);
 z_alls = z_all(sort_idx);
 corr_alls = corr_all(sort_idx, :);
 
 figure; hold on
-leg_all = cell(max_mode,1);
-has_data = false(max_mode,1);
-for n_mode = 1:max_mode
+leg_all = cell(max_modes,1);
+has_data = false(max_modes,1);
+for n_mode = 1:max_modes
     has_vals = corr_alls(:,n_mode) ~= 0;
     if sum(has_vals)
         leg_all{n_mode} = num2str(n_mode);
@@ -204,22 +243,37 @@ legend(leg_all(has_data))
 
 z1 = min(z_all):max(z_all);
 
-w_fit = zeros(numel(modes_to_fit),1);
+w_fit1 = zeros(numel(modes_to_fit),1);
+w_fit2 = zeros(numel(modes_to_fit),1);
 figure; hold on;
 for n_mode = 1:numel(modes_to_fit)
     temp_data = corr_alls(:,modes_to_fit(n_mode));
     do_fit = or(z_alls == 0, temp_data ~=0);
-    w_fit2 = z_alls(do_fit)\corr_alls(do_fit,modes_to_fit(n_mode));
-    w_fit(n_mode) = w_fit2;
-    plot(z_alls(do_fit), corr_alls(do_fit,modes_to_fit),'o', 'color', colors1(modes_to_fit(n_mode),:))
-    y1 = z1*w_fit2;
-    plot(z1, y1)
+    if sum(do_fit)>1
+        if 0
+            w_fit11 = 0;
+            w_fit21 = z_alls(do_fit)\corr_alls(do_fit,modes_to_fit(n_mode));
+            y_fit = z1*w_fit2;
+        else
+            yf = fit(z_alls(do_fit), corr_alls(do_fit,modes_to_fit(n_mode)), 'poly1');
+            y_fit = yf(z1);
+            w_fit11 = yf.p1;
+            w_fit21 = yf.p2;
+        end
+        w_fit1(n_mode) = w_fit11;
+        w_fit2(n_mode) = w_fit21;
+        
+        plot(z_alls(do_fit), corr_alls(do_fit, modes_to_fit(n_mode)), 'o', 'color', colors1(n_mode,:))
+        plot(z1, y_fit, 'color', colors1(n_mode,:))
+    end
 end
 xlabel('z')
 ylabel('weight')
 title(['Mode ' num2str(modes_to_fit)])
 
-AO_correction.fit_weights = [modes_to_fit', w_fit'];
+AO_correction.fit_weights = [modes_to_fit', w_fit1, w_fit2];
 AO_correction.AO_data = AO_data;
+AO_correction.fit_eq = 'yf(x) = p1*x + p2';
 
-Ssave([fpath save_fname '.mat'], 'AO_correction');
+
+save([fpath save_fname '.mat'], 'AO_correction');
