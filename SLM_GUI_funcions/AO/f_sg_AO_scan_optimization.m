@@ -131,6 +131,7 @@ reduce_w_step_fac = 1;
 make_scan = 1;
 step_fac = 1;
 ao_data.ao_params = ao_params;
+ao_data.init_AO_correction = ao_temp.init_AO_correction;
 
 for n_it = 1:num_iter
     fprintf('Iteration %d; scan %d...\n', n_it, num_scans_done);
