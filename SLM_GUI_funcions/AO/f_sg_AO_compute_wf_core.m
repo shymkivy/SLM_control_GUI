@@ -1,4 +1,4 @@
-function [all_modes_fit_sum, all_modes_const_sum] = f_sg_AO_compute_wf_core(modes_in, params)
+function all_modes = f_sg_AO_compute_wf_core(modes_in, params)
 
 phase_diameter = params.phase_diameter;
 SLMm = params.SLMm;
@@ -23,20 +23,31 @@ for Zn = 0:maxZn
 end
 zernike_nm_list = cat(1, zernike_nm_list_cell{:});
 
-
 % generate all polynomials
 all_modes = zeros(SLMm, SLMn, num_modes);
-all_modes_const = zeros(SLMm, SLMn, num_modes);
 for n_mode_idx = 1:num_modes
     n_mode = modes_in(n_mode_idx,1);
     Z_nm = f_sg_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
-    all_modes(:,:,n_mode_idx) = Z_nm*modes_in(n_mode_idx,2);
-    if num_fit == 3
-        all_modes_const = Z_nm*modes_in(n_mode_idx,3);
-    end
+    all_modes(:,:,n_mode_idx) = Z_nm;
 end
 
-all_modes_fit_sum = sum(all_modes,3);
-all_modes_const_sum = sum(all_modes_const,3);
+% generate all polynomials
+% all_modes = zeros(SLMm, SLMn, num_modes);
+% for n_mode_idx = 1:num_modes
+%     n_mode = modes_in(n_mode_idx,1);
+%     Z_nm = f_sg_zernike_pol(rho, theta, zernike_nm_list(n_mode,1), zernike_nm_list(n_mode,2));
+%     if num_fit == 2
+%         all_modes(:,:,1,n_mode_idx) = Z_nm*modes_in(n_mode_idx,2);
+%     elseif num_fit == 3
+%         all_modes(:,:,1,n_mode_idx) = Z_nm*modes_in(n_mode_idx,2);
+%         all_modes(:,:,2,n_mode_idx) = Z_nm*modes_in(n_mode_idx,3);
+%     elseif num_fit == 4
+%         all_modes(:,:,1,n_mode_idx) = Z_nm*modes_in(n_mode_idx,2);
+%         all_modes(:,:,2,n_mode_idx) = Z_nm*modes_in(n_mode_idx,3);
+%         all_modes(:,:,3,n_mode_idx) = Z_nm*modes_in(n_mode_idx,3);
+%     end
+% end
+
+%all_modes_fit_sum = sum(all_modes,4);
 %figure; imagesc(all_modes_sum)
 end

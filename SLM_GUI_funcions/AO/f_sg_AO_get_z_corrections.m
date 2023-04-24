@@ -14,13 +14,21 @@ for n_point = 1:num_points
     if isfield(reg1, 'AO_wf')
         if ~isempty(reg1.AO_wf)
             if isstruct(reg1.AO_wf)
-                if isfield(reg1.AO_wf, 'wf_out_fit')
-                    AO_wf1 = reg1.AO_wf.wf_out_fit*Z(n_point);
-                    temp_phase = temp_phase + AO_wf1;
-                    AO_corr = reg1.AO_wf.fit_weights(:,1:2) .* [1 Z(n_point)];
-                    if isfield(reg1.AO_wf, 'wf_out_const')
-                        AO_corr(:,2) = AO_corr(:,2) + reg1.AO_wf.fit_weights(:,3);
+                if isfield(reg1.AO_wf, 'fit_weights')
+                    all_modes = reg1.AO_wf.all_modes;
+                    fit_weights = reg1.AO_wf.fit_weights;
+                    num_fit = size(fit_weights,2)-1;
+                    if num_fit == 1
+                        weights = fit_weights(:,2)*Z(n_point);
+                    elseif num_fit == 2
+                        weights = fit_weights(:,2)*Z(n_point) + fit_weights(:,3);
+                    elseif num_fit == 3
+                        weights = fit_weights(:,2)*Z(n_point)^2 + fit_weights(:,3)*Z(n_point) + fit_weights(:,4);
                     end
+                    AO_wf1 = sum(all_modes .* reshape(weights, 1, 1, []),3);
+                    AO_corr = [fit_weights(:,1), weights];
+                    AO_corr(AO_corr(:,2) == 0,:) = [];
+                    temp_phase = temp_phase + AO_wf1;
                 end
                 if isfield(reg1.AO_wf, 'Z_corr')
                     [dist1, idx] = min(abs(Z(n_point) - [reg1.AO_wf.Z_corr.Z]));
@@ -28,7 +36,6 @@ for n_point = 1:num_points
                         AO_wf2 = reg1.AO_wf.Z_corr(idx).wf_out;
                     end
                     temp_phase = temp_phase + AO_wf2;
-                    
                 end
             else
                 temp_phase = temp_phase + reg1.AO_wf;

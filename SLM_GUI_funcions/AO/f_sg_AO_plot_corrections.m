@@ -6,6 +6,8 @@ ao_data = reg1.AO_wf.AO_data;
 
 AO_correction_all = cat(1,ao_data.AO_correction);
 
+fit_type = 'poly2'; % 'constrain_z0' 'poly1', 'poly2'
+
 max_modes = max(AO_correction_all(:,1));
 %%
 z_all = ([ao_data.Z])';
@@ -50,8 +52,7 @@ end
 
 z_fit = min(z_all):max(z_all);
 
-w_fit1 = zeros(numel(modes_to_fit),1);
-w_fit2 = zeros(numel(modes_to_fit),1);
+w_fit1 = cell(numel(modes_to_fit),1);
 leg_all = cell(max_modes,1);
 pl = cell(max_modes,1);
 has_data = false(max_modes,1);
@@ -60,24 +61,30 @@ for n_mode = 1:numel(modes_to_fit)
     mode = modes_to_fit(n_mode);
     temp_data = corr_alls(:,mode);
     do_fit = or(z_alls == 0, temp_data ~=0);
-    if sum(do_fit)>1
+    if sum(do_fit)>2
         has_data(mode) = 1;
         leg_all{mode} = num2str(mode);
-        if app.constrainz0CheckBox.Value
-            w_fit11 = z_alls(do_fit)\corr_alls(do_fit,mode);
-            w_fit21 = 0;
+        if strcmpi(fit_type, 'zonstrain_z0')
+            w_fit11 = z_alls(do_fit)\corr_alls(do_fit, mode);
             y_fit = z_fit*w_fit11;
-        else
-            yf = fit(z_alls(do_fit), corr_alls(do_fit,mode), 'poly1');
+            fit_eq = 'yf(x) = p1*x';
+        elseif strcmpi(fit_type, 'poly1')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
             y_fit = yf(z_fit);
-            w_fit11 = yf.p1;
-            w_fit21 = yf.p2;
+            w_fit11 = [yf.p1 yf.p2];
+            fit_eq = 'yf(x) = p1*x + p2';
+            
+        elseif strcmpi(fit_type, 'poly2')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
+            y_fit = yf(z_fit);
+            w_fit11 = [yf.p1 yf.p2 yf.p3];
+            fit_eq = 'yf(x) = p1*x^2 + p2*x + p3';
         end
-        w_fit1(mode) = w_fit11;
-        w_fit2(mode) = w_fit21;
+        w_fit1{n_mode} = w_fit11;
         
-        plot(z_alls(do_fit), corr_alls(do_fit, mode), 'o', 'color', colors1(mode,:));
-        pl{mode} = plot(z_fit, y_fit, 'color', colors1(mode,:));
+        pl{n_mode} = plot(z_fit, y_fit, 'color', colors1(n_mode,:), 'linewidth', 2);
+        plot(z_alls(do_fit), corr_alls(do_fit, mode), '.', 'color', colors1(mode,:), 'markersize', 20);
+        plot(z_alls(do_fit), corr_alls(do_fit, mode), 'ko', 'linewidth', 1);
     end
 end
 xlabel('z')
@@ -86,8 +93,10 @@ title(['Mode ' num2str(modes_to_fit)])
 legend([pl{has_data}], leg_all(has_data))
 
 if app.SavefiletagEditField.Value
-    reg1.AO_wf.fit_weights = [modes_to_fit', w_fit1(modes_to_fit), w_fit2(modes_to_fit)];
-
+    %reg1.AO_wf.fit_weights = [modes_to_fit', w_fit1(modes_to_fit), w_fit2(modes_to_fit)];
+    reg1.AO_wf.fit_weights = [modes_to_fit(has_data)', cat(1,w_fit1{:})];
+    reg1.AO_wf.fit_eq = fit_eq;
+    
     z_weight_params = ao_data(1).ao_params.region_params;
     params = struct;
     params.phase_diameter = reg1.phase_diameter;
@@ -103,7 +112,7 @@ if app.SavefiletagEditField.Value
         params.phase_diameter = z_weight_params.beam_width;
     end
 
-    [reg1.AO_wf.wf_out_fit, reg1.AO_wf.wf_out_const] = f_sg_AO_compute_wf_core(reg1.AO_wf.fit_weights, params);
+    reg1.AO_wf.all_modes = f_sg_AO_compute_wf_core(reg1.AO_wf.fit_weights, params);
     
     reg_params_idx = f_sg_get_reg_params_idx(app, app.CurrentregionDropDown.Value);
     app.region_obj_params(reg_params_idx).AO_wf = reg1.AO_wf;

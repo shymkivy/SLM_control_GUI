@@ -34,7 +34,7 @@ if app.ApplyAOcorrectionButton.Value
                 elseif isfield(z_weight_params, 'beam_width')
                     params.phase_diameter = z_weight_params.beam_width;
                 end
-                [wf_out.wf_out_fit, wf_out.wf_out_const] = f_sg_AO_compute_wf_core(wf_out.fit_weights, params);
+                wf_out.all_modes = f_sg_AO_compute_wf_core(wf_out.fit_weights, params);
             end
             
             if isfield(data.AO_correction, 'z_weights')
