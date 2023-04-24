@@ -4,6 +4,8 @@ close all;
 %%
 
 fnames = {'zernike_scan_data_4_22_23_20h_35m_z-100.mat';...
+          'zernike_scan_data_4_23_23_18h_34m_z-50.mat';...
+          'zernike_scan_data_4_23_23_21h_11m_z0.mat';...
           'zernike_scan_data_4_23_23_2h_5m_z50.mat';...
           'zernike_scan_data_4_22_23_23h_46m_z100.mat'};
       
@@ -11,7 +13,7 @@ init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_4_22_23';
+save_fname = 'AO_correction_25x_maitai_poly2_4_23_23';
 
 
 % fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
@@ -58,6 +60,11 @@ save_fname = 'AO_correction_25x_maitai_4_22_23';
 
 %%
 modes_to_fit = 1:10;
+
+
+fit_type = 'poly2'; % 'constrain_z0' 'poly1', 'poly2'
+
+constrain_z0 = 0;
 
 save_mode_data = 0;
 
@@ -107,10 +114,14 @@ for n_corr = 1:num_fnames
             AO_data(n_corr).ao_params = rmfield(AO_data(n_corr).ao_params, 'deets_pre');
         end
     end
-    AO_init = ao_init_corr_weights .* [1, AO_data(n_corr).Z];
+    if isfield(data, 'init_AO_correction')
+        AO_init = data.init_AO_correction;
+        AO_init(AO_init(:,2) == 0,:) = [];
+    else
+        AO_init = ao_init_corr_weights .* [1, AO_data(n_corr).Z];
+    end
     correction1 = [{AO_init}; data.AO_correction];
     correction2 = cat(1,correction1{:});
-    
     max_modes2 = max(correction2(:,1));
     correction3 = zeros(max_modes2, 2);
     has_data = false(max_modes2,1);
@@ -208,34 +219,47 @@ end
 
 %%
 
-corr_all = zeros(num_fnames, max_modes);
-corr_idx = (1:max_modes)';
+ao_corr_all = cat(1,AO_data.AO_correction);
+
+max_modes = max(ao_corr_all(:,1));
+max_mode_use = max(modes_to_fit);
+min_modes = min(ao_corr_all(:,1));
+
+corr_all = zeros(num_fnames, max_mode_use);
+corr_idx = (1:max_mode_use)';
 for n_corr = 1:num_fnames
-    corr_all2 = zeros(max_modes,1);
+    corr_all2 = zeros(max_mode_use,1);
     temp_corr = AO_data(n_corr).AO_correction;
     for n_it = 1:size(temp_corr,1)
         n_mode = temp_corr(n_it,1);
-        corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
+        if sum(n_mode == modes_to_fit)
+            corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
+        end
     end
     corr_all(n_corr,:) = corr_all2;
 end
 
 
-colors1 = jet(max_modes);
+colors1 = parula(max_mode_use-min_modes+1);
+%colors1 = hsv(max_modes-min_modes+1);
+%colors1 = jet(max_modes-min_modes+1);
+
+
 [~, sort_idx] = sort(z_all);
 z_alls = z_all(sort_idx);
 corr_alls = corr_all(sort_idx, :);
 
 figure; hold on
-leg_all = cell(max_modes,1);
-has_data = false(max_modes,1);
-for n_mode = 1:max_modes
+leg_all = cell(max_mode_use,1);
+has_data = false(max_mode_use,1);
+for n_mode = 1:max_mode_use
     has_vals = corr_alls(:,n_mode) ~= 0;
     if sum(has_vals)
         leg_all{n_mode} = num2str(n_mode);
         has_data(n_mode) = 1;
+        plot(z_alls(has_vals), corr_alls(has_vals,n_mode), 'o-', 'color', colors1(n_mode+1-min_modes,:));
     end
-    plot(z_alls(has_vals), corr_alls(has_vals,n_mode), 'o-', 'color', colors1(n_mode,:));
+    
 end
 legend(leg_all(has_data))
 
@@ -243,37 +267,50 @@ legend(leg_all(has_data))
 
 z1 = min(z_all):max(z_all);
 
-w_fit1 = zeros(numel(modes_to_fit),1);
+w_fit1 = cell(numel(modes_to_fit),1);
 w_fit2 = zeros(numel(modes_to_fit),1);
+leg_all = cell(max_mode_use,1);
+has_data = false(max_mode_use,1);
+pl = cell(max_mode_use,1);
 figure; hold on;
 for n_mode = 1:numel(modes_to_fit)
-    temp_data = corr_alls(:,modes_to_fit(n_mode));
+    mode = modes_to_fit(n_mode);
+    temp_data = corr_alls(:, mode);
     do_fit = or(z_alls == 0, temp_data ~=0);
     if sum(do_fit)>1
-        if 0
-            w_fit11 = 0;
-            w_fit21 = z_alls(do_fit)\corr_alls(do_fit,modes_to_fit(n_mode));
-            y_fit = z1*w_fit2;
-        else
-            yf = fit(z_alls(do_fit), corr_alls(do_fit,modes_to_fit(n_mode)), 'poly1');
+        leg_all{n_mode} = [num2str(n_mode)];
+        has_data(n_mode) = 1;
+        if strcmpi(fit_type, 'zonstrain_z0')
+            w_fit11 = z_alls(do_fit)\corr_alls(do_fit, mode);
+            y_fit = z1*w_fit11;
+            fit_eq = 'yf(x) = p1*x';
+        elseif strcmpi(fit_type, 'poly1')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
             y_fit = yf(z1);
-            w_fit11 = yf.p1;
-            w_fit21 = yf.p2;
+            w_fit11 = [yf.p1 yf.p2];
+            fit_eq = 'yf(x) = p1*x + p2';
+            
+        elseif strcmpi(fit_type, 'poly2')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
+            y_fit = yf(z1);
+            w_fit11 = [yf.p1 yf.p2 yf.p3];
+            fit_eq = 'yf(x) = p1*x^2 + p2*x + p3';
         end
-        w_fit1(n_mode) = w_fit11;
-        w_fit2(n_mode) = w_fit21;
+        w_fit1{n_mode} = w_fit11;
         
-        plot(z_alls(do_fit), corr_alls(do_fit, modes_to_fit(n_mode)), 'o', 'color', colors1(n_mode,:))
-        plot(z1, y_fit, 'color', colors1(n_mode,:))
+        pl{n_mode} = plot(z1, y_fit, 'color', colors1(n_mode+1-min_modes,:), 'linewidth', 2);
+        plot(z_alls(do_fit), corr_alls(do_fit, mode), '.', 'color', colors1(mode+1-min_modes,:), 'markersize', 20);
+        plot(z_alls(do_fit), corr_alls(do_fit, mode), 'ko', 'linewidth', 1);
     end
 end
-xlabel('z')
-ylabel('weight')
-title(['Mode ' num2str(modes_to_fit)])
+legend([pl{has_data}], leg_all(has_data))
+xlabel('z defocus')
+ylabel('weight correction')
+title(sprintf('Mode correction weights, %s', fit_type))
 
-AO_correction.fit_weights = [modes_to_fit', w_fit1, w_fit2];
+AO_correction.fit_weights = [modes_to_fit(has_data)', cat(1,w_fit1{:})];
 AO_correction.AO_data = AO_data;
-AO_correction.fit_eq = 'yf(x) = p1*x + p2';
+AO_correction.fit_eq = fit_eq;
 
 
 save([fpath save_fname '.mat'], 'AO_correction');
