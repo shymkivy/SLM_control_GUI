@@ -255,7 +255,7 @@ for n_it = 1:num_iter
         currentZm_seq = currentZm_seq + 1;
         if currentZm_seq > num_Zm
             make_scan = 1;
-            if mean(abs(delta_w_seq)) < (W_step/2)
+            if mean(abs(delta_w_seq)) < (W_step)
                 step_fac = step_fac * 2;
             end
         end
