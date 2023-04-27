@@ -3,8 +3,7 @@
 clear;
 %close all;
 
-
-data_source = 2;
+data_source = 6;
 
 if data_source == 1
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\etl_psf_prairie1\3_28_23\';
@@ -47,7 +46,7 @@ elseif data_source == 4
                   'PSF_SLM_256_z16_01um_z-150_AO-015'};
               
     z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -150];
-    description = 'SLM AO';
+    description = 'SLM AO old';
 elseif data_source == 5
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb_SLM\';
     data_path2 = {'PSF_SLM_256_z16_01um_z150-008',...
@@ -63,6 +62,18 @@ elseif data_source == 5
               
     z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -100, -150];
     description = 'SLM no AO';
+elseif data_source == 6
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_24_23\SLM_25x_AO\';
+    data_path2 = {'PSF_25x_150AO_32ave-003',...
+                  'PSF_25x_100AO_32ave-004',...
+                  'PSF_25x_50AO_32ave-007',...
+                  'PSF_25x_0AO_32ave-008',...
+                  'PSF_25x_-50AO_32ave-006',...
+                  'PSF_25x_-100AO_32ave-005',...
+                  'PSF_25x_-150AO_32ave-002'};
+              
+    z_loc = [150, 100, 50, 0, -50, -100, -150];
+    description = 'SLM  AO';
 end
 
 %%
@@ -91,13 +102,16 @@ plot_superdeets = 0;
 
 num_fil = numel(data_path2);
 
-points_all = cell(num_fil,1);
-fwhm_all = cell(num_fil,1);
-intensity_5pct = cell(num_fil,1);
-intensity_mean_max_max = cell(num_fil,1);
+
 
 z_loc2 = unique(z_loc);
 num_loc = numel(z_loc2);
+
+
+points_all = cell(num_loc,1);
+fwhm_all = cell(num_loc,1);
+intensity_5pct = cell(num_loc,1);
+intensity_mean_max_max = cell(num_loc,1);
 
 for n_loc = 1:num_loc
     
