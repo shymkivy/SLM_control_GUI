@@ -2,8 +2,9 @@ function f_sg_initialize_default_regobj_params(app)
 
 idx = 1;
 
-default_objectives(idx).obj_name = 'default';
+default_objectives(idx).obj_name = '25X_default';
 default_objectives(idx).FOV_size = 500;
+default_objectives(idx).magnification = 25;
 
 default_region_list(idx).reg_name = 'Full SLM';
 default_region_list(idx).height_range = [0, 1];

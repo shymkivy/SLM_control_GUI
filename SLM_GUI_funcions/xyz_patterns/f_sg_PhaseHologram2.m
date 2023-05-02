@@ -22,10 +22,22 @@ num_points = size(xyzp,1);
 
 holo_phase = zeros(SLMm, SLMn, num_points);
 
-defocus_phase = f_sg_DefocusPhase(reg_params);
-%defocus_phase = f_sg_DefocusPhase2(reg_params);
+alpha = asin(reg_params.effective_NA/reg_params.objective_RI);
+f_obj = 0.180/25;
 
+reg_params2 = reg_params;
 for idx=1:size(xyzp,1)
+    
+    % adjust NA by z depth
+    z = xyzp(3)*1e-6;
+    f_obj_corr = f_obj + z;
+    alpha_corr = atan(tan(alpha)*f_obj/f_obj_corr);
+    NA_corr = reg_params.objective_RI * sin(alpha_corr);
+    reg_params2.effective_NA = NA_corr;
+
+    %defocus_phase = f_sg_DefocusPhase(reg_params2);
+    defocus_phase = f_sg_DefocusPhase2(reg_params2);
+
     holo_phase(:,:,idx)=2*pi.*xyzp(idx,1).*u ...
                       + 2*pi.*xyzp(idx,2).*v ...
                       + xyzp(idx,3)*1e-6.*defocus_phase;

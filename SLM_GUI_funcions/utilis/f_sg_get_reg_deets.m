@@ -13,6 +13,10 @@ current_reg = app.region_list(strcmpi(name_tag, {app.region_list.reg_name}));
 reg_params_idx = f_sg_get_reg_params_idx(app, name_tag);
 region_obj_params = app.region_obj_params(reg_params_idx);
 
+% load objective params
+objectives = app.SLM_ops.objectives(strcmpi(region_obj_params.obj_name, {app.SLM_ops.objectives.obj_name}));
+region_obj_params = f_copy_fields(region_obj_params, objectives);
+
 % get slm region
 m = current_reg.height_range;
 n = current_reg.width_range;
@@ -51,6 +55,7 @@ region_obj_params.m_idx = m_idx;
 region_obj_params.n_idx = n_idx;
 region_obj_params.holo_mask = holo_mask;
 region_obj_params.objective_RI = app.ObjectiveRIEditField.Value;
+region_obj_params.tube_length = app.TubelengthEditField.Value;
 region_obj_params.sim_pixel_crosstalk = app.SimulatepixelcrosstalkCheckBox.Value;
 region_obj_params.sim_smooth_std = f_str_to_array(app.XYsmoothstdpixEditField.Value);
 end

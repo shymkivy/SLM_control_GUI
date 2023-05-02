@@ -61,6 +61,7 @@ SLM_params(idx).regions_use = {'Full SLM'};
 %ops.beam_diameter = 1152;   % in pixels, unused 
 ops.objective_RI = 1.33;    % used in defocus functions
 %ops.wavelength = 940;       % in nm    
+ops.tube_length = 0.180;     % meters
 
 ops.zoom = 1.2;
 

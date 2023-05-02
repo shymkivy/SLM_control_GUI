@@ -5,9 +5,7 @@ coord_corr = f_sg_coord_correct(reg1, coord);
 if strcmpi(method, 'synthesis')
 
     holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
-
     complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord_corr.weight,[1 1 numel(coord_corr.weight)]),3);
-
     SLM_phase = angle(complex_exp);
 
     % add ao corrections

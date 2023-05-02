@@ -53,8 +53,6 @@ bias = (2*objectiveRI*k)/(3*sin_alpha^2)*(1 - cos_alpha^3);
 % defocus is phase with bias subtracted
 defocus = -(phase - bias);
 
-
-
 % approximation
 %defocus = -objectiveRI * k * (1 - RHO.^2 * (objectiveNA/objectiveRI)^2 / 2 - RHO.^4 * (objectiveNA/objectiveRI)^4 / 8);
 %defocus = -objectiveRI * k * ((objectiveNA/objectiveRI)^2/4 - RHO.^2 * (objectiveNA/objectiveRI)^2 / 2 - RHO.^4 * (objectiveNA/objectiveRI)^4 / 8);
