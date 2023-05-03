@@ -36,10 +36,11 @@ pupil_amp = A  * exp(-res);
 %holo_image1(pupil_mask) = holo_image;
 
 holo_image2 = holo_image - defocus_dist.*defocus*1e-6;
-bin_fac = 5;
-smooth_std2 = reg1.sim_smooth_std*bin_fac;
 
 if reg1.sim_pixel_crosstalk
+    bin_fac = 5;
+    smooth_std2 = reg1.sim_smooth_std*bin_fac;
+    
     holo_image_rep = f_repmat_xy(holo_image2, bin_fac);
     holo_image3 = f_smooth_nd(holo_image_rep, smooth_std2);
 
@@ -60,6 +61,7 @@ else
     holo_image3 = holo_image2;
     pupil_amp2 = pupil_amp;
 end
+
 SLM_complex_wave=pupil_amp2.*exp(1i.*(holo_image3));
 
 im1 = fftshift(fft2(SLM_complex_wave));
@@ -82,9 +84,7 @@ end
 %y_lab = linspace(-(ph_d-1)/2, (ph_d-1)/2, dims(1)-1)/2;
 
 % fft output, first value is baseline (0, 0), the middle of remainder is N/2 freq
-
 dims = size(im_amp);
-
 x_lab = round(((1:dims(2))-(dims(2)/2)-1)/2/dims(2)*ph_d,2);
 y_lab = round(((1:dims(1))-(dims(1)/2)-1)/2/dims(1)*ph_d,2);
 

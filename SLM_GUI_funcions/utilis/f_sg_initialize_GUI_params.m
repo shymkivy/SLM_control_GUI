@@ -53,7 +53,7 @@ for n_reg = 1:numel(app.region_obj_params)
 end
 
 %%
-app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark'};
+app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark', 'global GS'};
 app.ImageGenverEditField.Value = 'none';
 
 app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
