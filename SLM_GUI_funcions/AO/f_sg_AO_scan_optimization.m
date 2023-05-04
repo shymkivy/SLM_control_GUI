@@ -119,6 +119,7 @@ ao_temp.w_step_all = zeros(num_iter, num_modes_all);
 ao_temp.d_w_all = zeros(num_iter, 1);
 ao_data.intensity_x_all = cell(num_iter,1);
 ao_data.intensity_all = cell(num_iter,1);
+bead_im_all = cell(num_iter,1);
 
 AO_corrections_all = cell(num_iter, 1);
 ao_temp.good_correction = false(num_iter, 1);
@@ -334,7 +335,7 @@ for n_it = 1:num_iter
         deeps_post{n_it} = deets_corr;
         
         ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
-
+        bead_im_all{n_it} = ao_temp.bead_im;
         ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(1));
         ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(2));
     end
@@ -360,7 +361,7 @@ for n_it = 1:num_iter
     ao_data.PSF_all = PSF_all;
     ao_data.intensity_x_all{n_it} = x_intens_scan2;
     ao_data.intensity_all{n_it} = intensit;
-    
+    ao_data.bead_im = bead_im_all;
     save([name_tag2 '.mat'], 'ao_data', '-v7.3');
 end
 
