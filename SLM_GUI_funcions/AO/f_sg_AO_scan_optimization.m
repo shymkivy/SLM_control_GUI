@@ -107,7 +107,7 @@ ao_params.ma_num_it = 2;
 ao_temp.z_all = zeros(num_iter, 1);
 ao_temp.z_all_idx = false(num_iter, 1);
 
-currentZn = min_Zn;
+currentZn = min(zernike_imn(:,2));
 currentZm_seq = 1;
 Zn_all = zeros(num_iter, 1);
 Zm_all = zeros(num_iter, 1);
@@ -166,11 +166,6 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
 
     %% create scan sequence
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential')
-        
-        if step_fac > step_max
-            currentZn = currentZn + 1;
-            step_fac = 1;
-        end
         
         if make_scan
             zernike_imn2 = zernike_imn(zernike_imn(:,2) == currentZn,:);
@@ -267,6 +262,11 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
             if mean(abs(delta_w_seq)) < (W_step)
                 step_fac = step_fac * 2;
             end
+        end
+        
+        if step_fac > step_max
+            currentZn = currentZn + 1;
+            step_fac = 1;
         end
     end
     
