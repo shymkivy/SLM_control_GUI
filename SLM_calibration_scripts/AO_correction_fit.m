@@ -1,10 +1,12 @@
 clear;
-close all;
+%close all;
 
 %%
 
-fnames = {'zernike_scan_data_5_5_23_22h_40m_z-150.mat'
-          'zernike_scan_data_4_22_23_20h_35m_z-100.mat';...
+fnames = {'zernike_scan_data_5_6_23_13h_45m_z-200.mat';...
+          'zernike_scan_data_5_5_23_22h_40m_z-150.mat';...
+          'zernike_scan_data_5_7_23_22h_49m_z-100.mat';...
+          %'zernike_scan_data_4_22_23_20h_35m_z-100.mat';...
           'zernike_scan_data_4_23_23_18h_34m_z-50.mat';...
           'zernike_scan_data_4_23_23_21h_11m_z0.mat';...
           'zernike_scan_data_4_23_23_2h_5m_z50.mat';...
@@ -63,7 +65,7 @@ save_fname = 'AO_correction_25x_maitai_poly2_5_6_23';
 modes_to_fit = 1:10;
 
 
-fit_type = 'poly2'; % 'constrain_z0' 'poly1', 'poly2'
+fit_type = 'poly1'; % 'constrain_z0' 'poly1', 'poly2'
 
 constrain_z0 = 0;
 
@@ -286,7 +288,7 @@ for n_mode = 1:numel(modes_to_fit)
             y_fit = z1*w_fit11;
             fit_eq = 'yf(x) = p1*x';
         elseif strcmpi(fit_type, 'poly1')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly1');
             y_fit = yf(z1);
             w_fit11 = [yf.p1 yf.p2];
             fit_eq = 'yf(x) = p1*x + p2';
