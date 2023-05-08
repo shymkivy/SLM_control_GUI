@@ -20,7 +20,13 @@ if app.ApplyAOcorrectionButton.Value
             if isfield(data.AO_correction, 'AO_data')
                 wf_out.AO_data = data.AO_correction.AO_data;
             end
-            if isfield(data.AO_correction, 'fit_weights')
+            if isfield(data.AO_correction, 'fit_fx') % newest implementation
+                wf_out.fit_fx = data.AO_correction.fit_fx;
+                max_mode = numel(wf_out.fit_fx);
+                maxZn = ceil((-1 + sqrt(1 + 4*max_mode*2))/2)-1;
+                zernike_nm_all = f_sg_get_zernike_mode_nm(0:maxZn);
+                wf_out.all_modes = f_sg_gen_zernike_modes(reg1, zernike_nm_all);
+            elseif isfield(data.AO_correction, 'fit_weights')
                 wf_out.fit_weights = data.AO_correction.fit_weights;
                 if isfield(data.AO_correction, 'fit_params')
                     z_weight_params = data.AO_correction.fit_params(1);

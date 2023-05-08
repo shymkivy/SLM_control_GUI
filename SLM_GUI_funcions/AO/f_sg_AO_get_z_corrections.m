@@ -14,7 +14,18 @@ for n_point = 1:num_points
     if isfield(reg1, 'AO_wf')
         if ~isempty(reg1.AO_wf)
             if isstruct(reg1.AO_wf)
-                if isfield(reg1.AO_wf, 'fit_weights')
+                if isfield(reg1.AO_wf, 'fit_fx')
+                    all_modes = reg1.AO_wf.all_modes;
+                    AO_wf1 = temp_phase;
+                    for n_mode = 1:numel(reg1.AO_wf.fit_fx)
+                        if ~isempty(reg1.AO_wf.fit_fx{n_mode})
+                            y_w = reg1.AO_wf.fit_fx{n_mode}(Z(n_point));
+                            AO_wf1 = AO_wf1 + all_modes(:,:,n_mode)*y_w;
+                            AO_corr = [AO_corr; n_mode, y_w];
+                        end
+                    end
+                    temp_phase = temp_phase + AO_wf1;
+                elseif isfield(reg1.AO_wf, 'fit_weights')
                     all_modes = reg1.AO_wf.all_modes;
                     fit_weights = reg1.AO_wf.fit_weights;
                     num_fit = size(fit_weights,2)-1;

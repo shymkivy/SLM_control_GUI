@@ -1,5 +1,5 @@
 clear;
-%close all;
+close all;
 
 %%
 
@@ -16,7 +16,7 @@ init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_poly2_5_6_23';
+save_fname = 'AO_correction_25x_maitai_5_8_23';
 
 
 % fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
@@ -62,10 +62,11 @@ save_fname = 'AO_correction_25x_maitai_poly2_5_6_23';
 % save_fname = 'AO_correction_20x_maitai_12_20_20_test';
 
 %%
-modes_to_fit = 1:10;
+modes_to_fit = 1:30;
 
 
-fit_type = 'poly1'; % 'constrain_z0' 'poly1', 'poly2'
+fit_type = 'smoothingspline'; % 'poly1_constrain_z0' 'poly1', 'poly2', 'spline', 'smoothingspline'
+spline_smoothing_param = 0.0001;
 
 constrain_z0 = 0;
 
@@ -115,6 +116,9 @@ for n_corr = 1:num_fnames
         end
         if isfield(AO_data(n_corr).ao_params, 'deets_pre')
             AO_data(n_corr).ao_params = rmfield(AO_data(n_corr).ao_params, 'deets_pre');
+        end
+        if isfield(AO_data(n_corr).ao_params, 'region_params')
+            AO_data(n_corr).ao_params = rmfield(AO_data(n_corr).ao_params, 'region_params');
         end
     end
     if isfield(data, 'init_AO_correction')
@@ -225,7 +229,10 @@ end
 ao_corr_all = cat(1,AO_data.AO_correction);
 
 max_modes = max(ao_corr_all(:,1));
-max_mode_use = max(modes_to_fit);
+max_mode_use = min([max(modes_to_fit), max_modes]);
+
+modes_to_fit2 = 1:max_mode_use;
+
 min_modes = min(ao_corr_all(:,1));
 
 corr_all = zeros(num_fnames, max_mode_use);
@@ -235,7 +242,7 @@ for n_corr = 1:num_fnames
     temp_corr = AO_data(n_corr).AO_correction;
     for n_it = 1:size(temp_corr,1)
         n_mode = temp_corr(n_it,1);
-        if sum(n_mode == modes_to_fit)
+        if sum(n_mode == modes_to_fit2)
             corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
         end
     end
@@ -268,52 +275,74 @@ legend(leg_all(has_data))
 
 %%
 
-z1 = min(z_all):max(z_all);
+z_fit = min(z_all):max(z_all);
 
-w_fit1 = cell(numel(modes_to_fit),1);
-w_fit2 = zeros(numel(modes_to_fit),1);
+w_fit1 = cell(numel(modes_to_fit2),1);
+fit_fx = cell(numel(modes_to_fit2),1);
+w_fit2 = zeros(numel(modes_to_fit2),1);
 leg_all = cell(max_mode_use,1);
 has_data = false(max_mode_use,1);
 pl = cell(max_mode_use,1);
-figure; hold on;
-for n_mode = 1:numel(modes_to_fit)
-    mode = modes_to_fit(n_mode);
+pl2 = cell(max_mode_use,1);
+
+f1 = figure; hold on;
+f2 = figure; hold on;
+for n_mode = 1:numel(modes_to_fit2)
+    mode = modes_to_fit2(n_mode);
     temp_data = corr_alls(:, mode);
     do_fit = or(z_alls == 0, temp_data ~=0);
     if sum(do_fit)>1
         leg_all{n_mode} = [num2str(n_mode)];
         has_data(n_mode) = 1;
-        if strcmpi(fit_type, 'zonstrain_z0')
+        if strcmpi(fit_type, 'poly1_constrain_z0')
             w_fit11 = z_alls(do_fit)\corr_alls(do_fit, mode);
-            y_fit = z1*w_fit11;
+            yf = @(x) w_fit11*x;
             fit_eq = 'yf(x) = p1*x';
         elseif strcmpi(fit_type, 'poly1')
             yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly1');
-            y_fit = yf(z1);
             w_fit11 = [yf.p1 yf.p2];
             fit_eq = 'yf(x) = p1*x + p2';
-            
         elseif strcmpi(fit_type, 'poly2')
             yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
-            y_fit = yf(z1);
             w_fit11 = [yf.p1 yf.p2 yf.p3];
             fit_eq = 'yf(x) = p1*x^2 + p2*x + p3';
+        elseif strcmpi(fit_type, 'spline')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'spline');
+            w_fit11 = [];
+            fit_eq = 'spline';
+        elseif strcmpi(fit_type, 'smoothingspline')
+            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'smoothingspline', 'SmoothingParam', spline_smoothing_param);
+            w_fit11 = [];
+            fit_eq = 'smoothingspline';
         end
+        y_fit = yf(z_fit);
         w_fit1{n_mode} = w_fit11;
+        fit_fx{n_mode} = yf;
         
-        pl{n_mode} = plot(z1, y_fit, 'color', colors1(n_mode+1-min_modes,:), 'linewidth', 2);
+        figure(f1)
+        pl{n_mode} = plot(z_fit, y_fit, 'color', colors1(n_mode+1-min_modes,:), 'linewidth', 2);
         plot(z_alls(do_fit), corr_alls(do_fit, mode), '.', 'color', colors1(mode+1-min_modes,:), 'markersize', 20);
         plot(z_alls(do_fit), corr_alls(do_fit, mode), 'ko', 'linewidth', 1);
+        
+        figure(f2);
+        pl2{n_mode} = plot(z_alls(do_fit), corr_alls(do_fit, mode) - yf(z_alls(do_fit)), 'color', colors1(mode+1-min_modes,:), 'linewidth', 2);
     end
 end
+figure(f1)
 legend([pl{has_data}], leg_all(has_data))
 xlabel('z defocus')
 ylabel('weight correction')
 title(sprintf('Mode correction weights, %s', fit_type))
 
-AO_correction.fit_weights = [modes_to_fit(has_data)', cat(1,w_fit1{:})];
+figure(f2)
+xlabel('z')
+ylabel('fit error')
+legend([pl2{has_data}], leg_all(has_data))
+title(sprintf('Mode correction w errors, %s', fit_type))
+
+AO_correction.fit_weights = [modes_to_fit2(has_data)', cat(1,w_fit1{:})];
 AO_correction.AO_data = AO_data;
 AO_correction.fit_eq = fit_eq;
-
+AO_correction.fit_fx = fit_fx;
 
 save([fpath save_fname '.mat'], 'AO_correction');

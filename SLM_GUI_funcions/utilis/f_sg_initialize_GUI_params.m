@@ -60,6 +60,10 @@ app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Fu
 
 app.ScanframesdirpathEditField.Value = app.SLM_ops.default_AO_scan_path;
 
+app.FitmethodDropDown.Items = {'Poly1_constrain_z0', 'Poly1', 'Poly2', 'Spline', 'smoothingspline'};
+app.FitmethodDropDown.Value = {'Poly1'};
+app.splinesmparam01EditField.Value = 0.0001;
+
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));
