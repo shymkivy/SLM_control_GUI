@@ -39,7 +39,7 @@ if 1
         y0 = mode_weight_int(idx1,3);
 
         if 1
-            yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 0.9);
+            yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 0.1);
         else
             yf = fit(x0 ,y0, 'gauss1');
         end

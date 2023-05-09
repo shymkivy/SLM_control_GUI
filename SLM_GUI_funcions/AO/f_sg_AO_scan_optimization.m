@@ -91,7 +91,8 @@ center_defocus_z_range = (-5:5);
 
 init_W_step = app.WeightstepEditField.Value;
 W_step = init_W_step;
-W_lim_steps = app.WeightlimitEditField.Value/W_step;
+%W_lim_steps = app.WeightlimitEditField.Value/W_step;
+W_lim_steps = 13;
 W_step_thresh = 0.05;
 
 ao_params.W_step = W_step;
