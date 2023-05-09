@@ -1,6 +1,6 @@
 function [AO_correction_new, ao_temp, intensity_change] = f_sg_AO_analyze_scan(frames2, grad_scan_seq, ao_params, ao_temp)
 
-reg_factor = 0.02;
+reg_factor = ao_params.reg_factor;
 
 n_it = ao_temp.n_it;
 num_scans = numel(grad_scan_seq);
@@ -39,13 +39,13 @@ if 1
         y0 = mode_weight_int(idx1,3);
 
         if 1
-            yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 0.1);
+            yf = fit(x0 ,y0, 'smoothingspline','SmoothingParam', ao_params.weight_spline_smooth);
         else
             yf = fit(x0 ,y0, 'gauss1');
         end
         
         yf_fit = yf(x_fit);
-        yf_reg = yf_fit.*(abs(x_fit)* -reg_factor+1)';
+        yf_reg = yf_fit.*(abs(x_fit)* -reg_factor/ao_temp.W_step + 1)';
         
         [~, idx2] = max(yf_reg);
         peak_loc = x_fit(idx2);

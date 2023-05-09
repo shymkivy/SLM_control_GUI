@@ -19,6 +19,8 @@ ao_params.interate_intens_every = app.ScanallcorreverynframesEditField.Value;
 ao_params.scans_per_mode = app.ScanspermodeEditField.Value;
 ao_params.shuff_scan = app.ShufflemodesCheckBox.Value;
 ao_params.intensity_use_peak = 0;
+ao_params.weight_spline_smooth = app.SplinefitsmoothEditField.Value;
+ao_params.reg_factor = app.WregfactorEditField.Value;
 
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
 
@@ -87,16 +89,17 @@ app.DAQ_session.outputSingleScan(0);
 %% scan
 num_iter = app.NumiterationsSpinner.Value;
 
-center_defocus_z_range = (-5:5);
+center_defocus_z_range = linspace(-app.RefocusdistumEditField.Value/2, app.RefocusdistumEditField.Value/2, app.RefocusnumstepsEditField.Value);
 
-init_W_step = app.WeightstepEditField.Value;
+W_range = app.WeightrangeEditField.Value;
+W_num_steps = app.NumwstepsEditField.Value;
+init_W_step = W_range*2/(W_num_steps-1);
 W_step = init_W_step;
 %W_lim_steps = app.WeightlimitEditField.Value/W_step;
-W_lim_steps = 13;
 W_step_thresh = 0.05;
 
 ao_params.W_step = W_step;
-ao_params.W_lim_steps = W_lim_steps;
+ao_params.W_num_steps = W_num_steps;
 
 mode_data_all = cell(app.NumiterationsSpinner.Value,1);
 deeps_post = cell(app.NumiterationsSpinner.Value,1);
@@ -110,9 +113,6 @@ ao_temp.z_all_idx = false(num_iter, 1);
 
 currentZn = min(zernike_imn(:,2));
 currentZm_seq = 1;
-Zn_all = zeros(num_iter, 1);
-Zm_all = zeros(num_iter, 1);
-num_W_step_reps = 3;
 Zm_seq_all = cell(num_iter,1);
 grad3_weights = 1;
 
@@ -129,7 +129,6 @@ ao_temp.good_correction = false(num_iter, 1);
 
 num_refocus_scan = num_scans_done - ao_params.refocus_every - 1; % to do it on first iteration
 num_iter_intens_scan = num_scans_done - ao_params.refocus_every -1;
-reduce_w_step_fac = 1;
 
 step_max = 2^(app.DecresegradntimesEditField.Value);
 make_scan = 1;
@@ -192,12 +191,12 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
         
         fprintf('Seq scan; Zn = %d/%d; Zm = %d; grad fac = %d\n', currentZn,max_Zn, zernike_imn3(3), step_fac);
         
-        W_step = init_W_step/step_fac;
-        weights1 = (-W_lim_steps*W_step):W_step:(W_lim_steps*W_step);
+        weights1 = linspace(-W_range, W_range, W_num_steps)/step_fac;
+
     elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Sequential gradient')
         zernike_imn3 = zernike_imn(zernike_imn(:,2) == currentZn,:);
         
-        W_step = init_W_step/reduce_w_step_fac;
+        W_step = init_W_step/step_fac;
         if grad3_weights
             weights1 = [-W_step, 0,  W_step];
         else
@@ -205,12 +204,13 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
         end
     else
         % weights
-        W_step = init_W_step/reduce_w_step_fac;
+        W_step = init_W_step/step_fac;
 
         if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
             zernike_imn3 = zernike_imn;
             
-            weights1 = (-W_lim_steps*W_step):W_step:(W_lim_steps*W_step);
+            weights1 = linspace(-W_range, W_range, W_num_steps);
+
         elseif strcmpi(app.OptimizationmethodDropDown.Value, 'Full gradient')
             zernike_imn3 = zernike_imn2;
             
@@ -223,8 +223,8 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
     end
     
     Zm_seq_all{n_it} = zernike_imn3;
-    ao_temp.W_step = W_step;
-    ao_temp.d_w_all(n_it) = W_step;
+    ao_temp.W_step = init_W_step/step_fac;
+    ao_temp.d_w_all(n_it) = init_W_step/step_fac;
     ao_temp.weights1 = weights1;
     num_modes_scan = size(zernike_imn3,1);
     num_weights = numel(weights1);
@@ -263,11 +263,6 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
             if mean(abs(delta_w_seq)) < (W_step)
                 step_fac = step_fac * 2;
             end
-        end
-        
-        if step_fac > step_max
-            currentZn = currentZn + 1;
-            step_fac = 1;
         end
     end
     
@@ -333,8 +328,13 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
     %% update w_step
     if and(intensit(end) < intensit(end-1), sum(strcmpi(app.OptimizationmethodDropDown.Value, {'Sequential gradient', 'Full gradient'})))
         ao_temp.good_correction(n_it) = 0;
-        reduce_w_step_fac = reduce_w_step_fac*2;
+        step_fac = step_fac*2;
         AO_corrections_all(n_it) = {[]};
+    end
+    
+    if step_fac > step_max
+        currentZn = currentZn + 1;
+        step_fac = 1;
     end
     
     %AO_corrections_all(~good_correction) = {[]};

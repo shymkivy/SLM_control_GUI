@@ -10,7 +10,9 @@ fnames = {'zernike_scan_data_5_6_23_13h_45m_z-200.mat';...
           'zernike_scan_data_4_23_23_18h_34m_z-50.mat';...
           'zernike_scan_data_4_23_23_21h_11m_z0.mat';...
           'zernike_scan_data_4_23_23_2h_5m_z50.mat';...
-          'zernike_scan_data_4_22_23_23h_46m_z100.mat'};
+          'zernike_scan_data_4_22_23_23h_46m_z100.mat';...
+          'zernike_scan_data_5_8_23_15h_49m_z150.mat';...
+          'zernike_scan_data_5_8_23_23h_44m_z200.mat'};
       
 init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
@@ -250,9 +252,9 @@ for n_corr = 1:num_fnames
 end
 
 
-colors1 = parula(max_mode_use-min_modes+1);
+%colors1 = parula(max_mode_use-min_modes+1);
 %colors1 = hsv(max_modes-min_modes+1);
-%colors1 = jet(max_modes-min_modes+1);
+colors1 = jet(max_modes-min_modes+1);
 
 
 [~, sort_idx] = sort(z_all);
