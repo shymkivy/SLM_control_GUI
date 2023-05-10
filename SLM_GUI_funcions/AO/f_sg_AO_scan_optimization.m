@@ -138,9 +138,10 @@ ao_data.mode_data_all = all_modes_phase;
 ao_data.init_AO_correction = ao_temp.init_AO_correction;
 
 iter_filled = false(num_iter,1);
+hit_edge = 0;
 
 n_it = 1;
-while and(n_it <= num_iter, currentZn <= max_Zn)
+while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     fprintf('Iteration %d/%d; scan %d...\n', n_it, num_iter, num_scans_done);
     ao_temp.n_it = n_it;
     ao_temp.good_correction(n_it) = 1;
@@ -339,17 +340,22 @@ while and(n_it <= num_iter, currentZn <= max_Zn)
     
     %AO_corrections_all(~good_correction) = {[]};
     
-    if num_scan_corrections == (n_it+scan_pad)
-        ao_temp.cent_mn = round(mean(cat(1,deets_corr.cent_mn),1));
-        ao_temp.bead_im = mean(frames(:,:,fr_idx1),3);
-        deeps_post{n_it} = deets_corr;
-        bead_im_all{n_it} = ao_temp.bead_im;
-        
-        ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
-        ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(1));
-        ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(2));
-    end
+    %if num_scan_corrections == (n_it+scan_pad)
+    ao_temp.cent_mn = round(mean(cat(1,deets_corr.cent_mn),1));
+    ao_temp.bead_im = mean(frames(:,:,fr_idx1),3);
+    deeps_post{n_it} = deets_corr;
+    bead_im_all{n_it} = ao_temp.bead_im;
+
+    ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
+    ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(1));
+    ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(2));
     
+    if or(ao_temp.im_m_idx < 1, ao_temp.im_n_idx < 1)
+        hit_edge = 1;
+    end
+    if or(ao_temp.im_m_idx > 256, ao_temp.im_n_idx > 256)
+        hit_edge = 1;
+    end
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(ao_temp.f1);

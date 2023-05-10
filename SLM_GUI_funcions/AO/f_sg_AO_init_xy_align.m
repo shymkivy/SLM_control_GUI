@@ -50,6 +50,7 @@ if app.PlotprogressCheckBox.Value
     ao_temp.sp1 = cell(2,1);
     ao_temp.sp1{1} = subplot(1,2,1); hold on; axis tight equal;
     imagesc(ao_temp.bead_im);
+    ao_temp.sp1{1}.YAxis.Direction = 'reverse';
     plot(ao_temp.cent_mn(2), ao_temp.cent_mn(1), 'ro');
     ao_temp.sp1{2} = subplot(1,2,2); hold on; axis tight;
     plot(0, intens, '-o');
