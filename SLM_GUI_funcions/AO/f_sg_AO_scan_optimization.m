@@ -1,6 +1,13 @@
-function f_sg_AO_scan_optimization(app)
+function f_sg_AO_scan_optimization(app, ao_temp_in)
 disp('Starting optimization...');
 
+load_temp = 0;
+if exist('ao_temp_in', 'var')
+    if ~isempty(ao_temp_in)
+        load_temp = 1;
+    end
+end
+  
 timestamp = f_sg_get_timestamp();
 name_tag = sprintf('%s_%s', app.SavefiletagEditField.Value, timestamp);
 
@@ -15,11 +22,12 @@ ao_params.sigma_pixels = 1;
 ao_params.region_name = app.CurrentregionDropDown.Value;
 ao_params.file_dir = app.ScanframesdirpathEditField.Value;
 ao_params.refocus_every = app.RefocuseverynframesEditField.Value;
+ao_params.refoucs_sm_spline_param = app.RefocussplinesmparamEditField.Value;
 ao_params.interate_intens_every = app.ScanallcorreverynframesEditField.Value;
 ao_params.scans_per_mode = app.ScanspermodeEditField.Value;
 ao_params.shuff_scan = app.ShufflemodesCheckBox.Value;
 ao_params.intensity_use_peak = 0;
-ao_params.weight_spline_smooth = app.SplinefitsmoothEditField.Value;
+ao_params.weight_spline_smooth = app.WsplinesmparamEditField.Value;
 ao_params.reg_factor = app.WregfactorEditField.Value;
 
 reg1 = f_sg_get_reg_deets(app, ao_params.region_name);
@@ -35,7 +43,7 @@ ao_temp.scan_path = app.ScanframesdirpathEditField.Value;
 
 ao_params.name_tag = name_tag;
 
-name_tag2 = sprintf('%s\\%s_z%d',...
+ao_temp.name_tag_full = sprintf('%s\\%s_z%d',...
             app.SLM_ops.save_AO_dir, name_tag, ao_params.init_coord.xyzp(3));
 
 %% first upload (maybe not needed. already there)
@@ -100,14 +108,13 @@ W_step_thresh = 0.05;
 
 ao_params.W_step = W_step;
 ao_params.W_num_steps = W_num_steps;
-
-mode_data_all = cell(app.NumiterationsSpinner.Value,1);
-deeps_post = cell(app.NumiterationsSpinner.Value,1);
-PSF_all = cell(num_iter, 1);
-
 ao_params.step_size = 10/num_modes_all;
 ao_params.ma_num_it = 2;
 
+ao_temp.mode_data_all = cell(app.NumiterationsSpinner.Value,1);
+ao_temp.deeps_post = cell(app.NumiterationsSpinner.Value,1);
+ao_temp.PSF_all = cell(num_iter, 1);
+ao_temp.bead_im_all = cell(num_iter,1);
 ao_temp.z_all = zeros(num_iter, 1);
 ao_temp.z_all_idx = false(num_iter, 1);
 
@@ -119,12 +126,12 @@ grad3_weights = 1;
 ao_temp.step_size_all = zeros(num_iter, 1);
 ao_temp.w_step_all = zeros(num_iter, num_modes_all);
 ao_temp.d_w_all = zeros(num_iter, 1);
-intensity_x_all = cell(num_iter,1);
-intensity_all = cell(num_iter,1);
+ao_temp.intensity_x_all = cell(num_iter,1);
+ao_temp.intensity_all = cell(num_iter,1);
+ao_temp.iter_filled = false(num_iter,1);
 
-bead_im_all = cell(num_iter,1);
 
-AO_corrections_all = cell(num_iter, 1);
+ao_temp.AO_corrections_all = cell(num_iter, 1);
 ao_temp.good_correction = false(num_iter, 1);
 
 num_refocus_scan = num_scans_done - ao_params.refocus_every - 1; % to do it on first iteration
@@ -134,20 +141,44 @@ step_max = 2^(app.DecresegradntimesEditField.Value);
 make_scan = 1;
 step_fac = 1;
 ao_data.ao_params = ao_params;
-ao_data.mode_data_all = all_modes_phase;
+ao_data.all_modes_phase = all_modes_phase;
 ao_data.init_AO_correction = ao_temp.init_AO_correction;
 
-iter_filled = false(num_iter,1);
-hit_edge = 0;
+continue_scan = 1;
 
 n_it = 1;
-while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
+
+if load_temp
+    if ao_temp_in.n_it < num_iter
+        n_it = ao_temp_in.n_it;
+        
+        ao_temp.AO_corrections_all(1:n_it) =    ao_temp_in.AO_corrections_all(ao_temp_in.iter_filled);
+        ao_temp.good_correction(1:n_it) =       ao_temp_in.good_correction(ao_temp_in.iter_filled);
+        ao_temp.z_all(1:n_it) =                 ao_temp_in.z_all(ao_temp_in.iter_filled);
+        ao_temp.z_all_idx(1:n_it) =             ao_temp_in.z_all_idx(ao_temp_in.iter_filled);
+        ao_temp.step_size_all(1:n_it) =         ao_temp_in.step_size_all(ao_temp_in.iter_filled);
+        ao_temp.w_step_all(1:n_it) =            ao_temp_in.w_step_all(ao_temp_in.iter_filled);
+        ao_temp.d_w_all(1:n_it) =               ao_temp_in.d_w_all(ao_temp_in.iter_filled);
+        ao_temp.deeps_post(1:n_it) =            ao_temp_in.deeps_post(ao_temp_in.iter_filled);
+        ao_temp.bead_im_all(1:n_it) =           ao_temp_in.bead_im_all(ao_temp_in.iter_filled);
+        ao_temp.PSF_all(1:n_it) =               ao_temp_in.PSF_all(ao_temp_in.iter_filled);
+        ao_temp.intensity_x_all(1:n_it) =       ao_temp_in.intensity_x_all(ao_temp_in.iter_filled);
+        ao_temp.intensity_all(1:n_it) =         ao_temp_in.intensity_all(ao_temp_in.iter_filled);
+        ao_temp.mode_data_all(1:n_it) =         ao_temp_in.mode_data_all(ao_temp_in.iter_filled);
+
+        ao_temp.name_tag_full =                 ao_temp_in.name_tag_full;
+    else
+        fprintf('Not enough iterations set, restarting fresh\n');
+    end
+end
+
+while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
     fprintf('Iteration %d/%d; scan %d...\n', n_it, num_iter, num_scans_done);
     ao_temp.n_it = n_it;
     ao_temp.good_correction(n_it) = 1;
-    
+
     %% update AO phase
-    AO_corrections_all2 = [{ao_temp.init_AO_correction}; AO_corrections_all];
+    AO_corrections_all2 = [{ao_temp.init_AO_correction}; ao_temp.AO_corrections_all];
     %current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
     current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all2{:}), ao_temp);
     ao_temp.current_AO_phase = current_AO_phase;
@@ -250,7 +281,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     %% analyze
     if strcmpi(app.OptimizationmethodDropDown.Value, 'Grid search')
         % process find best mode
-        [AO_correction_new, mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames, grad_scan_seq, ao_params);
+        [AO_correction_new, ao_temp.mode_data_all{n_it}] = f_sg_AO_find_best_mode_grid(frames, grad_scan_seq, ao_params);
     else %if strcmpi(app.OptimizationmethodDropDown.Value, 'Gradient desc')
         [AO_correction_new, ao_temp, intensity_change] = f_sg_AO_analyze_scan(frames, grad_scan_seq, ao_params, ao_temp);
     end
@@ -268,17 +299,17 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     end
     
     % update corrections
-    AO_corrections_all{n_it} = AO_correction_new;
+    ao_temp.AO_corrections_all{n_it} = AO_correction_new;
     
     %% scan all corrections
     fprintf('Scanning corrections\n')
     if sum(ao_temp.init_AO_correction) == 1
         x_intens_scan = 0:n_it;
-        AO_corrections_all2 = [{[1 0]}; AO_corrections_all];
+        AO_corrections_all2 = [{[1 0]}; ao_temp.AO_corrections_all];
         scan_pad = 1;
     else
         x_intens_scan = -1:n_it;
-        AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; AO_corrections_all];
+        AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; ao_temp.AO_corrections_all];
         scan_pad = 2;
     end
         
@@ -330,7 +361,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     if and(intensit(end) < intensit(end-1), sum(strcmpi(app.OptimizationmethodDropDown.Value, {'Sequential gradient', 'Full gradient'})))
         ao_temp.good_correction(n_it) = 0;
         step_fac = step_fac*2;
-        AO_corrections_all(n_it) = {[]};
+        ao_temp.AO_corrections_all(n_it) = {[]};
     end
     
     if step_fac > step_max
@@ -343,19 +374,25 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     %if num_scan_corrections == (n_it+scan_pad)
     ao_temp.cent_mn = round(mean(cat(1,deets_corr.cent_mn),1));
     ao_temp.bead_im = mean(frames(:,:,fr_idx1),3);
-    deeps_post{n_it} = deets_corr;
-    bead_im_all{n_it} = ao_temp.bead_im;
+    ao_temp.deeps_post{n_it} = deets_corr;
+    ao_temp.bead_im_all{n_it} = ao_temp.bead_im;
 
     ao_temp.bead_mn = ao_temp.bead_mn + round(ao_temp.cent_mn) - [ao_params.bead_im_window/2 ao_params.bead_im_window/2];
     ao_temp.im_m_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(1));
     ao_temp.im_n_idx = round(((-ao_params.bead_im_window/2):(ao_params.bead_im_window/2)) + ao_temp.bead_mn(2));
     
     if or(ao_temp.im_m_idx < 1, ao_temp.im_n_idx < 1)
-        hit_edge = 1;
+        continue_scan = 0;
     end
     if or(ao_temp.im_m_idx > 256, ao_temp.im_n_idx > 256)
-        hit_edge = 1;
+        continue_scan = 0;
     end
+    
+    if ~app.StartoptimizationButton.Value
+        continue_scan = 0;
+        fprintf('Finishing scan early')
+    end
+    
     %% maybe plot
     if app.PlotprogressCheckBox.Value
         figure(ao_temp.f1);
@@ -368,30 +405,34 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
     end
 
     %%
-    intensity_x_all{n_it} = x_intens_scan2;
-    intensity_all{n_it} = intensit;
+    ao_temp.intensity_x_all{n_it} = x_intens_scan2;
+    ao_temp.intensity_all{n_it} = intensit;
     
-    iter_filled(n_it) = 1;
+    ao_temp.iter_filled(n_it) = 1;
     n_it = n_it + 1;
     
     %%
-    ao_data.AO_correction = AO_corrections_all(iter_filled);
-    ao_data.good_correction = ao_temp.good_correction(iter_filled);
-    ao_data.z_all = ao_temp.z_all(ao_temp.z_all_idx);
-    ao_data.step_size_all = ao_temp.step_size_all(iter_filled);
-    ao_data.w_step_all = ao_temp.w_step_all(iter_filled,:);
-    ao_data.d_w_all = ao_temp.d_w_all(iter_filled);
-    ao_data.deeps_post = deeps_post(iter_filled);
-    ao_data.bead_im_all = bead_im_all(iter_filled);
-    ao_data.PSF_all = PSF_all(iter_filled);
-    ao_data.intensity_x_all = intensity_x_all(iter_filled);
-    ao_data.intensity_all = intensity_all(iter_filled);
+    ao_data.AO_correction =     ao_temp.AO_corrections_all(ao_temp.iter_filled);
+    ao_data.good_correction =   ao_temp.good_correction(ao_temp.iter_filled);
+    ao_data.z_all =             ao_temp.z_all(ao_temp.iter_filled);
+    ao_data.z_all_idx =         ao_temp.z_all_idx(ao_temp.iter_filled);
+    ao_data.step_size_all =     ao_temp.step_size_all(ao_temp.iter_filled);
+    ao_data.w_step_all =        ao_temp.w_step_all(ao_temp.iter_filled,:);
+    ao_data.d_w_all =           ao_temp.d_w_all(ao_temp.iter_filled);
+    ao_data.deeps_post =        ao_temp.deeps_post(ao_temp.iter_filled);
+    ao_data.bead_im_all =       ao_temp.bead_im_all(ao_temp.iter_filled);
+    ao_data.PSF_all =           ao_temp.PSF_all(ao_temp.iter_filled);
+    ao_data.intensity_x_all =   ao_temp.intensity_x_all(ao_temp.iter_filled);
+    ao_data.intensity_all =     ao_temp.intensity_all(ao_temp.iter_filled);
+    ao_data.mode_data_all =     ao_temp.mode_data_all(ao_temp.iter_filled);
     
-    save([name_tag2 '.mat'], 'ao_data', '-v7.3');
+    app.GUI_buffer.ao_temp = ao_temp;
+    
+    save([ao_temp.name_tag_full '.mat'], 'ao_data', '-v7.3');
 end
 
 %% scan PSF at end
-current_AO_phase = f_sg_AO_corr_to_phase(cat(1,AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
+current_AO_phase = f_sg_AO_corr_to_phase(cat(1,ao_temp.AO_corrections_all{:}), ao_temp) + ao_temp.init_AO_phase;
 ao_temp.current_AO_phase = current_AO_phase;
 
 if 0
@@ -418,9 +459,9 @@ f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
 %% save
 
-save([name_tag2 '.mat'], 'ao_data', '-v7.3');
-saveas(ao_temp.f1,[name_tag2 'intensity.fig']);
-saveas(ao_temp.f2,[name_tag2 'mode_weight.fig']);
+save([ao_temp.name_tag_full '.mat'], 'ao_data', '-v7.3');
+saveas(ao_temp.f1,[ao_temp.name_tag_full 'intensity.fig']);
+saveas(ao_temp.f2,[ao_temp.name_tag_full 'mode_weight.fig']);
 %% save stuff
 disp('Done');
 end

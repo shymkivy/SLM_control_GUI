@@ -5,6 +5,8 @@ n_it = ao_temp.n_it;
 current_coord = ao_temp.current_coord;
 win_cent = ao_params.bead_im_window/2+1;
 
+refoucs_sm_spline_param = ao_params.refoucs_sm_spline_param;
+
 [PSF_frames, num_scans_done] = f_sg_AO_scan_z_defocus(app, center_defocus_z_range, num_scans_done, ao_temp);
 
 % analyze
@@ -52,7 +54,7 @@ end
 [~, peak_idx1] = max(y0);
 
 %yf = fit(z_range' ,y0,'gauss1');
-yf = fit(z_range' ,y0,'smoothingspline', 'SmoothingParam', 0.3);
+yf = fit(z_range' ,y0,'smoothingspline', 'SmoothingParam', refoucs_sm_spline_param);
 z_fit = z_range(1):0.1:z_range(end);
 y_fit = yf(z_fit);
 

@@ -72,8 +72,6 @@ ops.NI_DAQ_AO_channel = 0;
 
 ops.orbital_mag = 1;
 
-ops.default_AO_scan_path = '\\PRAIRIE2000\p2f\Yuriy\SLM\PSF\AO_optimization-001';
-
 %% objective list
 idx = 1;
 objectives(idx).obj_name = '25X_fat';
@@ -256,7 +254,26 @@ region_list(idx).width_range = [0, 1];
 % xyz_pts formats: [x y z]; [x y z weight]; [pat x y z weight]
 idx = 1;
 xyz_patterns(idx).pat_name = 'Multiplane';
-xyz_patterns(idx).xyz_pts = [8 0 -50; 0 8 -25; 8 0 0; 0 8 25; 8 0 50;];
+xyz_patterns(idx).xyz_pts = [8 0 -50;...
+                             0 8 -25;...
+                             8 0 0;...
+                             0 8 25;...
+                             8 0 50;];
+xyz_patterns(idx).SLM_region = 'Right half';
+
+idx = idx + 1;
+xyz_patterns(idx).pat_name = 'Multiplane2';
+xyz_patterns(idx).xyz_pts = [0 0 -250;...
+                             0 0 -200;...
+                             0 0 -150;...
+                             0 0 -100;...
+                             0 0 -50;...
+                             0 0 0;...
+                             0 0 50;...
+                             0 0 100;...
+                             0 0 150;...
+                             0 0 200;...
+                             0 0 250];
 xyz_patterns(idx).SLM_region = 'Right half';
 
 idx = idx + 1;
@@ -269,6 +286,31 @@ pw_calibration.smooth_std = 1;
 pw_calibration.min_thresh = 0.3;
 pw_calibration.pw_sqrt = 1;
 
+%% ao default params
+
+AO_params.min_Zn = 0;
+AO_params.max_Zn = 4;
+AO_params.w_range = 1.5;
+AO_params.num_w_steps = 13;
+AO_params.w_spline_sm_param = 0.1;
+AO_params.w_reg_factor = 0.003;
+AO_params.ignore_spherical = 1;
+AO_params.scans_per_mode = 4;
+AO_params.default_AO_scan_path = '\\PRAIRIE2000\p2f\Yuriy\SLM\PSF\AO_optimization-001';
+AO_params.Optimization_method = 'Sequential';
+AO_params.refocus_every_n_frames = 200;
+AO_params.refocus_dist = 10;
+AO_params.refocus_num_steps = 11;
+AO_params.refocus_spline_sm_param = 0.3;
+AO_params.scan_all_corr_every_n_frames = 500;
+AO_params.decrease_grad_n_times = 1;
+AO_params.num_iterations = 40;
+AO_params.bead_win_size = 80;
+AO_params.post_scan_delay = 0.8;
+AO_params.fit_ao_method = 'smoothingspline';
+AO_params.fit_spline_sm_param = 0.001;
+AO_params.fit_save_weights = 1;
+
 %% save stuff
 ops.objectives = objectives;
 ops.SLM_params = SLM_params;
@@ -276,5 +318,6 @@ ops.region_params = region_params;
 ops.region_list = region_list;
 ops.xyz_patterns = xyz_patterns;
 ops.pw_calibration = pw_calibration;
+ops.AO_params = AO_params;
 
 end

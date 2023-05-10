@@ -53,16 +53,38 @@ for n_reg = 1:numel(app.region_obj_params)
 end
 
 %%
+
 app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark', 'global GS'};
 app.ImageGenverEditField.Value = 'none';
 
-app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
+AO_params = app.SLM_ops.AO_params;
 
-app.ScanframesdirpathEditField.Value = app.SLM_ops.default_AO_scan_path;
+app.MinZnEditField.Value = AO_params.min_Zn;
+app.MaxZnEditField.Value = AO_params.max_Zn;
+app.WeightrangeEditField.Value = AO_params.w_range;
+app.NumwstepsEditField.Value = AO_params.num_w_steps;
+app.WsplinesmparamEditField.Value = AO_params.w_spline_sm_param;
+app.WregfactorEditField.Value = AO_params.w_reg_factor;
+app.AOignoresphericalmodeCheckBox.Value = AO_params.ignore_spherical;
+app.ScanspermodeEditField.Value = AO_params.scans_per_mode;
+app.ScanframesdirpathEditField.Value = AO_params.default_AO_scan_path;
+app.RefocuseverynframesEditField.Value = AO_params.refocus_every_n_frames;
+app.RefocusdistumEditField.Value = AO_params.refocus_dist;
+app.RefocusnumstepsEditField.Value = AO_params.refocus_num_steps;
+app.RefocussplinesmparamEditField.Value = AO_params.refocus_spline_sm_param;
+app.ScanallcorreverynframesEditField.Value = AO_params.scan_all_corr_every_n_frames;
+app.DecresegradntimesEditField.Value = AO_params.decrease_grad_n_times;
+app.NumiterationsSpinner.Value = AO_params.num_iterations;
+app.BeadwindowsizeEditField.Value = AO_params.bead_win_size;
+app.PostscandelayEditField.Value = AO_params.post_scan_delay;
+
+app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
+app.OptimizationmethodDropDown.Value = AO_params.Optimization_method;
 
 app.FitmethodDropDown.Items = {'Poly1_constrain_z0', 'Poly1', 'Poly2', 'Spline', 'smoothingspline'};
-app.FitmethodDropDown.Value = {'Poly1'};
-app.splinesmparam01EditField.Value = 0.0001;
+app.FitmethodDropDown.Value = AO_params.fit_ao_method;
+app.splinesmparam01EditField.Value = AO_params.fit_spline_sm_param;
+app.save_fit_weightsCheckBox.Value = AO_params.fit_save_weights;
 
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;

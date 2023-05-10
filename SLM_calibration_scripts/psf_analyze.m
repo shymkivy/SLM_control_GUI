@@ -3,7 +3,7 @@
 clear;
 %close all;
 
-data_source = 6;
+data_source = 7;
 
 if data_source == 1
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\etl_psf_prairie1\3_28_23\';
@@ -16,7 +16,7 @@ if data_source == 1
     description = 'EL-10-30-C';
 
 elseif data_source == 2
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25X_no_orb_ETLobj\';  
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25X_no_orb_ETLobj\';  
     data_path2 = {'PSF_ETLp2_25x_16z_01um_256_z150-006',...
                   'PSF_ETLp2_25x_16z_01um_256_z100-005',...
                   'PSF_ETLp2_25x_16z_01um_256_z50-004',...
@@ -27,14 +27,14 @@ elseif data_source == 2
     z_loc = [150, 100, 50, 0, -50, -100, -150];
     description = 'EL-16-40-TC-Obj'; 
 elseif data_source == 3
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25x_no_orb\';
     data_path2 = {'PSF_25x_16z_01um_256-001',...
                   'PSF_25x_16z_01um_256-002'};
               
     z_loc = [0, 0];
     description = 'Regular path';
 elseif data_source == 4
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb_SLM_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25x_no_orb_SLM_AO\';
     data_path2 = {'PSF_SLM_256_z16_01um_z150_AO-009',...
                   'PSF_SLM_256_z16_01um_z100_AO-007',...
                   'PSF_SLM_256_z16_01um_z50_AO-005',...
@@ -48,7 +48,7 @@ elseif data_source == 4
     z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -150];
     description = 'SLM AO old';
 elseif data_source == 5
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_10_23\PSF_prairie2_25x_no_orb_SLM\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25x_no_orb_SLM\';
     data_path2 = {'PSF_SLM_256_z16_01um_z150-008',...
                   'PSF_SLM_256_z16_01um_z100-006',...
                   'PSF_SLM_256_z16_01um_z50-004',...
@@ -63,7 +63,7 @@ elseif data_source == 5
     z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -100, -150];
     description = 'SLM no AO';
 elseif data_source == 6
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\ETL_data\4_24_23\SLM_25x_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_24_23\SLM_25x_AO\';
     data_path2 = {'PSF_25x_150AO_32ave-003',...
                   'PSF_25x_100AO_32ave-004',...
                   'PSF_25x_50AO_32ave-007',...
@@ -74,6 +74,14 @@ elseif data_source == 6
               
     z_loc = [150, 100, 50, 0, -50, -100, -150];
     description = 'SLM  AO';
+elseif data_source == 7
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\5_9_23\SLM_25x_AO\';
+    data_path2 = {'z_scan_z0_AO-001',...
+                  'z_scan_z150_AO-003',...
+                  'z_scan_z200_AO-002'};
+              
+    z_loc = [0, 150, 200];
+    description = 'SLM  AO 5_9_23';
 end
 
 %%
