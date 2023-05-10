@@ -20,7 +20,7 @@ init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_5_9_23';
+save_fname = 'AO_correction_25x_maitai_5_10_23';
 
 
 % fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
