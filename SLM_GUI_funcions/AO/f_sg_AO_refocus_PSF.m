@@ -52,7 +52,7 @@ end
 [~, peak_idx1] = max(y0);
 
 %yf = fit(z_range' ,y0,'gauss1');
-yf = fit(z_range' ,y0,'smoothingspline', 'SmoothingParam', 0.5);
+yf = fit(z_range' ,y0,'smoothingspline', 'SmoothingParam', 0.3);
 z_fit = z_range(1):0.1:z_range(end);
 y_fit = yf(z_fit);
 
