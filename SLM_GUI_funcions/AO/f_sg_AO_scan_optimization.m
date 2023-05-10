@@ -190,7 +190,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), ~hit_edge)
         %zernike_imn3 = zernike_imn2(zernike_imn(:,1) == mode_seq(mode_seq_idx),:);
         zernike_imn3 = zernike_imn2(Zm_seq2(currentZm_seq), :);
         
-        fprintf('Seq scan; Zn = %d/%d; Zm = %d; grad fac = %d\n', currentZn,max_Zn, zernike_imn3(3), step_fac);
+        fprintf('Seq scan; Zn = %d/%d; idx = %d; Zm = %d; grad fac = %d\n', currentZn,max_Zn, zernike_imn3(1), zernike_imn3(3), step_fac);
         
         weights1 = linspace(-W_range, W_range, W_num_steps)/step_fac;
 
