@@ -12,6 +12,9 @@ if app.StartoptimizationButton.Value
     end
     
     f_sg_AO_scan_optimization(app, AO_temp);
+    
+    app.StartoptimizationButton.Value = 0;
+    
 end
     
 end
