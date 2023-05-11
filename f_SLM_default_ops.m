@@ -289,7 +289,7 @@ pw_calibration.pw_sqrt = 1;
 %% ao default params
 
 AO_params.min_Zn = 0;
-AO_params.max_Zn = 4;
+AO_params.max_Zn = 5;
 AO_params.w_range = 1.5;
 AO_params.num_w_steps = 13;
 AO_params.w_spline_sm_param = 0.1;

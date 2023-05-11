@@ -152,6 +152,7 @@ if load_temp
     if ao_temp_in.n_it < num_iter
         n_it = ao_temp_in.n_it;
         
+        ao_temp_in.iter_filled(1:n_it) =        ao_temp_in.iter_filled(ao_temp_in.iter_filled);
         ao_temp.AO_corrections_all(1:n_it) =    ao_temp_in.AO_corrections_all(ao_temp_in.iter_filled);
         ao_temp.good_correction(1:n_it) =       ao_temp_in.good_correction(ao_temp_in.iter_filled);
         ao_temp.z_all(1:n_it) =                 ao_temp_in.z_all(ao_temp_in.iter_filled);
@@ -185,7 +186,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
     
     %% refocus in z
     if (num_scans_done - num_refocus_scan) > ao_params.refocus_every
-        [current_coord, num_scans_done, PSF_all{n_it}] = f_sg_AO_refocus_PSF(app, center_defocus_z_range, num_scans_done, ao_temp, ao_params);
+        [current_coord, num_scans_done, ao_temp.PSF_all{n_it}] = f_sg_AO_refocus_PSF(app, center_defocus_z_range, num_scans_done, ao_temp, ao_params);
         ao_temp.current_coord = current_coord;
         ao_temp.z_all(n_it) = current_coord.xyzp(3);
         ao_temp.z_all_idx(n_it) = 1;
