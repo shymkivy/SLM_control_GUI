@@ -1,26 +1,32 @@
 clear;
-%close all;
+close all;
 
 %%
 
-fnames = {'zernike_scan_data_5_6_23_13h_45m_z-200.mat';...
+fnames = {%'zernike_scan_data_5_10_23_15h_8m_z-250.mat';...
+          'zernike_scan_data_5_10_23_23h_16m_z-250.mat';... % 7 order only
+          'zernike_scan_data_5_6_23_13h_45m_z-200.mat';...
           'zernike_scan_data_5_5_23_22h_40m_z-150.mat';...
           'zernike_scan_data_5_7_23_22h_49m_z-100.mat';...
           %'zernike_scan_data_4_22_23_20h_35m_z-100.mat';...
           'zernike_scan_data_4_23_23_18h_34m_z-50.mat';...
           'zernike_scan_data_5_9_23_20h_9m_z0.mat';...
           'zernike_scan_data_4_23_23_2h_5m_z50.mat';...
-          'zernike_scan_data_4_22_23_23h_46m_z100.mat';...
+          'zernike_scan_data_5_10_23_20h_16m_z100.mat';...
           'zernike_scan_data_5_8_23_15h_49m_z150.mat';...
           'zernike_scan_data_5_9_23_15h_25m_z200.mat';...
-          'zernike_scan_data_5_10_23_0h_5m_z250.mat';...
+          %'zernike_scan_data_5_10_23_13h_44m_z250.mat';...
+          'zernike_scan_data_5_10_23_19h_15m_z250.mat'... % 7 order only
           };
+
+addpath(genpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI_funcions'));
       
 init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_5_10_23';
+save_fname = 'AO_correction_25x_maitai_5_11_23';
+
 
 
 % fnames = {'zernike_scan_data_4_16_23_22h_59m_z-50.mat';...
@@ -66,13 +72,14 @@ save_fname = 'AO_correction_25x_maitai_5_10_23';
 % save_fname = 'AO_correction_20x_maitai_12_20_20_test';
 
 %%
-modes_to_fit = 1:30;
+modes_to_fit = 1:50;
 
 
 fit_type = 'smoothingspline'; % 'poly1_constrain_z0' 'poly1', 'poly2', 'spline', 'smoothingspline'
-spline_smoothing_param = 0.001;
+spline_smoothing_param = 0.1;
 
 constrain_z0 = 0;
+ignore_zeros = 0;
 
 save_mode_data = 0;
 
@@ -148,7 +155,7 @@ for n_corr = 1:num_fnames
     AO_data(n_corr).AO_correction = correction3(has_data,:);
 end
 
-z_all = [AO_data.Z]';
+%z_all = [AO_data.Z]';
 
 %%
 if extra_plots
@@ -230,123 +237,14 @@ end
 
 %%
 
-ao_corr_all = cat(1,AO_data.AO_correction);
+fit_params.fit_type = fit_type;
+fit_params.spline_smoothing_param = spline_smoothing_param;
+fit_params.constrain_z0 = constrain_z0;
+fit_params.ignore_zeros = ignore_zeros;
+fit_params.plot_corr = 1;
+fit_params.plot_extra = 1;
+AO_correction = f_sg_AO_do_zernike_fit(AO_data, modes_to_fit, fit_params);
 
-max_modes = max(ao_corr_all(:,1));
-max_mode_use = min([max(modes_to_fit), max_modes]);
-
-modes_to_fit2 = 1:max_mode_use;
-
-min_modes = min(ao_corr_all(:,1));
-
-corr_all = zeros(num_fnames, max_mode_use);
-corr_idx = (1:max_mode_use)';
-for n_corr = 1:num_fnames
-    corr_all2 = zeros(max_mode_use,1);
-    temp_corr = AO_data(n_corr).AO_correction;
-    for n_it = 1:size(temp_corr,1)
-        n_mode = temp_corr(n_it,1);
-        if sum(n_mode == modes_to_fit2)
-            corr_all2(n_mode) = corr_all2(n_mode) + temp_corr(n_it,2);
-        end
-    end
-    corr_all(n_corr,:) = corr_all2;
-end
-
-
-%colors1 = parula(max_mode_use-min_modes+1);
-%colors1 = hsv(max_modes-min_modes+1);
-colors1 = jet(max_modes-min_modes+1);
-
-
-[~, sort_idx] = sort(z_all);
-z_alls = z_all(sort_idx);
-corr_alls = corr_all(sort_idx, :);
-
-figure; hold on
-leg_all = cell(max_mode_use,1);
-has_data = false(max_mode_use,1);
-for n_mode = 1:max_mode_use
-    has_vals = corr_alls(:,n_mode) ~= 0;
-    if sum(has_vals)
-        leg_all{n_mode} = num2str(n_mode);
-        has_data(n_mode) = 1;
-        plot(z_alls(has_vals), corr_alls(has_vals,n_mode), 'o-', 'color', colors1(n_mode+1-min_modes,:));
-    end
-    
-end
-legend(leg_all(has_data))
 
 %%
-
-z_fit = min(z_all):max(z_all);
-
-w_fit1 = cell(numel(modes_to_fit2),1);
-fit_fx = cell(numel(modes_to_fit2),1);
-w_fit2 = zeros(numel(modes_to_fit2),1);
-leg_all = cell(max_mode_use,1);
-has_data = false(max_mode_use,1);
-pl = cell(max_mode_use,1);
-pl2 = cell(max_mode_use,1);
-
-f1 = figure; hold on;
-f2 = figure; hold on;
-for n_mode = 1:numel(modes_to_fit2)
-    mode = modes_to_fit2(n_mode);
-    temp_data = corr_alls(:, mode);
-    do_fit = or(z_alls == 0, temp_data ~=0);
-    if sum(do_fit)>1
-        leg_all{n_mode} = [num2str(n_mode)];
-        has_data(n_mode) = 1;
-        if strcmpi(fit_type, 'poly1_constrain_z0')
-            w_fit11 = z_alls(do_fit)\corr_alls(do_fit, mode);
-            yf = @(x) w_fit11*x;
-            fit_eq = 'yf(x) = p1*x';
-        elseif strcmpi(fit_type, 'poly1')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly1');
-            w_fit11 = [yf.p1 yf.p2];
-            fit_eq = 'yf(x) = p1*x + p2';
-        elseif strcmpi(fit_type, 'poly2')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
-            w_fit11 = [yf.p1 yf.p2 yf.p3];
-            fit_eq = 'yf(x) = p1*x^2 + p2*x + p3';
-        elseif strcmpi(fit_type, 'spline')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'spline');
-            w_fit11 = [];
-            fit_eq = 'spline';
-        elseif strcmpi(fit_type, 'smoothingspline')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'smoothingspline', 'SmoothingParam', spline_smoothing_param);
-            w_fit11 = [];
-            fit_eq = 'smoothingspline';
-        end
-        y_fit = yf(z_fit);
-        w_fit1{n_mode} = w_fit11;
-        fit_fx{n_mode} = yf;
-        
-        figure(f1)
-        pl{n_mode} = plot(z_fit, y_fit, 'color', colors1(n_mode+1-min_modes,:), 'linewidth', 2);
-        plot(z_alls(do_fit), corr_alls(do_fit, mode), '.', 'color', colors1(mode+1-min_modes,:), 'markersize', 20);
-        plot(z_alls(do_fit), corr_alls(do_fit, mode), 'ko', 'linewidth', 1);
-        
-        figure(f2);
-        pl2{n_mode} = plot(z_alls(do_fit), corr_alls(do_fit, mode) - yf(z_alls(do_fit)), 'color', colors1(mode+1-min_modes,:), 'linewidth', 2);
-    end
-end
-figure(f1)
-legend([pl{has_data}], leg_all(has_data))
-xlabel('z defocus')
-ylabel('weight correction')
-title(sprintf('Mode correction weights, %s', fit_type))
-
-figure(f2)
-xlabel('z')
-ylabel('fit error')
-legend([pl2{has_data}], leg_all(has_data))
-title(sprintf('Mode correction w errors, %s', fit_type))
-
-AO_correction.fit_weights = [modes_to_fit2(has_data)', cat(1,w_fit1{:})];
-AO_correction.AO_data = AO_data;
-AO_correction.fit_eq = fit_eq;
-AO_correction.fit_fx = fit_fx;
-
 save([fpath save_fname '.mat'], 'AO_correction');

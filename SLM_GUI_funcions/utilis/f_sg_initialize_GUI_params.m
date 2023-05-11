@@ -81,10 +81,15 @@ app.PostscandelayEditField.Value = AO_params.post_scan_delay;
 app.OptimizationmethodDropDown.Items = {'Sequential', 'Sequential gradient', 'Full gradient', 'Grid search'};
 app.OptimizationmethodDropDown.Value = AO_params.Optimization_method;
 
-app.FitmethodDropDown.Items = {'Poly1_constrain_z0', 'Poly1', 'Poly2', 'Spline', 'smoothingspline'};
+app.FitmethodDropDown.Items = {'poly1_constrain_z0', 'Poly1', 'Poly2', 'Spline', 'smoothingspline'};
 app.FitmethodDropDown.Value = AO_params.fit_ao_method;
 app.splinesmparam01EditField.Value = AO_params.fit_spline_sm_param;
 app.save_fit_weightsCheckBox.Value = AO_params.fit_save_weights;
+app.Constrainz0CheckBox.Value = AO_params.constrain_z0;
+app.Ignore0CheckBox.Value = AO_params.ignore_0;
+app.PlotfitCheckBox.Value = AO_params.plot_fit;
+app.PlotextraCheckBox.Value = AO_params.plot_extra;
+
 
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;

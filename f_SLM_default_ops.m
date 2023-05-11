@@ -308,8 +308,12 @@ AO_params.num_iterations = 40;
 AO_params.bead_win_size = 80;
 AO_params.post_scan_delay = 0.8;
 AO_params.fit_ao_method = 'smoothingspline';
-AO_params.fit_spline_sm_param = 0.001;
+AO_params.fit_spline_sm_param = 0.1;
 AO_params.fit_save_weights = 1;
+AO_params.constrain_z0 = 0;
+AO_params.ignore_0 = 0;
+AO_params.plot_fit = 1;
+AO_params.plot_extra = 0;
 
 %% save stuff
 ops.objectives = objectives;
