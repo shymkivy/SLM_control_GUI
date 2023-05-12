@@ -25,6 +25,7 @@ if app.ApplyAOcorrectionButton.Value
                 max_modes = max(AO_correction_all(:,1));
                 modes_to_fit = 1:max_modes;
                 
+                fit_params.ignore_sherical = app.IgnoreallsphericalCheckBox.Value;
                 fit_params.fit_type = app.FitmethodDropDown.Value;
                 fit_params.spline_smoothing_param = app.splinesmparam01EditField.Value;
                 fit_params.constrain_z0 = app.Constrainz0CheckBox.Value;
