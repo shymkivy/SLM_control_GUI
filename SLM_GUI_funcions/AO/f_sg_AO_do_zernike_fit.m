@@ -12,6 +12,9 @@ min_modes = min(ao_corr_all(:,1));
 z_all = [AO_data.Z]';
 num_z = numel(z_all);
 
+maxZn = ceil((-1 + sqrt(1 + 4*max_modes*2))/2)-1;
+zernike_nm_all = f_sg_get_zernike_mode_nm(0:maxZn);
+
 corr_all = zeros(num_z, max_mode_use);
 for n_corr = 1:num_z
     corr_all2 = zeros(max_mode_use,1);
@@ -25,6 +28,11 @@ for n_corr = 1:num_z
     corr_all(n_corr,:) = corr_all2;
 end
 
+
+if params.ignore_sherical
+    idx_sph = zernike_nm_all(:,2) == 0;
+    corr_all(:,idx_sph) = 0;
+end
 
 %colors1 = parula(max_mode_use-min_modes+1);
 %colors1 = hsv(max_modes-min_modes+1);

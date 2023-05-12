@@ -19,6 +19,10 @@ if app.AOignoresphericalmodeCheckBox.Value
     scan_modes(and(zernike_table_list(:,1) == 2, zernike_table_list(:,2) == 0)) = 0;
 end
 
+if app.AOignoreallsphericalCheckBox.Value
+    scan_modes(zernike_table_list(:,2) == 0) = 0;
+end
+
 tab_data = [(round(1:num_modes)'),round(zernike_table_list), repmat([W_lim, W_step, W_num_steps], num_modes, 1), logical(round(scan_modes))];
 
 app.ZernikeListTable.Data = tab_data(zernike_table_list(:,1) >= min_Zn,:);

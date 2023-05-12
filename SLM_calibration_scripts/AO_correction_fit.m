@@ -242,6 +242,7 @@ end
 
 %%
 
+fit_params.ignore_sherical = 1;
 fit_params.fit_type = fit_type;
 fit_params.spline_smoothing_param = spline_smoothing_param;
 fit_params.constrain_z0 = constrain_z0;

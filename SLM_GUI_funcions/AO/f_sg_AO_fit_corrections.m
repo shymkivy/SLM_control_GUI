@@ -14,6 +14,7 @@ else
     modes_to_fit = f_str_to_array(app.modestofitEditField.Value)';
 end
 %%
+fit_params.ignore_sherical = app.IgnoreallsphericalCheckBox.Value;
 fit_params.fit_type = app.FitmethodDropDown.Value;
 fit_params.spline_smoothing_param = app.splinesmparam01EditField.Value;
 fit_params.constrain_z0 = app.Constrainz0CheckBox.Value;

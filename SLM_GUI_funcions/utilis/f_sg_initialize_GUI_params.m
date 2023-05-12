@@ -89,7 +89,7 @@ app.Constrainz0CheckBox.Value = AO_params.constrain_z0;
 app.Ignore0CheckBox.Value = AO_params.ignore_0;
 app.PlotfitCheckBox.Value = AO_params.plot_fit;
 app.PlotextraCheckBox.Value = AO_params.plot_extra;
-
+app.IgnoreallsphericalCheckBox.Value = AO_params.ignore_all_spherical;
 
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
