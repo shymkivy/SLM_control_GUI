@@ -314,7 +314,7 @@ AO_params.constrain_z0 = 0;
 AO_params.ignore_0 = 0;
 AO_params.plot_fit = 1;
 AO_params.plot_extra = 0;
-AO_params.ignore_all_spherical = 1;
+AO_params.ignore_all_spherical = 0;
 
 %% save stuff
 ops.objectives = objectives;
