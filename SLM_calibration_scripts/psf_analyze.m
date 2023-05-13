@@ -1,7 +1,7 @@
 % fitting gaussian for each dimension
 
 clear;
-close all;
+%close all;
 
 data_source = 10;
 
@@ -126,6 +126,14 @@ elseif data_source == 10
               
     z_loc = [250, 250, 250, 200, 200];
     description = 'SLM  AO 5_13_23';
+elseif data_source == 11
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_13_23_2\';
+    data_path2 = {'PSF_z250_16x_32ave-001',...
+                  'PSF_z200_16x_32ave-002',...
+                  };
+              
+    z_loc = [250, 200];
+    description = 'SLM  AO 5_13_23';
 end
 
 %%
@@ -158,8 +166,8 @@ manual_selection = 0;
 dims_all = 1:3;
 %%
 
-plot_deets = 1;
-plot_superdeets = 1;
+plot_deets = 0;
+plot_superdeets = 0;
 
 num_fil = numel(data_path2);
 
