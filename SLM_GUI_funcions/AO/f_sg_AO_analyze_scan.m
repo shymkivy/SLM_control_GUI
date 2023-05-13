@@ -43,7 +43,19 @@ if 1
         else
             yf = fit(x0 ,y0, 'gauss1');
         end
-        
+%         yf_spl1 = fit(x0 ,y0, 'smoothingspline','SmoothingParam', 0.5);
+%         yf_poly = fit(x0 ,y0, 'poly2');
+%         
+%         err_yf = mean(abs(yf(x0) - y0));
+%         err_spl = mean(abs(yf_spl1(x0) - y0));
+%         err_poly = mean(abs(yf_poly(x0) - y0));
+%         
+%         err_total = mean(abs(y0 - mean(y0)));
+%         
+%         1 - err_spl/err_total;
+%         
+%         1 - err_poly/err_total;
+%         
         yf_fit = yf(x_fit);
         yf_reg = yf_fit.*(abs(x_fit)* -reg_factor/ao_temp.W_step + 1)';
         

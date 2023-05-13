@@ -5,6 +5,7 @@ load_temp = 0;
 if exist('ao_temp_in', 'var')
     if ~isempty(ao_temp_in)
         load_temp = 1;
+        fprintf('continuing optimizatoin\n')
     end
 end
   
@@ -75,9 +76,12 @@ f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
 %% create patterns
 
+max_modes_init = max(ao_temp.init_AO_correction(:,1));
+maxZn_init = ceil((-1 + sqrt(1 + 4*max_modes_init*2))/2)-1;
+
 max_Zn = app.MaxZnEditField.Value;
 min_Zn = app.MinZnEditField.Value;
-zernike_nm_all = f_sg_get_zernike_mode_nm(0:max_Zn);
+zernike_nm_all = f_sg_get_zernike_mode_nm(0:max([maxZn_init, max_Zn]));
 num_modes_all = size(zernike_nm_all ,1);
 % generate all polynomials
 all_modes_phase = f_sg_gen_zernike_modes(reg1, zernike_nm_all);
@@ -152,20 +156,21 @@ if load_temp
     if ao_temp_in.n_it < num_iter
         n_it = ao_temp_in.n_it;
         
-        ao_temp_in.iter_filled(1:n_it) =        ao_temp_in.iter_filled(ao_temp_in.iter_filled);
-        ao_temp.AO_corrections_all(1:n_it) =    ao_temp_in.AO_corrections_all(ao_temp_in.iter_filled);
-        ao_temp.good_correction(1:n_it) =       ao_temp_in.good_correction(ao_temp_in.iter_filled);
-        ao_temp.z_all(1:n_it) =                 ao_temp_in.z_all(ao_temp_in.iter_filled);
-        ao_temp.z_all_idx(1:n_it) =             ao_temp_in.z_all_idx(ao_temp_in.iter_filled);
-        ao_temp.step_size_all(1:n_it) =         ao_temp_in.step_size_all(ao_temp_in.iter_filled);
-        ao_temp.w_step_all(1:n_it) =            ao_temp_in.w_step_all(ao_temp_in.iter_filled);
-        ao_temp.d_w_all(1:n_it) =               ao_temp_in.d_w_all(ao_temp_in.iter_filled);
-        ao_temp.deeps_post(1:n_it) =            ao_temp_in.deeps_post(ao_temp_in.iter_filled);
-        ao_temp.bead_im_all(1:n_it) =           ao_temp_in.bead_im_all(ao_temp_in.iter_filled);
-        ao_temp.PSF_all(1:n_it) =               ao_temp_in.PSF_all(ao_temp_in.iter_filled);
-        ao_temp.intensity_x_all(1:n_it) =       ao_temp_in.intensity_x_all(ao_temp_in.iter_filled);
-        ao_temp.intensity_all(1:n_it) =         ao_temp_in.intensity_all(ao_temp_in.iter_filled);
-        ao_temp.mode_data_all(1:n_it) =         ao_temp_in.mode_data_all(ao_temp_in.iter_filled);
+        ao_temp.current_coord =                 ao_temp_in.current_coord;
+        ao_temp.iter_filled(1:n_it) =           ao_temp_in.iter_filled(1:n_it);
+        ao_temp.AO_corrections_all(1:n_it) =    ao_temp_in.AO_corrections_all(1:n_it);
+        ao_temp.good_correction(1:n_it) =       ao_temp_in.good_correction(1:n_it);
+        ao_temp.z_all(1:n_it) =                 ao_temp_in.z_all(1:n_it);
+        ao_temp.z_all_idx(1:n_it) =             ao_temp_in.z_all_idx(1:n_it);
+        ao_temp.step_size_all(1:n_it) =         ao_temp_in.step_size_all(1:n_it);
+        ao_temp.w_step_all(1:n_it) =            ao_temp_in.w_step_all(1:n_it);
+        ao_temp.d_w_all(1:n_it) =               ao_temp_in.d_w_all(1:n_it);
+        ao_temp.deeps_post(1:n_it) =            ao_temp_in.deeps_post(1:n_it);
+        ao_temp.bead_im_all(1:n_it) =           ao_temp_in.bead_im_all(1:n_it);
+        ao_temp.PSF_all(1:n_it) =               ao_temp_in.PSF_all(1:n_it);
+        ao_temp.intensity_x_all(1:n_it) =       ao_temp_in.intensity_x_all(1:n_it);
+        ao_temp.intensity_all(1:n_it) =         ao_temp_in.intensity_all(1:n_it);
+        ao_temp.mode_data_all(1:n_it) =         ao_temp_in.mode_data_all(1:n_it);
 
         ao_temp.name_tag_full =                 ao_temp_in.name_tag_full;
     else
@@ -391,7 +396,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
     
     if ~app.StartoptimizationButton.Value
         continue_scan = 0;
-        fprintf('Finishing scan early')
+        fprintf('Finishing scan early\n')
     end
     
     %% maybe plot
