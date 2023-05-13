@@ -18,10 +18,12 @@ fnames = {
           %'zernike_scan_data_5_8_23_15h_49m_z150.mat';...
           'zernike_scan_data_5_11_23_18h_30m_z150.mat'...
           %'zernike_scan_data_5_9_23_15h_25m_z200.mat';...
-          'zernike_scan_data_5_11_23_17h_47m_z200.mat';...
+          %'zernike_scan_data_5_11_23_17h_47m_z200.mat';...
+          'zernike_scan_data_5_13_23_1h_34m_z200.mat';...
           %'zernike_scan_data_5_10_23_13h_44m_z250.mat';...
           %'zernike_scan_data_5_10_23_19h_15m_z250.mat';... % 7 order only
-          'zernike_scan_data_5_11_23_16h_5m_z250.mat';...
+          %'zernike_scan_data_5_11_23_16h_5m_z250.mat';...
+          'zernike_scan_data_5_12_23_18h_27m_z250.mat';...
           };
 
 addpath(genpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI_funcions'));
@@ -30,7 +32,7 @@ init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_5_12_23';
+save_fname = 'AO_correction_25x_maitai_5_13_23';
 
 
 
@@ -80,8 +82,8 @@ save_fname = 'AO_correction_25x_maitai_5_12_23';
 modes_to_fit = 1:50;
 
 
-fit_type = 'smoothingspline'; % 'poly1_constrain_z0' 'poly1', 'poly2', 'spline', 'smoothingspline'
-spline_smoothing_param = 0.1;
+fit_type = 'linearinterp'; % 'poly1_constrain_z0' 'poly1', 'poly2', 'spline', 'smoothingspline', linearinterp
+spline_smoothing_param = 0.5;
 
 constrain_z0 = 0;
 ignore_zeros = 0;
@@ -143,6 +145,21 @@ for n_corr = 1:num_fnames
     else
         AO_init = ao_init_corr_weights .* [1, AO_data(n_corr).Z];
     end
+    if isfield(data, 'z_all')
+        if isfield(data, 'z_all_idx')
+            defocus1 = data.z_all(data.z_all_idx);
+        else
+            idx1 = data.z_all~=0;
+            if sum(idx1)
+                defocus1 = data.z_all(idx1);
+            else
+                defocus1 = data.z_all;
+            end
+        end
+        defocus_eff = defocus1(end);
+    else
+        defocus_eff = AO_data(n_corr).Z;
+    end
     correction1 = [{AO_init}; data.AO_correction];
     correction2 = cat(1,correction1{:});
     max_modes2 = max(correction2(:,1));
@@ -158,6 +175,7 @@ for n_corr = 1:num_fnames
     end
     max_modes = max(max_modes, max_modes2);
     AO_data(n_corr).AO_correction = correction3(has_data,:);
+    AO_data(n_corr).defocus_comp = defocus_eff - AO_data(n_corr).Z;
 end
 
 %z_all = [AO_data.Z]';

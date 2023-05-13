@@ -1,12 +1,12 @@
 % fitting gaussian for each dimension
 
 clear;
-%close all;
+close all;
 
-data_source = 8;
+data_source = 10;
 
 if data_source == 1
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\etl_psf_prairie1\3_28_23\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\etl_psf_prairie1_3_28_23\';
     data_path2 = {'z100_20um_256_32ave-003',...
                   'z50_20um_256_32ave-002',...
                   'z0_20um_256_32ave-001',...
@@ -16,7 +16,7 @@ if data_source == 1
     description = 'EL-10-30-C';
 
 elseif data_source == 2
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25X_no_orb_ETLobj\';  
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\4_10_23\PSF_prairie2_25X_no_orb_ETLobj\';  
     data_path2 = {'PSF_ETLp2_25x_16z_01um_256_z150-006',...
                   'PSF_ETLp2_25x_16z_01um_256_z100-005',...
                   'PSF_ETLp2_25x_16z_01um_256_z50-004',...
@@ -27,14 +27,14 @@ elseif data_source == 2
     z_loc = [150, 100, 50, 0, -50, -100, -150];
     description = 'EL-16-40-TC-Obj'; 
 elseif data_source == 3
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25x_no_orb\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\4_10_23\PSF_prairie2_25x_no_orb\';
     data_path2 = {'PSF_25x_16z_01um_256-001',...
                   'PSF_25x_16z_01um_256-002'};
               
     z_loc = [0, 0];
     description = 'Regular path';
 elseif data_source == 4
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_10_23\PSF_prairie2_25x_no_orb_SLM_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\4_10_23\PSF_prairie2_25x_no_orb_SLM_AO\';
     data_path2 = {'PSF_SLM_256_z16_01um_z150_AO-009',...
                   'PSF_SLM_256_z16_01um_z100_AO-007',...
                   'PSF_SLM_256_z16_01um_z50_AO-005',...
@@ -63,7 +63,7 @@ elseif data_source == 5
     z_loc = [150, 100, 50, 0, 0, 0, -50, -100, -100, -150];
     description = 'SLM no AO';
 elseif data_source == 6
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\4_24_23\SLM_25x_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\4_24_23\';
     data_path2 = {'PSF_25x_150AO_32ave-003',...
                   'PSF_25x_100AO_32ave-004',...
                   'PSF_25x_50AO_32ave-007',...
@@ -75,7 +75,7 @@ elseif data_source == 6
     z_loc = [150, 100, 50, 0, -50, -100, -150];
     description = 'SLM AO 4_24_23';
 elseif data_source == 7
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\5_9_23\SLM_25x_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_9_23\';
     data_path2 = {'z_scan_z0_AO-001',...
                   'z_scan_z150_AO-003',...
                   'z_scan_z200_AO-002'};
@@ -83,7 +83,7 @@ elseif data_source == 7
     z_loc = [0, 150, 200];
     description = 'SLM  AO 5_9_23';
 elseif data_source == 8
-    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\5_11_23\SLM_25x_AO\';
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_11_23\';
     data_path2 = {'PSF_AO_z-250_16x_32ave-007',...
                   'PSF_AO_z-200_16x_32ave-008',...
                   'PSF_AO_z-150_16x_32ave-009',...
@@ -98,6 +98,34 @@ elseif data_source == 8
               
     z_loc = [-250, -200, -150, -100, -50, 0, 50, 100, 150, 200, 250];
     description = 'SLM  AO 5_11_23';
+elseif data_source == 9
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_12_23\';
+    data_path2 = {'PSF_z-250_AO_5_12_23_16x_32ave-012',...
+                  'PSF_z-200_AO_5_12_23_16x_32ave-011',...
+                  'PSF_z-150_AO_5_12_23_16x_32ave-010',...
+                  'PSF_z-100_AO_5_12_23_16x_32ave-009',...
+                  'PSF_z-50_AO_5_12_23_16x_32ave-008',...
+                  'PSF_z0_AO_5_12_23_16x_32ave-006',...
+                  'PSF_z0_noAO_5_12_23_16x_32ave-007',...
+                  'PSF_z50_AO_5_12_23_16x_32ave-005',...
+                  'PSF_z100_AO_5_12_23_16x_32ave-004',...
+                  'PSF_z150_AO_5_12_23_16x_32ave-003',...
+                  'PSF_z200_AO_5_12_23_16x_32ave-002',...
+                  'PSF_z250_AO_5_12_23_16x_32ave-001'};
+              
+    z_loc = [-250, -200, -150, -100, -50, 0, 0, 50, 100, 150, 200, 250];
+    description = 'SLM  AO 5_12_23';
+elseif data_source == 10
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_13_23\';
+    data_path2 = {'PSF_z250_AO_5_12_23_16x_32ave-013',...
+                  'PSF_z250_AO_5_12_23_16x_32ave-015',...
+                  'PSF_z250_AO_5_12_23_16x_32ave-016',...
+                  'PSF_z200_AO_5_12_23_16x_32ave-017',...
+                  'PSF_z200_AO_5_12_23_16x_32ave-018',...
+                  };
+              
+    z_loc = [250, 250, 250, 200, 200];
+    description = 'SLM  AO 5_13_23';
 end
 
 %%
@@ -130,8 +158,8 @@ manual_selection = 0;
 dims_all = 1:3;
 %%
 
-plot_deets = 0;
-plot_superdeets = 0;
+plot_deets = 1;
+plot_superdeets = 1;
 
 num_fil = numel(data_path2);
 
@@ -201,15 +229,16 @@ for n_loc = 1:num_loc
                     x_min = max(x_coord - FOV_half_size, 1);
                     x_max = min(x_coord + FOV_half_size, x1);
                     
-                    pts_all3 = cat(1,points_all2{:});
+                    pts_all3 = cat(1,pts2{:});
                     
                     if min([idx1, z1 - idx1]) > z1/4
-                        if ~numel(pts_all3) || (min(sqrt((y_coord - pts_all3(:,1)).^2 + (x_coord - pts_all3(:,2)).^2)) > min_dist)
-                            % check if far enough from cent
-                            if sqrt((y_coord - cent_y)^2 + (x_coord - cent_x)^2) < min_dist_from_cent
-                                % check if far from edge
-                                if min([y_coord, y1 - y_coord]) > FOV_half_size
-                                    if min([x_coord, x1 - x_coord]) > FOV_half_size
+                        % check if far enough from cent
+                        if sqrt((y_coord - cent_y)^2 + (x_coord - cent_x)^2) < min_dist_from_cent
+                            % check if far from edge
+                            if min([y_coord, y1 - y_coord]) > FOV_half_size
+                                if min([x_coord, x1 - x_coord]) > FOV_half_size
+                                    % check if points are not too close
+                                    if ~numel(pts_all3) || (min(sqrt((y_coord - pts_all3(:,1)).^2 + (x_coord - pts_all3(:,2)).^2)) > min_dist)
                                         points_all2 = [points_all2; [y_coord, x_coord]];
                                         fil_idx_all = [fil_idx_all; n_fil];
                                         pts2 = [pts2; [y_coord, x_coord]];

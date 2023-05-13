@@ -28,7 +28,6 @@ for n_corr = 1:num_z
     corr_all(n_corr,:) = corr_all2;
 end
 
-
 if params.ignore_sherical
     idx_sph = zernike_nm_all(:,2) == 0;
     corr_all(:,idx_sph) = 0;
@@ -91,27 +90,8 @@ for n_mode = 1:numel(modes_to_fit2)
     if sum(temp_data ~=0)>1
         leg_all{n_mode} = [num2str(n_mode)];
         has_data(n_mode) = 1;
-        if strcmpi(params.fit_type, 'poly1_constrain_z0')
-            w_fit11 = z_alls(do_fit)\corr_alls(do_fit, mode);
-            yf = @(x) w_fit11*x;
-            fit_eq = 'yf(x) = p1*x';
-        elseif strcmpi(params.fit_type, 'poly1')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly1');
-            w_fit11 = [yf.p1 yf.p2];
-            fit_eq = 'yf(x) = p1*x + p2';
-        elseif strcmpi(params.fit_type, 'poly2')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'poly2');
-            w_fit11 = [yf.p1 yf.p2 yf.p3];
-            fit_eq = 'yf(x) = p1*x^2 + p2*x + p3';
-        elseif strcmpi(params.fit_type, 'spline')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'spline');
-            w_fit11 = [];
-            fit_eq = 'spline';
-        elseif strcmpi(params.fit_type, 'smoothingspline')
-            yf = fit(z_alls(do_fit), corr_alls(do_fit, mode), 'smoothingspline', 'SmoothingParam', params.spline_smoothing_param);
-            w_fit11 = 0;
-            fit_eq = 'smoothingspline';
-        end
+        [yf, w_fit11, fit_eq] = f_sg_do_fit(z_alls(do_fit), corr_alls(do_fit, mode), params);
+        
         y_fit = yf(z_fit);
         w_fit1{n_mode} = w_fit11;
         fit_fx{n_mode} = yf;
@@ -144,10 +124,25 @@ if params.plot_extra
     title(sprintf('Mode correction w errors, %s; sm=%.4f', params.fit_type, params.spline_smoothing_param));
     l1.NumColumns = ceil(sum(has_data)/10);
 end
+%% defocus comp
 
+if isfield(AO_data, 'defocus_comp')
+    %params.fit_type = 'poly2';
+    yfz = f_sg_do_fit([AO_data.Z]', [AO_data.defocus_comp]', params);
+    
+    
+    figure; hold on;
+    plot([AO_data.Z],[AO_data.defocus_comp], 'o');
+    plot(z_fit,yfz(z_fit));
+else
+    yfz = 0;
+end
+
+%%
 AO_correction.fit_weights = [modes_to_fit2(has_data)', cat(1,w_fit1{:})];
 AO_correction.AO_data = AO_data;
 AO_correction.fit_eq = fit_eq;
 AO_correction.fit_fx = fit_fx;
+AO_correction.fit_defocus_comp = yfz;
 
 end

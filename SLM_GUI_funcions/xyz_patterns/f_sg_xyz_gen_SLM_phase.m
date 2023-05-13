@@ -3,7 +3,20 @@ function [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_
 coord_corr = f_sg_coord_correct(reg1, coord);
 
 if strcmpi(method, 'synthesis')
-
+    
+    comp_z1 = 0;
+    if apply_AO
+        if app.CompensatezCheckBox.Value
+            if isfield(reg1.AO_wf, 'fit_defocus_comp')
+                if strcmpi(class(reg1.AO_wf.fit_defocus_comp),'cfit')
+                    comp_z1 = reg1.AO_wf.fit_defocus_comp(coord_corr.xyzp(3));
+                    
+                end
+            end
+        end
+    end
+    coord_corr.xyzp(3) = coord_corr.xyzp(3) + comp_z1;
+    
     holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
     complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord_corr.weight,[1 1 numel(coord_corr.weight)]),3);
     SLM_phase = angle(complex_exp);
@@ -92,9 +105,7 @@ elseif strcmpi(method, 'global GS')
     
     figure(); imagesc(abs(fftshift(fft2(complex_disk))))
     figure(); imagesc(abs(fftshift(fft2(complex_pts(:,:,n_z)))))
-    
-    
-    
+
 end
 
 end

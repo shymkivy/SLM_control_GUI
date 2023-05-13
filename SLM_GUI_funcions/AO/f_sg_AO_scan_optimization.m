@@ -49,14 +49,25 @@ ao_temp.name_tag_full = sprintf('%s\\%s_z%d',...
 
 %% first upload (maybe not needed. already there)
 
+z_comp1 = 0;
 if app.ApplyAOcorrectionButton.Value
     [ao_temp.init_AO_phase, ao_temp.init_AO_correction] = f_sg_AO_get_z_corrections(app, reg1, ao_params.init_coord.xyzp(:,3));
+    
+    if app.CompensatezCheckBox.Value
+        if isfield(reg1.AO_wf, 'fit_defocus_comp')
+            if strcmpi(class(reg1.AO_wf.fit_defocus_comp),'cfit')
+                z_comp1 = reg1.AO_wf.fit_defocus_comp(ao_temp.current_coord.xyzp(3));
+            end
+        end
+    end
 else
     ao_temp.init_AO_correction = [1, 0];
     ao_temp.init_AO_phase = zeros(reg1.SLMm, reg1.SLMn);
 end
 
 coord_corr = f_sg_coord_correct(reg1, ao_temp.current_coord);
+coord_corr.xyzp(3) = coord_corr.xyzp(3) + z_comp1;
+
 init_holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
 
 % convert to exp and slm phase 

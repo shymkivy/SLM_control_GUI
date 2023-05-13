@@ -1,4 +1,4 @@
-function holo_phase = f_sg_PhaseHologram2(coord, reg_params)
+function [holo_phase, na_corr_all] = f_sg_PhaseHologram2(coord, reg_params)
 % most code here adopted from Weijian Yang slm gui
 
 xyzp = coord.xyzp;
@@ -26,7 +26,11 @@ alpha = asin(reg_params.effective_NA/reg_params.objective_RI);
 f_obj = 0.180/25;
 
 reg_params2 = reg_params;
-for idx=1:size(xyzp,1)
+
+num_pts = size(xyzp,1);
+
+na_corr_all = zeros(num_pts,1);
+for idx=1:num_pts
     
     % adjust NA by z depth
     z = xyzp(3)*1e-6;
@@ -34,7 +38,9 @@ for idx=1:size(xyzp,1)
     alpha_corr = atan(tan(alpha)*f_obj/f_obj_corr);
     NA_corr = reg_params.objective_RI * sin(alpha_corr);
     reg_params2.effective_NA = NA_corr;
-
+    
+    na_corr_all(idx) = NA_corr;
+    
     %defocus_phase = f_sg_DefocusPhase(reg_params2);
     defocus_phase = f_sg_DefocusPhase2(reg_params2);
 
