@@ -42,6 +42,7 @@ ao_temp.holo_im_pointer = f_sg_initialize_pointer(app);
 ao_temp.reg1 = reg1;
 ao_temp.scan_path = app.ScanframesdirpathEditField.Value;
 
+
 ao_params.name_tag = name_tag;
 
 ao_temp.name_tag_full = sprintf('%s\\%s_z%d',...
@@ -66,6 +67,12 @@ else
 end
 
 ao_temp.current_coord.xyzp(3) = ao_temp.current_coord.xyzp(3) + z_comp1;
+num_iter = app.NumiterationsSpinner.Value;
+if load_temp
+    if ao_temp_in.n_it < num_iter
+        ao_temp.current_coord = ao_temp_in.current_coord;
+    end
+end
 
 coord_corr = f_sg_coord_correct(reg1, ao_temp.current_coord);
 init_holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
@@ -101,7 +108,30 @@ ao_temp.all_modes = all_modes_phase;
 zernike_imn = f_sg_AO_get_zernike_imn(min_Zn:max_Zn);
 
 ao_temp.zernike_nm_all = zernike_nm_all;
- 
+
+%% plot correction potential per mode
+dims = size(init_holo_phase);
+ph_d = reg1.phase_diameter;
+Lx = linspace(-dims(2)/ph_d, dims(2)/ph_d, dims(2));
+Ly = linspace(-dims(1)/ph_d, dims(1)/ph_d, dims(1));
+sigma = 1;
+
+%Lx = linspace(-(siz-1)/2,(siz-1)/2,siz);
+%sigma = reg1.beam_diameter/2; 			% beam waist/2
+
+[c_X, c_Y] = meshgrid(Lx, Ly);
+x0 = 0;                 % beam center location
+y0 = 0;                 % beam center location
+A = 1;                  % peak of the beam 
+res = ((c_X-x0).^2 + (c_Y-y0).^2)./(2*sigma^2);
+pupil_amp = A  * exp(-res);
+
+weight_pt = squeeze(sum(sum(pupil_amp.*abs(all_modes_phase(:,:,4:end)),1),2));
+
+figure;
+plot(4:(numel(weight_pt)+3),weight_pt/max(weight_pt))
+title('Correction potential per mode')
+xlabe('mode index')
 %%
 resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
@@ -110,7 +140,6 @@ app.DAQ_session.outputSingleScan(0);
 [num_scans_done,ao_temp, ao_params] = f_sg_AO_init_xy_align(app, ao_temp, ao_params);
 
 %% scan
-num_iter = app.NumiterationsSpinner.Value;
 
 center_defocus_z_range = linspace(-app.RefocusdistumEditField.Value/2, app.RefocusdistumEditField.Value/2, app.RefocusnumstepsEditField.Value);
 
@@ -165,8 +194,6 @@ n_it = 1;
 if load_temp
     if ao_temp_in.n_it < num_iter
         n_it = ao_temp_in.n_it;
-        
-        ao_temp.current_coord =                 ao_temp_in.current_coord;
         ao_temp.iter_filled(1:n_it) =           ao_temp_in.iter_filled(1:n_it);
         ao_temp.AO_corrections_all(1:n_it) =    ao_temp_in.AO_corrections_all(1:n_it);
         ao_temp.good_correction(1:n_it) =       ao_temp_in.good_correction(1:n_it);
@@ -237,7 +264,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
         %zernike_imn3 = zernike_imn2(zernike_imn(:,1) == mode_seq(mode_seq_idx),:);
         zernike_imn3 = zernike_imn2(Zm_seq2(currentZm_seq), :);
         
-        fprintf('Seq scan; Zn = %d/%d; idx = %d; Zm = %d; grad fac = %d\n', currentZn,max_Zn, zernike_imn3(1), zernike_imn3(3), step_fac);
+        fprintf('Seq scan; Zn = %d/%d; idx = %d; Zm = %d; %d/%d; grad fac = %d\n', currentZn,max_Zn, zernike_imn3(1), zernike_imn3(3), currentZm_seq, num_Zm, step_fac);
         
         weights1 = linspace(-W_range, W_range, W_num_steps)/step_fac;
 
