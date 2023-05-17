@@ -475,10 +475,28 @@ ao_temp.holo_im_pointer.Value = reshape(init_SLM_phase_corr_lut', [],1);
 f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
 %% save
+core_init = f_sg_AO_condense_corr(ao_temp.init_AO_correction);
+
+corr_final2 = [ao_temp.init_AO_correction; ao_temp.AO_corrections_all];
+corr_final = f_sg_AO_condense_corr(cat(1,corr_final2{:}));
+
+f3 = figure; 
+subplot(2,1,1); hold on;
+plot(core_init(:,1), core_init(:,2), '-o')
+plot(corr_final(:,1), corr_final(:,2), '-o')
+ylabel('weight');
+legend('initial', 'fina');
+subplot(2,1,2); hold on;
+plot(corr_final(:,1), corr_final(:,2) - core_init(:,2), '-o')
+title('difference');
+xlabel('modes');
+ylabel('weight change');
+sgtitle([name_tag ' weight changes'])
 
 save([ao_temp.name_tag_full '.mat'], 'ao_data', '-v7.3');
 saveas(ao_temp.f1,[ao_temp.name_tag_full 'intensity.fig']);
 saveas(ao_temp.f2,[ao_temp.name_tag_full 'mode_weight.fig']);
+saveas(f3,[ao_temp.name_tag_full 'weight_change.fig']);
 %% save stuff
 disp('Done');
 end
