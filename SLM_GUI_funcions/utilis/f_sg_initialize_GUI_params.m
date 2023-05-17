@@ -86,6 +86,7 @@ app.FitmethodDropDown.Value = AO_params.fit_ao_method;
 app.splinesmparam01EditField.Value = AO_params.fit_spline_sm_param;
 app.save_fit_weightsCheckBox.Value = AO_params.fit_save_weights;
 app.Constrainz0CheckBox.Value = AO_params.constrain_z0;
+app.ZcompthreshumEditField.Value = AO_params.z_comp_thresh;
 app.CompensatezCheckBox.Value = AO_params.compensate_z;
 app.Ignore0CheckBox.Value = AO_params.ignore_0;
 app.PlotfitCheckBox.Value = AO_params.plot_fit;

@@ -21,6 +21,7 @@ fit_params.constrain_z0 = app.Constrainz0CheckBox.Value;
 fit_params.ignore_zeros = app.Ignore0CheckBox.Value;
 fit_params.plot_corr = app.PlotfitCheckBox.Value;
 fit_params.plot_extra = app.PlotextraCheckBox.Value;
+fit_params.z_defocus_correct_thresh = app.ZcompthreshumEditField.Value;
 AO_correction = f_sg_AO_do_zernike_fit(ao_data, modes_to_fit, fit_params);
 
 if app.save_fit_weightsCheckBox.Value

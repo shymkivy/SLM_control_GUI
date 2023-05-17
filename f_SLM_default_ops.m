@@ -312,6 +312,7 @@ AO_params.fit_spline_sm_param = 0.5;
 AO_params.fit_save_weights = 1;
 AO_params.constrain_z0 = 0;
 AO_params.compensate_z = 1;
+AO_params.z_comp_thresh = 190; % in um
 AO_params.ignore_0 = 0;
 AO_params.plot_fit = 1;
 AO_params.plot_extra = 0;

@@ -128,11 +128,19 @@ end
 
 if isfield(AO_data, 'defocus_comp')
     %params.fit_type = 'poly2';
-    yfz = f_sg_do_fit([AO_data.Z]', [AO_data.defocus_comp]', params);
     
+    
+    z_x = [AO_data.Z];
+    idx_z = abs(z_x) > params.z_defocus_correct_thresh;
+    
+    z_y = [AO_data.defocus_comp];
+    
+    z_y(~idx_z) = 0;
+    
+    yfz = f_sg_do_fit(z_x', z_y', params);
     
     figure; hold on;
-    plot([AO_data.Z],[AO_data.defocus_comp], 'o');
+    plot(z_x, z_y, 'o');
     plot(z_fit,yfz(z_fit));
     title(sprintf('Defocus compensation, %s; sm=%.4f', params.fit_type, params.spline_smoothing_param));
     xlabel('z');
