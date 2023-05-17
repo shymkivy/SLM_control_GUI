@@ -145,12 +145,11 @@ ao_temp.intensity_x_all = cell(num_iter,1);
 ao_temp.intensity_all = cell(num_iter,1);
 ao_temp.iter_filled = false(num_iter,1);
 
-
 ao_temp.AO_corrections_all = cell(num_iter, 1);
 ao_temp.good_correction = false(num_iter, 1);
 
 num_refocus_scan = num_scans_done - ao_params.refocus_every - 1; % to do it on first iteration
-num_iter_intens_scan = num_scans_done - ao_params.refocus_every -1;
+num_corr_scan = num_scans_done - ao_params.refocus_every -1;
 
 step_max = 2^(app.DecresegradntimesEditField.Value);
 make_scan = 1;
@@ -320,6 +319,7 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
     
     %% scan all corrections
     fprintf('Scanning corrections\n')
+    
     if sum(ao_temp.init_AO_correction) == 1
         x_intens_scan = 0:n_it;
         AO_corrections_all2 = [{[1 0]}; ao_temp.AO_corrections_all];
@@ -329,10 +329,11 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
         AO_corrections_all2 = [{[1 0]}; {ao_temp.init_AO_correction}; ao_temp.AO_corrections_all];
         scan_pad = 2;
     end
-        
+    
+    num_corr_scan2 = num_scans_done;
     scan_seq = x_intens_scan' + scan_pad;
-    if or((num_scans_done - num_iter_intens_scan) > ao_params.interate_intens_every, n_it == app.NumiterationsSpinner.Value)
-        num_iter_intens_scan = num_scans_done;
+    if or((num_scans_done - num_corr_scan) > ao_params.interate_intens_every, n_it == app.NumiterationsSpinner.Value)
+        num_corr_scan = num_scans_done;
     else
         scan_seq = scan_seq(end-1:end);
     end
@@ -354,9 +355,12 @@ while and(and(n_it <= num_iter, currentZn <= max_Zn), continue_scan)
     end
     
     [frames, num_scans_done] = f_sg_AO_scan_ao_seq(app, zeros(reg1.SLMm, reg1.SLMn), scan_seq3, num_scans_done, ao_temp);
-
-    intensit = zeros(num_scan_corrections,1);
     
+    % to ignore correction scans in 
+    num_corr_scan = num_corr_scan + num_scans_done - num_corr_scan2;
+    
+    % calculate intensity changes
+    intensit = zeros(num_scan_corrections,1);
     for n_fr = 1:num_scan_corrections
         fr_idx1 = find(scan_seq2 == (x_intens_scan2(n_fr)+scan_pad));
         for n_fr2 = 1:numel(fr_idx1)

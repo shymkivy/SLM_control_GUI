@@ -5,7 +5,8 @@ close all;
 
 fnames = {
           %'zernike_scan_data_5_10_23_15h_8m_z-250.mat';...
-          'zernike_scan_data_5_10_23_23h_16m_z-250.mat';... % 7 order only
+          % 'zernike_scan_data_5_10_23_23h_16m_z-250.mat';... % 7 order only
+          'zernike_scan_data_5_17_23_1h_53m_z-250.mat';...
           %'zernike_scan_data_5_6_23_13h_45m_z-200.mat';...
           'zernike_scan_data_5_11_23_22h_42m_z-200.mat';...
           'zernike_scan_data_5_5_23_22h_40m_z-150.mat';...
@@ -34,7 +35,7 @@ init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_5_16_23';
+save_fname = 'AO_correction_25x_maitai_5_17_23';
 
 
 
