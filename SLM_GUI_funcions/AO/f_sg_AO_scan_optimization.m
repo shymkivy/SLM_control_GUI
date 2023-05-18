@@ -130,8 +130,8 @@ weight_pt = squeeze(sum(sum(pupil_amp.*abs(all_modes_phase(:,:,4:end)),1),2));
 
 figure;
 plot(4:(numel(weight_pt)+3),weight_pt/max(weight_pt))
-title('Correction potential per mode')
-xlabe('mode index')
+title('Correction potential per mode');
+xlabel('mode index');
 %%
 resetCounters(app.DAQ_session);
 app.DAQ_session.outputSingleScan(0);
@@ -522,7 +522,7 @@ plot(corr_final(:,1), corr_final(:,2) - core_init(:,2), '-o')
 title('difference');
 xlabel('modes');
 ylabel('weight change');
-sgtitle([name_tag ' weight changes'])
+sgtitle([name_tag ' weight changes'], 'interpreter', 'none')
 
 save([ao_temp.name_tag_full '.mat'], 'ao_data', '-v7.3');
 saveas(ao_temp.f1,[ao_temp.name_tag_full 'intensity.fig']);
