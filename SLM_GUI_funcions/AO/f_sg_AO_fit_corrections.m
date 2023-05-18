@@ -13,6 +13,7 @@ if isempty(app.modestofitEditField.Value)
 else
     modes_to_fit = f_str_to_array(app.modestofitEditField.Value)';
 end
+
 %%
 fit_params.ignore_sherical = app.IgnoreallsphericalCheckBox.Value;
 fit_params.fit_type = app.FitmethodDropDown.Value;
