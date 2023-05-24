@@ -26,7 +26,8 @@ fnames = {
           'zernike_scan_data_5_11_23_18h_30m_z150.mat'...
           %'zernike_scan_data_5_9_23_15h_25m_z200.mat';...
           %'zernike_scan_data_5_11_23_17h_47m_z200.mat';...
-          'zernike_scan_data_5_13_23_1h_34m_z200.mat';...
+          %'zernike_scan_data_5_13_23_1h_34m_z200.mat';...
+          'zernike_scan_data_5_18_23_22h_11m_z200.mat';...
           %'zernike_scan_data_5_10_23_13h_44m_z250.mat';...
           %'zernike_scan_data_5_10_23_19h_15m_z250.mat';... % 7 order only
           %'zernike_scan_data_5_11_23_16h_5m_z250.mat';...
@@ -35,13 +36,16 @@ fnames = {
           'zernike_scan_data_5_13_23_18h_21m_z250.mat';...
           };
 
-addpath(genpath('C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI_funcions'));
-      
+gui_path = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\';
+addpath(genpath([gui_path '\SLM_GUI_funcions']));
+%addpath(genpath([gui_path '\SLM_calibration_scripts']));
+ 
+
 init_ao_file = 'AO_correction_25x_maitai_4_16_23.mat';
       
 fpath = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\AO_outputs\4_22_23\';
 
-save_fname = 'AO_correction_25x_maitai_5_18_23';
+save_fname = 'AO_correction_25x_maitai_5_19_23';
 
 
 
@@ -101,7 +105,7 @@ save_mode_data = 0;
 
 extra_plots = 0;
 
-z_defocus_correct_thresh = 190;
+z_defocus_correct_thresh = 140;
 
 %%
 ao_init_corr_weights = [1 0];

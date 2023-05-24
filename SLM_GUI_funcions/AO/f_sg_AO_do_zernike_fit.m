@@ -1,5 +1,7 @@
 function AO_correction = f_sg_AO_do_zernike_fit(AO_data, modes_to_fit, params)
 
+num_col_divider = 6;
+
 ao_corr_all = cat(1,AO_data.AO_correction);
 
 max_modes = max(ao_corr_all(:,1));
@@ -88,7 +90,7 @@ for n_mode = 1:numel(modes_to_fit2)
         do_fit = true(numel(z_alls),1);
     end
     if sum(temp_data ~=0)>1
-        leg_all{n_mode} = [num2str(n_mode)];
+        leg_all{n_mode} = ['Z^{' num2str(zernike_nm_all(n_mode,2)) '}_{' num2str(zernike_nm_all(n_mode,1)) '}'];
         has_data(n_mode) = 1;
         [yf, w_fit11, fit_eq] = f_sg_do_fit(z_alls(do_fit), corr_alls(do_fit, mode), params);
         
@@ -114,7 +116,7 @@ if params.plot_corr
     xlabel('z defocus');
     ylabel('weight correction');
     title(sprintf('Mode correction weights, %s; sm=%.4f', params.fit_type, params.spline_smoothing_param));
-    l1.NumColumns = ceil(sum(has_data)/10);
+    l1.NumColumns = ceil(sum(has_data)/num_col_divider);
 end
 if params.plot_extra
     figure(f2)
@@ -122,7 +124,7 @@ if params.plot_extra
     ylabel('fit error')
     l1 = legend([pl2{has_data}], leg_all(has_data));
     title(sprintf('Mode correction w errors, %s; sm=%.4f', params.fit_type, params.spline_smoothing_param));
-    l1.NumColumns = ceil(sum(has_data)/10);
+    l1.NumColumns = ceil(sum(has_data)/num_col_divider);
 end
 %% defocus comp
 
