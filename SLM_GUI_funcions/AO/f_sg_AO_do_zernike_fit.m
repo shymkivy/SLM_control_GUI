@@ -1,5 +1,7 @@
 function AO_correction = f_sg_AO_do_zernike_fit(AO_data, modes_to_fit, params)
 
+use_z_labels = 0;
+
 num_col_divider = 6;
 
 ao_corr_all = cat(1,AO_data.AO_correction);
@@ -90,7 +92,11 @@ for n_mode = 1:numel(modes_to_fit2)
         do_fit = true(numel(z_alls),1);
     end
     if sum(temp_data ~=0)>1
-        leg_all{n_mode} = ['Z^{' num2str(zernike_nm_all(n_mode,2)) '}_{' num2str(zernike_nm_all(n_mode,1)) '}'];
+        if use_z_labels
+            leg_all{n_mode} = ['Z^{' num2str(zernike_nm_all(n_mode,2)) '}_{' num2str(zernike_nm_all(n_mode,1)) '}'];
+        else
+            leg_all{n_mode} = num2str(n_mode);
+        end
         has_data(n_mode) = 1;
         [yf, w_fit11, fit_eq] = f_sg_do_fit(z_alls(do_fit), corr_alls(do_fit, mode), params);
         

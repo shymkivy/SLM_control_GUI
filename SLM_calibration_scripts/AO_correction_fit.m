@@ -36,7 +36,7 @@ fnames = {
           'zernike_scan_data_5_13_23_18h_21m_z250.mat';...
           };
 
-gui_path = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\';
+gui_path = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI\';
 addpath(genpath([gui_path '\SLM_GUI_funcions']));
 %addpath(genpath([gui_path '\SLM_calibration_scripts']));
  
