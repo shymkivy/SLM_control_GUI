@@ -3,8 +3,45 @@
 clear;
 %close all;
 
-data_source = 14;
 
+%% params
+FOV_size = 497; % in um (from prairie2 25x no orb)
+pix = 256;
+zoom = 16;
+dz = 0.1; % in um
+
+FOV_half_size = 30;
+
+min_dist_from_cent = 80;
+
+baceline_prc = 98;
+sm_std3 = [2, 2, 1];
+interp_factor = 5;
+intens_thresh = 0.2;
+
+psf_fit = 'poly1';
+
+min_dist = FOV_half_size * 2.5;
+
+pix_size = FOV_size/zoom/pix;
+
+do_mean = 0;
+
+labs = {'y', 'x', 'z'};
+
+manual_selection = 0;
+
+dims_all = 1:3;
+
+
+plot_deets = 1;
+plot_superdeets = 1;
+
+%%
+
+data_source = 19;
+
+%%
 if data_source == 1
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\etl_psf_prairie1_3_28_23\';
     data_path3 = {100,      'z100_20um_256_32ave-003';...
@@ -270,6 +307,35 @@ elseif data_source == 17
     description = 'SLM AO';
     date_tag = '5_20_23';
 elseif data_source == 18
+    FOV_size = 320;
+    
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_27_23_fianium_no_AO\';
+    data_path3 = {-250,     'PSF_z-250_fianium_stgalvo_16x_4ave-011';...
+                  -200,     'PSF_z-200_fianium_stgalvo_16x_4ave-010';...
+                  -150,     'PSF_z-150_fianium_stgalvo_16x_4ave-009';...
+                  -100,     'PSF_z-100_fianium_stgalvo_16x_4ave-008';...
+                  -50,      'PSF_z-50_fianium_stgalvo_16x_4ave-007';...
+                  0,        'PSF_z0_fianium_stgalvo_16x_4ave-001';...
+                  50,       'PSF_z50_fianium_stgalvo_16x_4ave-002';...
+                  100,      'PSF_z100_fianium_stgalvo_16x_4ave-003';...
+                  150,      'PSF_z150_fianium_stgalvo_16x_4ave-004';...
+                  200,      'PSF_z200_fianium_stgalvo_16x_4ave-005';...
+                  250,      'PSF_z250_fianium_stgalvo_16x_4ave-006';...
+                  };
+              
+    description = 'SLM stim no AO';
+    date_tag = '5_27_23';
+elseif data_source == 19
+    FOV_size = 320;
+    
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_28_23\';
+    data_path3 = {-150,     'PSF_z-150_16x_32ave-001';...
+                  -150,     'PSF_z-150_16x_32ave-002';...
+                  };
+              
+    description = 'SLM AO';
+    date_tag = '5_28_23';
+elseif data_source == 20
     data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\SLM_AO_comb\';
     data_path3 = {
                   % 6
@@ -338,38 +404,9 @@ end
 
 data_path2 = data_path3(:,2);
 z_loc = [data_path3{:,1}];
-%%
-FOV_size = 497; % in um (from prairie2 25x no orb)
-pix = 256;
-zoom = 16;
-dz = 0.1; % in um
 
-FOV_half_size = 30;
-
-min_dist_from_cent = 80;
-
-baceline_prc = 98;
-sm_std3 = [2, 2, 1];
-interp_factor = 5;
-intens_thresh = 0.2;
-
-psf_fit = 'poly1';
-
-min_dist = FOV_half_size * 2.5;
-
-pix_size = FOV_size/zoom/pix;
-
-do_mean = 0;
-
-labs = {'y', 'x', 'z'};
-
-manual_selection = 0;
-
-dims_all = 1:3;
 %%
 
-plot_deets = 0;
-plot_superdeets = 0;
 
 num_fil = numel(data_path2);
 
