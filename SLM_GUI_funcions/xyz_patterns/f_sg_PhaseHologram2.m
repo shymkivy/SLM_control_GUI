@@ -37,7 +37,7 @@ for idx=1:num_pts
     f_obj_corr = f_obj + z;
     alpha_corr = atan(tan(alpha)*f_obj/f_obj_corr);
     NA_corr = reg_params.objective_RI * sin(alpha_corr);
-    reg_params2.effective_NA = NA_corr;
+    %reg_params2.effective_NA = NA_corr;
     
     na_corr_all(idx) = NA_corr;
     
