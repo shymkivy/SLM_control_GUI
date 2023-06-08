@@ -95,7 +95,7 @@ for n_mode = 1:numel(modes_to_fit2)
         if use_z_labels
             leg_all{n_mode} = ['Z^{' num2str(zernike_nm_all(n_mode,2)) '}_{' num2str(zernike_nm_all(n_mode,1)) '}'];
         else
-            leg_all{n_mode} = num2str(n_mode);
+            leg_all{n_mode} = num2str(n_mode-1);
         end
         has_data(n_mode) = 1;
         [yf, w_fit11, fit_eq] = f_sg_do_fit(z_alls(do_fit), corr_alls(do_fit, mode), params);
