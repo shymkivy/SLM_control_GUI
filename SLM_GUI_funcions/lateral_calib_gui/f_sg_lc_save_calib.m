@@ -88,7 +88,51 @@ xyz_affine_calib.calib_ops = calib_ops;
 
 % check
 %input_coords*xyz_affine_tf_mat;
+%% plot 
 
+save_fname = app.calibfilenameEditField.Value;
+
+is_x = input_xy(:,1) ~= 0;
+zero_zero = and(input_xy(:,1) == 0, input_xy(:,2) == 0);
+
+is_x2 = or(is_x, zero_zero);
+
+input_x = input_xy(is_x2,:);
+disp_x = disp_xy(is_x2,:);
+
+input1x = input_x(:,1);
+target1x = disp_x(:,1);
+
+yfx = fit(input1x, target1x, 'poly1');
+input2x = min(input1x):max(input1x);
+
+is_y = input_xy(:,2) ~= 0;
+
+zero_zero = and(input_xy(:,1) == 0, input_xy(:,2) == 0);
+
+is_y2 = or(is_y, zero_zero);
+
+input_y = input_xy(is_y2,:);
+disp_y = disp_xy(is_y2,:);
+
+input1y = input_y(:,2);
+target1y = disp_y(:,2);
+
+yfy = fit(input1y, target1y, 'poly1');
+input2y = min(input1y):max(input1y);
+
+figure; hold on;
+plot(input1x, target1x, 'ro');
+plot(input2x, yfx(input2x), 'r--');
+plot(input1y, target1y, 'go');
+plot(input2y, yfy(input2y), 'g--');
+xlabel('Input coord');
+ylabel('Output coord');
+title(['lateral calibration; ' save_fname], 'interpreter', 'none');
+legend('X data', 'X linear fit', 'Y data', 'Y linear fit')
+
+
+%%
 save_path = app.imagedirEditField.Value;
 save_fname = app.calibfilenameEditField.Value;
 

@@ -6,7 +6,7 @@ clear;
 
 %%
 
-data_source = 17;
+data_source = 15;
 
 %% params
 FOV_size = 497; % in um (from prairie2 25x no orb)
@@ -17,6 +17,7 @@ dz = 0.1; % in um
 FOV_half_size = 30;
 
 min_dist_from_cent = 80;
+clear_edge_dist = 50;
 
 baceline_prc = 98;
 sm_std3 = [2, 2, 1];
@@ -25,7 +26,7 @@ intens_thresh = 0.2;
 
 psf_fit = 'poly1';
 
-min_dist = FOV_half_size * 2.5;
+min_dist = FOV_half_size * 2;
 
 pix_size = FOV_size/zoom/pix;
 
@@ -40,8 +41,6 @@ dims_all = 1:3;
 
 plot_deets = 0;
 plot_superdeets = 0;
-
-
 
 %%
 if data_source == 1
@@ -450,6 +449,24 @@ elseif data_source == 22
               
     description = 'SLM AO';
     date_tag = '5_29_23';
+elseif data_source == 23
+    FOV_size = 320;
+    
+    data_path = 'C:\Users\ys2605\Desktop\stuff\data\PSF_data\SLM_25x_AO\5_30_23\';
+    data_path3 = {
+                  250,      'PSF_z250_16x_32ave-007';...
+                  250,      'PSF_z250_16x_32ave-008';...
+                  250,      'PSF_z250_16x_32ave-009';...
+                  %50,     'PSF_z50_16x_32ave-001';...
+                  %50,     'PSF_z50_16x_32ave-002';...
+                  %50,     'PSF_z50_16x_32ave-003';...
+                  50,       'PSF_z50_16x_32ave-004';...
+                  50,       'PSF_z50_16x_32ave-005';...
+                  50,       'PSF_z50_16x_32ave-006';...
+                  };
+              
+    description = 'SLM AO';
+    date_tag = '5_30_23';
 end
 
 data_path2 = data_path3(:,2);
@@ -463,7 +480,7 @@ addpath(genpath([gui_path '\SLM_GUI_funcions']));
 %%
 num_fil = numel(data_path2);
 
-
+points_removed_clust = 0;
 
 z_loc2 = unique(z_loc);
 num_loc = numel(z_loc2);
@@ -473,6 +490,24 @@ points_all = cell(num_loc,1);
 fwhm_all = cell(num_loc,1);
 intensity_5pct = cell(num_loc,1);
 intensity_mean_max_max = cell(num_loc,1);
+
+% model k means in gauss data
+
+
+datam = randn([1000,2]);
+%figure; scatter(datam(:,1), datam(:,2))     
+num_clust_check = 5;
+dist_shuff = zeros(1, num_clust_check);
+for n_k = 1:num_clust_check
+    [idx1,C1,sumD1, D1] = kmeans(datam, n_k);
+    
+    d2 = zeros(n_k,1);
+    for nk2 = 1:n_k
+        d2(nk2) = mean(sqrt(D1(idx1==nk2,nk2)));
+    end
+    dist_shuff(n_k) = mean(d2);
+end
+
 
 for n_loc = 1:num_loc
 
@@ -510,10 +545,15 @@ for n_loc = 1:num_loc
         else
             mean_frame = mean(data,3);
 
-            base = mean(mean_frame(:));
-            std1 = std(mean_frame(:));
-
             mean_frame2 = mean_frame;
+
+            % clear edges
+            mean_frame2(:, 1:clear_edge_dist) = 0;
+            mean_frame2(:, (end-clear_edge_dist):end) = 0;
+
+            base = mean(mean_frame2(mean_frame2~=0));
+            std1 = std(mean_frame2(mean_frame2~=0));
+
             look = 1;
             while look
                 [val1, idx1] = max(mean_frame2(:));
@@ -583,11 +623,12 @@ for n_loc = 1:num_loc
     num_pts = numel(points_all2);
     
     if ~num_pts
-        1
+        fprintf("did not find any points; %s", data_path2{n_fil2})
     end
     fwhm_all2 = zeros(num_pts,3);
     intensity_5pct2 = zeros(num_pts,1);
     intensity_mean_max_max2 = zeros(num_pts,1);
+    keep_point = true(num_pts,1);
     for n_pt = 1:num_pts
         
         name_tag_pt = sprintf('z %d; point %d; %s fit;', z_loc(n_loc), n_pt, psf_fit);
@@ -608,6 +649,37 @@ for n_loc = 1:num_loc
         x_max = min(coord1(2) + FOV_half_size, x1);
         
         data_cut = data3(y_min:y_max, x_min:x_max,:);
+        
+        mean_cut = mean(data_cut,3);
+
+        cut_val = prctile(mean_cut(:), 99);
+        
+        [row1, col1] = ind2sub([FOV_half_size*2+1, FOV_half_size*2+1], find(mean_cut>cut_val));
+        
+        num_pts = numel(row1);
+
+        dist_all = zeros(1, num_clust_check);
+        for n_k = 1:num_clust_check
+            [idx1,C1,sumD1, D1] = kmeans([row1, col1], n_k);
+            
+            
+            d2 = zeros(n_k,1);
+            for nk2 = 1:n_k
+                d2(nk2) = mean(sqrt(D1(idx1==nk2,nk2)));
+            end
+
+            dist_all(n_k) = mean(d2);
+        end
+        
+        [yf1,gof,output] = fit(dist_shuff', dist_all', 'poly1');
+        
+        if gof.rsquare > 0.9
+            title_tag5 = sprintf('one point, rsq = %.2f', gof.rsquare);
+        else
+            keep_point(n_pt) = 0;
+            points_removed_clust = points_removed_clust + 1;
+            title_tag5 = sprintf('maybe more than one point, rsq = %.2f', gof.rsquare);
+        end
         
         x = (-FOV_half_size:FOV_half_size)'*pix_size;
         y = (-FOV_half_size:FOV_half_size)'*pix_size;
@@ -643,13 +715,21 @@ for n_loc = 1:num_loc
 
         idx_intens2 = xy_intens > (max_intens*intens_thresh);
         
-        
-        
         zfit = (1:num_z)';
         yfx = fit(zfit(idx_intens2), xy_locs2(idx_intens2,1), psf_fit);
         yfy = fit(zfit(idx_intens2), xy_locs2(idx_intens2,2), psf_fit);
         
         if plot_deets
+            figure;
+            subplot(2,1,1);
+            scatter(row1, col1)
+            subplot(2,1,2); hold on;
+            plot(dist_shuff, dist_all)
+            plot(dist_shuff, yf1(dist_shuff))
+            sgtitle(title_tag5)
+
+            figure; imagesc(mean_cut>cut_val)
+
             figure; 
             subplot(2,1,1); hold on;
             plot(zfit, xy_locs2(:,1));
@@ -769,10 +849,11 @@ for n_loc = 1:num_loc
         intensity_mean_max_max2(n_pt) = sum(intens1(:))/6;
         
     end
-    points_all{n_loc} = points_all2;
-    fwhm_all{n_loc} = fwhm_all2;
-    intensity_5pct{n_loc} = intensity_5pct2;
-    intensity_mean_max_max{n_loc} = intensity_mean_max_max2;
+
+    points_all{n_loc} = points_all2(keep_point);
+    fwhm_all{n_loc} = fwhm_all2(keep_point,:);
+    intensity_5pct{n_loc} = intensity_5pct2(keep_point);
+    intensity_mean_max_max{n_loc} = intensity_mean_max_max2(keep_point);
 end
 
 %%
@@ -806,6 +887,7 @@ title(sprintf('%s resolution; %s; %s; source %d', description, date_tag, psf_fit
 xlabel('z offset (um)');
 ylabel('PSF size (um)');
 
+fprintf('nearby points removed with kmeans = %d\n', points_removed_clust)
 
 %%
 data_fwhm.fwhm = fwhm_all;

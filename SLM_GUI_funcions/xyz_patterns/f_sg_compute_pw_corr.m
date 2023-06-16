@@ -32,8 +32,9 @@ if app.ApplyPWcorrectionButton.Value
 %             pw_data_sm = f_smooth_nd(pw_data, pw_params.smooth_std);
             
             % pad data
-            pw_data_pad = padarray(pw_data,[1 1],'replicate','both');
-            
+            %pw_data_pad = padarray(pw_data,[1 1],'replicate','both');
+            pw_data_pad = f_pad_matrix(pw_data, 1, 1);
+
             half_fov = ceil(app.FOVsizeumEditField.Value/2);
             
             if min(coords_x) > -half_fov
@@ -98,6 +99,12 @@ if app.ApplyPWcorrectionButton.Value
                 imagesc(coords_y_ip, coords_x_ip, pw_data_ipn); caxis([0 1]); axis equal tight
                 title(sprintf('data interp, thresh=%.1f', pw_params.min_w_thesh));
                 sgtitle(reg_params.reg_name)
+
+                figure;
+                imagesc(coords_y, coords_x, pw_data); caxis([0 1]); axis equal tight
+                title('data raw');
+
+
             end
         end
     end

@@ -1,8 +1,8 @@
 
 % fianium at NAeff 0.565 (i think)
-% SLM_loc = [-250, -200, -150, -100, -50, 0, 50, 100, 150, 200, 250];
+SLM_loc = [-250, -200, -150, -100, -50, 0, 50, 100, 150, 200, 250];
 % 
-% no_corr_loc = [239, 190, 143, 95, 49, 0, -48, -97, -146, -192, -241];
+no_corr_loc = [239, 190, 143, 95, 49, 0, -48, -97, -146, -192, -241];
 % corr_loc = [256, 200, 148, 98, 48, 0, -48, -95, -141, -184, -228];
 
 % maitai at NAeff 0.5
@@ -24,6 +24,14 @@ plot(z_loc2, -yf(z_loc2))
 plot(SLM_loc, -corr_loc, 'o')
 plot(z_loc2, -yf_corr(z_loc2))
 legend('no corr', 'no corr fit', 'corr', 'corr fit')
+
+figure; hold on
+plot(SLM_loc, -no_corr_loc, 'ro')
+plot(z_loc2, -yf(z_loc2), 'r--')
+legend('Z data', 'Z linear fit')
+xlabel('Input coord');
+ylabel('Output coord');
+title('axial calibration');
 
 figure; plot(no_corr_loc' - yf(SLM_loc))
 
