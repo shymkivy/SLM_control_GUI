@@ -54,7 +54,7 @@ end
 
 %%
 
-app.GenXYZpatmethodDropDown.Items = {'Synthesis', 'GS Meadowlark', 'global GS', 'synthesis_LW', 'global_GS_LW', 'NOVO_CGH_LW'};
+app.GenXYZpatmethodDropDown.Items = {'superposition', 'global_GS_Meadowlark', 'global_GS', 'superposition_LW', 'global_GS_LW', 'NOVO_CGH_VarI_LW', 'NOVO_CGH_VarIEuclid_LW', 'NOVO_CGH_2PEuclid_LW'};
 app.ImageGenverEditField.Value = 'none';
 
 AO_params = app.SLM_ops.AO_params;
