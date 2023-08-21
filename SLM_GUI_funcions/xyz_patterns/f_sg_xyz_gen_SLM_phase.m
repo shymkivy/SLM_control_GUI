@@ -38,10 +38,9 @@ if strcmpi(method, 'Superposition')
     SLM_phase_corr = angle(complex_exp_corr);
 
 elseif strcmpi(method, 'global_GS_Meadowlark')
+    % no AO possible
     SLM_phase = f_sg_xyz_gen_holo_MGS(app, coord_corr, reg1);
-
     SLM_phase_corr = SLM_phase;
-    
 else
     
     % make input image from points
@@ -88,7 +87,7 @@ else
         amp_fac = siz*siz;
     
         % stragegy 1 is to make points holograms, then multiply by disk holo
-        complex_pts = fftshift(ifft2(ifftshift(mask_all_pts(:,:,1))));
+        complex_pts = fftshift(ifft2(ifftshift(mask_all(:,:,1))));
         complex_disk = fftshift(ifft2(ifftshift(mask_disk)));
         complex1 = complex_pts.*complex_disk*amp_fac;
         
