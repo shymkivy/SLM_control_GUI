@@ -56,6 +56,5 @@ region_obj_params.n_idx = n_idx;
 region_obj_params.holo_mask = holo_mask;
 region_obj_params.objective_RI = app.ObjectiveRIEditField.Value;
 region_obj_params.tube_length = app.TubelengthEditField.Value;
-region_obj_params.sim_pixel_crosstalk = app.SimulatepixelcrosstalkCheckBox.Value;
-region_obj_params.sim_smooth_std = f_str_to_array(app.XYsmoothstdpixEditField.Value);
+
 end

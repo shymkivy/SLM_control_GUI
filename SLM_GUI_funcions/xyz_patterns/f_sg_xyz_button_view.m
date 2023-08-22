@@ -20,7 +20,7 @@ if ~isempty(coord)
     %% generate holo (need to apply AO separately for each) 
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, app.GenXYZpatmethodDropDown.Value);
+    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_corr, reg1, 0, app.XYZpatalgotithmDropDown.Value);
     
 %     coord0.xyzp = [0 0 0];
 %     coord0.weight = 1;         
@@ -106,14 +106,14 @@ if ~isempty(coord)
     
     if strcmpi(view_out, 'phase')
         f_sg_view_hologram_phase(app, SLM_phase_full);
-        title(sprintf('%s defocus %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
+        title(sprintf('%s defocus %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.XYZpatalgotithmDropDown.Value), 'interpreter', 'none');
     elseif strcmpi(view_out, 'fft')
-        [im_amp, x_lab, y_lab] = f_sg_compute_holo_fft(reg1, SLM_phase, app.fftdefocusumEditField.Value);
+        [im_amp, x_lab, y_lab] = f_sg_compute_holo_fft(reg1, SLM_phase, app.fftdefocusumEditField.Value, [], app.UsegaussianbeamampCheckBox.Value);
         if app.fftampsquaredCheckBox.Value
             im_amp = im_amp.^2;
         end
         f_sg_view_hologram_fft(app, im_amp, x_lab, y_lab);
-        title(sprintf('%s PSF at %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.GenXYZpatmethodDropDown.Value), 'interpreter', 'none');
+        title(sprintf('%s PSF at %.1f um; %s', view_source, app.fftdefocusumEditField.Value, app.XYZpatalgotithmDropDown.Value), 'interpreter', 'none');
     end
 end
 

@@ -4,9 +4,9 @@ if strcmp(from_where, 'custom')
     X_disp = f_str_to_array(app.XdisplacementEditField.Value);
     Y_disp = f_str_to_array(app.YdisplacementEditField.Value);
     Z_disp = f_str_to_array(app.ZoffsetumEditField.Value);
-    W = f_str_to_array(app.WeightEditField.Value);
+    I_targ = f_str_to_array(app.IntensitytargetEditFieldLabel.Value);
     
-    max_len = max([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(W)]);
+    max_len = max([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(I_targ)]);
     
     if max_len > 1
         if numel(X_disp) == 1
@@ -18,26 +18,26 @@ if strcmp(from_where, 'custom')
         if numel(Z_disp) == 1
             Z_disp = ones(max_len,1)*Z_disp;
         end
-        if numel(W) == 1
-            W = ones(max_len,1)*W;
+        if numel(I_targ) == 1
+            I_targ = ones(max_len,1)*I_targ;
         end
     end
     
-    min_len = min([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(W)]);
+    min_len = min([numel(X_disp), numel(Y_disp), numel(Z_disp), numel(I_targ)]);
     
     if min_len < max_len
         X_disp = X_disp(1:min_len);
         Y_disp = Y_disp(1:min_len);
         Z_disp = Z_disp(1:min_len);
-        W = W(1:min_len);
+        I_targ = I_targ(1:min_len);
     end
     
     coord.xyzp = [X_disp,...
                   Y_disp,...
                   Z_disp];
 
-    coord.weight = W;
-    coord.weight_set = W;
+    coord.I_targ = I_targ;
+    
 
 elseif strcmp(from_where, 'table_selection')
     if ~isempty(app.UIImagePhaseTable.Data)
@@ -46,9 +46,7 @@ elseif strcmp(from_where, 'table_selection')
         
         coord.idx = tab_data.Idx;
         coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
-        coord.weight = tab_data.W_est;
-        coord.weight_set = tab_data.W_set;
-
+        coord.I_targ = tab_data.I_targ;
     else
         coord = [];
     end
@@ -64,9 +62,7 @@ elseif strcmp(from_where, 'pattern')
             
             coord.idx = tab_data2.Idx;
             coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
-            coord.weight = tab_data2.W_est;
-            coord.weight_set = tab_data2.W_set;
-            
+            coord.I_targ = tab_data2.I_targ;
         else
             coord = [];
         end
@@ -75,9 +71,14 @@ elseif strcmp(from_where, 'pattern')
     end
 elseif strcmp(from_where, 'zero')
     coord.xyzp = [0, 0, 0];
-    coord.weight = 1;
-    coord.weight_set = 1;
+    coord.I_targ = 1;
 end
 
+if app.I2target2PCheckBox.Value
+    coord.I_targ1P = sqrt(coord.I_targ);
+else
+    coord.I_targ1P = coord.I_targ;
+end
+coord.W_est = coord.I_targ1P;
 
 end

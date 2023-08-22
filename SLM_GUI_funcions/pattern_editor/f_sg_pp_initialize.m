@@ -53,6 +53,14 @@ app.data.plot_points.YData = [];
 %app.UIFigure.ButtonDownFcn = @(source,event)f_sg_pp_button_down(app,event);
 app.data.plot_points.ButtonDownFcn = @(source,event)f_sg_pp_button_down_line(app,event);
 app.data.plot_im.ButtonDownFcn = @(source,event)f_sg_pp_button_down(app,event);
+
+if ~isempty(app.app_main.UIImagePhaseTable.Data)
+    tab_sel = app.app_main.UIImagePhaseTableSelection;
+    if size(tab_sel,1) > 0
+        app.ZdepthSpinner.Value = app.app_main.UIImagePhaseTable.Data.Z(tab_sel(1));
+        app.PatternSpinner.Value = app.app_main.UIImagePhaseTable.Data.Pattern(tab_sel(1));
+    end
+end
 %%
 f_sg_pp_update_pat_plot(app);
 f_sg_pp_update_bkg_im(app);

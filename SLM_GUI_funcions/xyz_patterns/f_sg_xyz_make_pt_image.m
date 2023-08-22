@@ -9,7 +9,6 @@ end
 
 z_all = unique(coord_corr.xyzp(:,3));
 num_z = numel(z_all);
-siz = max(reg1.SLMm, reg1.SLMn);
 
 FOV_size = reg1.FOV_size;
 
@@ -19,9 +18,7 @@ FOV_size = reg1.FOV_size;
 
 x_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMn);
 y_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMm);
-
 [X,Y] = meshgrid(x_coord,y_coord);
-
 xy_coord = [X(:), Y(:)];
 
 % mask_disk = zeros(siz, siz);
@@ -32,7 +29,9 @@ xy_coord = [X(:), Y(:)];
 mask_all = zeros(reg1.SLMm, reg1.SLMn, num_z);
 
 for n_z = 1:num_z
-    xyzp2 = coord_corr.xyzp(coord_corr.xyzp(:,3) == z_all(n_z),:);
+    idx1 = coord_corr.xyzp(:,3) == z_all(n_z);
+    xyzp2 = coord_corr.xyzp(idx1,:);
+    I1P = coord_corr.I_targ1P(idx1);
     num_pts2 = size(xyzp2,1);
     for n_pt = 1:num_pts2
         temp_fr = mask_all(:,:,n_z);
@@ -40,11 +39,11 @@ for n_z = 1:num_z
         euc_dist = sqrt(sum((xyzp3(1:2) - xy_coord).^2,2));
         [~, idx_cent] = min(euc_dist);
         
-        temp_fr(idx_cent) = 1;
+        temp_fr(idx_cent) = I1P(n_pt);
 
         if make_disk
             idx_disc = euc_dist < disc_size;
-            temp_fr(idx_disc) = 1;
+            temp_fr(idx_disc) = I1P(n_pt);
         end
 
         mask_all(:,:,n_z) = temp_fr;

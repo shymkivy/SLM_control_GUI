@@ -17,8 +17,8 @@ power_sim = data_w.pt_mags/data_w_zero.pt_mags;
 
 power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
 
-tab_data.Power = power_sim.*power_corr;
+tab_data.I_est = power_sim.*power_corr;
 
-powers_all = tab_data.Power;
+powers_all = tab_data.I_est;
 
 end

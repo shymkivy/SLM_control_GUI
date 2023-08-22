@@ -5,7 +5,7 @@ if ~isempty(coord)
     reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
     %% update slm im
-    [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, app.ApplyAOcorrectionButton.Value, app.GenXYZpatmethodDropDown.Value);
+    [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, app.ApplyAOcorrectionButton.Value, app.XYZpatalgotithmDropDown.Value);
     
     %% apply ZO suppression
     if app.ApplyZOsuppressionButton.Value

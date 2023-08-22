@@ -36,7 +36,7 @@ for n_pat = 1:num_pat
     
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, app.GenXYZpatmethodDropDown.Value);
+    [SLM_phase, ~, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, app.XYZpatalgotithmDropDown.Value);
 
     if reg1.zero_outside_phase_diameter
         SLM_phase(~reg1.holo_mask) = 0;
@@ -47,9 +47,9 @@ for n_pat = 1:num_pat
     power_sim = data_w.pt_mags;%/data_w_zero.pt_mags;
     power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
     
-    tab_data_pat.Power = power_sim.*power_corr;
+    tab_data_pat.I_est = power_sim.*power_corr;
     
-    powers_all{n_pat} = tab_data_pat.Power;
+    powers_all{n_pat} = tab_data_pat.I_est;
     tab_data(tab_data.Pattern == curr_pat,:) = tab_data_pat;
     f_waitbar_update(wb, n_pat/num_pat, 'Updating power...');
 end

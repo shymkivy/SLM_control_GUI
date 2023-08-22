@@ -19,12 +19,11 @@ if apply_AO
 end
 coord_corr_zcomp.xyzp(:,3) = coord_corr_zcomp.xyzp(:,3) + comp_z1;
 
+
 if strcmpi(method, 'Superposition')
     
     holo_phase = f_sg_PhaseHologram2(coord_corr_zcomp, reg1);
-    complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord_corr.weight,[1 1 numel(coord_corr.weight)]),3);
-    SLM_phase = angle(complex_exp);
-
+    
     % add ao corrections
     if apply_AO
         % ao use uncorrected coords
@@ -33,8 +32,32 @@ if strcmpi(method, 'Superposition')
     else
         holo_phase_corr = holo_phase;
     end
+    
+    complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.W_est,[1 1 numel(coord.W_est)]),3);
+    complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord_corr.W_est,[1 1 numel(coord_corr.W_est)]),3);
 
-    complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord_corr.weight,[1 1 numel(coord_corr.weight)]),3);
+    if app.MakedisksCheckBox.Value
+    
+        FOV_size = reg1.FOV_size;
+
+        x_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMn);
+        y_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMm);
+        [X,Y] = meshgrid(x_coord,y_coord);
+        xy_coord = [X(:), Y(:)];
+        
+        mask_disk = zeros(reg1.SLMm, reg1.SLMn);
+        euc_dist_zero = sqrt(sum((xy_coord).^2,2));
+        idx_disc = euc_dist_zero < app.DiskradiusumEditField.Value;
+        mask_disk(idx_disc) = 1;
+        complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk))));
+        
+        %im_amp = abs(fftshift(fft2(complex_disk)).^2);
+        
+        complex_exp = complex_exp.*complex_disk;
+        complex_exp_corr = complex_exp_corr.*complex_disk;
+    end
+    
+    SLM_phase = angle(complex_exp);
     SLM_phase_corr = angle(complex_exp_corr);
 
 elseif strcmpi(method, 'global_GS_Meadowlark')
@@ -44,7 +67,7 @@ elseif strcmpi(method, 'global_GS_Meadowlark')
 else
     
     % make input image from points
-    mask_all = f_sg_xyz_make_pt_image(reg1, coord_corr, 0);
+    mask_all = f_sg_xyz_make_pt_image(reg1, coord_corr, app.MakedisksCheckBox.Value, app.DiskradiusumEditField.Value);
     
     % make defocus 
     
@@ -77,7 +100,8 @@ else
     System.useGPU = 0;          % 1 or 0    Use GPU to accelerate computation. Effective when Nx, Ny is large (e.g. 600*800).
     System.maxiter = 50;        % int       Number of iterations (for all methods explored)
     System.GSoffset = 0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
-    System.source = (1/(reg1.SLMm * reg1.SLMn))*ones(reg1.SLMm, reg1.SLMn);
+    
+    System.source = f_sg_get_beam_amp(reg1, app.UsegaussianbeamampCheckBox.Value);
 
     NovoCGHOptions.HighThreshold = 0.5;
     NovoCGHOptions.LowThreshold = 0.1;
@@ -122,7 +146,7 @@ else
         Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_all);
         SLM_phase_corr = Hologram.phase;
     elseif strcmpi(method, 'NOVO_CGH_2PEuclid_LW')
-        Hologram = function_NOVO_CGH_TPEuclid( System, defocus_cpx, mask_all, z_all);
+        Hologram = function_NOVO_CGH_TPEuclid(System, defocus_cpx, mask_all.^2, z_all);
         SLM_phase_corr = Hologram.phase;
     end
     SLM_phase = SLM_phase_corr;
