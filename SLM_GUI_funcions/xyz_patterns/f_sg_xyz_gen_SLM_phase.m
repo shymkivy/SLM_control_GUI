@@ -49,7 +49,10 @@ if strcmpi(method, 'Superposition')
         euc_dist_zero = sqrt(sum((xy_coord).^2,2));
         idx_disc = euc_dist_zero < app.DiskradiusumEditField.Value;
         mask_disk(idx_disc) = 1;
-        complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk))));
+        mask_disk = mask_disk/sum(mask_disk(:));
+
+        %complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk))));
+        complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk).*exp(1i*2*pi*randn(reg1.SLMm, reg1.SLMn)))));
         
         %im_amp = abs(fftshift(fft2(complex_disk)).^2);
         
@@ -99,7 +102,7 @@ else
     System.verbose=1;           % 1 or 0    Set this value to 1 to display activity, 0 otherwise
     System.useGPU = 0;          % 1 or 0    Use GPU to accelerate computation. Effective when Nx, Ny is large (e.g. 600*800).
     System.maxiter = 50;        % int       Number of iterations (for all methods explored)
-    System.GSoffset = 0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
+    System.GSoffset = 0;%0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
     
     System.source = f_sg_get_beam_amp(reg1, app.UsegaussianbeamampCheckBox.Value);
 

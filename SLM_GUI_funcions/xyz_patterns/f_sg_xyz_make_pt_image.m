@@ -10,14 +10,15 @@ end
 z_all = unique(coord_corr.xyzp(:,3));
 num_z = numel(z_all);
 
-FOV_size = reg1.FOV_size;
+% express in terms of SLM pix freq
+ph_d = reg1.phase_diameter;
+x_coord = round(((1:reg1.SLMn)-(reg1.SLMn/2)-1)/2/reg1.SLMn*ph_d,2);
+y_coord = round(((1:reg1.SLMm)-(reg1.SLMm/2)-1)/2/reg1.SLMm*ph_d,2);
 
-%ph_d = reg1.phase_diameter;
-%x_coord = round(((1:siz)-(siz/2)-1)/2/siz*ph_d,2);
-%y_coord = round(((1:siz)-(siz/2)-1)/2/siz*ph_d,2);
+% FOV_size = reg1.FOV_size;
+% x_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMn);
+% y_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMm);
 
-x_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMn);
-y_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMm);
 [X,Y] = meshgrid(x_coord,y_coord);
 xy_coord = [X(:), Y(:)];
 

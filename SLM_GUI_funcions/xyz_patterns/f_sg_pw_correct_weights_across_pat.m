@@ -18,7 +18,7 @@ reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 % data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
 
 coord_bd.xyzp = [reg1.beam_dump_xy 0];
-coord_bd.weight = 0;
+coord_bd.W_esst = 0;
 [holo_phase_bd, coord_bd_corr] = f_sg_xyz_gen_holo(coord_bd, reg1);
     
 % find zeros and remove
@@ -28,9 +28,14 @@ tab_data_bd = tab_data_full(beam_dump_idx,:);
 
 all_pat = unique(tab_data.Pattern);
 
-[~, min_pow_idx] = min(tab_data.Power);
+I_norm = tab_data.I_est./tab_data.I_targ;
+
+[~, min_pow_idx] = min(I_norm);
+
+% need to adjust by targets and 
+
 tab_data_target = tab_data;
-tab_data_target.Power = ones(numel(tab_data_target.Power),1)*tab_data.Power(min_pow_idx);
+I_targ_all = ones(numel(I_norm),1)*I_norm(min_pow_idx).*tab_data.I_targ;
 
 power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, [tab_data.X, tab_data.Y]);
 tab_data_target_pre_corr = tab_data_target;

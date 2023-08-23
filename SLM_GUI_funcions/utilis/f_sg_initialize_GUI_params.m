@@ -54,7 +54,7 @@ end
 
 %%
 
-app.XYZpatalgotithmDropDown.Items = {'superposition', 'global_GS_Meadowlark', 'global_GS', 'superposition_LW', 'global_GS_LW', 'NOVO_CGH_VarI_LW', 'NOVO_CGH_VarIEuclid_LW', 'NOVO_CGH_2PEuclid_LW'};
+app.XYZpatalgotithmDropDown.Items = {'superposition', 'global_GS_Meadowlark', 'superposition_LW', 'global_GS_LW', 'NOVO_CGH_VarI_LW', 'NOVO_CGH_VarIEuclid_LW', 'NOVO_CGH_2PEuclid_LW'}; % , 'global_GS'
 app.ImageGenverEditField.Value = 'none';
 
 AO_params = app.SLM_ops.AO_params;

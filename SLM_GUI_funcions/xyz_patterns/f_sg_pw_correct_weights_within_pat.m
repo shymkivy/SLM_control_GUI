@@ -20,42 +20,49 @@ for n_pat = 1:num_pat
     curr_pat = all_pat(n_pat);
     tab_pat = tab_data(tab_data.Pattern == curr_pat,:);
 
-    coord.xyzp = [tab_pat.X tab_pat.Y tab_pat.Z];
-    coord.weight = tab_pat.W_est;
-    coord.weight_set = tab_pat.W_set;
+    coord.idx = tab_pat.Idx;
+    coord.xyzp = [tab_pat.X, tab_pat.Y, tab_pat.Z];
+    coord.I_targ = tab_pat.I_targ;
+    if app.I_targI22PCheckBox.Value
+        coord.I_targ1P = sqrt(coord.I_targ);
+    else
+        coord.I_targ1P = coord.I_targ;
+    end
+    coord.W_est = tab_pat.W_est;
     
     beam_dump_idx = and(and(tab_pat.X == reg1.beam_dump_xy(1), tab_pat.Y == reg1.beam_dump_xy(2)), tab_pat.Z == 0);
     
-    coord.weight(beam_dump_idx) = 0;
-    coord.weight_set(beam_dump_idx) = 0;
+    coord.I_targ(beam_dump_idx) = 0;
+    coord.I_targ1P(beam_dump_idx) = 0;
+    coord.W_est(beam_dump_idx) = 0;
     
     power_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));
     
     coord_corr = f_sg_coord_correct(reg1, coord);
     
-    [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, 'synthesis');
+    [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, 'Superposition');
     
     %[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
-    I_target = coord.weight_set./power_corr;
-    w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target);
+    I_target = coord.I_targ;
+    w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, app.PlotwoptimizationCheckBox.Value);
  
     %I_target = coord.weight_set(~beam_dump_idx)./power_corr(~beam_dump_idx);
     %w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, beam_dump_idx);
 
     tab_pat.W_est = w_out.w_final;
-    tab_pat.Power = w_out.I_final.*power_corr;
+    tab_pat.I_est = w_out.I_final.*power_corr;
     
     tab_data(tab_data.Pattern == all_pat(n_pat),:) = tab_pat;
     f_waitbar_update(wb, n_pat/num_pat, 'Correcting weights within pat...');
 end
 f_waitbar_close(wb);
 
-for n_pat = 1:numel(all_pat)
-    curr_pat = all_pat(n_pat);
-    pat_idx = tab_data.Pattern == curr_pat;
-    tab_data(pat_idx,:).W_est = tab_data(pat_idx,:).W_est./sum(tab_data(pat_idx,:).W_est);
-end
+% for n_pat = 1:numel(all_pat)
+%     curr_pat = all_pat(n_pat);
+%     pat_idx = tab_data.Pattern == curr_pat;
+%     tab_data(pat_idx,:).W_est = tab_data(pat_idx,:).W_est./sum(tab_data(pat_idx,:).W_est);
+% end
 app.UIImagePhaseTable.Data = tab_data;
 
 if isempty(all_pat)

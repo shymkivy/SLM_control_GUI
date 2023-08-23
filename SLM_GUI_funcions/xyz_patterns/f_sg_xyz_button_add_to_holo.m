@@ -12,7 +12,7 @@ end
 coord = f_sg_mpl_get_coords(app, 'custom');
 pat_num = f_str_to_array(app.PatternnumberEditField.Value);
 
-num_rows = numel(coord.weight);
+num_rows = numel(coord.W_est);
 new_row = f_sg_initialize_tabxyz(app, 1);
 
 if num_rows > 1
@@ -42,8 +42,8 @@ if num_rows == numel(pat_num)
             new_row.X = coord.xyzp(n_row,1);
             new_row.Y = coord.xyzp(n_row,2);
             new_row.Z = coord.xyzp(n_row,3);
-            new_row.W_set = coord.weight_set(n_row);
-            new_row.W_est = coord.weight(n_row);
+            new_row.I_targ = coord.I_targ(n_row);
+            new_row.W_est = coord.W_est(n_row);
             
             current_idx = current_idx + 1;
             

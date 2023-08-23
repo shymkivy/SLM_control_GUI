@@ -9,7 +9,6 @@ table_data.Idx = (1:num_rows)';
 table_data.Pattern = (1:num_rows)';
 table_data.I_targ = ones(num_rows,1);
 table_data.I_est = ones(num_rows,1);
-table_data.W_set = ones(num_rows,1);
 table_data.W_est = ones(num_rows,1);
 
 end

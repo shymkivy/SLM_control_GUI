@@ -1,6 +1,6 @@
 function f_sg_initialize_xyz_table(app)
 
-Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'I_targ', 'I_est', 'W_set', 'W_est'};
+Varnames = {'Idx', 'Pattern', 'X', 'Y', 'Z', 'I_targ', 'I_est', 'W_est'};
 app.GUI_ops.table_var_names = Varnames;
 xyz_patterns(1).pat_name = 'Multiplane';
 tab_data = f_sg_initialize_tabxyz(app, 0);

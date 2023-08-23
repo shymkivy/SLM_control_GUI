@@ -1,4 +1,9 @@
-function w_out = f_sg_optimize_phase_w(app, holo_phase, coord, I_target_in, fix_idx)
+function w_out = f_sg_optimize_phase_w(app, holo_phase, coord, I_target_in, plot_stuff, fix_idx)
+
+if ~exist('plot_stuff', 'var')
+    plot_stuff = 0;
+end
+
 
 alpha_start = 1;
 alpha_decrease_factor = .5;
@@ -10,9 +15,8 @@ noise_frac = 0.01;
 
 max_iter = 50;
 
-plot_stuff = 0;
 
-w0 = coord.weight;
+w0 = coord.W_est;
 num_w = numel(w0);
 
 if ~exist('fix_idx', 'var')
@@ -28,7 +32,7 @@ reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 %data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
 
 SLM_phase0 = angle(sum(exp(1i*(holo_phase)).*reshape(w0,[1 1 num_w]),3));
-data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord, app.pointsizepixEditField.Value);
+data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
 
 I_target0 = I_target_in/sum(I_target_in)*sum(data_w0.pt_mags(~fix_idx));
 err0 = mean(abs(I_target0 - data_w0.pt_mags(~fix_idx)));
@@ -43,15 +47,17 @@ I_target = I_target0;
 err_all = [err0; zeros(max_iter,1)];
 alpha_all = [alpha_start; zeros(max_iter,1)];
 tic();
+fprintf('Optimizing over w: step ')
 if err0 > error_final_thresh
     while and(n_it <= max_iter, num_w_mod*err_all(n_it) > error_final_thresh)
+        fprintf('%d ', n_it)
         delta = data_w.pt_mags(~fix_idx) - I_target;
         delta2 = alpha1*delta.*(1 + noise_frac*randn(num_w_mod,1));
         temp_w_mod = w_mod;
         temp_w_mod(~fix_idx) = w_mod(~fix_idx) - delta2;
 
         SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(temp_w_mod,[1 1 num_w]),3));
-        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizepixEditField.Value);
+        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
         
         I_target = I_target_in/sum(I_target_in)*sum(temp_data_w.pt_mags(~fix_idx));
         temp_err = mean(abs(I_target - temp_data_w.pt_mags(~fix_idx)));
@@ -75,6 +81,7 @@ if err0 > error_final_thresh
         n_it = n_it + 1;
     end
 end
+fprintf(' ; Done\n')
 dur1 = toc();
 num_iter = n_it - 1;
 err_all = err_all(1:num_iter+1);
@@ -100,11 +107,13 @@ if plot_stuff
     xlabel('iterations');
 
     figure; hold on;
-    plot(w_out.I_target, 'o-', 'linewidth', 2)
-    plot(w_out.I_final, 'o-.', 'linewidth', 2)
-    plot(data_w0.pt_mags, 'o--', 'linewidth', 2)
+    plot(I_target, 'o-', 'linewidth', 2)
+    plot(data_w0.pt_mags, 'o-.', 'linewidth', 2)
+    plot(w_out.I_final, 'o--', 'linewidth', 2)
+    
+
     xlabel('points')
-    legend('target', 'data w', 'data wo');
+    legend('I target', 'I initial', 'I final');
     title('Intensity profile before and after');
     
 end
