@@ -10,7 +10,13 @@ pt_mags = zeros(size(xyz_temp,1),1);
 
 ph_d = reg1.phase_diameter;
 
-for n_z = 1:numel(all_z)
+num_z = numel(all_z);
+
+z_bkg = zeros(num_z,1);
+z_pts = zeros(num_z,1);
+im_sum = zeros(num_z,1);
+
+for n_z = 1:num_z
     [im_amp, x_coord, y_coord] = f_sg_compute_holo_fft(reg1, SLM_phase, all_z(n_z), [], gauss_input);
     
     if estimate_2p_int
@@ -23,7 +29,7 @@ for n_z = 1:numel(all_z)
     idx1 = xyz_temp(:,3)==all_z(n_z);
     
     xyz_temp2 = xyz_temp(idx1,:);
-    num_pts = sum(idx1);
+    num_pts2 = sum(idx1);
     
     %
     % FOV_size = reg1.FOV_size;
@@ -48,18 +54,27 @@ for n_z = 1:numel(all_z)
     dx = ph_d/2/max([reg1.SLMn, reg1.SLMm]);
     % dx = ph_d/2/reg1.SLMn;
     % dy = ph_d/2/reg1.SLMm;
+    
+    im_amp2 = im_amp;
 
-    idx_all = cell(num_pts,1);
-    pt_mags1 = zeros(num_pts,1);
-    for n_pt = 1:num_pts
+    idx_all = cell(num_pts2,1);
+    pt_mags1 = zeros(num_pts2,1);
+    for n_pt = 1:num_pts2
         euc_dist = sqrt(sum((xyz_temp2(n_pt,1:2) - xy_coord).^2,2));
         idx2 = euc_dist <= dx*point_size;
         pt_mags1(n_pt) = sum(im_amp(idx2));
+        im_amp2(idx2) = 0;
+
         idx_all{n_pt} = idx2;
     end
-
+    
     pt_mags(idx1) = pt_mags1;
     
+    z_pts(n_z) = num_pts2-1;
+    z_bkg(n_z) = sum(im_amp2(:));
+    im_sum(n_z) = sum(im_amp(:));
+
+
     if plot_stuff
         figure; hold on;
         im1 = imagesc(x_coord, y_coord, im_amp);
@@ -78,6 +93,9 @@ data_out.pt_mags = pt_mags(1:end-1);
 data_out.zero_ord_mag = pt_mags(end);
 data_out.coord = coord;
 data_out.zero_zoord = [0 0 0];
+data_out.z_pts = z_pts;
+data_out.z_bkg = z_bkg;
+data_out.im_sum = im_sum;
 
 if plot_stuff
     figure; plot(pt_mags)

@@ -45,7 +45,7 @@ for n_pat = 1:num_pat
     %[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
     I_target = coord.I_targ;
-    w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, app.PlotwoptimizationCheckBox.Value);
+    w_out = f_sg_optimize_phase_w(app, reg1, holo_phase, coord_corr, I_target, app.PlotwoptimizationCheckBox.Value);
  
     %I_target = coord.weight_set(~beam_dump_idx)./power_corr(~beam_dump_idx);
     %w_out = f_sg_optimize_phase_w(app, holo_phase, coord_corr, I_target, beam_dump_idx);

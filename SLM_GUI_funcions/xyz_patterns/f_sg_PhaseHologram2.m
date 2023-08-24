@@ -2,8 +2,8 @@ function holo_phase = f_sg_PhaseHologram2(coord, reg_params)
 % most code here adopted from Weijian Yang slm gui
 
 xyzp = coord.xyzp;
-SLMm = sum(reg_params.m_idx);
-SLMn = sum(reg_params.n_idx);
+SLMm = reg_params.SLMm;
+SLMn = reg_params.SLMn;
 
 if isfield(reg_params, 'phase_diameter')
     phase_diameter = reg_params.phase_diameter;

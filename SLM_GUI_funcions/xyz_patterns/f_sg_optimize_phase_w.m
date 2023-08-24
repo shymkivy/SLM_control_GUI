@@ -1,19 +1,20 @@
-function w_out = f_sg_optimize_phase_w(app, holo_phase, coord, I_target_in, plot_stuff, fix_idx)
+function w_out = f_sg_optimize_phase_w(app, reg1, holo_phase, coord, I_target_in, plot_stuff, fix_idx)
 
 if ~exist('plot_stuff', 'var')
     plot_stuff = 0;
 end
 
+verbose = 0;
 
 alpha_start = 1;
 alpha_decrease_factor = .5;
 alpha_iter_lag = 1;
 alpha_update_err_thesh = 0;
 
-error_final_thresh = 1e-4;
-noise_frac = 0.01;
+error_final_thresh = 0.001; % percent of target
+noise_frac = 0.001;
 
-max_iter = 50;
+max_iter = 10;
 
 
 w0 = coord.W_est;
@@ -25,9 +26,7 @@ end
 
 num_w_mod = sum(~fix_idx);
 
-reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
-
-%coord_zero.xyzp = [0 0 0];
+%coord_zer  o.xyzp = [0 0 0];
 %coord_zero.weight = 0;
 %data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
 
@@ -35,7 +34,8 @@ SLM_phase0 = angle(sum(exp(1i*(holo_phase)).*reshape(w0,[1 1 num_w]),3));
 data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
 
 I_target0 = I_target_in/sum(I_target_in)*sum(data_w0.pt_mags(~fix_idx));
-err0 = mean(abs(I_target0 - data_w0.pt_mags(~fix_idx)));
+mean_targ = mean(I_target0);
+err0 = mean(abs(I_target0 - data_w0.pt_mags(~fix_idx)))/mean_targ;
 
 w_mod = w0;
 data_w = data_w0;
@@ -44,15 +44,20 @@ alpha_iter = 0;
 n_it = 1;
 I_target = I_target0;
 
+
 err_all = [err0; zeros(max_iter,1)];
 alpha_all = [alpha_start; zeros(max_iter,1)];
 tic();
-fprintf('Optimizing over w: step ')
+if verbose
+    fprintf('Optimizing over w: step ')
+end
 if err0 > error_final_thresh
     while and(n_it <= max_iter, num_w_mod*err_all(n_it) > error_final_thresh)
-        fprintf('%d ', n_it)
+        if verbose
+            fprintf('%d ', n_it)
+        end
         delta = data_w.pt_mags(~fix_idx) - I_target;
-        delta2 = alpha1*delta.*(1 + noise_frac*randn(num_w_mod,1));
+        delta2 = alpha1*delta/mean_targ.*(1 + noise_frac*randn(num_w_mod,1));
         temp_w_mod = w_mod;
         temp_w_mod(~fix_idx) = w_mod(~fix_idx) - delta2;
 
@@ -60,7 +65,8 @@ if err0 > error_final_thresh
         temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
         
         I_target = I_target_in/sum(I_target_in)*sum(temp_data_w.pt_mags(~fix_idx));
-        temp_err = mean(abs(I_target - temp_data_w.pt_mags(~fix_idx)));
+        mean_targ = mean(I_target);
+        temp_err = mean(abs(I_target - temp_data_w.pt_mags(~fix_idx)))/mean_targ;
 
         % if error decreases, update w
         if temp_err < err_all(n_it)
@@ -81,7 +87,9 @@ if err0 > error_final_thresh
         n_it = n_it + 1;
     end
 end
-fprintf(' ; Done\n')
+if verbose
+    fprintf(' ; Done\n')
+end
 dur1 = toc();
 num_iter = n_it - 1;
 err_all = err_all(1:num_iter+1);

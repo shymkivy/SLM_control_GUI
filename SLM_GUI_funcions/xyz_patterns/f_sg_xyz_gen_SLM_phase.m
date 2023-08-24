@@ -34,7 +34,11 @@ if strcmpi(method, 'Superposition')
     end
     
     complex_exp = sum(exp(1i*(holo_phase)).*reshape(coord.W_est,[1 1 numel(coord.W_est)]),3);
-    complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord_corr.W_est,[1 1 numel(coord_corr.W_est)]),3);
+    if apply_AO
+        complex_exp_corr = sum(exp(1i*(holo_phase_corr)).*reshape(coord_corr.W_est,[1 1 numel(coord_corr.W_est)]),3);
+    else
+        complex_exp_corr = complex_exp;
+    end
 
     if app.MakedisksCheckBox.Value
     
@@ -61,7 +65,11 @@ if strcmpi(method, 'Superposition')
     end
     
     SLM_phase = angle(complex_exp);
-    SLM_phase_corr = angle(complex_exp_corr);
+    if apply_AO
+        SLM_phase_corr = angle(complex_exp_corr);
+    else
+        SLM_phase_corr = SLM_phase;
+    end
 
 elseif strcmpi(method, 'global_GS_Meadowlark')
     % no AO possible
@@ -99,7 +107,7 @@ else
     % Waller Lab params
     System.Nx = reg1.SLMm;
     System.Ny = reg1.SLMn;
-    System.verbose=1;           % 1 or 0    Set this value to 1 to display activity, 0 otherwise
+    System.verbose=0;           % 1 or 0    Set this value to 1 to display activity, 0 otherwise
     System.useGPU = 0;          % 1 or 0    Use GPU to accelerate computation. Effective when Nx, Ny is large (e.g. 600*800).
     System.maxiter = 50;        % int       Number of iterations (for all methods explored)
     System.GSoffset = 0;%0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
@@ -146,7 +154,7 @@ else
         Hologram = function_NOVO_CGH_VarI( System, defocus_cpx, mask_all, z_all, NovoCGHOptions);
         SLM_phase_corr = Hologram.phase;
     elseif strcmpi(method, 'NOVO_CGH_VarIEuclid_LW')
-        Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_all);
+        Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_all, z_all);
         SLM_phase_corr = Hologram.phase;
     elseif strcmpi(method, 'NOVO_CGH_2PEuclid_LW')
         Hologram = function_NOVO_CGH_TPEuclid(System, defocus_cpx, mask_all.^2, z_all);
