@@ -91,7 +91,7 @@ else
     else
         coord.I_targ1P = coord.I_targ;
     end
-    coord.W_est = coord.I_targ1P;
+    coord.W_est = sqrt(coord.I_targ1P);
 end
 
 

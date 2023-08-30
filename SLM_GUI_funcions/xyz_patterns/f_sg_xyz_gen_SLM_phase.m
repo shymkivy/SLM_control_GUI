@@ -1,6 +1,10 @@
-function [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, apply_AO, method)
+function [SLM_phase, holo_phase, SLM_phase_corr, holo_phase_corr, AO_phase] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, apply_AO, method, phase_synthesis_disk_method)
 
 coord_corr = f_sg_coord_correct(reg1, coord);
+
+if ~exist('phase_synthesis_disk_method', 'var')
+    phase_synthesis_disk_method = 'global_GS_LW';%  FFT, superposition_LW, global_GS_LW, NOVO_CGH_VarI_LW, NOVO_CGH_VarIEuclid_LW, NOVO_CGH_2PEuclid_LW
+end
 
 holo_phase = [];
 holo_phase_corr = [];
@@ -19,6 +23,20 @@ if apply_AO
 end
 coord_corr_zcomp.xyzp(:,3) = coord_corr_zcomp.xyzp(:,3) + comp_z1;
 
+defocus_phase = f_sg_DefocusPhase2(reg1);
+
+% Waller Lab params
+System.Nx = reg1.SLMm;
+System.Ny = reg1.SLMn;
+System.verbose=0;           % 1 or 0    Set this value to 1 to display activity, 0 otherwise
+System.useGPU = 0;          % 1 or 0    Use GPU to accelerate computation. Effective when Nx, Ny is large (e.g. 600*800).
+System.maxiter = 50;        % int       Number of iterations (for all methods explored)
+System.GSoffset = 0;%0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
+
+System.source = f_sg_get_beam_amp(reg1, app.UsegaussianbeamampCheckBox.Value);
+
+NovoCGHOptions.HighThreshold = 0.5;
+NovoCGHOptions.LowThreshold = 0.1;
 
 if strcmpi(method, 'Superposition')
     
@@ -41,27 +59,48 @@ if strcmpi(method, 'Superposition')
     end
 
     if app.MakedisksCheckBox.Value
-    
-        FOV_size = reg1.FOV_size;
-
-        x_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMn);
-        y_coord = linspace(-FOV_size/2, FOV_size/2, reg1.SLMm);
-        [X,Y] = meshgrid(x_coord,y_coord);
-        xy_coord = [X(:), Y(:)];
         
-        mask_disk = zeros(reg1.SLMm, reg1.SLMn);
-        euc_dist_zero = sqrt(sum((xy_coord).^2,2));
-        idx_disc = euc_dist_zero < app.DiskradiusumEditField.Value;
-        mask_disk(idx_disc) = 1;
-        mask_disk = mask_disk/sum(mask_disk(:));
+        coord_zero.xyzp = [0, 0, 0];
+        coord_zero.I_targ1P = 1;
 
-        %complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk))));
-        complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk).*exp(1i*2*pi*randn(reg1.SLMm, reg1.SLMn)))));
-        
+        mask_disk = f_sg_xyz_make_pt_image(reg1, coord_zero, app.MakedisksCheckBox.Value, app.DiskradiusumEditField.Value);
+
+        defocus_cpx = exp(-1i*zeros(reg1.SLMm, reg1.SLMn));
+
+        if strcmpi(phase_synthesis_disk_method, 'FFT')
+            complex_disk = fftshift(ifft2(ifftshift(sqrt(mask_disk).*exp(1i*2*pi*randn(reg1.SLMm, reg1.SLMn)))));
+        else
+            if strcmpi(phase_synthesis_disk_method, 'global_GS_LW')
+                Hologram = function_globalGS(System, defocus_cpx, mask_disk);
+            elseif strcmpi(phase_synthesis_disk_method, 'superposition_LW')
+                Hologram = function_Superposition(System, defocus_cpx, mask_disk);
+            elseif strcmpi(phase_synthesis_disk_method, 'NOVO_CGH_VarI_LW')
+                Hologram = function_NOVO_CGH_VarI( System, defocus_cpx, mask_disk, 0, NovoCGHOptions);
+            elseif strcmpi(phase_synthesis_disk_method, 'NOVO_CGH_VarIEuclid_LW')
+                Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_disk, 0);
+            elseif strcmpi(phase_synthesis_disk_method, 'NOVO_CGH_2PEuclid_LW')
+                Hologram = function_NOVO_CGH_TPEuclid(System, defocus_cpx, mask_disk.^2, 0);
+            end
+            %phase_disk = Hologram.phase;
+            complex_disk = Hologram.hologram;
+        end
         %im_amp = abs(fftshift(fft2(complex_disk)).^2);
-        
+
+        %complex_exp2 = exp(1i*angle(complex_exp)).*complex_disk;
         complex_exp = complex_exp.*complex_disk;
-        complex_exp_corr = complex_exp_corr.*complex_disk;
+        
+        %[im_amp, x_coord, y_coord] = f_sg_compute_holo_fft(reg1, angle(complex_exp2), 0, [], 1);
+        %figure; imagesc(im_amp)
+
+        %complex_exp = complex_exp.*exp(1i*phase_disk);
+        if apply_AO
+            complex_exp_corr = complex_exp_corr.*complex_disk;
+            %complex_exp_corr = complex_exp_corr.*exp(1i*phase_disk);
+        else
+            complex_exp_corr = complex_exp;
+        end
+        
+        
     end
     
     SLM_phase = angle(complex_exp);
@@ -85,7 +124,7 @@ else
     z_all = unique(coord_corr_zcomp.xyzp(:,3));
     num_z = numel(z_all);
     %defocus_phase = f_sg_DefocusPhase(reg_params);
-    defocus_phase = f_sg_DefocusPhase2(reg1);
+    
     defocus_cpx = complex(zeros(reg1.SLMm, reg1.SLMn, num_z));
     
     if apply_AO
@@ -104,18 +143,7 @@ else
     %figure; imagesc(mask_all(:,:,1))
     %figure; imagesc(angle(defocus_cpx(:,:,1)))
     
-    % Waller Lab params
-    System.Nx = reg1.SLMm;
-    System.Ny = reg1.SLMn;
-    System.verbose=0;           % 1 or 0    Set this value to 1 to display activity, 0 otherwise
-    System.useGPU = 0;          % 1 or 0    Use GPU to accelerate computation. Effective when Nx, Ny is large (e.g. 600*800).
-    System.maxiter = 50;        % int       Number of iterations (for all methods explored)
-    System.GSoffset = 0;%0.01;     % float>0   Regularization constant to allow low light background in 3D Gerchberg Saxton algorithms
     
-    System.source = f_sg_get_beam_amp(reg1, app.UsegaussianbeamampCheckBox.Value);
-
-    NovoCGHOptions.HighThreshold = 0.5;
-    NovoCGHOptions.LowThreshold = 0.1;
 
     if strcmpi(method, 'global_GS')
 
@@ -144,20 +172,18 @@ else
         figure(); imagesc(abs(fftshift(fft2(complex_disk))))
         figure(); imagesc(abs(fftshift(fft2(complex_pts(:,:,n_z)))))
 
-    elseif strcmpi(method, 'superposition_LW')
-        Hologram = function_Superposition(System, defocus_cpx, mask_all);
-        SLM_phase_corr = Hologram.phase;
-    elseif strcmpi(method, 'global_GS_LW')
-        Hologram = function_globalGS(System, defocus_cpx, mask_all);
-        SLM_phase_corr = Hologram.phase;
-    elseif strcmpi(method, 'NOVO_CGH_VarI_LW')
-        Hologram = function_NOVO_CGH_VarI( System, defocus_cpx, mask_all, z_all, NovoCGHOptions);
-        SLM_phase_corr = Hologram.phase;
-    elseif strcmpi(method, 'NOVO_CGH_VarIEuclid_LW')
-        Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_all, z_all);
-        SLM_phase_corr = Hologram.phase;
-    elseif strcmpi(method, 'NOVO_CGH_2PEuclid_LW')
-        Hologram = function_NOVO_CGH_TPEuclid(System, defocus_cpx, mask_all.^2, z_all);
+    else
+        if strcmpi(method, 'superposition_LW')
+            Hologram = function_Superposition(System, defocus_cpx, mask_all);
+        elseif strcmpi(method, 'global_GS_LW')
+            Hologram = function_globalGS(System, defocus_cpx, mask_all);
+        elseif strcmpi(method, 'NOVO_CGH_VarI_LW')
+            Hologram = function_NOVO_CGH_VarI( System, defocus_cpx, mask_all, z_all, NovoCGHOptions);
+        elseif strcmpi(method, 'NOVO_CGH_VarIEuclid_LW')
+            Hologram = function_NOVO_CGH_VarIEuclid(System, defocus_cpx, mask_all, z_all);
+        elseif strcmpi(method, 'NOVO_CGH_2PEuclid_LW')
+            Hologram = function_NOVO_CGH_TPEuclid(System, defocus_cpx, mask_all.^2, z_all);
+        end
         SLM_phase_corr = Hologram.phase;
     end
     SLM_phase = SLM_phase_corr;

@@ -6,11 +6,12 @@ end
 
 xyz_temp = [coord.xyzp; [0 0 0]];
 all_z = unique(xyz_temp(:,3));
-pt_mags = zeros(size(xyz_temp,1),1);
 
-ph_d = reg1.phase_diameter;
-
+num_pts = size(xyz_temp,1);
 num_z = numel(all_z);
+
+pt_mags = zeros(num_pts,1);
+pt_abs_err = zeros(num_pts,1);
 
 z_bkg = zeros(num_z,1);
 z_pts = zeros(num_z,1);
@@ -50,25 +51,28 @@ for n_z = 1:num_z
 
     [X,Y] = meshgrid(x_coord,y_coord);
     xy_coord = [X(:), Y(:)];
-    
-    dx = ph_d/2/max([reg1.SLMn, reg1.SLMm]);
-    % dx = ph_d/2/reg1.SLMn;
-    % dy = ph_d/2/reg1.SLMm;
-    
+ 
     im_amp2 = im_amp;
 
     idx_all = cell(num_pts2,1);
     pt_mags1 = zeros(num_pts2,1);
+    pt_abs_err1 = zeros(num_pts2,1);
+
     for n_pt = 1:num_pts2
         euc_dist = sqrt(sum((xyz_temp2(n_pt,1:2) - xy_coord).^2,2));
-        idx2 = euc_dist <= dx*point_size;
-        pt_mags1(n_pt) = sum(im_amp(idx2));
+        idx2 = euc_dist <= point_size;
+        peak_vals = im_amp(idx2);
+        pt_mags1(n_pt) = sum(peak_vals);
+        peak_mean = mean(peak_vals);
+        pt_abs_err1(n_pt) = mean(abs(peak_vals - peak_mean))/peak_mean*100;
+
         im_amp2(idx2) = 0;
 
         idx_all{n_pt} = idx2;
     end
     
     pt_mags(idx1) = pt_mags1;
+    pt_abs_err(idx1) = pt_abs_err1;
     
     z_pts(n_z) = num_pts2-1;
     z_bkg(n_z) = sum(im_amp2(:));
@@ -78,7 +82,7 @@ for n_z = 1:num_z
     if plot_stuff
         figure; hold on;
         im1 = imagesc(x_coord, y_coord, im_amp);
-        for n_pt = 1:num_pts
+        for n_pt = 1:num_pts2
             plot(xy_coord(idx_all{n_pt},1), xy_coord(idx_all{n_pt},2), '.r')
             %rectangle('Position', [xyz_temp2(n_pt,1)-distx/2 xyz_temp2(n_pt,2)-distx/2 2*distx/2 2*distx/2]);
         end
@@ -90,12 +94,14 @@ for n_z = 1:num_z
 end
 
 data_out.pt_mags = pt_mags(1:end-1);
+data_out.pt_abs_err = pt_abs_err(1:end-1);
 data_out.zero_ord_mag = pt_mags(end);
 data_out.coord = coord;
 data_out.zero_zoord = [0 0 0];
 data_out.z_pts = z_pts;
 data_out.z_bkg = z_bkg;
 data_out.im_sum = im_sum;
+
 
 if plot_stuff
     figure; plot(pt_mags)
