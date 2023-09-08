@@ -15,7 +15,7 @@ tab_data_full = app.UIImagePhaseTable.Data;
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 % coord_zero.xyzp = [0 0 0];
 % coord_zero.weight = 0;
-% data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
+% data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizeumEditField.Value);
 
 coord_bd.xyzp = [reg1.beam_dump_xy 0];
 coord_bd.W_esst = 0;

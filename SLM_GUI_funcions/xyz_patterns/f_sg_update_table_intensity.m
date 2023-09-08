@@ -11,7 +11,7 @@ reg1 = f_sg_get_reg_extra_deets(reg1);
 
 %coord_zero.xyzp = [0 0 0];
 %coord_zero.weight = 0;
-%data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
+%data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizeumEditField.Value);
 
 int_all = cell(numel(curr_pat_all),1);
 
@@ -48,7 +48,7 @@ for n_pat = 1:num_pat
         SLM_phase(~reg1.holo_mask) = 0;
     end
     
-    data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord_corr, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value, app.PlotestimationCheckBox.Value);
+    data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord_corr, app.pointsizeumEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value, app.PlotestimationCheckBox.Value);
     
     intens_sim = data_w.pt_mags;%/data_w_zero.pt_mags;
     intens_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, coord.xyzp(:,1:2));

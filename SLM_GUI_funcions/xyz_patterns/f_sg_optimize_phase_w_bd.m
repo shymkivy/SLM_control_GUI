@@ -26,10 +26,10 @@ reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
 coord_zero.xyzp = [0 0 0];
 coord_zero.weight = 0;
-data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
+data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizeumEditField.Value);
 
 SLM_phase0 = angle(sum(exp(1i*(holo_phase2)).*reshape([w0; wbd0],[1 1 num_w+1]),3));
-data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord2, app.pointsizepixEditField.Value);
+data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord2, app.pointsizeumEditField.Value);
 
 I_target0 = I_target_in;
 err0 = mean(abs(I_target0 - data_w0.pt_mags(1:num_w)/data_w_zero.pt_mags));
@@ -55,7 +55,7 @@ if err0 > error_final_thresh
         temp_w_mod_bd = max(temp_w_mod_bd + sum(delta2), 0);
 
         SLM_phase = angle(sum(exp(1i*(holo_phase2)).*reshape([temp_w_mod; temp_w_mod_bd],[1 1 num_w+1]),3));
-        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord2, app.pointsizepixEditField.Value);
+        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord2, app.pointsizeumEditField.Value);
         
         %I_target = I_target_in/sum(I_target_in)*sum(temp_data_w.pt_mags);
         temp_err = mean(abs(I_target - temp_data_w.pt_mags(1:num_w)));

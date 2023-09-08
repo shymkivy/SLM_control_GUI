@@ -51,7 +51,7 @@ if ~isempty(coord)
     %
     %holo_phase0(~reg1.holo_mask) = 0;
     %SLM_phase0 = angle(sum(exp(1i*(holo_phase0)),3));
-    %data_holo0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord0, app.pointsizepixEditField.Value);
+    %data_holo0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord0, app.pointsizeumEditField.Value);
 
     %I_target = ones(numel(coord.weight),1);
     %w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);

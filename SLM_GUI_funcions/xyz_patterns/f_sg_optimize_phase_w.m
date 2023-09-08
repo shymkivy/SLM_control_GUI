@@ -28,10 +28,10 @@ num_w_mod = sum(~fix_idx);
 
 %coord_zer  o.xyzp = [0 0 0];
 %coord_zero.weight = 0;
-%data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizepixEditField.Value);
+%data_w_zero = f_sg_simulate_intensity(reg1, zeros(reg1.SLMm, reg1.SLMn), coord_zero, app.pointsizeumEditField.Value);
 
 SLM_phase0 = angle(sum(exp(1i*(holo_phase)).*reshape(w0,[1 1 num_w]),3));
-data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
+data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord, app.pointsizeumEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
 
 I_target0 = I_target_in/sum(I_target_in)*sum(data_w0.pt_mags(~fix_idx));
 mean_targ = mean(I_target0);
@@ -62,7 +62,7 @@ if err0 > error_final_thresh
         temp_w_mod(~fix_idx) = w_mod(~fix_idx) - delta2;
 
         SLM_phase = angle(sum(exp(1i*(holo_phase)).*reshape(temp_w_mod,[1 1 num_w]),3));
-        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizepixEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
+        temp_data_w = f_sg_simulate_intensity(reg1, SLM_phase, coord, app.pointsizeumEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
         
         I_target = I_target_in/sum(I_target_in)*sum(temp_data_w.pt_mags(~fix_idx));
         mean_targ = mean(I_target);
