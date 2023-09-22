@@ -80,7 +80,7 @@ To start:
 1. Start microscope scan, which will be waiting for trigger
 2. press "Start optimization scan" in SLM_GUI
 
-Associated article:
+#Associated article:
 
 Yuriy Shymkiv and Rafael Yuste, "Aberration-free holographic microscope for simultaneous imaging and stimulation of neuronal populations," Opt. Express 31, 33461-33474 (2023).
 https://doi.org/10.1364/OE.498051
