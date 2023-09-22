@@ -8,12 +8,12 @@ Author: Yuriy Shymkiv, shymkivy@gmail.com
 under construction, please let me know of bugs and errors
 
 # Installation 
-MATLAB 2019 (MATLAB 2020 has issues with updating graphics)
+1. MATLAB 2019-2022 tested (MATLAB 2020 has issues with updating graphics)
 req: image processing toolbox
-1. Meadowlark BLINK software needs to be installed. Our code is  compatible with v4.857 and v3.528 for 1920x1152 SLM, and 3.519 and 4.851 for 512x512 SLM. Note, different blink versions have differences in SDK and require different initialization functions to function.
-2. Download code and run "SLM_control_GUI" from its directory
-3. Modify the "f_SLM_default_ops.m" file with the SLM parameters and calibration inputs to be used
-4. The first time the GUI is run, it will create a SLM Calibration directory, with "Lut_calibration" subdirectory, into which you can place the lut files for your SLM
+2. Meadowlark BLINK software needs to be installed. Our code is  compatible with v4.857 and v3.528 for 1920x1152 SLM, and 3.519 and 4.851 for 512x512 SLM. Note, different blink versions have differences in SDK and require different initialization functions to function.
+3. Download code and run "SLM_control_GUI" from its directory
+4. Modify the "f_SLM_default_ops.m" file with the SLM parameters and calibration inputs to be used
+5. The first time the GUI is run, it will create a SLM Calibration directory, with "Lut_calibration" subdirectory, into which you can place the lut files for your SLM
 
 # Calibrations to do:
 1. Align the laser polarization to SLM
