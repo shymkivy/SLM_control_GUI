@@ -11,7 +11,9 @@ under construction, but sections below work, more or less
 MATLAB 2019 (MATLAB 2020 has issues with updating graphics)
 req: image processing toolbox
 
-Download code and run "SLM_control_GUI" from its directory
+1. Download code and run "SLM_control_GUI" from its directory
+2. Modify the "f_SLM_default_ops.m" file with the SLM parameters and calibration inputs to be used
+3. The first time the GUI is run, it will create a SLM Calibration directory, with "Lut_calibration" subdirectory, into which you can place the lut files for your SLM
 
 # Calibrations to do:
 1. Align the laser polarization to SLM
