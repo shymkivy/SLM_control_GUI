@@ -25,14 +25,14 @@ if ~strcmpi(pattern, 'none')
         
         coord.idx = gr_subtable.Idx;
         coord.xyzp = [gr_subtable.X, gr_subtable.Y, gr_subtable.Z];
-        coord.weight = gr_subtable.Weight;
+        coord.W_est = gr_subtable.W_est;
 
         holo_phase = f_sg_xyz_gen_holo(coord, reg1);
         
         AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
         
         holo_phase_corr = holo_phase+AO_phase;
-        SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
+        SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.W_est,[1 1 numel(coord.W_est)]),3));
         SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
         
         holo_phase_all(:,:,n_gr) = SLM_phase_corr_lut;
