@@ -1,7 +1,7 @@
 function f_sg_scan_initialize_imaging(app)
 
 if app.InitializeimagingButton.Value
-    if ~isempty(app.DAQ_session)
+    if or(~isempty(app.DAQ_session), app.ScanwithSLMtriggersCheckBox.Value)
         init_image_lut = app.SLM_phase_corr_lut;
         %try
         disp('Initializing multiplane imaging...');
@@ -37,7 +37,8 @@ if app.InitializeimagingButton.Value
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
     
             if app.ScanwithSLMtriggersCheckBox.Value
-                scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+                %scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+                scan_data = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             else
                 scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
             end

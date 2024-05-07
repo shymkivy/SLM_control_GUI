@@ -1,8 +1,11 @@
 function f_sg_initialize_DAQ(app)
 
+%daq_list = daqvendorlist();
+
 try
     app.InitializeDAQLamp.Color = [0.8 0.8 0.8];
-    app.DAQ_session = daq.createSession('ni');
+    %app.DAQ_session = daq.createSession('ni');
+    app.DAQ_session = daq('ni');
     % Setup counter
     counter_id = sprintf('ctr%d', app.DAQcounterchannelEditField.Value);
     app.DAQ_session.addCounterInputChannel(app.NIDAQdeviceEditField.Value, counter_id, 'EdgeCount');
