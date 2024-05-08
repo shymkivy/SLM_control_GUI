@@ -14,8 +14,6 @@ end
 
 value = app.ApplyZOsuppressionButton.Value;
 
-
-
 %% reupload upload current coord with correction update
 coord = app.GUI_buffer.current_SLM_coord;
 f_sg_xyz_upload_coord(app, coord);

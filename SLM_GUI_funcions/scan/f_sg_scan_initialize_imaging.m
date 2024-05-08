@@ -1,7 +1,7 @@
 function f_sg_scan_initialize_imaging(app)
 
 if app.InitializeimagingButton.Value
-    if or(~isempty(app.DAQ_session), app.ScanwithSLMtriggersCheckBox.Value)
+    if or(~isempty(app.DAQ_session), strcmpi(app.TriggertypeDropDown.Value, 'trigger to SLM'))
         init_image_lut = app.SLM_phase_corr_lut;
         %try
         disp('Initializing multiplane imaging...');
@@ -35,12 +35,14 @@ if app.InitializeimagingButton.Value
                 %figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
             end
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-    
-            if app.ScanwithSLMtriggersCheckBox.Value
-                %scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
-                scan_data = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
-            else
-                scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            strcmpi(app.TriggertypeDropDown.Value, 'trigger to SLM')
+            
+            if strcmpi(app.TriggertypeDropDown.Value, 'trigger to SLM')
+                scan_data = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_scans_all);
+            elseif strcmpi(app.TriggertypeDropDown.Value, 'trigger to GUI')
+                scan_data = f_sg_EOF_Zscan(app, holo_pointers, num_scans_all);
+            elseif strcmpi(app.TriggertypeDropDown.Value, 'trigger to both')
+                scan_data = f_sg_EOF_Zscan_trig(app, holo_pointers, num_scans_all);
             end
             
             scan_data.group_table_im = group_table_im;
@@ -60,10 +62,10 @@ if app.InitializeimagingButton.Value
             
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             if strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'AI input')
-                scan_data = f_sg_stim_scan(app, holo_pointers, app.InitializeimagingButton);
+                scan_data = f_sg_stim_scan(app, holo_pointers);
             elseif strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'Custom stim')
                 custom_stim = f_sg_gen_custom_stim_times(app, app.PatternDropDownAI.Value);
-                scan_data = f_sg_stim_scan_custom(app, holo_pointers, custom_stim , app.InitializeimagingButton);
+                scan_data = f_sg_stim_scan_custom(app, holo_pointers, custom_stim);
             end
             
             scan_data.stim_pattern = app.PatternDropDownAI.Value;
@@ -88,12 +90,12 @@ if app.InitializeimagingButton.Value
     
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
             if strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'AI input')
-                scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+                scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_scans_all);
             elseif strcmpi(app.stimcontrolsourceButtonGroup.SelectedObject.Text, 'Custom stim')
                 custom_stim = f_sg_gen_custom_stim_times(app, app.PatternDropDownAI.Value);
-                scan_data = f_sg_EOF_Zscan_stim_custom(app, holo_pointers, custom_stim ,num_scans_all, app.InitializeimagingButton);
+                scan_data = f_sg_EOF_Zscan_stim_custom(app, holo_pointers, custom_stim ,num_scans_all);
             end
-            %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all, app.InitializeimagingButton);
+            %f_sg_scan_EOF_trig(app, holo_pointers, num_scans_all);
             
             scan_data.group_table_im = group_table_im;
             scan_data.im_pattern = app.PatternDropDownCtr.Value;

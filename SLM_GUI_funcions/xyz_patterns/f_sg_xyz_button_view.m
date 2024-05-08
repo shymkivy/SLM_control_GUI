@@ -2,15 +2,15 @@ function f_sg_xyz_button_view(app, view_source, view_out)
 
 %% get coords
 if strcmpi(view_source, 'custom')
-    coord = f_sg_mpl_get_coords(app, view_source);
+    coord = f_sg_get_coords(app, view_source);
 elseif strcmpi(view_source, 'table_selection')
     if size(app.UIImagePhaseTableSelection,1) > 0
-        coord = f_sg_mpl_get_coords(app, view_source);
+        coord = f_sg_get_coords(app, view_source);
     else
         coord = [];
     end
 elseif strcmpi(view_source, 'pattern')
-    coord = f_sg_mpl_get_coords(app, view_source, app.PatternSpinner.Value);
+    coord = f_sg_get_coords(app, view_source, app.PatternSpinner.Value);
 end
 
 %% gen image and view without saving to buffer

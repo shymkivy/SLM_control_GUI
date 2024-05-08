@@ -1,4 +1,4 @@
-function scan_data  = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
+function scan_data  = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_planes_all, scans_per_frame)
 % end of frame scan, triggers sent to SLM
 % SLM needs end of frame trigger going down, to start pattern change
 % counter channel needs e
@@ -33,7 +33,6 @@ f_SLM_update(scan_ops, holo_pointers3{1});
 
 % set second frame on the bench waiting for EOF trig
 scan_ops.wait_For_Trigger = 1;
-scan_ops.external_Pulse = 1;
 SLM_frame = 2; % current SLM on bench
 f_SLM_update(scan_ops, holo_pointers3{SLM_frame});
 scan_frame = 1; % current scan frame
@@ -56,10 +55,10 @@ while imaging
     if scan_frame > num_planes_all
         imaging = 0;
     end
-
+    %fprintf('%.2f toc; %.2f last time; %d im val\n', toc, last_time, app.InitializeimagingButton.Value);
     if (toc - last_time) > 1
         pause(0.0001);
-        if ~imaging_button.Value
+        if ~app.InitializeimagingButton.Value
             imaging = 0;
             disp('Aborted run');
         end

@@ -1,4 +1,4 @@
-function scan_data = f_sg_stim_scan_custom(app, holo_pointers, custom_stim_data, imaging_button)
+function scan_data = f_sg_stim_scan_custom(app, holo_pointers, custom_stim_data)
 % end of frame scan with simultaneous stimulation in 2 regions of 1 SLM
 % uses AI input to turn on AI patterns in real time, (3sm update time)
 % assuming stim side of SLM can change without disrupting imaging side
@@ -69,7 +69,7 @@ if strcmpi(cont1 , 'y')
         
         if (toc -  stim_times_types(n_SLM_stim,1)) > 10
             pause(0.0001);
-            if ~imaging_button.Value
+            if ~app.InitializeimagingButton.Value
                 imaging = 0;
                 disp('Aborted run');
             end

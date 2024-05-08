@@ -1,4 +1,4 @@
-function scan_data  = f_sg_EOF_Zscan_trig(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
+function scan_data  = f_sg_EOF_Zscan_trig(app, holo_pointers, num_planes_all, scans_per_frame)
 % end of frame scan, triggers sent to SLM
 % SLM needs end of frame trigger going down, to start pattern change
 % counter channel needs e
@@ -35,25 +35,23 @@ f_SLM_update(scan_ops, holo_pointers3{1});
 
 % set second frame on the bench waiting for EOF trig
 scan_ops.wait_For_Trigger = 1;
-f_SLM_update(scan_ops, holo_pointers3{2});
 SLM_frame = 2; % current SLM on bench
-%scan_frame = 1; % current scan frame
+f_SLM_update(scan_ops, holo_pointers3{SLM_frame});
+scan_frame = 1;
 
-scan1 = inputSingleScan(session);
 disp('Ready to start imaging');
 last_time = toc;
 while imaging
     
-    scan_frame = scan1(1);
-
-    if SLM_frame == scan_frame
+    scan1 = inputSingleScan(session);
+    scan_frame = scan1(1)+1;
+    if SLM_frame <= scan_frame + 1
         % load the next frame, which is SLM_frame+1
         SLM_frame = SLM_frame + 1;
         f_SLM_update(scan_ops, holo_pointers3{rem(SLM_frame-1,num_planes)+1});
         frame_end_times(scan_frame-1) = toc;
         last_time = frame_end_times(scan_frame-1);
     end
-    scan1 = inputSingleScan(session);
 
     %pause(0.001);
     % waits for write zero means it was success
@@ -69,7 +67,7 @@ while imaging
 
     if (toc - last_time) > 1
         pause(0.0001);
-        if ~imaging_button.Value
+        if ~app.InitializeimagingButton.Value
             imaging = 0;
             disp('Aborted run');
         end

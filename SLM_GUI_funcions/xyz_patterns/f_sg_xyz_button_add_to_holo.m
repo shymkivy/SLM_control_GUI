@@ -9,7 +9,7 @@ else
     current_idx = max(tab_data.Idx(tab_data.Idx ~= bd_idx))+1;
 end
 
-coord = f_sg_mpl_get_coords(app, 'custom');
+coord = f_sg_get_coords(app, 'custom');
 pat_num = f_str_to_array(app.PatternnumberEditField.Value);
 
 num_rows = numel(coord.W_est);

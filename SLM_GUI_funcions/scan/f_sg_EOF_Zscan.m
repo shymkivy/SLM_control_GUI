@@ -1,4 +1,4 @@
-function scan_data  = f_sg_EOF_Zscan(app, holo_pointers, num_planes_all, imaging_button, scans_per_frame)
+function scan_data  = f_sg_EOF_Zscan(app, holo_pointers, num_planes_all, scans_per_frame)
 % end of frame scan, triggers sent to gui
 
 if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
@@ -34,7 +34,7 @@ while imaging
 
     if (toc -  frame_start_times(scan_frame)) > 1
         pause(0.0001);
-        if ~imaging_button.Value
+        if ~app.InitializeimagingButton.Value
             imaging = 0;
             disp('Aborted run');
         end

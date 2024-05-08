@@ -56,6 +56,7 @@ end
 
 app.XYZpatalgotithmDropDown.Items = {'superposition', 'global_GS_Meadowlark', 'superposition_LW', 'global_GS_LW', 'NOVO_CGH_VarI_LW', 'NOVO_CGH_VarIEuclid_LW', 'NOVO_CGH_2PEuclid_LW'}; % , 'global_GS'
 app.ImageGenverEditField.Value = 'none';
+app.TriggertypeDropDown.Items = {'Trigger to GUI', 'Trigger to SLM', 'Trigger to both'};
 
 AO_params = app.SLM_ops.AO_params;
 
@@ -192,7 +193,7 @@ app.SLM_gh_phase_preview = app.SLM_blank_phase;
 app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_blank_phase+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
-caxis(app.UIAxesGenerateHologram, [0 2*pi]);
+clim(app.UIAxesGenerateHologram, [0 2*pi]);
 
 clim_x = linspace(app.UIAxesGenerateHologram.CLim(1), app.UIAxesGenerateHologram.CLim(2), size(app.UIAxesGenerateHologram.Colormap,1))/pi;
 clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerateHologram.Colormap,1) 3]);
@@ -200,7 +201,7 @@ clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerat
 app.SLM_image_gh_climits = imagesc(app.UIAxesColorLimits, clim_x, [], clim_im);
 axis(app.UIAxesColorLimits, 'tight');
 
-app.current_SLM_coord = f_sg_mpl_get_coords(app, 'zero');
+app.current_SLM_coord = f_sg_get_coords(app, 'zero');
 app.current_SLM_AO_Image = [];
 
 if ~exist(ops.save_AO_dir, 'dir')
