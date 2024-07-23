@@ -1,10 +1,10 @@
-function f_sg_update_params_SLM(app)
+function f_sg_params_SLM_type(app)
 
-was_on = app.SLM_ops.SDK_created;
+was_on = app.SLM_ops.sdkObj.SDK_created;
 
 if was_on
     app.SLM_ops = f_SLM_close(app.SLM_ops);
-    if ~app.SLM_ops.SDK_created
+    if ~app.SLM_ops.sdkObj.SDK_created
         app.ActivateSLMLamp.Color = [0.80,0.80,0.80]; %[0.00,1.00,0.00];
         app.ActivateSLMButton.Value = 0;
     end
@@ -19,23 +19,12 @@ app.SLM_ops = f_copy_fields(app.SLM_ops, SLM_params);
 %%
 f_sg_lut_load_list(app);
 
-% update from default
-if isfield(SLM_params, 'lut_fname')
-    if sum(strcmpi(SLM_params.lut_fname, app.LUTDropDown.Items))
-        app.LUTDropDown.Value = SLM_params.lut_fname;
-    end
-else
-    if sum(strcmpi('linear.lut', app.LUTDropDown.Items))
-        SLM_params.lut_fname = 'linear.lut';
-        app.SLM_ops.lut_fname = 'linear.lut';
-        app.LUTDropDown.Value = SLM_params.lut_fname;
-    end
-end
+f_sg_set_lut(app);
 
 %%
 if was_on
     app.SLM_ops = f_SLM_initialize(app.SLM_ops);
-    if app.SLM_ops.SDK_created
+    if app.SLM_ops.sdkObj.SDK_created
         app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
         app.ActivateSLMButton.Value = 1;
     end

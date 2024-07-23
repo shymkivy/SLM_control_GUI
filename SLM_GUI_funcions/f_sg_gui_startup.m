@@ -18,22 +18,11 @@ app.SLM_ops = f_SLM_default_ops(GUI_dir);
 %% create calibration dirs
 ops = app.SLM_ops;
 
-% LUT dir
-if ~exist(ops.lut_dir, 'dir')
-    mkdir(ops.lut_dir);
-end
-
-% xyz calibration
-if ~exist(ops.xyz_calibration_dir, 'dir')
-    mkdir(ops.xyz_calibration_dir);
-end
-
-if ~exist(ops.AO_correction_dir, 'dir')
-    mkdir(ops.AO_correction_dir);
-end
-
-if ~exist(ops.point_weight_correction_dir, 'dir')
-    mkdir(ops.point_weight_correction_dir);
+for dir1 = {ops.lut_dir, ops.xyz_calibration_dir, ops.AO_correction_dir, ops.point_weight_correction_dir}
+    if ~exist(dir1{1}, 'dir')
+        fprintf('Creating dir: %s\n', dir1{1});
+        mkdir(dir1{1});
+    end
 end
 
 %% load lut lists
@@ -42,7 +31,7 @@ f_sg_load_calibration(app);
 f_sg_reg_update(app);
 
 app.SLM_ops = f_SLM_initialize(app.SLM_ops);
-if app.SLM_ops.SDK_created
+if app.SLM_ops.sdkObj.SDK_created
     app.ActivateSLMButton.Value = 1;
     app.ActivateSLMLamp.Color = [0.00,1.00,0.00];
 end

@@ -8,7 +8,7 @@ if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, {app.xyz_patterns.pat_name});
     reg1 = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
     
-    pointer_idx = false(app.SLM_ops.height,app.SLM_ops.width);
+    pointer_idx = false(app.SLM_ops.sdkObj.height, app.SLM_ops.sdkObj.width);
     pointer_idx(reg1.m_idx, reg1.n_idx) = 1;
     pointer_idx = reshape(pointer_idx', [],1);
     

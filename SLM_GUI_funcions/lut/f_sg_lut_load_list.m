@@ -6,7 +6,6 @@ function f_sg_lut_load_list(app)
 
 LUT_list = [LUT_list; LUT_list2];
 
-app.lut_list = LUT_list;
 app.LUTDropDown.Items = LUT_list;
 
 % create folders for regional lut and corrections

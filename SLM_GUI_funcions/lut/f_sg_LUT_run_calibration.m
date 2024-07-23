@@ -4,8 +4,8 @@ if app.RunLUTcalibrationButton.Value
     try
         disp('Initializing LUT calibration...')
         % generate coordinates
-        SLMn = app.SLM_ops.width;
-        SLMm = app.SLM_ops.height;
+        SLMn = app.SLM_ops.sdkObj.width;
+        SLMm = app.SLM_ops.sdkObj.height;
         reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 
         xlm = linspace(-SLMm/reg1.phase_diameter, SLMm/reg1.phase_diameter, SLMm);

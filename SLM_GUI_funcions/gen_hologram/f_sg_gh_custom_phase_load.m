@@ -26,8 +26,8 @@ elseif strcmpi(app.PhaseformatDropDown.Value, 'Radians')
     holo_image = exp(1i*(im-pi));
 end
 
-if ~sum(size(holo_image) == [app.SLM_ops.height app.SLM_ops.width])==2
-    uialert(app.UIFigure, sprintf('Image size must be %d x %d', app.SLM_ops.height, app.SLM_ops.width),'Error');
+if ~sum(size(holo_image) == [app.SLM_ops.sdkObj.height app.SLM_ops.sdkObj.width])==2
+    uialert(app.UIFigure, sprintf('Image size must be %d x %d', app.SLM_ops.sdkObj.height, app.SLM_ops.sdkObj.width),'Error');
 end
 
 if ~isempty(holo_image)

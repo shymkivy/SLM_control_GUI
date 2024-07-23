@@ -67,14 +67,18 @@ calllib('Blink_C_wrapper', 'Create_SDK', ops.bit_depth, ops.num_boards_found,...
     ops.use_GPU, ops.max_transients, init_lut_fpath);
 
 % Convention follows that of C function return values: 0 is success, nonzero integer is an error
+ops.SDK_created = 0;
 if ~ops.constructed_okay.value   % 0 for v3;  1 for v4.856
-    ops.SDK_created = 0;
-    disp('Blink SDK was not successfully constructed');
-    disp(calllib('Blink_C_wrapper', 'Get_last_error_message'));
-    calllib('Blink_C_wrapper', 'Delete_SDK');
-    disp('Deleted SDK')
+    err1 = calllib('Blink_C_wrapper', 'Get_last_error_message');
+    if contains(err1, 'simulation')
+        disp(err1)
+        ops.SDK_created = 1;
+    end
 else
     ops.SDK_created = 1;
+end
+
+if ops.SDK_created
     ops.board_number = 1;
     disp('Blink SDK was successfully constructed');
     fprintf('Found %u SLM controller(s)\n', ops.num_boards_found.value);
@@ -85,6 +89,17 @@ else
     %allocate arrays for our images
     ops.height = calllib('Blink_C_wrapper', 'Get_image_height', ops.board_number);
     ops.width = calllib('Blink_C_wrapper', 'Get_image_width', ops.board_number);
+else
+    disp('Blink SDK was not successfully constructed');
+    calllib('Blink_C_wrapper', 'Delete_SDK');
+    unloadlibrary('Blink_C_wrapper');
+    disp('Deleted SDK')
 end
+
+1;
+
+% val = calllib('Blink_C_wrapper', 'Is_slm_transient_constructed');
+% val = calllib('Blink_C_wrapper', 'Get_version_info');
+% val = GetProcAddress('Blink_C_wrapper', "Get_version_info");
 
 end

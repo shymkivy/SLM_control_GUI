@@ -12,7 +12,7 @@ try %#ok<*TRYNC>
     f_SLM_close(ops);
 end
 try 
-    f_SLM_BNS_imageGen_unload();
+    ops.igObj.close();
 end
 try 
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
@@ -91,7 +91,7 @@ regions_run = sort(regions_run(:));
 
 %% Initialize SLM
 ops = f_SLM_initialize(ops);
-ops = f_SLM_BNS_imageGen_load(ops);
+ops = f_imageGen_load(ops);
 %%
 lut_data = [];
 
@@ -379,7 +379,7 @@ try
     f_SLM_close(ops);
 end
 try 
-    f_SLM_BNS_imageGen_unload();
+    ops.igObj.close();
 end
 if ops.use_TLDC
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
