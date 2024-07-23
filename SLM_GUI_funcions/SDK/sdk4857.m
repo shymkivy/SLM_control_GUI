@@ -53,7 +53,10 @@ classdef sdk4857 < handle
                     error('Lut file "lut_fname" missing from: %s', ops.lut_path);
                 end
             end
-
+            
+            ops.height = SLM_ops.height;
+            ops.width = SLM_ops.width;
+            ops.bit_depth = SLM_ops.bit_depth;
 
         end
         %%

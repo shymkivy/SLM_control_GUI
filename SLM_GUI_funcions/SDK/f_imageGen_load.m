@@ -9,6 +9,8 @@ if strcmpi(ops.imageGen_ver, '4857')
     igObj = imGen4857(ops.imageGen_dir);
 elseif strcmpi(ops.imageGen_ver, '4851')
     igObj = imGen4851(ops.imageGen_dir);
+elseif strcmpi(ops.imageGen_ver, '4860')
+    igObj = imGen4860(ops.imageGen_dir);
 else
     fprintf('ImageGen version %s is unrecognized', ops.imageGen_ver);
 end
