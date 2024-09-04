@@ -7,7 +7,7 @@ try
     app.DAQ_session = daq.createSession('ni');
     %app.DAQ_session = daq('ni');
     
-    chan_made = false(3);
+    chan_made = false(3,1);
 
     % Setup counter
     try
