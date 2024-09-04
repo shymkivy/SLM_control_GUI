@@ -5,7 +5,7 @@ SLMn = sum(reg1.n_idx);
 
 iter = 100;
 
-pointer1 = libpointer('uint8Ptr', zeros(app.SLM_ops.width*app.SLM_ops.height,1));
+pointer1 = libpointer('uint8Ptr', zeros(app.SLM_ops.sdkObj.width*app.SLM_ops.sdkObj.height,1));
 
 x = calllib('ImageGen', 'Initalize_HologramGenerator', SLMn, SLMm, iter);
 
@@ -17,7 +17,7 @@ x2 = calllib('ImageGen', 'Generate_Hologram', pointer1, [0], [0], [10], [1], 1);
 calllib('ImageGen', 'Destruct_HologramGenerator');
 
 
-im1 = f_sg_poiner_to_im(pointer1, app.SLM_ops.height, app.SLM_ops.width);
+im1 = f_sg_poiner_to_im(pointer1, app.SLM_ops.sdkObj.height, app.SLM_ops.sdkObj.width);
 
 figure; imagesc(im1)
 

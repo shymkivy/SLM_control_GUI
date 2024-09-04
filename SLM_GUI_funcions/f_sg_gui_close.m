@@ -5,8 +5,9 @@ if app.ActivateSLMButton.Value
     app.SLM_ops = f_SLM_close(app.SLM_ops);
 end
 
-app.SLM_ops = f_sg_imageGen_destructGS(app.SLM_ops);
-f_SLM_BNS_imageGen_unload()
+if isfield(app.SLM_ops, 'igObj')
+    app.SLM_ops.igObj.close();
+end
 
 delete(app);
 

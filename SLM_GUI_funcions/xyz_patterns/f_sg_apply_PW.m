@@ -6,7 +6,6 @@ tab_data = app.UIImagePhaseTable.Data;
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
 intens_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, [tab_data.X, tab_data.Y]);
 
-
 if value
     % tuurned on
     I_targ_new = tab_data.I_targ./intens_corr;

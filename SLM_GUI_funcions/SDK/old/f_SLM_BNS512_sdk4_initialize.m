@@ -1,4 +1,4 @@
-function ops = f_SLM_BNS512_initialize(ops)
+function ops = f_SLM_BNS512_sdk4_initialize(ops)
 
 % regionalLUTfileName, SLMInitializationImageFileName 
 % [ sdk ]

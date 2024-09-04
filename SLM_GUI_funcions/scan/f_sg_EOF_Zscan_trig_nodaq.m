@@ -1,4 +1,4 @@
-function scan_data  = f_sg_EOF_Zscan_trig(app, holo_pointers, num_planes_all, scans_per_frame)
+function scan_data  = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_planes_all, scans_per_frame)
 % end of frame scan, triggers sent to SLM
 % SLM needs end of frame trigger going down, to start pattern change
 % counter channel needs e
@@ -7,8 +7,6 @@ if ~exist('scans_per_vol', 'var') || isempty(scans_per_frame)
     scans_per_frame = 1;
 end
 
-session = app.DAQ_session;
-resetCounters(session);
 pause(0.05);
 
 if scans_per_frame > 1
@@ -37,34 +35,27 @@ f_SLM_update(scan_ops, holo_pointers3{1});
 scan_ops.wait_For_Trigger = 1;
 SLM_frame = 2; % current SLM on bench
 f_SLM_update(scan_ops, holo_pointers3{SLM_frame});
-scan_frame = 1;
+scan_frame = 1; % current scan frame
 
 disp('Ready to start imaging');
 last_time = toc;
 while imaging
-    
-    scan1 = inputSingleScan(session);
-    scan_frame = scan1(1)+1;
-    if SLM_frame <= scan_frame + 1
+
+    % waits for write zero means it was success
+    write_complete = f_SLM_BNS1920_write_complete(scan_ops);
+    if write_complete
         % load the next frame, which is SLM_frame+1
+        scan_frame = scan_frame + 1;
         SLM_frame = SLM_frame + 1;
         f_SLM_update(scan_ops, holo_pointers3{rem(SLM_frame-1,num_planes)+1});
         frame_end_times(scan_frame-1) = toc;
         last_time = frame_end_times(scan_frame-1);
     end
 
-    %pause(0.001);
-    % waits for write zero means it was success
-    %write_complete = f_SLM_BNS1920_write_complete(scan_ops);
-    %if write_complete
-    
-    %scan_frame = scan_frame + 1;
-    %end
-      
     if scan_frame > num_planes_all
         imaging = 0;
     end
-
+    %fprintf('%.2f toc; %.2f last time; %d im val\n', toc, last_time, app.InitializeimagingButton.Value);
     if (toc - last_time) > 1
         pause(0.0001);
         if ~app.InitializeimagingButton.Value

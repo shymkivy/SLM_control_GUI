@@ -1,4 +1,4 @@
-function coord = f_sg_mpl_get_coords(app, from_where, num)
+function coord = f_sg_get_coords(app, from_where, num)
 
 if strcmp(from_where, 'custom')
     X_disp = f_str_to_array(app.XdisplacementEditField.Value);
@@ -91,7 +91,7 @@ else
     else
         coord.I_targ1P = coord.I_targ;
     end
-    coord.W_est = coord.I_targ1P;
+    coord.W_est = sqrt(coord.I_targ1P);
 end
 
 

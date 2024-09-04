@@ -8,44 +8,39 @@
 % lut pipeline step 1/3
 
 %%
-try %#ok<*TRYNC>
-    f_SLM_close(ops);
+if exist('ops', 'var')
+    if isfield(ops, 'sdkObj')
+        ops.sdkObj.close();
+    end
+    if isfield(ops, 'igObj')
+        ops.igObj.close();
+    end
 end
-try 
-    f_SLM_BNS_imageGen_unload();
-end
-try 
-    TLDC_set_Cam_Close(cam_out.hdl_cam);            
+
+if exist('cam_out', 'var')
+    if isfield(cam_out, 'hdl_cam')
+        TLDC_set_Cam_Close(cam_out.hdl_cam);   
+    end
 end
 
 clear;
 
 %%
-%script_dir = which('SLM_lut_s1_run_calibration.m');
-script_dir = fileparts(mfilename('fullpath'));
-gui_dir = [script_dir '\\..'];
-
-addpath(genpath(script_dir));
+gui_dir = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_GUI';
 addpath(gui_dir);
-addpath(genpath([gui_dir '\SLM_GUI_funcions']));
+addpath(genpath(gui_dir));
 
 ops = f_SLM_default_ops(gui_dir);
-
-% overwrite the imagegen lib used
-ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
 
 ops.lut_correction_fname = [];
 %ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 %ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_4_7_22_left_half_corr2_sub_region_interp_corr.mat';
 
-% overwrite the imagegen lib used
-ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
-
 %%
-ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD'
+ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD' Which SLM name from default params to use
 
 SLM_params = ops.SLM_params(strcmpi({ops.SLM_params.SLM_name}, ops.SLM_type));
-ops = f_copy_fields(ops, SLM_params);
+ops.SLM_params_use = SLM_params;
 
 % if strcmpi(ops.SLM_type, 'BNS1920')
 %     %ops.lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -106,7 +101,10 @@ regions_run = sort(regions_run(:));
 
 %% Initialize SLM
 ops = f_SLM_initialize(ops);
-ops = f_SLM_BNS_imageGen_load(ops);
+ops = f_imageGen_load(ops);
+ops.igObj.init(ops.sdkObj.height, ops.sdkObj.width);
+ops.guiObj = GUIobj(ops.sdkObj);
+
 %% load lut correction data
 lut_data = [];
 
@@ -139,8 +137,10 @@ cont1 = input('Turn laser on and reply [y] to continue:', 's');
 
 %%
 if ops.use_TLDC
-    try
-        TLDC_set_Cam_Close(cam_out.hdl_cam);
+    if exist('cam_out', 'var')
+        if isfield(cam_out, 'hdl_cam')
+            TLDC_set_Cam_Close(cam_out.hdl_cam);   
+        end
     end
     [cam_out, ops.cam_params] = f_TLDC_initialize(ops);
 end
@@ -168,23 +168,25 @@ end
 
 
 %% create gratings and upload
-if ops.SDK_created == 1 && strcmpi(cont1, 'y')
+if ops.sdkObj.SDK_created == 1 && strcmpi(cont1, 'y')
     region_gray = zeros(ops.NumGray*numel(regions_run),2);
     
-    SLM_blank = libpointer('uint8Ptr', zeros(ops.width*ops.height,1));
+    SLM_blank = ops.guiObj.generateBlank();
     f_SLM_update(ops, SLM_blank);
     
-    SLM_mask = libpointer('uint8Ptr', ones(ops.width*ops.height,1));
-   
+    SLM_mask = ops.guiObj.init_pointer();
+    
     %% generate SLM image
+    stripes = ops.guiObj.generateStripes(0,1,ops.PixelsPerStripe, ops.horizontalStripe);
+    region_idx = ops.guiObj.generateRegionIndexMask(ops.num_regions_m, ops.num_regions_n);
 
-    stripes = f_gen_stripes(ops.height, ops.width, ops.PixelsPerStripe, ops.horizontalStripe);
-    region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
+    % stripes = f_gen_stripes(ops.sdkObj.height, ops.sdkObj.width, ops.PixelsPerStripe, ops.horizontalStripe);
+    % region_idx = f_gen_region_index_mask(ops.sdkObj.height, ops.sdkObj.width, ops.num_regions_m, ops.num_regions_n);
     %ops.region_idx = region_idx;
     %%
     if ops.plot_phase
         SLM_fig = figure;
-        SLM_im = imagesc(reshape(SLM_mask.Value, ops.width, ops.height)'); axis equal tight;
+        SLM_im = imagesc(reshape(SLM_mask.Value, ops.sdkObj.width, ops.sdkObj.height)'); axis equal tight;
         caxis([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
     end
@@ -215,7 +217,8 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             
             region_gray(idx1,:) = [Region, Gray];
             
-            region_mask = zeros(ops.height, ops.width);
+            
+            region_mask = ops.guiObj.generateBlank();
             region_mask(region_idx == Region) = 1;
             region_mask = flipud(region_mask);
             holo_image = stripes.*region_mask*Gray;
@@ -254,7 +257,7 @@ if ops.SDK_created == 1 && strcmpi(cont1, 'y')
             end
             
             if ops.plot_phase
-                SLM_im.CData = reshape(SLM_mask.Value, ops.width, ops.height)';
+                SLM_im.CData = reshape(SLM_mask.Value, ops.sdkObj.width, ops.sdkObj.height)';
                 SLM_fig.Children(end).Title.String = sprintf('Gray %d/%d; Region %d/%d', Gray+1,ops.NumGray,Region+1,ops.NumRegions);
                 drawnow;
                 %figure; imagesc(reshape(SLM_image.Value, ops.width, ops.height)')
@@ -286,12 +289,8 @@ end
 
 cont1 = input('Done, turn off laser and press [y] close SLM:', 's');
 
-try 
-    f_SLM_close(ops);
-end
-try 
-    f_SLM_BNS_imageGen_unload();
-end
+f_SLM_close(ops);
+ops.igObj.close();
 if ops.use_TLDC
     TLDC_set_Cam_Close(cam_out.hdl_cam);            
 end

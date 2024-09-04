@@ -21,8 +21,11 @@ region_obj_params = f_copy_fields(region_obj_params, objectives);
 m = current_reg.height_range;
 n = current_reg.width_range;
 
-m_px = (1:app.SLM_ops.height)'/app.SLM_ops.height;
-n_px = (1:app.SLM_ops.width)'/app.SLM_ops.width;
+fSLMm = app.SLM_ops.sdkObj.height;
+fSLMn = app.SLM_ops.sdkObj.width;
+
+m_px = (1:fSLMm)'/fSLMm;
+n_px = (1:fSLMn)'/fSLMn;
 
 m_idx = logical((m_px>m(1)).*(m_px<=m(2)));
 n_idx = logical((n_px>n(1)).*(n_px<=n(2)));

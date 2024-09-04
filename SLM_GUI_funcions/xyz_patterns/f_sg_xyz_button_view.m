@@ -2,15 +2,15 @@ function f_sg_xyz_button_view(app, view_source, view_out)
 
 %% get coords
 if strcmpi(view_source, 'custom')
-    coord = f_sg_mpl_get_coords(app, view_source);
+    coord = f_sg_get_coords(app, view_source);
 elseif strcmpi(view_source, 'table_selection')
     if size(app.UIImagePhaseTableSelection,1) > 0
-        coord = f_sg_mpl_get_coords(app, view_source);
+        coord = f_sg_get_coords(app, view_source);
     else
         coord = [];
     end
 elseif strcmpi(view_source, 'pattern')
-    coord = f_sg_mpl_get_coords(app, view_source, app.PatternSpinner.Value);
+    coord = f_sg_get_coords(app, view_source, app.PatternSpinner.Value);
 end
 
 %% gen image and view without saving to buffer
@@ -51,7 +51,7 @@ if ~isempty(coord)
     %
     %holo_phase0(~reg1.holo_mask) = 0;
     %SLM_phase0 = angle(sum(exp(1i*(holo_phase0)),3));
-    %data_holo0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord0, app.pointsizepixEditField.Value);
+    %data_holo0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord0, app.pointsizeumEditField.Value);
 
     %I_target = ones(numel(coord.weight),1);
     %w_out = f_sg_optimize_phase_w(app, holo_phase_corr, coord, I_target);

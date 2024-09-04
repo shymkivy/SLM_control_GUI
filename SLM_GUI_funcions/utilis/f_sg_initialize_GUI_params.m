@@ -56,6 +56,7 @@ end
 
 app.XYZpatalgotithmDropDown.Items = {'superposition', 'global_GS_Meadowlark', 'superposition_LW', 'global_GS_LW', 'NOVO_CGH_VarI_LW', 'NOVO_CGH_VarIEuclid_LW', 'NOVO_CGH_2PEuclid_LW'}; % , 'global_GS'
 app.ImageGenverEditField.Value = 'none';
+app.TriggertypeDropDown.Items = {'Trigger to GUI', 'Trigger to SLM', 'Trigger to both'};
 
 AO_params = app.SLM_ops.AO_params;
 
@@ -104,8 +105,11 @@ app.PatternDropDownCtr.Items = [{'None'}, app.xyz_patterns.pat_name];
 app.PatternDropDownAI.Items = [{'None'}, app.xyz_patterns.pat_name];
 
 %%
-app.SLMheightEditField.Value = ops.height;
-app.SLMwidthEditField.Value = ops.width;
+SLMm = ops.sdkObj.height;
+SLMn = ops.sdkObj.width;
+
+app.SLMheightEditField.Value = SLMm;
+app.SLMwidthEditField.Value = SLMn;
 
 app.ObjectiveRIEditField.Value = ops.objective_RI;
 app.TubelengthEditField.Value = ops.tube_length;
@@ -123,9 +127,9 @@ app.GSzfactorEditField.Value = ops.GS_z_factor;
 app.BlankPixelValueEditField.Value = 0;
 
 % Fresnel lens
-app.FresCenterXEditField.Value = app.SLM_ops.width/2;
-app.FresCenterYEditField.Value = app.SLM_ops.height/2;
-app.FresRadiusEditField.Value = app.SLM_ops.height/2;
+app.FresCenterXEditField.Value = SLMn/2;
+app.FresCenterYEditField.Value = SLMm/2;
+app.FresRadiusEditField.Value = SLMm/2;
 app.FresPowerEditField.Value = 1;
 app.FresCylindricalCheckBox.Value = 1;
 app.FresHorizontalCheckBox.Value = 0;
@@ -141,9 +145,9 @@ app.StripePixelValueEditField.Value = 0;
 app.StripeGrayEditField.Value = 127;
 
 % zernike
-app.CenterXEditField.Value = floor(app.SLM_ops.width/2);
-app.CenterYEditField.Value = floor(app.SLM_ops.height/2);
-app.RadiusEditField.Value = min([app.SLM_ops.height, app.SLM_ops.height])/2;
+app.CenterXEditField.Value = floor(SLMn/2);
+app.CenterYEditField.Value = floor(SLMm/2);
+app.RadiusEditField.Value = min([SLMm, SLMm])/2;
 
 %%
 % current regional buffer
@@ -174,13 +178,13 @@ app.ApplyPWcorrectionButton.Value = 1;
 f_sg_apply_PW_correction_button(app);
 
 % initialize blank image
-app.SLM_blank_phase = zeros(app.SLM_ops.height,app.SLM_ops.width);
+app.SLM_blank_phase = zeros(SLMm, SLMn);
 app.SLM_blank_pointer = f_sg_initialize_pointer(app);
 app.SLM_blank_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
 
 app.SLM_phase = app.SLM_blank_phase;
 app.SLM_phase_corr = app.SLM_blank_phase;
-app.SLM_phase_corr_lut = zeros(app.SLM_ops.height,app.SLM_ops.width, 'uint8');
+app.SLM_phase_corr_lut = zeros(SLMm, SLMn, 'uint8');
 
 app.SLM_image_pointer = f_sg_initialize_pointer(app);
 app.SLM_image_pointer.Value = f_sg_im_to_pointer(app.SLM_blank_phase);
@@ -192,7 +196,7 @@ app.SLM_gh_phase_preview = app.SLM_blank_phase;
 app.SLM_phase_plot = imagesc(app.UIAxesGenerateHologram, app.SLM_blank_phase+pi);
 axis(app.UIAxesGenerateHologram, 'tight');
 axis(app.UIAxesGenerateHologram, 'equal');
-caxis(app.UIAxesGenerateHologram, [0 2*pi]);
+app.UIAxesGenerateHologram.CLim = [0 2*pi];
 
 clim_x = linspace(app.UIAxesGenerateHologram.CLim(1), app.UIAxesGenerateHologram.CLim(2), size(app.UIAxesGenerateHologram.Colormap,1))/pi;
 clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerateHologram.Colormap,1) 3]);
@@ -200,7 +204,7 @@ clim_im = reshape(app.UIAxesGenerateHologram.Colormap, [1 size(app.UIAxesGenerat
 app.SLM_image_gh_climits = imagesc(app.UIAxesColorLimits, clim_x, [], clim_im);
 axis(app.UIAxesColorLimits, 'tight');
 
-app.current_SLM_coord = f_sg_mpl_get_coords(app, 'zero');
+app.current_SLM_coord = f_sg_get_coords(app, 'zero');
 app.current_SLM_AO_Image = [];
 
 if ~exist(ops.save_AO_dir, 'dir')

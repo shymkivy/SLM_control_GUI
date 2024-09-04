@@ -8,7 +8,7 @@ if ~strcmpi(pattern, 'none')
     idx_pat = strcmpi(pattern, {app.xyz_patterns.pat_name});
     reg1 = f_sg_get_reg_deets(app, app.xyz_patterns(idx_pat).SLM_region);
     
-    pointer_idx = false(app.SLM_ops.height,app.SLM_ops.width);
+    pointer_idx = false(app.SLM_ops.sdkObj.height, app.SLM_ops.sdkObj.width);
     pointer_idx(reg1.m_idx, reg1.n_idx) = 1;
     pointer_idx = reshape(pointer_idx', [],1);
     
@@ -19,22 +19,51 @@ if ~strcmpi(pattern, 'none')
     num_groups = numel(groups);
     
     holo_phase_all = zeros(reg1.SLMm, reg1.SLMn, num_groups, 'uint8');
+
+    
     for n_gr = 1:num_groups
         curr_gr = groups(n_gr);
         gr_subtable = group_table(group_table.Pattern == curr_gr,:);
         
         coord.idx = gr_subtable.Idx;
         coord.xyzp = [gr_subtable.X, gr_subtable.Y, gr_subtable.Z];
-        coord.weight = gr_subtable.Weight;
+        coord.I_targ = gr_subtable.I_targ;
+        
+        if app.I_targI22PCheckBox.Value
+            coord.I_targ1P = sqrt(coord.I_targ);
+        else
+            coord.I_targ1P = coord.I_targ;
+        end
+        coord.W_est = sqrt(coord.I_targ1P);
 
-        holo_phase = f_sg_xyz_gen_holo(coord, reg1);
+        [~, ~, SLM_phase_corr, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, app.ApplyAOcorrectionButton.Value, app.XYZpatalgotithmDropDown.Value);
         
-        AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
+        %% apply ZO suppression
+        if app.ApplyZOsuppressionButton.Value
+            SLM_phase_corr = f_sg_apply_ZO_corr(SLM_phase_corr, reg1);
+            %SLM_phase = f_sg_apply_ZO_corr(SLM_phase, reg1);
+        end
         
-        holo_phase_corr = holo_phase+AO_phase;
-        SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.weight,[1 1 numel(coord.weight)]),3));
+        %% apply mask
+        if reg1.zero_outside_phase_diameter
+            %SLM_phase(~reg1.holo_mask) = 0;
+            SLM_phase_corr(~reg1.holo_mask) = 0;
+        end
+    
+        %% apply lut correction
         SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
         
+        %% old code
+        %coord_corr = f_sg_coord_correct(reg1, coord);         
+        %holo_phase = f_sg_PhaseHologram2(coord_corr, reg1);
+
+        %holo_phase = f_sg_xyz_gen_holo(coord, reg1);
+        %AO_phase = f_sg_AO_get_z_corrections(app, reg1, coord.xyzp(:,3));
+        
+        % holo_phase_corr = holo_phase+AO_phase;
+        % SLM_phase_corr = angle(sum(exp(1i*(holo_phase_corr)).*reshape(coord.W_est,[1 1 numel(coord.W_est)]),3));
+        % SLM_phase_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_corr, reg1);
+        % 
         holo_phase_all(:,:,n_gr) = SLM_phase_corr_lut;
         %holo_phase_all(:,:,n_gr) = f_sg_im_to_pointer(holo_phase);                
     end

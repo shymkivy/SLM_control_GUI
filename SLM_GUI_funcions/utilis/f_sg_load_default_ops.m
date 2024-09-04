@@ -2,7 +2,8 @@ function f_sg_load_default_ops(app)
 
 %% copy specific SLM params
 SLM_params = app.SLM_ops.SLM_params(strcmpi({app.SLM_ops.SLM_params.SLM_name}, app.SLM_ops.SLM_type));
-app.SLM_ops = f_copy_fields(app.SLM_ops, SLM_params);
+app.SLM_ops.SLM_params_use = SLM_params;
+%app.SLM_ops = f_copy_fields(app.SLM_ops, SLM_params);
 
 app.SLMtypeDropDown.Items = {app.SLM_ops.SLM_params.SLM_name};
 app.SLMtypeDropDown.Value = app.SLM_ops.SLM_type;
@@ -10,18 +11,7 @@ app.SLMtypeDropDown.Value = app.SLM_ops.SLM_type;
 %%
 f_sg_lut_load_list(app);
 
-% update from default
-if isfield(SLM_params, 'lut_fname')
-    if sum(strcmpi(SLM_params.lut_fname, app.LUTDropDown.Items))
-        app.LUTDropDown.Value = SLM_params.lut_fname;
-    end
-else
-    if sum(strcmpi('linear.lut', app.LUTDropDown.Items))
-        SLM_params.lut_fname = 'linear.lut';
-        app.SLM_ops.lut_fname = 'linear.lut';
-        app.LUTDropDown.Value = SLM_params.lut_fname;
-    end
-end
+f_sg_set_lut(app);
 
 %% some default params if not defined
 f_sg_initialize_default_regobj_params(app);

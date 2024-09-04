@@ -1,8 +1,9 @@
 function ops = f_SLM_BNS_imageGen_initGS(ops, reg1, num_iter)
 
-if ~libisloaded('ImageGen') 
-    loadlibrary([ops.imageGen_dir, '\ImageGen.dll'], [ops.imageGen_dir, '\ImageGen.h']);
+if ~isfield(ops.igObj)
+    ops = f_imageGen_load(ops);
 end
+
 
 if ~isfield(ops, 'ImageGen')
     ops.ImageGen.GS_init = 0;

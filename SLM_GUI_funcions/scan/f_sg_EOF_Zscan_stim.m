@@ -1,4 +1,4 @@
-function scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_planes_all, imaging_button)
+function scan_data = f_sg_EOF_Zscan_stim(app, holo_pointers, num_planes_all)
 % end of frame scan with simultaneous stimulation in 2 regions of 1 SLM
 % uses AI input to turn on AI patterns in real time, (3sm update time)
 % assuming stim side of SLM can change without disrupting imaging side
@@ -53,7 +53,7 @@ while imaging
     
     if (toc -  frame_start_times(scan_frame)) > 5
         pause(0.0001);
-        if ~imaging_button.Value
+        if ~app.InitializeimagingButton.Value
             imaging = 0;
             disp('Aborted run');
         end

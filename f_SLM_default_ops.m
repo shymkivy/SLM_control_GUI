@@ -8,25 +8,30 @@ ops.SLM_type = 'BNS1920'; % 'BNS1920', 'BNS512', 'BNS512OD', 'BNS512OD_sdk3'
 % BNS512OD with OverDrive (OD) in 901D
 % BNS512 standard on prairie 1 or 901 not using OD
 
-ops.sdk3_ver = 0; % using the old sdk 3 library?
-
 %% for meadowlark ImageGen and GS algorithm
 
-ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version, different functs
-%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';       % older version
+ops.imageGen_ver = '4857';
+ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';       % newer version
+
+% ops.imageGen_ver = '4851';
+% ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';      % older version  
+
+%ops.imageGen_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';      % older version
 
 ops.GS_z_factor = 50/39.7;  % scaling factor for meadowlark GS defocus to match effNA
-ops.GS_num_iterations = 50; % number of iterations for meadowlark GS optimization
+ops.GS_num_iterations = 100; % number of iterations for meadowlark GS optimization
 
 %% SLM specific params
 idx = 1;
 SLM_params(idx).SLM_name = 'BNS1920';
+SLM_params(idx).is_OD = 0;
+SLM_params(idx).SDK_ver = '4857'; % 4857, 4851
+SLM_params(idx).bit_depth = 12;
 SLM_params(idx).height = 1152;
 SLM_params(idx).width = 1920;
-SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut';
+SLM_params(idx).lut_fname = 'linear_cut_940_1064.lut'; % linear_cut_940_1064.lut
 %SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink OverDrive Plus\SDK';
-SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857';
-SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_3_528';
+SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_1920_4_857'; % Blink OverDrive Plus\SDK, SDK_1920_4_857, SDK_1920_3_528
 SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 %lut_fname =  'linear.lut'; %'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
 %lut_fname =  'photodiode_lut_comb_1064L_940R_64r_11_12_20_from_linear.txt';
@@ -35,20 +40,26 @@ SLM_params(idx).regions_use = {'Right half', 'Left half', 'Full SLM'};
 
 idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512OD'; % 901D with overdrive
+SLM_params(idx).is_OD = 1;
+SLM_params(idx).SDK_ver = '4851';
+SLM_params(idx).bit_depth = 8;
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
 SLM_params(idx).init_lut_fname = 'SLM_3329_20150303.txt'; % SLM_3329_20150303.txt; slm4317_test_regional.txt
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';
-SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
+%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
 
 idx = idx + 1;
 SLM_params(idx).SLM_name = 'BNS512'; % prairie 1
+SLM_params(idx).is_OD = 0;
+SLM_params(idx).SDK_ver = '4851';
+SLM_params(idx).bit_depth = 8;
 SLM_params(idx).height = 512;
 SLM_params(idx).width = 512;
 SLM_params(idx).lut_fname = 'slm4317_at1064_P8.lut';
 SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_4_851';
-SLM_params(idx).SLM_SDK3_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
+%SLM_params(idx).SLM_SDK_dir = 'C:\Program Files\Meadowlark Optics\Blink_SDK_all\SDK_512_3_519';
 SLM_params(idx).regions_use = {'Full SLM'};
 
 %% some default general params
@@ -219,6 +230,9 @@ ops.save_dir = [ops.GUI_dir '\..\SLM_outputs'];
 
 % GUI subdirectories
 ops.lut_dir = [ops.calibration_dir '\lut_calibration'];
+for par = 1:numel(SLM_params)
+    SLM_params(par).lut_dir = ops.lut_dir;
+end
 ops.xyz_calibration_dir = [ops.calibration_dir '\xyz_calibration'];
 ops.AO_correction_dir = [ops.calibration_dir '\AO_correction'];
 ops.point_weight_correction_dir = [ops.calibration_dir '\point_weight_correction'];

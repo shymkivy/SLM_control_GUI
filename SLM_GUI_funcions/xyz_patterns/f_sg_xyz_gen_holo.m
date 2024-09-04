@@ -1,8 +1,10 @@
 function [holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1)
 
 %% xyz calib
-coord_corr = coord;
-coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
+%coord_corr = coord;
+%coord_corr.xyzp = (coord.xyzp+reg1.xyz_offset)*reg1.xyz_affine_tf_mat;
+
+coord_corr = f_sg_coord_correct(reg1, coord);
 
 %% expand weights
 % num_points = size(coord.xyzp,1);
