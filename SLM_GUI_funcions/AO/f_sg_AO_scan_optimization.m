@@ -68,9 +68,12 @@ end
 
 ao_temp.current_coord.xyzp(3) = ao_temp.current_coord.xyzp(3) + z_comp1;
 num_iter = app.NumiterationsSpinner.Value;
+max_load = 1;
 if load_temp
     if ao_temp_in.n_it < num_iter
         ao_temp.current_coord = ao_temp_in.current_coord;
+        load_corr = cat(1, ao_temp_in.AO_corrections_all{:});
+        max_load = max(load_corr(:,1));
     end
 end
 
@@ -94,7 +97,7 @@ f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer);
 
 %% create patterns
 
-max_modes_init = max(ao_temp.init_AO_correction(:,1));
+max_modes_init = max(max(ao_temp.init_AO_correction(:,1)), max_load);
 maxZn_init = ceil((-1 + sqrt(1 + 4*max_modes_init*2))/2)-1;
 
 max_Zn = app.MaxZnEditField.Value;
@@ -511,6 +514,9 @@ core_init = f_sg_AO_condense_corr(ao_temp.init_AO_correction);
 corr_final2 = [ao_temp.init_AO_correction; ao_temp.AO_corrections_all];
 corr_final = f_sg_AO_condense_corr(cat(1,corr_final2{:}));
 
+core_init2 = zeros(size(corr_final));
+core_init2(1:size(core_init,1),:) = core_init;
+
 f3 = figure; 
 subplot(2,1,1); hold on;
 plot(core_init(:,1), core_init(:,2), '-o')
@@ -518,7 +524,7 @@ plot(corr_final(:,1), corr_final(:,2), '-o')
 ylabel('weight');
 legend('initial', 'fina');
 subplot(2,1,2); hold on;
-plot(corr_final(:,1), corr_final(:,2) - core_init(:,2), '-o')
+plot(corr_final(:,1), corr_final(:,2) - core_init2(:,2), '-o')
 title('difference');
 xlabel('modes');
 ylabel('weight change');
