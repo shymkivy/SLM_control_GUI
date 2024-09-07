@@ -34,9 +34,8 @@ if app.InitializeimagingButton.Value
                 holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
                 %figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
             end
+
             app.ImagingReadyLamp.Color = [0.00,1.00,0.00];
-            strcmpi(app.TriggertypeDropDown.Value, 'trigger to SLM')
-            
             if strcmpi(app.TriggertypeDropDown.Value, 'trigger to SLM')
                 scan_data = f_sg_EOF_Zscan_trig_nodaq(app, holo_pointers, num_scans_all);
             elseif strcmpi(app.TriggertypeDropDown.Value, 'trigger to GUI')
@@ -138,7 +137,7 @@ if app.InitializeimagingButton.Value
         app.SLM_phase_corr_lut = init_image_lut;
         f_sg_upload_image_to_SLM(app);
     else
-        disp('Set up and initialize DAQ first')
+        disp('Set up and initialize DAQ first');
         app.ImagingReadyLamp.Color = [0.80,0.80,0.80];
         app.InitializeimagingButton.Value = 0;
     end

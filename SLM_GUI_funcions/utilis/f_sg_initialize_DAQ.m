@@ -52,7 +52,7 @@ try
         app.InitializeDAQLamp.Color = [0 1 0];
     else
         app.InitializeDAQLamp.Color = [0.8 0.8 0.8];
-        fprintf('Warning: DAQ initialized, but no channels set up\n');
+        fprintf('Warning: DAQ not initialized, no channels set up\n');
     end
 catch
     app.InitializeDAQLamp.Color = [0.8 0.8 0.8];
