@@ -1,6 +1,6 @@
 function f_sg_apply_PW(app)
 
-value = app.ApplyPWtoI_targButton.Value;
+value = app.ApplyPWcorrectionButton.Value;
 
 tab_data = app.UIImagePhaseTable.Data;
 reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);

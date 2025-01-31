@@ -3,7 +3,7 @@ function f_sg_save_current_XYZ(app)
 XYZ_data.region = app.CurrentregionDropDown.Value;
 XYZ_data.pattern = app.PatterngroupDropDown.Value;
 XYZ_data.coords_table = app.UIImagePhaseTable.Data;
-XYZ_data.current_pattern = app.PatternSpinner.Value;
+%XYZ_data.current_pattern = app.PatternSpinner.Value;
 XYZ_data.current_XYZ_coords = app.current_SLM_coord;
 XYZ_data.current_SLM_phase = app.SLM_phase;
 XYZ_data.current_SLM_phase_corr = app.SLM_phase_corr;

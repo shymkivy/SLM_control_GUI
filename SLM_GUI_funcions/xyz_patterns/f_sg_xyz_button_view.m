@@ -10,7 +10,15 @@ elseif strcmpi(view_source, 'table_selection')
         coord = [];
     end
 elseif strcmpi(view_source, 'pattern')
-    coord = f_sg_get_coords(app, view_source, app.PatternSpinner.Value);
+    %coord = f_sg_get_coords(app, upload_type, app.PatternSpinner.Value);
+    if size(app.UIImagePhaseTableSelection,1) > 0
+        coord0 = f_sg_get_coords(app, 'table_selection');
+        coord = f_sg_get_coords(app, view_source, coord0.pattern);
+    else
+        coord = [];
+        disp('Select a pattern first')
+    end
+    
 end
 
 %% gen image and view without saving to buffer

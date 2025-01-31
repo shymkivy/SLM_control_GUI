@@ -1,4 +1,4 @@
-function pupil_amp2 = f_sg_get_beam_amp(reg1, use_gauss)
+function pupil_amp = f_sg_get_beam_amp(reg1, use_gauss)
 
 dims = [reg1.SLMm, reg1.SLMn];
 ph_d = reg1.phase_diameter;
@@ -22,9 +22,11 @@ else
     pupil_amp = ones(dims);
 end
 
-if reg1.zero_outside_phase_diameter
-    pupil_amp = pupil_amp .* reg1.holo_mask;
-end
-pupil_amp2 = pupil_amp/sum(pupil_amp(:));
+pupil_amp = pupil_amp/sum(pupil_amp(:));
+
+% removed because amp is not clipped in path
+% if reg1.zero_outside_phase_diameter
+%     pupil_amp = pupil_amp .* reg1.holo_mask;
+% end
 
 end

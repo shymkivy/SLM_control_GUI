@@ -7,6 +7,7 @@ ph_d = reg1.phase_diameter;
 
 % beam shape
 pupil_amp2 = f_sg_get_beam_amp(reg1, use_gauss_amp);
+%pupil_amp2 = ones(reg1.SLMm, reg1.SLMn)/(reg1.SLMm*reg1.SLMn);
 
 % defocus
 defocus = f_sg_DefocusPhase2(reg1);

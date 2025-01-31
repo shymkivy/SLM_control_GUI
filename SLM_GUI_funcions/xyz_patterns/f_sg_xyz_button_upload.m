@@ -10,7 +10,14 @@ elseif strcmpi(upload_type, 'table_selection')
         coord = [];
     end
 elseif strcmpi(upload_type, 'pattern')
-    coord = f_sg_get_coords(app, upload_type, app.PatternSpinner.Value);
+    %coord = f_sg_get_coords(app, upload_type, app.PatternSpinner.Value);
+    if size(app.UIImagePhaseTableSelection,1) > 0
+        coord0 = f_sg_get_coords(app, 'table_selection');
+        coord = f_sg_get_coords(app, 'pattern', coord0.pattern);
+    else
+        coord = [];
+        disp('Not uploaded, Select a pattern first')
+    end
 end
 
 %% uppload coord

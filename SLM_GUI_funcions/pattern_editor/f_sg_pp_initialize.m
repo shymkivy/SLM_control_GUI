@@ -57,8 +57,10 @@ app.data.plot_im.ButtonDownFcn = @(source,event)f_sg_pp_button_down(app,event);
 if ~isempty(app.app_main.UIImagePhaseTable.Data)
     tab_sel = app.app_main.UIImagePhaseTableSelection;
     if size(tab_sel,1) > 0
-        app.ZdepthSpinner.Value = app.app_main.UIImagePhaseTable.Data.Z(tab_sel(1));
-        app.PatternSpinner.Value = app.app_main.UIImagePhaseTable.Data.Pattern(tab_sel(1));
+        if tab_sel(1) <= size(app.app_main.UIImagePhaseTable.Data.Z)
+            app.ZdepthSpinner.Value = app.app_main.UIImagePhaseTable.Data.Z(tab_sel(1));
+            app.PatternSpinner.Value = app.app_main.UIImagePhaseTable.Data.Pattern(tab_sel(1));
+        end
     end
 end
 %%

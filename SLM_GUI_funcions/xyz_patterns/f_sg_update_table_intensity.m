@@ -57,7 +57,7 @@ for n_pat = 1:num_pat
     
     int_all{n_pat} = tab_data_pat.I_est;
     tab_data(tab_data.Pattern == curr_pat,:) = tab_data_pat;
-    fprintf('pat %d; zero ord intens = %.3f\n', curr_pat, data_w.zero_ord_mag)
+    %fprintf('pat %d; zero ord intens = %.3f\n', curr_pat, data_w.zero_ord_mag)
     f_waitbar_update(wb, n_pat/num_pat, 'Updating power...');
 end
 f_waitbar_close(wb);

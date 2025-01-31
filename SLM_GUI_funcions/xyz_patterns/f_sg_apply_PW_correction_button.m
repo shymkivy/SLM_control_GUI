@@ -1,11 +1,11 @@
 function f_sg_apply_PW_correction_button(app)
-
+% point weignt corrections
 
 if app.ApplyPWcorrectionButton.Value
     app.PWcorrectionLamp.Color = [0,1,0];
     pause(0.05);
 else
-    if app.ApplyPWtoI_targButton.Value
+    if app.ApplyPWcorrectionButton.Value
         tab_data = app.UIImagePhaseTable.Data;
         reg1 = f_sg_get_reg_deets(app, app.CurrentregionDropDown.Value);
         intens_corr = f_sg_apply_xy_power_corr(reg1.pw_corr_data, [tab_data.X, tab_data.Y]);
@@ -17,7 +17,7 @@ else
 
         app.UIImagePhaseTable.Data = tab_data;
         
-        app.ApplyPWtoI_targButton.Value = 0;
+        app.ApplyPWcorrectionButton.Value = 0;
     end
     app.PWcorrectionLamp.Color = [0.80,0.80,0.80];
     pause(0.05);

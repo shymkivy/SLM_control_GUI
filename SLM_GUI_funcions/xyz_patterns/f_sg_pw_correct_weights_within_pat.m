@@ -42,9 +42,17 @@ for n_pat = 1:num_pat
     
     [~, holo_phase, ~, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord, reg1, 0, 'Superposition');
     
+    if reg1.zero_outside_phase_diameter
+        for n_ph = 1:numel(coord.W_est)
+            holo1 = holo_phase(:,:,n_ph);
+            holo1(~reg1.holo_mask) = 0;
+            holo_phase(:,:,n_ph) = holo1;
+        end
+    end
+
     %[holo_phase, coord_corr] = f_sg_xyz_gen_holo(coord, reg1);
     
-    I_target = coord.I_targ;
+    I_target = coord.I_targ./power_corr;
     w_out = f_sg_optimize_phase_w(app, reg1, holo_phase, coord_corr, I_target, app.PlotwoptimizationCheckBox.Value);
  
     %I_target = coord.weight_set(~beam_dump_idx)./power_corr(~beam_dump_idx);

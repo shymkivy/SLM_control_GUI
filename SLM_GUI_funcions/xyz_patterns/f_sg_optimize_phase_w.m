@@ -118,7 +118,7 @@ if plot_stuff
     plot(I_target, 'o-', 'linewidth', 2)
     plot(data_w0.pt_mags, 'o-.', 'linewidth', 2)
     plot(w_out.I_final, 'o--', 'linewidth', 2)
-    
+    xlabel('points')
 
     xlabel('points')
     legend('I target', 'I initial', 'I final');

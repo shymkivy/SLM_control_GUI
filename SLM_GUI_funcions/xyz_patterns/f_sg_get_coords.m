@@ -59,6 +59,7 @@ else
             coord.idx = tab_data.Idx;
             coord.xyzp = [tab_data.X, tab_data.Y, tab_data.Z];
             coord.I_targ = tab_data.I_targ;
+            coord.pattern = tab_data.Pattern;
         else
             coord = [];
         end
@@ -75,6 +76,7 @@ else
                 coord.idx = tab_data2.Idx;
                 coord.xyzp = [tab_data2.X, tab_data2.Y, tab_data2.Z];
                 coord.I_targ = tab_data2.I_targ;
+                coord.pattern = tab_data2.Pattern;
             else
                 coord = [];
             end

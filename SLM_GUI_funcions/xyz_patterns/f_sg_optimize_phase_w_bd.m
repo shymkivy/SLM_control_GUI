@@ -3,14 +3,14 @@ function w_out = f_sg_optimize_phase_w_bd(app, holo_phase, holo_phase_bd, coord,
 alpha_start = 1;
 alpha_decrease_factor = .5;
 alpha_iter_lag = 1;
-alpha_update_err_thesh = 0;
+alpha_update_err_thesh = .1;
 
 error_final_thresh = 1e-4;
 noise_frac = 0.01;
 
 max_iter = 50;
 
-plot_stuff = 0;
+plot_stuff = 1;
 
 w0 = coord.W_est;
 wbd0 = coord_bd.W_est;
@@ -32,7 +32,7 @@ SLM_phase0 = angle(sum(exp(1i*(holo_phase2)).*reshape([w0; wbd0],[1 1 num_w+1]),
 data_w0 = f_sg_simulate_intensity(reg1, SLM_phase0, coord2, app.pointsizeumEditField.Value, app.UsegaussianbeamampCheckBox.Value, app.I_estI22PCheckBox.Value);
 
 I_target0 = I_target_in;
-err0 = mean(abs(I_target0 - data_w0.pt_mags(1:num_w)/data_w_zero.pt_mags));
+err0 = mean(abs(I_target0 - data_w0.pt_mags(1:num_w))); % /data_w_zero.pt_mags)
 
 w_mod = w0;
 w_mod_bd = wbd0;
@@ -48,7 +48,7 @@ tic();
 if err0 > error_final_thresh
     while and(n_it <= max_iter, num_w*err_all(n_it) > error_final_thresh)
         delta = data_w.pt_mags(1:num_w) - I_target; % /data_w_zero.pt_mags
-        delta2 = alpha1*delta.*(1 + noise_frac*randn(num_w,1));
+        delta2 = alpha1*delta/mean(I_target).*(1 + noise_frac*randn(num_w,1));
         temp_w_mod = w_mod;
         temp_w_mod = temp_w_mod - delta2;
         temp_w_mod_bd = w_mod_bd;

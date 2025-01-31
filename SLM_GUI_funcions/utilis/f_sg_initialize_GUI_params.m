@@ -97,7 +97,7 @@ app.IgnoreallsphericalCheckBox.Value = AO_params.ignore_all_spherical;
 %% xyz table
 app.UIImagePhaseTable.ColumnName = app.GUI_ops.table_var_names;
 app.UIImagePhaseTable.ColumnEditable = true(1, numel(app.GUI_ops.table_var_names));
-app.UIImagePhaseTable.ColumnEditable(end) = 0;
+app.UIImagePhaseTable.ColumnEditable(7) = 0;
 app.UIImagePhaseTable.ColumnWidth = {50, 68, 63, 63, 63, 63, 63, 63};
 
 f_sg_pat_update(app, 1);
