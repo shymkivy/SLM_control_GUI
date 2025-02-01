@@ -74,7 +74,7 @@ for n_pat = 1:num_pat
     end
 
     I_target = I_targ_corr(idx1);
-    w_out = f_sg_optimize_phase_w_bd(app, holo_phase, holo_phase_bd, coord_corr, coord_bd_corr, I_target);
+    w_out = f_sg_optimize_phase_w_bd(app, holo_phase, holo_phase_bd, coord_corr, coord_bd_corr, I_target, app.PlotwoptimizationCheckBox.Value);
     
     tab_pat.W_est = w_out.w_final;
     tab_pat.I_est = w_out.I_final;

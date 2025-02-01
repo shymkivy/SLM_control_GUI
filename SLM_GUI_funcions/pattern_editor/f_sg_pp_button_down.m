@@ -28,7 +28,9 @@ elseif event.Button == 1
         if isempty(tab_data.Idx)
             idx_shift = 0;
         else
-            idx_shift = max(tab_data.Idx);
+            idx_all = tab_data.Idx;
+            idx_all(idx_all==999) = [];
+            idx_shift = max(idx_all);
         end
         
         if app.NewpatternCheckBox.Value
