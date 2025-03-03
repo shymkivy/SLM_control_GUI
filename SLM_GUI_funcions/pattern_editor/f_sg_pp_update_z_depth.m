@@ -7,18 +7,22 @@ function f_sg_pp_update_z_depth(app, event)
 
 z_all = app.ZdepthSpinner.UserData;
 
-last_z = event.PreviousValue;
-last_index = find(z_all == last_z);
+last_value = event.PreviousValue;
+last_index = find(z_all == last_value);
 
 if isempty(last_index)
     return
 else
     current_value = event.Value;
-    delta_index = current_value - last_z;
-    
     % Because -20 is up
-    current_index = last_index + delta_index * -1;
-
+    if current_value < last_value
+        delta_index = -1;
+    elseif current_value > last_value
+        delta_index = 1;
+    else
+        delta_index = 0;
+    end
+    current_index = last_index + delta_index;
     current_z_depth = z_all(current_index);
     app.ZdepthSpinner.Value = current_z_depth;
 

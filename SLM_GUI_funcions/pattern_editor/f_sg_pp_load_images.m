@@ -23,7 +23,9 @@ for n_file = 1:numel(files1)
     
 end
 
-app.app_main.pattern_editor_data.im_all = im_all;
+[xyz_all, order_] = sortrows(xyz_all, 3);
+
+app.app_main.pattern_editor_data.im_all = im_all(order_);
 app.app_main.pattern_editor_data.xyz_all = xyz_all;
 
 f_sg_pp_update_bkg_im(app);
