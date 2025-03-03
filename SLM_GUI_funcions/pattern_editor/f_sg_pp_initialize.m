@@ -29,6 +29,10 @@ var_list = {'imagedirEditField', 'image_dir';...
             'spacingYEditField', 'spacingY';...
             'shiftXEditField', 'shiftX';...
             'shiftXEditField', 'shiftY';...
+            'VMaxSlider', 'vmaxslider';...
+            'VMaxLabel', 'vmaxlabel';...
+            'zdepth_mutex', 'zmutex';...
+            'current_colormap', 'cur_cmap';...
             };
         
 for n_var = 1:size(var_list,1)
@@ -43,6 +47,7 @@ app.data.plot_im = imagesc(app.UIAxes, []);
 hold(app.UIAxes, 'on');
 axis(app.UIAxes, 'tight');
 axis(app.UIAxes, 'equal');
+f_sg_pp_update_colormap(app);
 f_sg_pp_update_axes(app);
 
 app.data.plot_points = plot(app.UIAxes, 0, 0, '.r');
@@ -64,6 +69,7 @@ if ~isempty(app.app_main.UIImagePhaseTable.Data)
     end
 end
 %%
+f_sg_pp_init_z_depth_spinner(app);
 f_sg_pp_update_pat_plot(app);
 f_sg_pp_update_bkg_im(app);
 f_sg_pp_update_group_text(app);

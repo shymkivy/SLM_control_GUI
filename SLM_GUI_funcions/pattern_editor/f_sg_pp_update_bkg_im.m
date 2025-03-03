@@ -23,4 +23,6 @@ app.data.plot_im.CData = im1;
 
 f_sg_pp_update_axes(app);
 
+f_sg_pp_update_v_range(app);  % update range of v-max slider
+
 end
