@@ -20,6 +20,8 @@ zoom = app.ZoomEditField.Value;
 
 app.UIAxes.XLim = [-FOV_size/zoom/2 FOV_size/zoom/2] + xy_offset(1);
 app.UIAxes.YLim = [-FOV_size/zoom/2 FOV_size/zoom/2] + xy_offset(2);
+app.UIAxes.XLabel.String = ('X (µm)');
+app.UIAxes.YLabel.String = ('Y (µm)');
 app.data.plot_im.XData = app.UIAxes.XLim;
 app.data.plot_im.YData = app.UIAxes.YLim;
 

@@ -41,6 +41,10 @@ for n_var = 1:size(var_list,1)
     end
 end
 
+%% Initialize zoom
+app.ZoomEditField.Value = app.app_main.SLM_ops.zoom;
+
+
 %% initialize plot
 
 app.data.plot_im = imagesc(app.UIAxes, []);
