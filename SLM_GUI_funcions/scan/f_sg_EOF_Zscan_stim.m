@@ -18,8 +18,7 @@ n_SLM_stim = 1;
 tic;
 
 scan1 = inputSingleScan(session);
-%stim_type = round(scan1(2)/5*(num_stim-1));
-stim_type = round(scan1(2)+1);
+stim_type = round(scan1(2)/5*(num_stim-1));
 f_SLM_update(app.SLM_ops, holo_pointers{1,stim_type}); 
 pause(0.01)
 frame_start_times(1) = toc;
@@ -28,7 +27,7 @@ disp('Ready to start imaging');
 while imaging
     scan1 = inputSingleScan(session);
     scan_frame = scan1(1)+1;
-    stim_type = round(scan1(2)+1);
+    stim_type = round(scan1(2)/5*(num_stim-1));
     if scan_frame > SLM_frame  % if new frame
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1,stim_type});
         frame_start_times(scan_frame) = toc;
