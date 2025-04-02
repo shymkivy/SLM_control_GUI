@@ -132,9 +132,10 @@ classdef sdk4851 < handle
             ops.val_complete = calllib('Blink_C_wrapper', 'Write_overdrive_image', ops.board_number, image_pointer, ...
                     ops.wait_For_Trigger, ops.external_Pulse, ops.timeout_ms);
         end
-        function image_write_complete(ops)
+        function write_complete = image_write_complete(ops)
             % checks if image is complete
-            ops.val_complete = calllib('Blink_C_wrapper', 'ImageWriteComplete', ops.board_number, ops.timeout_ms);
+            write_complete = calllib('Blink_C_wrapper', 'ImageWriteComplete', ops.board_number, ops.timeout_ms);
+            ops.val_complete = write_complete;
         end
         function load_lut(ops)
             if ops.SDK_created

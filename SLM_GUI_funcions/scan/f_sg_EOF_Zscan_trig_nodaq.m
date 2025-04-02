@@ -42,7 +42,7 @@ last_time = toc;
 while imaging
 
     % waits for write zero means it was success
-    write_complete = f_SLM_BNS1920_write_complete(scan_ops);
+    write_complete = scan_ops.sdkObj.image_write_complete();
     if write_complete
         % load the next frame, which is SLM_frame+1
         scan_frame = scan_frame + 1;
