@@ -13,12 +13,12 @@ close all
 %path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
 path1 = 'C:\Users\ys2605\Desktop\stuff\data_others\dhruv\';
 
-%fname_lut = 'photodiode_lut_1064_slm5221_fianium_corr2_128r_11_07_21_22h_39m.mat';
+%fname_data = 'photodiode_lut_1064_slm5221_fianium_corr2_128r_11_07_21_22h_39m.mat';
 fname_data = 'photodiode_lut_920_maitai_1r_03_20_25_18h_28m.mat';
 
 %save_tag = 'photodiode_lut_1064_slm5221_4_7_22_right_half_corr2';
 %save_tag = 'globar_cor';
-save_tag = 'test_cor';
+save_tag = 'lut_920_03_20_25_18h_28m';
 
 addpath([pwd '\calibration_functions']);
 %addpath([pwd '/calibration_functions']);
@@ -46,8 +46,8 @@ intens_all = data_load.AI_intensity;
 ops_lut = data_load.ops;
 
 if isfield(ops_lut, 'sdkObj')
-    SLMm = ops_lut.sdkObj.height;
-    SLMn = ops_lut.sdkObj.width;
+    SLMm = ops_lut.SLM_params_use.height;
+    SLMn = ops_lut.SLM_params_use.width;
 else
     SLMm = ops_lut.height;
     SLMn = ops_lut.width;
@@ -385,6 +385,8 @@ if num_regions_SLM > 1
     f_plot_lut_corr(subreg_px_3d_corr_ip);
 end
 %% save full region corrections
+% the correction file should be used together with lut used during generation
+disp('the correction file needs to be used with global .LUT file used during corrections')
 lut_corr = struct();
 lut_corr.lut_corr = full_region_px_corr;
 lut_corr.SLMrm = 1;
@@ -392,15 +394,24 @@ lut_corr.SLMrn = 1;
 lut_corr.gray = gray1;
 lut_corr.mmm_idx = full_region_mmm_idx_corr;
 lut_corr.fname_data = fname_data;
+lut_corr.fname_lut = ops_lut.SLM_params.lut_fname;
 lut_corr.regions_run = regions_run;
-lut_corr.ops = data_load.ops;
+lut_corr.ops = ops_lut;
 
 fname_save = [path1 save_tag '_full_region_corr.mat'];
 save(fname_save, 'lut_corr');
 
 if  num_regions_SLM == 1
     % also generate new global lut file, in case only 1 region
-    lut_array = f_SLM_read_lut(path1 + data_load.ops.SLM_params.lut_fname);
+    lut_array = f_SLM_read_lut([path1,data_load.ops.SLM_params.lut_fname]);
+    
+    vq = interp1(lut_array(:,1),lut_array(:,2),full_region_px_corr);
+    
+    lut_out = [lut_array(:,1), round(vq)];
+
+    f_SLM_write_lut(lut_out, [path1 save_tag '.LUT']);
+    disp('anohter alternative is to use the new .LUT file on its own without corrections, as a new global LUT');
+
 end
 %% save subregions corr
 if num_regions_SLM > 1
@@ -415,7 +426,9 @@ if num_regions_SLM > 1
     lut_corr.ops = data_load.ops;
     
     fname_save = [path1 save_tag '_sub_region_corr.mat'];
+    
     save(fname_save, 'lut_corr');
+    disp('')
 end
 
 %% save interp subregions corr

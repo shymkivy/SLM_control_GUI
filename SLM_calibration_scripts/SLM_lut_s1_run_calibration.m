@@ -89,7 +89,7 @@ save_pref = '1064_check_Fianium_maitai_corr2';
 ops.NumRegions = ops.num_regions_m  * ops.num_regions_n;
 
 %% add paths and create save name
-ops.time_stamp = sprintf('%s_%sh_%sm',datestr(now,'mm_dd_yy'),datestr(now,'HH'),datestr(now,'MM'));
+ops.time_stamp = sprintf('%s_%sh_%sm',datetime('now','Format','y_M_d'),datetime('now','Format','HH'),datetime('now','Format','MM'));
 ops.save_file_name = sprintf('lut_%s_%dr_%s.mat', save_pref,ops.NumRegions, ops.time_stamp);
 if ~exist(ops.save_lut_dir, 'dir')
     mkdir(ops.save_lut_dir);
@@ -187,7 +187,7 @@ if ops.sdkObj.SDK_created == 1 && strcmpi(cont1, 'y')
     if ops.plot_phase
         SLM_fig = figure;
         SLM_im = imagesc(reshape(SLM_mask.Value, ops.sdkObj.width, ops.sdkObj.height)'); axis equal tight;
-        caxis([0 255]);
+        clim([0 255]);
         SLM_fig.Children.Title.String = 'SLM phase';
     end
     
