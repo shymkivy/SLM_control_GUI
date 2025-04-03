@@ -27,10 +27,10 @@ addpath([pwd '\calibration_functions']);
 params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
 %params.smooth_win = 20;
 
-params.manual_selection = 1; % manually select peaks for fit
-params.order_use = 1;   % zero order vs first order spots
+% if automatic fitting is not working well, use manual to select window for the fit
+params.manual_peak_selection = 1; % manually select peaks for fit
+params.order_use = 1;   % zero order vs first order spots, where the photodiode was placed
 
-%params.manual_peak_selection = 0;
 params.plot_stuff = 0;
 
 sm_spline_global = 0.5; % modify for different level of smoothing

@@ -19,10 +19,10 @@ if ~isfield(params, 'plot_stuff')
 end
 plot_stuff = params.plot_stuff;
 
-if ~isfield(params, 'manual_selection')
-    params.manual_selection = 0;
+if ~isfield(params, 'manual_peak_selection')
+    params.manual_peak_selection = 0;
 end
-manual_selection = params.manual_selection;
+manual_selection = params.manual_peak_selection;
 manual_method = 2;      % this selects window
 extend_mins = 0;
 if smooth_win
