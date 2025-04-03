@@ -17,6 +17,10 @@ classdef GUIobj < handle
             im_out = reshape(holo_image,ops.width,ops.height)';
 
         end
+        function pointer_out = uint8im_to_pointer(ops, im_in)
+            pointer_out = ops.init_pointer();
+            pointer_out.value = reshape(im_in', [],1);
+        end
         function pointer_out = im_to_pointer(ops, holo_image)
             pointer_out = ops.init_pointer();
             temp_holo = uint8((holo_image/(2*pi))*255);

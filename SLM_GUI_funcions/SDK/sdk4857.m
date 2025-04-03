@@ -17,6 +17,7 @@ classdef sdk4857 < handle
         output_pulse_image_refresh = 0;
         true_frames = 3;
         use_GPU = 0;    % this is specific to ODP slms (512)
+        WFC_im = [];
 
         init_lut_fpath = libpointer('string'); % null for new bns, only important for old
         lut_path = '';
@@ -57,6 +58,13 @@ classdef sdk4857 < handle
             ops.height = SLM_ops.height;
             ops.width = SLM_ops.width;
             ops.bit_depth = SLM_ops.bit_depth;
+
+            if isfield(SLM_ops, 'WFC_fname')
+                if ~isempty(SLM_ops.WFC_fname)
+                    WFC_fpath = [SLM_ops.lut_dir '\' SLM_ops.WFC_fname];
+                    ops.WFC_im = imread(WFC_fpath);
+                end
+            end
 
         end
         %%
@@ -116,7 +124,6 @@ classdef sdk4857 < handle
         end
         %%
         function write_image(ops, image_pointer)
-
             % loads image 857 ver
             ops.val_complete = calllib('Blink_C_wrapper', 'Write_image', ops.board_number, image_pointer,...
                     ops.width*ops.height, ops.wait_For_Trigger, ops.flip_immediate,...
@@ -156,6 +163,27 @@ classdef sdk4857 < handle
             %destruct
             if libisloaded('Blink_C_wrapper')
                 unloadlibrary('Blink_C_wrapper');
+            end
+        end
+
+        function pointer = add_WFC(ops, pointer)
+            if ~isempty(ops.WFC_im)
+                im1 = double(reshape(pointer.Value, ops.width, ops.height))/255*2*pi;
+                % transform back
+                WFC_im1 = double(ops.WFC_im')/255*2*pi-pi;
+                WFC2 = unwrap(WFC_im1);
+                WFC3 = angle(exp(1i * (WFC2*1064/940)));
+                phase_sum = angle(exp(1i * (WFC3)) .* exp(1i * (im1)))+pi;
+                
+                %figure; imagesc(atan2(sin(WFC_im1-pi), cos(WFC_im1-pi)))
+                %figure; imagesc(sin(WFC_im1-pi))
+                %figure(); imagesc(im1')
+                %figure(); imagesc(WFC3')
+                %figure(); imagesc(WFC_im1')
+                %figure(); imagesc(phase_sum')
+                %figure(); hold on; plot(WFC_im1(:,500)); plot(WFC2(:,500)); plot(WFC3(:,500))
+
+                pointer.Value = reshape(phase_sum/2/pi*255, ops.width*ops.height,1);
             end
         end
     end
