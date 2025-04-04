@@ -11,7 +11,7 @@ else
     disp('SLM is not active')
 end
 
-%im1 = double(reshape(image_pointer.Value, ops.sdkObj.width, ops.sdkObj.height))/255*2*pi;
+%im1 = double(reshape(image_pointer.Value, ops.sdkObj.width, ops.sdkObj.height))/256*2*pi;
 %phase_sum = angle(exp(1i * (WFC_im1-pi)) .* exp(1i * (im1)))+pi;
 
 %figure(); imagesc(im1')

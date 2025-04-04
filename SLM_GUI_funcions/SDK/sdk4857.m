@@ -97,8 +97,8 @@ classdef sdk4857 < handle
                 disp('Blink SDK was successfully constructed');
                 fprintf('Found %u SLM controller(s)\n', obj.num_boards_found.value);
                 
-                obj.height = calllib('Blink_C_wrapper', 'Get_image_height', obj.board_number);
-                obj.width = calllib('Blink_C_wrapper', 'Get_image_width', obj.board_number);
+                %obj.height = calllib('Blink_C_wrapper', 'Get_image_height', obj.board_number);
+                %obj.width = calllib('Blink_C_wrapper', 'Get_image_width', obj.board_number);
                 
                 if obj.height == 512
                     % Turn the SLM power on
@@ -141,8 +141,12 @@ classdef sdk4857 < handle
         end
         function load_lut(ops)
             if ops.SDK_created
-                fprintf('Uploading lut %s\n', ops.lut_path);
-                ops.val_complete = calllib('Blink_C_wrapper', 'Load_LUT_file',ops.board_number, ops.lut_path);
+                if ~ops.is_OD
+                    fprintf('Uploading lut %s\n', ops.lut_path);
+                    ops.val_complete = calllib('Blink_C_wrapper', 'Load_LUT_file',ops.board_number, ops.lut_path);
+                else
+                    Disp('Overdrive SLM uses regional lut loaded on startup');
+                end
             end
         end
         function load_linear_lut(ops)
@@ -168,22 +172,24 @@ classdef sdk4857 < handle
 
         function pointer = add_WFC(ops, pointer)
             if ~isempty(ops.WFC_im)
-                im1 = double(reshape(pointer.Value, ops.width, ops.height))/255*2*pi;
+                im1 = double(reshape(pointer.Value, ops.width, ops.height))/256*2*pi;
                 % transform back
-                WFC_im1 = double(ops.WFC_im')/255*2*pi-pi;
-                WFC2 = unwrap(WFC_im1);
-                WFC3 = angle(exp(1i * (WFC2*1064/940)));
-                phase_sum = angle(exp(1i * (WFC3)) .* exp(1i * (im1)))+pi;
+                WFC1 = double(ops.WFC_im)/256*2*pi;
+                WFC2 = unwrap(WFC1);
+                phase_sum = angle(exp(1i * ((WFC2')*1064/940-pi)) .* exp(1i * (im1)))+pi;
+                %WFC3 = angle(exp(1i * (WFC2*1064/940-pi)))+pi;
+                %phase_sum2 = angle(exp(1i * (WFC3'-pi)) .* exp(1i * (im1)))+pi;
                 
+
                 %figure; imagesc(atan2(sin(WFC_im1-pi), cos(WFC_im1-pi)))
                 %figure; imagesc(sin(WFC_im1-pi))
-                %figure(); imagesc(im1')
+                %figure(); imagesc(WFC1')
                 %figure(); imagesc(WFC3')
                 %figure(); imagesc(WFC_im1')
                 %figure(); imagesc(phase_sum')
-                %figure(); hold on; plot(WFC_im1(:,500)); plot(WFC2(:,500)); plot(WFC3(:,500))
+                %figure(); hold on; plot(WFC1(500,:)); plot(WFC2(500,:)); plot(WFC3(500,:))
 
-                pointer.Value = reshape(phase_sum/2/pi*255, ops.width*ops.height,1);
+                pointer.Value = reshape(phase_sum/2/pi*256, ops.width*ops.height,1);
             end
         end
     end

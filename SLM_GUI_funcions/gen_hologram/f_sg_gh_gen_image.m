@@ -77,7 +77,7 @@ elseif strcmpi(pattern, 'cross')
     cross_im(cross_im_ind == 0) = app.CrossPixelValueEditField.Value;
     cross_im(cross_im_ind == 1) = app.CrossGrayEditField.Value;
     
-    holo_phase = (cross_im)/255*2*pi;
+    holo_phase = (cross_im)/256*2*pi;
 
     pointer.Value = f_sg_im_to_pointer(holo_phase);
 else

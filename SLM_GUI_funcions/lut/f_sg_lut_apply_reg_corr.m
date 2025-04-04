@@ -2,7 +2,7 @@ function holo_corr = f_sg_lut_apply_reg_corr(SLM_phase, reg1)
 % apply lut correction for current region
 
 % convert full phase to 256int
-temp_holo = uint8(((SLM_phase+pi)/(2*pi))*255);
+temp_holo = uint8(((SLM_phase+pi)/(2*pi))*256);
 
 if ~isempty(reg1.lut_correction_data)
     

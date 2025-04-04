@@ -13,7 +13,7 @@ classdef GUIobj < handle
             pointer = libpointer('uint8Ptr', zeros(ops.height*ops.width,1));
         end
         function im_out = pointer_to_im(ops, pointer_in)
-            holo_image = double(mod(pointer_in.Value, 256))/255*2*pi;
+            holo_image = double(mod(pointer_in.Value, 256))/256*2*pi;
             im_out = reshape(holo_image,ops.width,ops.height)';
 
         end
@@ -23,7 +23,7 @@ classdef GUIobj < handle
         end
         function pointer_out = im_to_pointer(ops, holo_image)
             pointer_out = ops.init_pointer();
-            temp_holo = uint8((holo_image/(2*pi))*255);
+            temp_holo = uint8((holo_image/(2*pi))*256);
             pointer_out.value = reshape(temp_holo', [],1);
         end
         function blank_phase_p = generateBlankP(ops)
