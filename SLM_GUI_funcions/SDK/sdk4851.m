@@ -18,6 +18,7 @@ classdef sdk4851 < handle
         true_frames = 3;
         use_GPU = 0;    % this is specific to ODP slms (512)
         WFC_im = [];
+        WCF_add_on_update = 1;      % alternative to add on pattern generation step, before lut
 
         init_lut_fpath = libpointer('string'); % null for new bns, only important for old
         lut_path = '';

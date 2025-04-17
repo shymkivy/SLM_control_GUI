@@ -1,7 +1,9 @@
 function f_SLM_update(ops, image_pointer)
 
 if ops.sdkObj.SDK_created
-    %image_pointer = ops.sdkObj.add_WFC(image_pointer)
+    if ops.sdkObj.WCF_add_on_update
+        image_pointer = ops.sdkObj.add_WFC(image_pointer);
+    end
     if ops.sdkObj.is_OD
         ops.sdkObj.write_image_OD(image_pointer);
     else

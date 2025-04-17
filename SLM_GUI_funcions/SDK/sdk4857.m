@@ -18,6 +18,7 @@ classdef sdk4857 < handle
         true_frames = 3;
         use_GPU = 0;    % this is specific to ODP slms (512)
         WFC_im = [];
+        WCF_add_on_update = 1;      % alternative to add on pattern generation step, before lut
 
         init_lut_fpath = libpointer('string'); % null for new bns, only important for old
         lut_path = '';
@@ -184,7 +185,7 @@ classdef sdk4857 < handle
                 %figure; imagesc(atan2(sin(WFC_im1-pi), cos(WFC_im1-pi)))
                 %figure; imagesc(sin(WFC_im1-pi))
                 %figure(); imagesc(WFC1')
-                %figure(); imagesc(WFC3')
+                %figure(); imagesc(WFC2')
                 %figure(); imagesc(WFC_im1')
                 %figure(); imagesc(phase_sum')
                 %figure(); hold on; plot(WFC1(500,:)); plot(WFC2(500,:)); plot(WFC3(500,:))

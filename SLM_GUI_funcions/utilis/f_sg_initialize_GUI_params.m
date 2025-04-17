@@ -2,13 +2,13 @@ function f_sg_initialize_GUI_params(app)
 ops = app.SLM_ops;
 
 %% update lut corrections
-parmals_to_init = {'lut_correction_fname', 'xyz_affine_tf_fname',...
+params_to_init = {'lut_correction_fname', 'xyz_affine_tf_fname',...
                    'AO_correction_fname', 'point_weight_correction_fname',...
                    'lut_correction_data', 'AO_wf', 'pw_corr_data'};
                                
-for n_par = 1:numel(parmals_to_init)
-    if ~isfield(app.region_obj_params, parmals_to_init{n_par})
-        app.region_obj_params(1).(parmals_to_init{n_par}) = [];
+for n_par = 1:numel(params_to_init)
+    if ~isfield(app.region_obj_params, params_to_init{n_par})
+        app.region_obj_params(1).(params_to_init{n_par}) = [];
     end
 end
 
