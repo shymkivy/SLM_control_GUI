@@ -176,19 +176,7 @@ classdef sdk4857 < handle
                 im1 = double(reshape(pointer.Value, ops.width, ops.height))/256*2*pi;
                 % transform back
                 WFC1 = double(ops.WFC_im)/256*2*pi;
-                WFC2 = unwrap(WFC1);
-                phase_sum = angle(exp(1i * ((WFC2')*1064/940-pi)) .* exp(1i * (im1)))+pi;
-                %WFC3 = angle(exp(1i * (WFC2*1064/940-pi)))+pi;
-                %phase_sum2 = angle(exp(1i * (WFC3'-pi)) .* exp(1i * (im1)))+pi;
-                
-
-                %figure; imagesc(atan2(sin(WFC_im1-pi), cos(WFC_im1-pi)))
-                %figure; imagesc(sin(WFC_im1-pi))
-                %figure(); imagesc(WFC1')
-                %figure(); imagesc(WFC2')
-                %figure(); imagesc(WFC_im1')
-                %figure(); imagesc(phase_sum')
-                %figure(); hold on; plot(WFC1(500,:)); plot(WFC2(500,:)); plot(WFC3(500,:))
+                phase_sum = angle(exp(1i * ((WFC1')-pi)) .* exp(1i * (im1)))+pi;
 
                 pointer.Value = reshape(phase_sum/2/pi*256, ops.width*ops.height,1);
             end
