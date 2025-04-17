@@ -177,8 +177,8 @@ classdef sdk4857 < handle
                 % transform back
                 WFC1 = double(ops.WFC_im)/256*2*pi;
                 phase_sum = angle(exp(1i * ((WFC1')-pi)) .* exp(1i * (im1)))+pi;
-
-                pointer.Value = reshape(phase_sum/2/pi*256, ops.width*ops.height,1);
+                im2 = uint8(phase_sum/2/pi*256);
+                pointer.Value = reshape(im2, ops.width*ops.height,1);
             end
         end
     end
