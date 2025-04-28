@@ -14,21 +14,27 @@ stim_times_types = zeros(num_planes_all,2); % should not be more than num scans
 SLM_frame = 1;
 SLM_stim_type = 0;
 n_SLM_stim = 1;
-[num_planes, ~] = size(holo_pointers);
+[num_planes, num_stim] = size(holo_pointers);
+
+stim_type_ids = linspace(0, 5, num_stim);
+fprintf('\nSTIM IDS (0=BLANK)\n');
+for idx = 1:num_stim
+    fprintf('(%s): %.3f\n', string([idx-1, stim_type_ids(idx)]));
+end
 tic;
 
 scan1 = inputSingleScan(session);
-%stim_type = round(scan1(2)/5*(num_stim-1));
-stim_type = round(scan1(2)+1);
+stim_type = round(scan1(2)/5*(num_stim-1)); % 0 is blank, 1-N for N patterns
 f_SLM_update(app.SLM_ops, holo_pointers{1,stim_type}); 
 pause(0.01)
 frame_start_times(1) = toc;
+
 
 disp('Ready to start imaging');
 while imaging
     scan1 = inputSingleScan(session);
     scan_frame = scan1(1)+1;
-    stim_type = round(scan1(2)+1);
+    stim_type = round(scan1(2)/5*(num_stim-1));
     if scan_frame > SLM_frame  % if new frame
         f_SLM_update(app.SLM_ops, holo_pointers{rem(scan_frame-1,num_planes)+1,stim_type});
         frame_start_times(scan_frame) = toc;
