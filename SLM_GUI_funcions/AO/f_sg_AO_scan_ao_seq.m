@@ -29,13 +29,13 @@ for n_scan = 1:num_scans
     f_SLM_update(app.SLM_ops, ao_temp.holo_im_pointer)
     pause(0.005); % wait 3ms for SLM to stabilize
 
-    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+    f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value, ao_params.use_counter);
 end
 
 num_scans_done = num_scans_done + num_scans;
 
 % make extra scan because stupid scanimage
-f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value, ao_params.use_counter);
 num_scans_done = num_scans_done + 1;
 f_sg_AO_wait_for_frame_convert(ao_temp.scan_path, num_scans_done);
 

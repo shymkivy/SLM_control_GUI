@@ -23,7 +23,7 @@ if sum(idx1)
 
         num_tr = numel(pat_all2);
         stim_times = zeros(num_tr,1);
-        stim_times(1) = round(init_delay*1000);
+        stim_times(1) = max(round(init_delay*1000), 1);
         for n_tr = 2:num_tr
             shift = round((duration + isi + rand(1)*isi_jitter)*1000);
             stim_times(n_tr) = stim_times(n_tr-1) + shift;
@@ -31,7 +31,7 @@ if sum(idx1)
         
         trace1 = zeros(round(max(stim_times)+(duration + isi + isi_jitter)*1000),1);
         for n_st = 1:numel(stim_times)
-            trace1(stim_times(n_st):(stim_times(n_st)+round(duration*1000))) = pat_all2(n_st);
+            trace1(stim_times(n_st):(stim_times(n_st)+round(duration*1000)-1)) = pat_all2(n_st);
         end
         
         custom_stim.stim_times = stim_times;

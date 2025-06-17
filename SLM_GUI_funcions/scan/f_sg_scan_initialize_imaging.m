@@ -17,7 +17,7 @@ if app.InitializeimagingButton.Value
         end
         
         if ~strcmpi(app.PatternDropDownAI.Value, 'none')
-            [holo_patterns_stim, stim_params, group_table_stim] = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 0);
+            [holo_patterns_stim, stim_params, group_table_stim] = f_sg_scan_make_images(app, app.PatternDropDownAI.Value, 1);
             num_stim = size(holo_patterns_stim,3);
         else
             num_stim = 0;
@@ -50,12 +50,12 @@ if app.InitializeimagingButton.Value
         elseif and(~num_planes, num_stim) % if only stim
             disp('Running stimulation only');
             
-            holo_pointers = cell(1,num_stim+1);
+            holo_pointers = cell(1,num_stim);
             for n_st = 1:num_stim
                 holo_phase = init_image_lut;
                 holo_phase(stim_params.m_idx, stim_params.n_idx) = holo_patterns_stim(:,:, n_st);
-                holo_pointers{1,n_st+1} = f_sg_initialize_pointer(app);
-                holo_pointers{1,n_st+1}.Value = reshape(holo_phase', [],1);
+                holo_pointers{1,n_st} = f_sg_initialize_pointer(app);
+                holo_pointers{1,n_st}.Value = reshape(holo_phase', [],1);
                 % figure; imagesc(reshape(holo_pointers{n_gr,n_st+1}.Value, [1920 1152])')
             end
             
@@ -72,17 +72,17 @@ if app.InitializeimagingButton.Value
         elseif and(num_planes, num_stim) % if both
             disp('Running both imaging and stimulation');
             
-            holo_pointers = cell(num_planes,num_stim+1);
+            holo_pointers = cell(num_planes,num_stim);
             for n_gr = 1:num_planes
                 holo_phase = zeros(size(init_image_lut), 'uint8');
                 holo_phase(im_params.m_idx, im_params.n_idx) = holo_patterns_im(:,:, n_gr);
-                holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
-                holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
+                %holo_pointers{n_gr,1} = f_sg_initialize_pointer(app);
+                %holo_pointers{n_gr,1}.Value = reshape(holo_phase', [],1);
                 % figure; imagesc(reshape(holo_pointers{n_gr,1}.Value, [1920 1152])')
                 for n_st = 1:num_stim
                     holo_phase(stim_params.m_idx, stim_params.n_idx) = holo_patterns_stim(:,:, n_st);
-                    holo_pointers{n_gr,n_st+1} = f_sg_initialize_pointer(app);
-                    holo_pointers{n_gr,n_st+1}.Value = reshape(holo_phase', [],1);
+                    holo_pointers{n_gr,n_st} = f_sg_initialize_pointer(app);
+                    holo_pointers{n_gr,n_st}.Value = reshape(holo_phase', [],1);
                     % figure; imagesc(reshape(holo_pointers{n_gr,n_st+1}.Value, [1920 1152])')
                 end
             end

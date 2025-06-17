@@ -45,6 +45,11 @@ ao_temp.scan_path = app.ScanframesdirpathEditField.Value;
 
 ao_params.name_tag = name_tag;
 
+ao_params.use_counter = 1;
+if strcmpi(app.TriggertypeDropDown.Value, 'Trigger to GUI')
+    ao_params.use_counter = 0;
+end
+
 ao_temp.name_tag_full = sprintf('%s\\%s_z%d',...
             app.SLM_ops.save_AO_dir, name_tag, ao_params.init_coord.xyzp(3));
 

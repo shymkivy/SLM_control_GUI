@@ -14,7 +14,7 @@ if ~strcmpi(pattern, 'none')
     
     group_table = app.xyz_patterns(idx_pat).xyz_pts;
     groups = unique(group_table.Pattern);
-    
+
     %% precompute hologram patterns
     num_groups = numel(groups);
     
@@ -69,8 +69,25 @@ if ~strcmpi(pattern, 'none')
     end
     
     if add_blank
-        holo_zero = zeros(reg1.SLMm, reg1.SLMn, 'uint8');
-        holo_phase_all = cat(3,holo_zero,holo_phase_all);
+        %holo_zero = zeros(reg1.SLMm, reg1.SLMn, 'uint8');
+
+        coord_blank.xyzp = [reg1.beam_dump_xy(1), reg1.beam_dump_xy(2), 0];
+        coord_blank.W_est = 1;
+        [~, ~, SLM_phase_zero_corr, ~, ~] = f_sg_xyz_gen_SLM_phase(app, coord_blank, reg1, app.ApplyAOcorrectionButton.Value, app.XYZpatalgotithmDropDown.Value);
+        if app.ApplyZOsuppressionButton.Value
+            SLM_phase_zero_corr = f_sg_apply_ZO_corr(SLM_phase_zero_corr, reg1);
+            %SLM_phase = f_sg_apply_ZO_corr(SLM_phase, reg1);
+        end
+        
+        %% apply mask
+        if reg1.zero_outside_phase_diameter
+            %SLM_phase(~reg1.holo_mask) = 0;
+            SLM_phase_zero_corr(~reg1.holo_mask) = 0;
+        end
+        
+        SLM_phase_zero_corr_lut = f_sg_lut_apply_reg_corr(SLM_phase_zero_corr, reg1);
+
+        holo_phase_all = cat(3,SLM_phase_zero_corr_lut,holo_phase_all);
     end
 else
     holo_phase_all = [];
