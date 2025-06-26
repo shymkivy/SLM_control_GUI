@@ -10,15 +10,15 @@ clear;
 close all
 
 %%
-%path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
-path1 = 'C:\Users\ys2605\Desktop\stuff\data_others\dhruv\';
+path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
+%path1 = 'C:\Users\ys2605\Desktop\stuff\data_others\dhruv\';
 
-%fname_data = 'photodiode_lut_1064_slm5221_fianium_corr2_128r_11_07_21_22h_39m.mat';
-fname_data = 'photodiode_lut_920_maitai_1r_03_20_25_18h_28m.mat';
+fname_data = '4x8_5400mW_photodiode_lut_spirit_victor_32r_2025_6_26_11h_06m.mat';
+%fname_data = 'photodiode_lut_920_maitai_1r_03_20_25_18h_28m.mat';
 
 %save_tag = 'photodiode_lut_1064_slm5221_4_7_22_right_half_corr2';
 %save_tag = 'globar_cor';
-save_tag = 'lut_920_03_20_25_18h_28m';
+save_tag = 'victor111';
 
 addpath([pwd '\calibration_functions']);
 %addpath([pwd '/calibration_functions']);
@@ -36,6 +36,8 @@ params.plot_stuff = 0;
 sm_spline_global = 0.5; % modify for different level of smoothing
 % not enough smoothing may mess up peak selection, reduce for more
 sm_spline_reg = 0.0001; %0.0001; % modify for different level of smoothing  0.005 for 8*4
+
+pad_correction = 1.2;       % 1 for no padding (on right side); padding maybe good for recalibrations.
 
 %%
 data_load = load([path1 '/' fname_data]);
@@ -254,6 +256,8 @@ if num_regions_SLM > 1
         temp_lut_ssn = temp_lut_ssn./max(temp_lut_ssn);
         
         [px_fo, phi_fo, mmm_idx] = f_lut_fit_gamma2(temp_lut_ssn);
+
+        px_fo = min(px_fo*pad_correction,255);
         
         phi_fo_int = phi_fo*255;
         phi_fo_int2 = (0:255)';
@@ -421,7 +425,7 @@ if num_regions_SLM > 1
     lut_corr.SLMrn = 8;
     lut_corr.gray = gray1;
     lut_corr.mmm_idx = subreg_mmm_idx_3d_corr;
-    lut_corr.fname_lut = fname_lut;
+    lut_corr.fname_lut = ops_lut.SLM_params_use.lut_fname;
     lut_corr.regions_run_list = regions_run;
     lut_corr.ops = data_load.ops;
     
@@ -439,7 +443,7 @@ if num_regions_SLM > 1
     lut_corr.SLMrn = size(subreg_px_3d_corr_ip,2);
     lut_corr.gray = gray1;
     lut_corr.mmm_idx = subreg_mmm_idx_3d_corr_ip;
-    lut_corr.fname_lut = fname_lut;
+    lut_corr.fname_lut = ops_lut.SLM_params_use.lut_fname;
     lut_corr.regions_run_list = regions_run;
     lut_corr.ops = data_load.ops;
     

@@ -32,7 +32,8 @@ addpath(genpath(gui_dir));
 
 ops = f_SLM_default_ops(gui_dir);
 
-ops.lut_correction_fname = [];
+% enter correction to use here
+ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr';
 %ops.lut_correction_fname = 'photodiode_lut_940_slm5221_4_7_22_right_half_corr2_sub_region_interp_corr.mat';
 %ops.lut_correction_fname = 'photodiode_lut_1064_slm5221_4_7_22_left_half_corr2_sub_region_interp_corr.mat';
 
@@ -109,21 +110,23 @@ ops.guiObj = GUIobj(ops.sdkObj);
 lut_data = [];
 
 if ~isempty(ops.lut_correction_fname)
-    lut_corr_path = [ops.lut_dir '\' ops.lut_fname(1:end-4) '_correction\' ops.lut_correction_fname];
+    width = ops.sdkObj.width;
+    height = ops.sdkObj.height;
+    lut_corr_path = [ops.lut_dir '\' SLM_params.lut_fname(1:end-4) '_correction\' ops.lut_correction_fname];
     lut_load = load(lut_corr_path);    
     lut_data2(1).lut_corr = lut_load.lut_corr.lut_corr;
     
-    region_idx = f_gen_region_index_mask(ops.height, ops.width, ops.num_regions_m, ops.num_regions_n);
+    region_idx = f_gen_region_index_mask(height, width, ops.num_regions_m, ops.num_regions_n);
     
-    n_idx = ones(ops.width, 1);
-    n_px = ceil((1:ops.width)'/ops.width*ops.num_regions_n);
+    n_idx = ones(width, 1);
+    n_px = ceil((1:width)'/width*ops.num_regions_n);
     if strcmpi(slm_roi, 'right_half')
         n_idx(n_px <= floor(ops.num_regions_n/2)) = 0;
     elseif strcmpi(slm_roi, 'left_half')
         n_idx(n_px > floor(ops.num_regions_n/2)) = 0;
     end
     
-    lut_data2(1).m_idx = ones(ops.height, 1);
+    lut_data2(1).m_idx = ones(height, 1);
     lut_data2(1).n_idx = n_idx;
     lut_data = [lut_data; lut_data2];
 end
@@ -207,6 +210,13 @@ if ops.sdkObj.SDK_created == 1 && strcmpi(cont1, 'y')
         phd_plot = plot(x1,y1); axis tight;
         %caxis([1 256]);
         phd_fig.Children.Title.String = 'Photodiode';
+
+        % wait 30 sec to let voltage stabilize
+        tic;
+        while toc<30
+            data = read(session,ops.DAQ_num_sessions,"OutputFormat","Matrix");
+            pause(0.01)
+        end
     end
     
     %loop through each region
