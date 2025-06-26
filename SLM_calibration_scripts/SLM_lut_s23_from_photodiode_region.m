@@ -255,9 +255,10 @@ if num_regions_SLM > 1
         temp_lut_ssn = temp_lut_ss - min(temp_lut_ss);
         temp_lut_ssn = temp_lut_ssn./max(temp_lut_ssn);
         
-        [px_fo, phi_fo, mmm_idx] = f_lut_fit_gamma2(temp_lut_ssn);
-
-        px_fo = min(px_fo*pad_correction,255);
+        [px_fo0, phi_fo, mmm_idx] = f_lut_fit_gamma2(temp_lut_ssn);
+        
+        base1 = min(px_fo0);
+        px_fo = min((px_fo0-base1)*pad_correction+base1,255);
         
         phi_fo_int = phi_fo*255;
         phi_fo_int2 = (0:255)';
