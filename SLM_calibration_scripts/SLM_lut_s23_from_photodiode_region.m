@@ -37,7 +37,7 @@ sm_spline_global = 0.5; % modify for different level of smoothing
 % not enough smoothing may mess up peak selection, reduce for more
 sm_spline_reg = 0.0001; %0.0001; % modify for different level of smoothing  0.005 for 8*4
 
-pad_correction = 1.2;       % 1 for no padding (on right side); padding maybe good for recalibrations.
+pad_correction = 1;       % 1 for no padding (on right side); padding maybe good for recalibrations.
 
 %%
 data_load = load([path1 '/' fname_data]);
