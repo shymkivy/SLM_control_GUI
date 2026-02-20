@@ -11,12 +11,10 @@ close all
 
 
 %%
-path1 = 'C:\Users\ys2605\Desktop\stuff\SLM_GUI\SLM_outputs\lut_calibration\';
-%path1 = '/Users/yuriyshymkiv/Desktop/matlab/SLM_GUI/SLM_outputs/lut_calibration/';
+fname_lut = 'photodiode_lut_920nm_coherent_100pv_1kterm_pin_det10A_2r_2r_01_25_25_23h_04m';
+path1 = 'C:\Users\rylab_901c_slm\PycharmProjects\split_slm\slm_legacy\SLM_GUI\SLM_GUI\darik\calibrations\luts'
 
-fname_lut = 'photodiode_lut_1064_slm5221_fianium_corr2_128r_11_07_21_22h_39m.mat';
-
-save_tag = 'photodiode_lut_1064_slm5221_4_7_22_right_half_corr2';
+save_tag = 'test';
           
 addpath([pwd '\calibration_functions']);
 %addpath([pwd '/calibration_functions']);
@@ -27,7 +25,7 @@ params.two_photon = 0; % is intensity 2p? since 2pFl ~ I^2, will take sqrt
 params.order_use = 1;
 
 params.manual_peak_selection = 0;
-params.plot_stuff = 0;
+params.plot_stuff = 1;
 
 sm_spline_global = 0.5; % modify for different level of smoothing
 % not enough smoothing may mess up peak selection, reduce for more
