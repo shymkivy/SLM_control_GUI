@@ -103,7 +103,7 @@ disp_x = disp_xy(is_x2,:);
 input1x = input_x(:,1);
 target1x = disp_x(:,1);
 
-yfx = fit(input1x, target1x, 'poly1');
+yfx = f_sg_fit_simple(input1x, target1x, 'poly1');
 input2x = min(input1x):max(input1x);
 
 is_y = input_xy(:,2) ~= 0;
@@ -118,7 +118,7 @@ disp_y = disp_xy(is_y2,:);
 input1y = input_y(:,2);
 target1y = disp_y(:,2);
 
-yfy = fit(input1y, target1y, 'poly1');
+yfy = f_sg_fit_simple(input1y, target1y, 'poly1');
 input2y = min(input1y):max(input1y);
 
 figure; hold on;

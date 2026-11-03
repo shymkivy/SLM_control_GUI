@@ -29,7 +29,14 @@ if app.ApplyAOcorrectionButton.Value
                 zernike_nm_all = f_sg_get_zernike_mode_nm(0:maxZn);
                 wf_out.all_modes = f_sg_gen_zernike_modes(reg1, zernike_nm_all);
 
-                if isfield(AO_corr1, 'fit_fx')  % load
+                % saved cfit fits can't be evaluated without the toolbox -> refit
+                saved_usable = isfield(AO_corr1, 'fit_fx') && (f_sg_has_curvefit() || ...
+                    (iscell(AO_corr1.fit_fx) && all(cellfun(@(f) isempty(f) || isa(f, 'function_handle'), AO_corr1.fit_fx)) && ...
+                    (~isfield(AO_corr1, 'fit_defocus_comp') || isnumeric(AO_corr1.fit_defocus_comp) || isa(AO_corr1.fit_defocus_comp, 'function_handle'))));
+                if isfield(AO_corr1, 'fit_fx') && ~saved_usable
+                    disp('Saved AO fit needs the Curve Fitting Toolbox; refitting from AO_data');
+                end
+                if saved_usable  % load
                     disp('Loading AO');
                     wf_out.fit_fx = AO_corr1.fit_fx;
                     wf_out.fit_weights = AO_corr1.fit_weights;
@@ -46,11 +53,13 @@ if app.ApplyAOcorrectionButton.Value
                     fit_params.ignore_zeros = app.Ignore0CheckBox.Value;
                     fit_params.plot_corr = app.PlotfitCheckBox.Value;
                     fit_params.plot_extra = app.PlotextraCheckBox.Value;
+                    fit_params.z_defocus_correct_thresh = app.ZcompthreshumEditField.Value;
                     AO_correction = f_sg_AO_do_zernike_fit(ao_data, 1:max_modes, fit_params);
 
                     wf_out.fit_weights = AO_correction.fit_weights;
                     wf_out.fit_eq = AO_correction.fit_eq;
                     wf_out.fit_fx = AO_correction.fit_fx;
+                    wf_out.fit_defocus_comp = AO_correction.fit_defocus_comp;
                 end
             end
         end

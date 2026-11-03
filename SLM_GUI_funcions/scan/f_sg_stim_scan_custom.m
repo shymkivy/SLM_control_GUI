@@ -4,7 +4,7 @@ function scan_data = f_sg_stim_scan_custom(app, holo_pointers, custom_stim_data)
 % assuming stim side of SLM can change without disrupting imaging side
 % all patterns are precomputed
 
-scan_data.holo_pointers = holo_pointers;
+scan_data = struct;
 
 session = app.DAQ_session;
 if ~numel(session.Channels)
@@ -84,7 +84,6 @@ if strcmpi(cont1 , 'y')
     stim_times_types = cat(1,stim_times_types_all{:});
     stim_times_types(~sum(stim_times_types,2),:) = [];
     scan_data.stim_times_types = stim_times_types;
-    scan_data.holo_pointers = holo_pointers;
     scan_data.custom_stim_data = custom_stim_data;
 
     disp('Done');

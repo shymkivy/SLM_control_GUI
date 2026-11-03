@@ -4,7 +4,7 @@ function scan_data = f_sg_stim_scan(app, holo_pointers)
 % assuming stim side of SLM can change without disrupting imaging side
 % all patterns are precomputed
 
-scan_data.holo_pointers = holo_pointers;
+scan_data = struct;
 
 session = app.DAQ_session;
 resetCounters(session);

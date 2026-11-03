@@ -36,6 +36,5 @@ if app.save_fit_weightsCheckBox.Value
 
     reg_params_idx = f_sg_get_reg_params_idx(app, app.CurrentregionDropDown.Value);
     app.region_obj_params(reg_params_idx).AO_wf = reg1.AO_wf;
-    disp('saved fit')
 end
 end
