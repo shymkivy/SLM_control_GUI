@@ -1,5 +1,9 @@
 function f_sg_gui_startup(app, GUI_dir)
 
+[ver_str, ver_info] = f_sg_version();
+app.UIFigure.Name = ['SLM GUI - ' ver_str];
+fprintf('SLM GUI %s\n', ver_info.full);     % commit + date for the record
+
 %% add all paths inside functions folder
 
 %addpath(genpath([app.SLM_ops.GUI_dir '\SLM_GUI_funcions']));
