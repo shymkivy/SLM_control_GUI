@@ -61,7 +61,7 @@ if app.ApplyAOcorrectionButton.Value
     
     if app.CompensatezCheckBox.Value
         if isfield(reg1.AO_wf, 'fit_defocus_comp')
-            if strcmpi(class(reg1.AO_wf.fit_defocus_comp),'cfit')
+            if ~isnumeric(reg1.AO_wf.fit_defocus_comp)     % cfit or function handle; 0 = none
                 z_comp1 = reg1.AO_wf.fit_defocus_comp(ao_temp.current_coord.xyzp(3));
             end
         end

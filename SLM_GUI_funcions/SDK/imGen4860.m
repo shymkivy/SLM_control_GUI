@@ -6,7 +6,7 @@ classdef imGen4860 < handle
 
         height;
         width;
-        WFC_ptr;
+        WFC;            % uint8 column (height*width), row-major; pointer made per call
         bit_depth = 8;
         RGB = 0;
 
@@ -34,15 +34,18 @@ classdef imGen4860 < handle
 
         end
         %%
-        function ops = init(ops, height, width, WFC_ptr, bit_depth, RGB)
-          
+        function ops = init(ops, height, width, WFC, bit_depth, RGB)
+
             ops.height = height;
             ops.width = width;
 
-            if exist('WFC_ptr', 'var')
-                ops.WFC_ptr = WFC_ptr;
+            if exist('WFC', 'var') && ~isempty(WFC)
+                if isequal(size(WFC), [height, width])
+                    WFC = reshape(WFC', [], 1);
+                end
+                ops.WFC = uint8(WFC(:));
             else
-                ops.WFC_ptr = ops.init_pointer();
+                ops.WFC = zeros(height*width, 1, 'uint8');
             end
             
             if exist('bit_depth', 'var')
@@ -70,10 +73,13 @@ classdef imGen4860 < handle
         function pointer = init_pointer(ops)
             pointer = libpointer('uint8Ptr', zeros(ops.height*ops.width,1));
         end
+        function p = wfc_pointer(ops)
+            p = libpointer('uint8Ptr', ops.WFC);
+        end
         function pointer = generateStripe(ops, pixelValOne, pixelValTwo, pixelPerStripe, horizontal)
             pointer = ops.init_pointer();
             
-            calllib('ImageGen', 'Generate_Stripe', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Stripe', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 pixelValOne, pixelValTwo, pixelPerStripe, ~horizontal,...
                 ops.RGB);
 
@@ -81,7 +87,7 @@ classdef imGen4860 < handle
         function pointer = generateCheckerboard(ops, pixelValOne, pixelValTwo, pixelPerCheck)
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_Checkerboard', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Checkerboard', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 pixelValOne, pixelValTwo, pixelPerCheck,...
                 ops.RGB);
         end
@@ -89,27 +95,27 @@ classdef imGen4860 < handle
             
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_Solid', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Solid', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 PixelVal,...
                 ops.RGB);
         end
         function pointer = generateRandom(ops)
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_Random', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Random', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 ops.RGB);
         end
         function pointer = generateGrating(ops, Period, increasing, horizontal)
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_Grating', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Grating', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 Period, increasing, horizontal,...
                 ops.RGB);
         end
         function pointer = generateFresnel(ops, CenterX, CenterY, Radius, power, cylindrical, horizontal)
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_FresnelLens', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_FresnelLens', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 CenterX, CenterY, Radius, power, cylindrical, horizontal,...
                 ops.RGB);
         end
@@ -123,7 +129,7 @@ classdef imGen4860 < handle
             
             pointer = ops.init_pointer();
 
-            calllib('ImageGen', 'Generate_Zernike', pointer, ops.WFC_ptr, ops.width, ops.height, ops.bit_depth,...
+            calllib('ImageGen', 'Generate_Zernike', pointer, ops.wfc_pointer(), ops.width, ops.height, ops.bit_depth,...
                 CenterX, CenterY, Radius, Piston,...
                 TiltX, TiltY, Power,...
                 AstigX, AstigY, ComaX, ComaY, PrimarySpherical,...
@@ -151,7 +157,7 @@ classdef imGen4860 < handle
             pointer = ops.init_pointer();
 
             ops.gen_val = calllib('ImageGen', 'Generate_Hologram',...
-                pointer, ops.WFC_ptr,...
+                pointer, ops.wfc_pointer(),...
                 x_spots, y_spots, z_spots,....
                 I_spots, n_spots,...
                 0);

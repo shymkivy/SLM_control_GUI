@@ -76,7 +76,6 @@ end
 
 pause(1);
 scan_data.frame_start_times = frame_end_times;
-scan_data.holo_pointers = holo_pointers;
 scan_data.scans_per_frame = scans_per_frame;
 scan_data.num_planes_all = num_planes_all;
 

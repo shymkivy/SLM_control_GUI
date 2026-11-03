@@ -5,8 +5,8 @@ classdef sdk4851 < handle
 
         SLM_SDK_dir = '';
         bit_depth = 12; % 512 is 8, 1920 is 12
-        num_boards_found = libpointer('uint32Ptr', 0);
-        constructed_okay = libpointer('int32Ptr', 0);
+        num_boards_found = 0;   % plain values; Create_SDK pointers are local to init()
+        constructed_okay = 0;
         is_nematic_type = 1;
         RAM_write_enable = 1;
         max_transients = 10; % this is specific to ODP slms (512)
@@ -20,7 +20,7 @@ classdef sdk4851 < handle
         WFC_im = [];
         WCF_add_on_update = 1;      % alternative to add on pattern generation step, before lut
 
-        init_lut_fpath = libpointer('string'); % null for new bns, only important for old
+        init_lut_fpath = ''; % '' -> NULL for new bns, only important for old
         lut_path = '';
 
         SDK_created = 0;
@@ -76,14 +76,23 @@ classdef sdk4851 < handle
                 loadlibrary([obj.SLM_SDK_dir, '\Blink_C_wrapper.dll'], [obj.SLM_SDK_dir, '\Blink_C_wrapper.h']); % [not_found,warn] = 
             end
 
-            %% - create SDK
-            calllib('Blink_C_wrapper', 'Create_SDK', obj.bit_depth, obj.num_boards_found,...
-                obj.constructed_okay, obj.is_nematic_type, obj.RAM_write_enable,...
-                obj.use_GPU, obj.max_transients, obj.init_lut_fpath);
-            
+            %% - create SDK (pointers local so the object holds only plain data)
+            p_boards = libpointer('uint32Ptr', 0);
+            p_ok = libpointer('int32Ptr', 0);
+            if isempty(obj.init_lut_fpath)
+                p_lut = libpointer('string');
+            else
+                p_lut = obj.init_lut_fpath;
+            end
+            calllib('Blink_C_wrapper', 'Create_SDK', obj.bit_depth, p_boards,...
+                p_ok, obj.is_nematic_type, obj.RAM_write_enable,...
+                obj.use_GPU, obj.max_transients, p_lut);
+            obj.num_boards_found = double(p_boards.Value);
+            obj.constructed_okay = double(p_ok.Value);
+
             % Convention follows that of C function return values: 0 is success, nonzero integer is an error
             obj.SDK_created = 0;
-            if ~obj.constructed_okay.value   % 0 for v3;  1 for v4.856
+            if ~obj.constructed_okay   % 0 for v3;  1 for v4.856
                 err1 = calllib('Blink_C_wrapper', 'Get_last_error_message');
                 if contains(err1, 'simulation')
                     disp(err1)
@@ -96,7 +105,7 @@ classdef sdk4851 < handle
             if obj.SDK_created
                 obj.board_number = 1;
                 disp('Blink SDK was successfully constructed');
-                fprintf('Found %u SLM controller(s)\n', obj.num_boards_found.value);
+                fprintf('Found %u SLM controller(s)\n', obj.num_boards_found);
                 
                 %obj.height = calllib('Blink_C_wrapper', 'Get_image_height', obj.board_number);
                 %obj.width = calllib('Blink_C_wrapper', 'Get_image_width', obj.board_number);

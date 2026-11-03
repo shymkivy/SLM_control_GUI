@@ -13,6 +13,11 @@ function f_sg_gui_startup(app, GUI_dir)
 % end
 
 %%
+if ~f_sg_has_curvefit()
+    warning('Curve Fitting Toolbox not found (or not licensed) in MATLAB %s. Simple fits (poly1/poly2/spline/linearinterp) use base MATLAB; smoothingspline/gauss1 fail (AO scan analysis, AO refocus, LUT calibration s23).', version('-release'));
+end
+
+%%
 app.SLM_ops = f_SLM_default_ops(GUI_dir);
 
 %% create calibration dirs
