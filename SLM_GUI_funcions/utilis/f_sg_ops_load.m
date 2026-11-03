@@ -15,12 +15,13 @@ if exist(fname, 'file')
     
     %%
     def_region_params.obj_name = app.SLM_ops.default_objectives.obj_name;
-    def_region_params.SLM_name = app.SLM_ops.SLM_name;
+    def_region_params.SLM_name = app.SLM_ops.SLM_params(1).SLM_name;
     def_region_params.reg_name = 'Full SLM';
     def_region_params = f_copy_fields(def_region_params, app.SLM_ops.default_region_params);
     temp_region_obj_params = repmat(def_region_params, [1, numel(load_data.region_obj_params)]);
     for n_reg = 1:numel(load_data.region_obj_params)
-        temp_region_obj_params(n_reg) = f_copy_fields(app.SLM_ops.default_region_params, load_data.region_obj_params(n_reg));
+        temp1 = f_copy_fields(app.SLM_ops.default_region_params, load_data.region_obj_params(n_reg));
+        temp_region_obj_params(n_reg) = temp1;
     end
     app.region_obj_params = temp_region_obj_params;
     

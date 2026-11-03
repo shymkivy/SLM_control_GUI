@@ -5,7 +5,7 @@ if ~exist('lut_corr_data', 'var')
 end
 
 if in_phase
-    SLM_phase = ((SLM_phase+pi)/(2*pi))*255;
+    SLM_phase = ((SLM_phase+pi)/(2*pi))*256;
 end
 temp_holo1 = uint8(SLM_phase);
 

@@ -46,5 +46,5 @@ phase = angle(exp(1i*(phase))) + pi;
 holo_phase_out = app.SLM_blank_phase;
 holo_phase_out(m_idx, n_idx) = phase;
 % convert to 8bit
-%phase8bit = round(phase/2/pi*255);
+%phase8bit = round(phase/2/pi*256);
 end

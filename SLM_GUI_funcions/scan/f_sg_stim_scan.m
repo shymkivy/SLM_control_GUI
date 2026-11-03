@@ -27,7 +27,7 @@ if strcmpi(cont1 , 'y')
     tic;
     while imaging
         scan1 = inputSingleScan(session);
-        stim_type = round(scan1(2)+1);
+        stim_type = round(scan1(2)+1);          % zero volt is default pattern, then limited to 1, 2, 3, 4, 5 patterns for corresponding voltages
 
         if stim_type~=SLM_stim_type % or change of stim
             f_SLM_update(app.SLM_ops, holo_pointers{scan_frame,stim_type});

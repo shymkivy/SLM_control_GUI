@@ -6,9 +6,9 @@ if ~exist('lut_corr_data', 'var')
 end
 
 if isempty(lut_corr_data)
-    temp_holo = uint8((holo_image/(2*pi))*255);
+    temp_holo = uint8((holo_image/(2*pi))*256);
 else
-    temp_holo1 = uint8((holo_image/(2*pi))*255);
+    temp_holo1 = uint8((holo_image/(2*pi))*256);
     
     for n_corr = 1:size(lut_corr_data,1)
         if ~isempty(lut_corr_data(n_corr).lut_corr)

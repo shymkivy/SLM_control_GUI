@@ -4,9 +4,9 @@ files1 = dir([ao_temp.scan_path '\' '*tif']);
 fnames = {files1.name}';
 num_scans_done = numel(fnames);
 
-f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value, ao_params.use_counter);
 % make extra scan because stupid scanimage
-f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value);
+f_sg_scan_triggered_frame(app.DAQ_session, app.PostscandelayEditField.Value, ao_params.use_counter);
 num_scans_done = num_scans_done + 2;
 
 f_sg_AO_wait_for_frame_convert(ao_temp.scan_path, num_scans_done);

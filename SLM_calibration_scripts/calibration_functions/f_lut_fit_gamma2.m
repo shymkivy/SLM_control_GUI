@@ -81,6 +81,8 @@ end
 % plot(px, data_fo_rns);
 % plot(px_cut, data_fo_rn_cut_s);
 
+% I ~ cos^2(phi/2) = (cos(phi)+1)/2; Fl = I^2 (two photon)
+
 s1 = mmm_ind(1):mmm_ind(2);
 fo_rn = data_fo_rn(s1) - min(data_fo_rn(s1));
 fo_rn = fo_rn / max(fo_rn) * 2 - 1;

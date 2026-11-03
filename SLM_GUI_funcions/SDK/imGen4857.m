@@ -70,6 +70,11 @@ classdef imGen4857 < handle
         function pointer = init_pointer(ops)
             pointer = libpointer('uint8Ptr', zeros(ops.height*ops.width,1));
         end
+        function load_WFC_image(ops, path1)
+            WFC_im1 = imread(path1);
+            ops.WFC_ptr = ops.init_pointer();
+            ops.WFC_ptr.value = reshape(WFC_im1', [],1);
+        end
         function pointer = generateStripe(ops, pixelValOne, pixelValTwo, pixelPerStripe, horizontal)
             pointer = ops.init_pointer();
             

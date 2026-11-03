@@ -19,7 +19,7 @@ if strcmpi(app.PhaseformatDropDown.Value, 'Preprocessed to uint8')
         uialert(app.UIFigure, 'Preprocessed image must be uint8 format','Error');
         holo_image = [];
     else
-        im2 = double(mod(im, 256))/255*2*pi;
+        im2 = double(mod(im, 256))/256*2*pi;
         holo_image = exp(1i*(im2-pi));
     end
 elseif strcmpi(app.PhaseformatDropDown.Value, 'Radians')
